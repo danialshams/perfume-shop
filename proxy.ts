@@ -1,0 +1,140 @@
+// proxy.ts
+import { NextRequest, NextResponse } from "next/server";
+import { verifyAccessToken } from "@/server/utils/jwt";
+import {
+  ADMIN_ACCESS_COOKIE_NAME,
+  USER_ACCESS_COOKIE_NAME,
+} from "@/server/constants/auth";
+
+function verifyTokenWithRole(
+  token: string | undefined,
+  expectedRole: "USER" | "ADMIN",
+) {
+  if (!token) return false;
+
+  try {
+    const payload = verifyAccessToken(token);
+    return payload.role === expectedRole;
+  } catch {
+    return false;
+  }
+}
+
+function clearCookie(response: NextResponse, name: string) {
+  response.cookies.set({
+    name,
+    value: "",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
+}
+
+export function proxy(request: NextRequest) {
+  const { pathname, search } = request.nextUrl;
+
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isAdminLoginRoute =
+    pathname === "/admin" || pathname === "/admin/login";
+
+  const protectedUserRoutes = ["/account", "/complete-profile"];
+  const isProtectedUserRoute = protectedUserRoutes.some((route) =>
+    pathname.startsWith(route),
+  );
+
+  const userAuthPage = pathname === "/auth";
+
+  if (isAdminRoute) {
+    const token = request.cookies.get(ADMIN_ACCESS_COOKIE_NAME)?.value;
+    const validAdminToken = verifyTokenWithRole(token, "ADMIN");
+
+    if (isAdminLoginRoute) {
+      if (validAdminToken) {
+        return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+      }
+
+      const response = NextResponse.next();
+
+      if (token && !validAdminToken) {
+        clearCookie(response, ADMIN_ACCESS_COOKIE_NAME);
+      }
+
+      return response;
+    }
+
+    if (!validAdminToken) {
+      const loginUrl = new URL("/admin", request.url);
+      loginUrl.searchParams.set("redirect", pathname + search);
+
+      const response = NextResponse.redirect(loginUrl);
+
+      if (token) {
+        clearCookie(response, ADMIN_ACCESS_COOKIE_NAME);
+      }
+
+      return response;
+    }
+
+    return NextResponse.next();
+  }
+
+  if (userAuthPage) {
+    const token = request.cookies.get(USER_ACCESS_COOKIE_NAME)?.value;
+    const validUserToken = verifyTokenWithRole(token, "USER");
+
+    if (validUserToken) {
+      return NextResponse.redirect(new URL("/account", request.url));
+    }
+
+    const response = NextResponse.next();
+
+    if (token && !validUserToken) {
+      clearCookie(response, USER_ACCESS_COOKIE_NAME);
+    }
+
+    return response;
+  }
+
+  if (isProtectedUserRoute) {
+    const token = request.cookies.get(USER_ACCESS_COOKIE_NAME)?.value;
+    const validUserToken = verifyTokenWithRole(token, "USER");
+
+    if (!validUserToken) {
+      // پیدا کردن صفحه قبلی کاربر که از آن کلیک کرده است
+      const referer = request.headers.get("referer");
+      let fallbackUrl: URL;
+
+      if (referer) {
+        fallbackUrl = new URL(referer);
+      } else {
+        fallbackUrl = new URL("/", request.url);
+      }
+
+      // افزودن پارامتر باز شدن فرم لاگین به صفحه فعلی/قبلی
+      fallbackUrl.searchParams.set("openLogin", "true");
+
+      const response = NextResponse.redirect(fallbackUrl);
+
+      if (token) {
+        clearCookie(response, USER_ACCESS_COOKIE_NAME);
+      }
+
+      return response;
+    }
+
+    return NextResponse.next();
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    "/admin/:path*",
+    "/auth",
+    "/account/:path*",
+    "/complete-profile",
+  ],
+};
