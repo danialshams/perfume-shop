@@ -115,16 +115,26 @@ export default function LuxuryNavbar() {
   }, []);
 
   useEffect(() => {
-    loadUserProfile().finally(() => setLoadingUser(false));
+    let alive = true;
+
+    loadUserProfile().finally(() => {
+      if (alive) setLoadingUser(false);
+    });
+
+    return () => {
+      alive = false;
+    };
   }, [loadUserProfile]);
 
   const isActive = useCallback(
     (href: string) => {
+      if (!pathname) return false;
       if (href === "/") return pathname === "/";
       return pathname.startsWith(href);
     },
     [pathname]
   );
+
 
   const updateMobileSearchVisible = useCallback((visible: boolean) => {
     if (mobileSearchVisibleRef.current === visible) return;
@@ -205,7 +215,7 @@ export default function LuxuryNavbar() {
     loadUserProfile,
   };
 
-    return (
+  return (
     <>
       <div
         ref={topLineRef}
@@ -247,26 +257,16 @@ export default function LuxuryNavbar() {
               <BrandLogo />
             </div>
 
-            <div className="flex items-center gap-1.5 text-[#33383C]">
+            <div className="flex items-center gap-1.5">
               <NavbarActions
                 only="search"
                 updateHeaderHidden={updateHeaderHidden}
-                className="text-[#33383C]"
                 {...navbarActionsAuthProps}
               />
-
-              <NavbarActions 
-                only="user" 
-                className="text-[#33383C]"
-                {...navbarActionsAuthProps} 
-              />
-
-              <NavbarActions 
-                only="cart" 
-                className="text-[#33383C]"
-                {...navbarActionsAuthProps} 
-              />
+              <NavbarActions only="user" {...navbarActionsAuthProps} />
+              <NavbarActions only="cart" {...navbarActionsAuthProps} />
             </div>
+
           </div>
         </div>
       </header>
@@ -327,7 +327,7 @@ export default function LuxuryNavbar() {
         </div>
       </header>
 
-      <div className="h-[72px] min-[920px]:hidden" />
+      <div aria-hidden="true" className="h-[88px] min-[920px]:hidden" />
 
       <MobileMenuOverlay
         isOpen={isOpen}

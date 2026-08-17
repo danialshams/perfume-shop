@@ -52,13 +52,19 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("h-full antialiased font-sans", geist.variable)}
     >
+      <head>
+        <script
+          id="fx-intro-flag"
+          dangerouslySetInnerHTML={{ __html: INTRO_FLAG_SCRIPT }}
+        />
+      </head>
+
       <body
         suppressHydrationWarning
         className="flex min-h-full flex-col font-sans"
       >
-        <script dangerouslySetInnerHTML={{ __html: INTRO_FLAG_SCRIPT }} />
-
         <CartCountProvider>{children}</CartCountProvider>
+
 
         <BackgroundMusic audioUrl="/audio/luxury-piano.mp3" />
       </body>

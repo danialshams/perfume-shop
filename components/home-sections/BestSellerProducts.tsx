@@ -90,6 +90,34 @@ function getProductId(product: any) {
 function getProductName(product: any) {
   return product?.name || product?.title || "نام محصول";
 }
+/* تاریخ ساخت را از کلیدهای رایج API می‌خواند */
+function getCreatedTime(product: any) {
+  const raw =
+    product?.created_at ??
+    product?.createdAt ??
+    product?.created ??
+    product?.date_created ??
+    null;
+
+  if (raw) {
+    const time = new Date(raw).getTime();
+    if (!Number.isNaN(time)) return time;
+  }
+
+  // fallback: id عددی بزرگ‌تر = جدیدتر
+  const numericId = Number(product?.id);
+  return Number.isFinite(numericId) ? numericId : 0;
+}
+
+/* همیشه ۶ محصول آخر (جدیدترین) */
+function getLatestProducts(items: any[], count = 6) {
+  if (!Array.isArray(items)) return [];
+
+  return [...items]
+    .sort((a, b) => getCreatedTime(b) - getCreatedTime(a))
+    .slice(0, count);
+}
+
 
 function splitProducts(products: any[]) {
   if (!Array.isArray(products) || products.length === 0) {
@@ -373,10 +401,11 @@ export default function BestSellerProducts() {
         setLoading(true);
         setError("");
 
-        const res = await fetch(`${API_BASE_URL}/api/v1/products`, {
-          cache: "no-store",
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `${API_BASE_URL}/api/v1/products?limit=6&ordering=-created_at`,
+          { cache: "no-store", signal: controller.signal }
+        );
+
 
         if (!res.ok) {
           throw new Error("خطا در دریافت محصولات");
@@ -391,8 +420,9 @@ export default function BestSellerProducts() {
           [];
 
         if (!ignore) {
-          setProducts(Array.isArray(items) ? items : []);
+          setProducts(getLatestProducts(items, 6));
         }
+
       } catch (err: any) {
         if (err.name === "AbortError") return;
         if (!ignore) {
@@ -428,8 +458,8 @@ export default function BestSellerProducts() {
 
     const charEls = eyebrowEl
       ? (Array.from(
-          eyebrowEl.querySelectorAll("[data-eyebrow-char]")
-        ) as HTMLElement[])
+        eyebrowEl.querySelectorAll("[data-eyebrow-char]")
+      ) as HTMLElement[])
       : [];
 
     if (!wordEls.length) return;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import LuxuryHero from "../home-sections/LuxuryHero";
 import LuxuryPerfumeSlider from "../home-sections/LuxuryPerfumeSlider";
@@ -10,7 +10,14 @@ import InitialLoader from "../panel-sections/initial-loader";
 import CategoryBlurSlider from "../home-sections/CategoryBlurSlider";
 
 export default function HomePageShell() {
+  // مقدار اولیه باید در SSR و CSR یکسان باشد؛ فلگ session را داخل effect بخوان.
   const [loaderDone, setLoaderDone] = useState(false);
+
+  useEffect(() => {
+    if (document.documentElement.classList.contains("fx-intro-seen")) {
+      setLoaderDone(true);
+    }
+  }, []);
 
   const handleLoaderFinish = useCallback(() => {
     setLoaderDone(true);

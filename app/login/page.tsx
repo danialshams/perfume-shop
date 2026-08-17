@@ -19,7 +19,7 @@ import LuxuryFooter from "@/components/home-sections/LuxuryFooter";
 
 const T = {
     paper: "#FFFFFF",
-    ink1: "#1A1A1A",
+    ink1: "#2C2926",
     ink2: "#6B6863",
     ink3: "#A8A49E",
     hairline: "#EAE7E2",
