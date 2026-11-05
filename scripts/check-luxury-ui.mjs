@@ -13,8 +13,12 @@ const card = read("components/HomeProductsComponnents/MobileProductCard.tsx");
 
 assert.ok(shell.includes("CinematicStorefront"), "Homepage must mount cinematic design");
 assert.ok(shell.includes("CinematicFooter"), "Homepage must include dedicated footer");
-assert.ok(!shell.includes("<InitialLoader"), "Long initial loader must not obstruct content");
-assert.ok(!layout.includes("<BackgroundMusic"), "Global autoplay audio must not ship");
+assert.ok(shell.includes("<MaisonIntro"), "The short MAISON branded entry sequence must be mounted");
+assert.ok(!shell.includes("<InitialLoader"), "Legacy five-second loader must not obstruct content");
+assert.ok(layout.includes("<MaisonAmbientSound"), "Explicitly controlled ambient music must be mounted");
+const audioControl = read("components/maison/MaisonAmbientSound.tsx");
+assert.ok(audioControl.includes('preload="none"'), "Music must not load before user consent");
+assert.ok(audioControl.includes("background-music:pause-for-voice"), "Voice descriptions must pause ambient music");
 assert.ok(!layout.includes("FERTINI"), "Legacy brand must not appear in new layout");
 assert.ok(home.includes('id="collection"'), "Collection anchor required");
 assert.ok(home.includes("/api/v1/products?limit=4"), "Live products must still be read");

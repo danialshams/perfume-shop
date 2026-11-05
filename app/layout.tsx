@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { CartCountProvider } from "@/context/CartCountContext";
 import "./globals.css";
 import "./quiet-luxury.css";
+import "./maison-experience.css";
+import MaisonAmbientSound from "@/components/maison/MaisonAmbientSound";
 
 export const metadata: Metadata = {
   title: "MAISON | هنر انتخاب رایحه",
@@ -14,7 +16,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="fa" dir="rtl" className="h-full antialiased">
       <body className="flex min-h-full flex-col font-sans">
-        <CartCountProvider>{children}</CartCountProvider>
+        <CartCountProvider>{children}<MaisonAmbientSound /></CartCountProvider>
       </body>
     </html>
   );

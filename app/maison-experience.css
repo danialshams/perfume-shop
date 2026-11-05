@@ -1,0 +1,47 @@
+/* MAISON entry sequence — isolated from the storefront and admin UI. */
+.maison-intro {
+  position: fixed; inset: 0; z-index: 10000; isolation: isolate;
+  display: flex; align-items: center; justify-content: center;
+  background: #ede9e2; color: #302d29; text-align: center;
+  overflow: hidden; will-change: opacity, transform;
+}
+.maison-intro__content { display: flex; flex-direction: column; align-items: center; gap: 19px; margin-top: -28px; }
+.maison-intro__overline { font: 10px/1.5 Georgia, serif; color: #9b8263; letter-spacing: .32em; }
+.maison-intro__brand { font: 400 clamp(60px, 11vw, 152px)/1 Georgia, "Times New Roman", serif; letter-spacing: .19em; padding-left: .19em; }
+.maison-intro__period { color: #b09b7e; }
+.maison-intro__rule { width: clamp(100px, 18vw, 210px); height: 1px; background: #b29b7c; transform-origin: center center; }
+.maison-intro__sub { font: 300 13px/2 "Vazirmatn", sans-serif; color: #807468; }
+.maison-intro__skip {
+  position: absolute; inset-inline-end: clamp(22px, 6vw, 84px); bottom: clamp(26px, 5vh, 65px);
+  border: 0; background: none; color: #7b7064; cursor: pointer; padding: 12px;
+  font: 300 11px/1.5 "Vazirmatn", sans-serif; letter-spacing: 0;
+}
+.maison-intro__skip:hover { color: #302d29; }
+.maison-intro__skip:focus-visible { outline: 1px solid #9b8263; outline-offset: 5px; }
+.maison-sound {
+  position: fixed; z-index: 80; inset-inline-end: clamp(16px, 3vw, 38px); bottom: clamp(18px, 3vw, 34px);
+  display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 8px 12px;
+  border: 1px solid rgba(125, 107, 85, .18); border-radius: 3px;
+  background: rgba(245, 241, 235, .84); color: #51483f;
+  box-shadow: 0 7px 30px rgba(35, 27, 21, .08);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  font: 350 11px/1.5 "Vazirmatn", sans-serif;
+  cursor: pointer; transition: background .35s ease, color .35s ease;
+}
+.maison-sound:hover { background: rgba(250, 248, 244, .94); }
+.maison-sound:focus-visible { outline: 2px solid #9b8263; outline-offset: 3px; }
+.maison-sound__state { color: #a18f78; font-size: 10px; }
+.maison-sound__bars { display: flex; align-items: center; gap: 2px; height: 14px; }
+.maison-sound__bars i { display: block; width: 1.5px; height: 4px; background: #a28e75; }
+.maison-sound--playing .maison-sound__bars i { animation: maison-sound-wave 750ms ease-in-out infinite alternate; }
+.maison-sound--playing .maison-sound__bars i:nth-child(2) { animation-delay: -300ms; }
+.maison-sound--playing .maison-sound__bars i:nth-child(3) { animation-delay: -510ms; }
+@keyframes maison-sound-wave { from { height: 3px; } to { height: 13px; } }
+@media (max-width: 600px) {
+  .maison-intro__content { gap: 16px; }
+  .maison-sound { inset-inline-end: 13px; bottom: 14px; padding: 7px 10px; min-height: 38px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .maison-intro, .maison-intro * { animation: none !important; transition: none !important; }
+  .maison-sound--playing .maison-sound__bars i { animation: none !important; height: 7px; }
+}
