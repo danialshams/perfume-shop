@@ -29,7 +29,7 @@ export async function GET(request: NextRequest, context: Context) {
     let isAdmin = false;
 
     try {
-      const user = requireAuth(request);
+      const user = await requireAuth(request);
       isAdmin = user?.role === "ADMIN";
     } catch {
       isAdmin = false;

@@ -1,15 +1,16 @@
-﻿import jwt from "jsonwebtoken";
+﻿import jwt, { type SignOptions } from "jsonwebtoken";
 import { env } from "@/server/config/env";
 
 export type JwtPayload = {
   userId: number;
+  mobile?: string;
   email?: string; // این‌جا رو از اجباری به اختیاری تغییر بده
   role: "USER" | "ADMIN";
 };
 
 export function signAccessToken(payload: JwtPayload) {
   return jwt.sign(payload, env.jwtAccessSecret, {
-    expiresIn: env.jwtAccessExpiresIn,
+    expiresIn: env.jwtAccessExpiresIn as SignOptions['expiresIn'],
   });
 }
 

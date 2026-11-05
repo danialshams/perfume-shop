@@ -11,7 +11,7 @@ import { requireAuth } from "@/server/middlewares/auth";
 
 export async function POST(request: NextRequest) {
   try {
-    const user = requireAuth(request);
+    const user = await requireAuth(request);
     if (!user) {
       return unauthorizedResponse("Unauthorized");
     }

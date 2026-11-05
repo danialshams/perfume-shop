@@ -69,7 +69,7 @@ export const customerAuthService = {
 
       await customerRepository.attachGuestOrdersByMobile(
         Number(customer.id),
-        customer.mobile,
+        String(customer.mobile ?? ""),
       );
 
       const accessToken = signAccessToken({

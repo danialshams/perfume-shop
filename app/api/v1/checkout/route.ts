@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const validated = checkoutSchema.parse(body);
     const cartToken = await getCartToken();
     const session = await getOptionalCustomerSession(request);
-    const customerId = session?.userId || (session as any)?.id || null;
+    const customerId = session?.userId ?? null;
 
     const result = await checkoutService.checkout(validated, {
       cartToken,

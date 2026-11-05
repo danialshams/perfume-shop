@@ -5,10 +5,6 @@ import { customerAccountService } from "@/server/services/customer-account.servi
 import { HttpError } from "@/server/utils/http-error";
 
 function getErrorStatus(error: unknown, fallbackStatus: number) {
-  if (error instanceof HttpError && typeof error.statusCode === "number") {
-    return error.statusCode;
-  }
-
   if (error instanceof HttpError && typeof error.status === "number") {
     return error.status;
   }

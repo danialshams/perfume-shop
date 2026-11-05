@@ -46,6 +46,7 @@ type CheckoutInput = {
 };
 
 type CheckoutOptions = {
+  customerId?: number | null;
   cartToken?: string | null;
 };
 
@@ -142,7 +143,7 @@ class CheckoutService {
       const normalizedPassword = input.password?.trim();
       const normalizedConfirmPassword = input.confirm_password?.trim();
 
-      let customerId: number | null = null;
+      let customerId: number | null = options?.customerId ?? null;
       let userCreated = false;
 
       if (input.wants_register) {
