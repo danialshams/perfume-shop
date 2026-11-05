@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import LuxuryFooter from "@/components/home-sections/LuxuryFooter";
@@ -216,7 +216,7 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
-export default function CheckoutPage() {
+function CheckoutPageContent() {
   const router = useRouter();
   const { cart, loading, isEmpty } = useCart();
 
@@ -1247,4 +1247,7 @@ export default function CheckoutPage() {
       <LuxuryFooter />
     </>
   );
+}
+export default function CheckoutPage() {
+  return <Suspense fallback={<main className="ql-shop min-h-screen p-10 text-center text-[#8a8176]" role="status">در حال آماده‌سازی تسویه‌حساب…</main>}><CheckoutPageContent /></Suspense>;
 }
