@@ -23,7 +23,7 @@ import {
 import ProductDescription from "../HomeProductsComponnents/ProductDescription";
 import ProductGallery from "../HomeProductsComponnents/ProductGallery";
 import ProductMobileStickyBar from "../HomeProductsComponnents/ProductMobileStickyBar";
-import ProductPurchasePanel from "../HomeProductsComponnents/ProductPurchasePanel";
+import CinematicPurchasePanel from "../home-sections/CinematicPurchasePanel";
 import ProductVoiceCard from "../HomeProductsComponnents/ProductVoiceCard";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -528,7 +528,7 @@ export default function ProductDetailClient({ product }: Props) {
       `}</style>
 
       {/* DESKTOP HERO */}
-      <section className="pd-hero-shell relative z-10 hidden lg:flex lg:h-[calc(100dvh-120px)] lg:flex-row-reverse">
+      <section className="pd-hero-shell relative z-10 hidden lg:flex lg:min-h-[calc(100dvh-100px)] lg:flex-row-reverse">
         {/* خط عمودی - با جبران فاصله بالا برای چسبیدن به نوبار */}
         <div
           className="pointer-events-none absolute right-1/2 z-20 w-px bg-[#F8F8F8]"
@@ -555,91 +555,17 @@ export default function ProductDetailClient({ product }: Props) {
           />
         </div>
 
-        {/* بخش جزئیات با خط افقی در پایین */}
-        <div className="flex h-[calc(100dvh-120px)] w-1/2 flex-col border-b border-gray-200 bg-[#F8F8F8]">
-          <div className="flex h-full w-full flex-col items-center justify-center px-16 py-14 xl:px-20">
-            <div className="pd-reveal w-full max-w-[440px] text-center">
-              <p className="text-[11px] font-light uppercase tracking-[0.4em] text-[#a18461]" lang="en" dir="ltr">MAISON — THE FRAGRANCE EDIT</p>
-
-              <h1 className="mt-8 text-[40px] font-extralight leading-[1.45] tracking-[-0.015em] text-[#302d29]">{product.name}</h1>
-
-              {product.short_description && (
-                <p className="mt-8 text-[13.5px] font-light leading-[2] tracking-[0.02em] text-[#6a6a6a]">
-                  {product.short_description}
-                </p>
-              )}
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  createRipple(e);
-                  setTimeout(() => setDetailsOpen(true), 100);
-                }}
-                className="relative mt-12 overflow-hidden rounded-full border border-[#d8d8d8] bg-[#F8F8F8] px-12 py-4 text-[12px] font-light tracking-[0.12em] text-[#2a2a2a] shadow-sm transition-all duration-300 hover:border-[#2a2a2a] hover:bg-[#2a2a2a] hover:text-white hover:shadow-md"
-              >
-                کشف جزئیات رایحه
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PURCHASE PANEL DESKTOP */}
-      <div className="pd-reveal hidden w-full lg:block lg:pt-24">
-        <div className="mx-auto w-full max-w-[640px] px-6">
-          {isLowStock && (
-            <div className="mb-8 rounded-xl border border-[#f5c6c6] bg-[#F8F8F8] p-5">
-              <div className="flex items-center gap-3.5">
-                <svg
-                  className="h-5 w-5 shrink-0 text-[#d64545]"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-
-                <div className="flex-1">
-                  <p className="text-sm font-light text-[#d64545]">
-                    تنها {currentStock} عدد در انبار باقی مانده است
-                  </p>
-
-                  <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[#F8F8F8]">
-                    <div
-                      className="h-full rounded-full bg-[#d64545] transition-all duration-700"
-                      style={{ width: `${stockPercentage}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <ProductPurchasePanel
-            variants={shouldShowVariants ? variants : []}
-            selectedVariant={selectedVariant}
-            onSelectVariant={handleSelectVariant}
-            quantity={quantity}
-            onIncreaseQty={increaseQty}
-            onDecreaseQty={decreaseQty}
-            onAddToCart={handleAddToCart}
-            isAddingToCart={isAddingToCart}
-            cartError={cartError}
-            currentPrice={Number(currentPrice || 0)}
-            currentStock={currentStock}
-            currentLabel={currentLabel}
-            inStock={inStock}
-            formatVariantLabel={formatVariantLabel}
-          />
-        </div>
-      </div>
-
-      {/* OVERLAY */}
+        <div className="ql-detail-buy-pane w-1/2 flex items-center justify-center">
+ <div className="w-full max-w-[560px] px-9 py-12 xl:px-14">
+  <p className="ql-overline" lang="en" dir="ltr">MAISON — THE FRAGRANCE EDIT</p>
+  <h1 className="ql-detail-title">{product.name}</h1>
+  {product.short_description&&<p className="ql-detail-subtitle">{product.short_description}</p>}
+  <CinematicPurchasePanel variants={shouldShowVariants?variants:[]} selectedVariant={selectedVariant} onSelectVariant={handleSelectVariant} quantity={quantity} onIncreaseQty={increaseQty} onDecreaseQty={decreaseQty} onAddToCart={handleAddToCart} isAddingToCart={isAddingToCart} cartError={cartError} currentPrice={Number(currentPrice||0)} currentStock={currentStock} currentLabel={currentLabel} inStock={inStock} formatVariantLabel={formatVariantLabel}/>
+  <button type="button" onClick={()=>setDetailsOpen(true)} className="ql-detail-more">جزئیات و نت‌های رایحه <span>←</span></button>
+ </div>
+</div>
+</section>
+{/* OVERLAY */}
       <button
         type="button"
         aria-label="بستن جزئیات محصول"
@@ -714,7 +640,7 @@ export default function ProductDetailClient({ product }: Props) {
       {/* MOBILE CONTENT */}
       <div className="pd-sections-trigger mt-20 space-y-14 sm:mt-24 sm:space-y-16 lg:hidden">
         <div id="product-mobile-purchase-panel" className="pd-card-reveal">
-          <ProductPurchasePanel
+          <CinematicPurchasePanel
             variants={shouldShowVariants ? variants : []}
             productName={product.name}
             selectedVariant={selectedVariant}
