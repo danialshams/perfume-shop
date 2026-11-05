@@ -16,6 +16,7 @@ export default function MaisonIntro() {
     finishedRef.current = true;
     try { window.sessionStorage.setItem(SESSION_KEY, "1"); } catch {}
     setVisible(false);
+    window.dispatchEvent(new Event("maison:intro:complete"));
   }, []);
 
   useEffect(() => {
