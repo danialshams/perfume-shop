@@ -24,9 +24,9 @@ const DEFAULT_FILTERS: ProductQueryParams = {
     page: 1,
     limit: 10,
     search: "",
-    status: "",
-    is_active: "",
-    is_featured: "",
+    status: undefined,
+    is_active: undefined,
+    is_featured: undefined,
 };
 
 type CategoryOption = {
@@ -53,7 +53,7 @@ export default function ProductsManagement() {
     const [editOpen, setEditOpen] = useState(false);
     const [editingProductId, setEditingProductId] = useState<number | null>(null);
 
-    const [data, setData] = useState<ProductsResponse>({
+    const [data, setData] = useState<ProductsResponse["data"]>({
         items: [],
         meta: {
             page: 1,

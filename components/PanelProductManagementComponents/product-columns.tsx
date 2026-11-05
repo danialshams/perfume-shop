@@ -99,6 +99,7 @@ export function getProductColumns({
                 const variants = getProductVariants(record).map((variant) => ({
                     ...variant,
                     label: getVariantLabel(variant),
+                    stock_qty: Number(variant.stock_qty ?? variant.stock ?? 0),
                 }));
 
                 return <ProductPriceCell variants={variants} />;

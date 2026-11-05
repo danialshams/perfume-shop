@@ -268,7 +268,7 @@ export default function RichTextEditor({
         const nextValue = value || "";
 
         if (nextValue !== currentValue) {
-            editor.commands.setContent(nextValue, false);
+            editor.commands.setContent(nextValue, { emitUpdate: false });
         }
     }, [editor, value]);
 

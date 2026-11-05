@@ -165,6 +165,8 @@ export default function ProductsFilterTransition({
             setActiveParentId={setActiveParentId}
             setActiveChildId={setActiveChildId}
             loadingCategories={loadingCategories}
+            selectedSort="newest"
+            onSortChange={() => {}}
           />
         </div>
       </div>
