@@ -110,8 +110,8 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
   }
   await evaluate(send,`(async()=>{await document.fonts.ready;await new Promise(r=>setTimeout(r,1100));let h=document.documentElement.scrollHeight;for(let y=0;y<h;y+=650){window.scrollTo(0,y);await new Promise(r=>setTimeout(r,65));}window.scrollTo(0,0);await new Promise(r=>setTimeout(r,650));return true;})()`);
   const state=await evaluate(send,`(()=>{
-   const hero=document.querySelector(".maison-hero");
-   const img=document.querySelector(".maison-hero__image img");
+   const hero=document.querySelector(".fertini-hero");
+   const img=document.querySelector(".fertini-hero__image.is-active img");
    const title=hero?.querySelector("h1");
    return{
     url:location.pathname,width:window.innerWidth,scrollWidth:document.documentElement.scrollWidth,
@@ -120,7 +120,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroImageLoaded:!!img?.complete&&Number(img?.naturalWidth)>50,
     heroTitleOpacity:title?Number(getComputedStyle(title).opacity):null,
     headerFound:!!document.querySelector("header"),
-    imageCount:document.querySelectorAll(".maison-home img").length
+    imageCount:document.querySelectorAll(".fertini-home img").length
    };
   })()`);
   if(!state.headerFound)throw Error(name+" has no header");
@@ -171,6 +171,8 @@ try{
  await pageScreenshot({name:"privacy-mobile-full",url:"http://127.0.0.1:3100/privacy",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"terms-mobile-full",url:"http://127.0.0.1:3100/terms",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"payment-result-mobile-full",url:"http://127.0.0.1:3100/payment/result?status=failed",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"demo-mobile-full",url:"http://127.0.0.1:3100/demo/fragrance?item=demo-001",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"demo-desktop-full",url:"http://127.0.0.1:3100/demo/fragrance?item=demo-001",width:1440,height:900,mobile:false,assertHome:false});
  process.stdout.write("Visual QA browser checks passed.\n");
 }finally{
  chrome?.kill("SIGTERM");
