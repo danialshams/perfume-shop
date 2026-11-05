@@ -1,23 +1,55 @@
 import { spawn } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
-import { randomInt } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
 
-const browserPath=process.env.CHROME||"google-chrome";
-const port=9000+randomInt(1000);
-let chromeErrors="";
-let chromeExit=null;
-const chrome=spawn(browserPath,[
- "--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage",
- "--hide-scrollbars","--remote-allow-origins=*",
- "--remote-debugging-port="+port,
- "--user-data-dir=/tmp/maison-cdp-"+process.pid,
- "about:blank"
-],{stdio:["ignore","ignore","pipe"]});
-chrome.stderr?.on("data",chunk=>{ chromeErrors=(chromeErrors+chunk.toString()).slice(-4500); });
-chrome.on("exit",(code,signal)=>{chromeExit={code,signal};});
-chrome.on("error",error=>{chromeErrors+="\\n"+error.message;});
-const endpoint="http://127.0.0.1:"+port;
+const browserPath = process.env.CHROME || "google-chrome";
+let chrome = null;
+let endpoint = "";
+const chromeStartupErrors = [];
+
+async function bootChrome() {
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    const userDataDir = `/tmp/maison-cdp-${process.pid}-${attempt}`;
+    let chromeExit = null;
+    let stderr = "";
+    chrome = spawn(browserPath, [
+      "--headless=new", "--no-sandbox", "--disable-gpu",
+      "--disable-dev-shm-usage", "--disable-extensions", "--no-first-run",
+      "--remote-allow-origins=*", "--remote-debugging-port=0",
+      `--user-data-dir=${userDataDir}`, "about:blank",
+    ], { stdio: ["ignore", "ignore", "pipe"] });
+
+    chrome.stderr?.on("data", chunk => {
+      stderr = (stderr + String(chunk)).slice(-5000);
+    });
+    chrome.on("exit", (code, signal) => { chromeExit = { code, signal }; });
+    chrome.on("error", error => { stderr += "\\n" + error.message; });
+
+    try {
+      await until(async () => {
+        if (chromeExit) return false;
+        const content = await readFile(`${userDataDir}/DevToolsActivePort`, "utf8");
+        const port = Number(content.split("\\n")[0]);
+        if (!Number.isInteger(port) || port <= 0) return false;
+        const candidate = `http://127.0.0.1:${port}`;
+        const response = await fetch(candidate + "/json/version");
+        if (response.ok) {
+          endpoint = candidate;
+          return true;
+        }
+        return false;
+      }, 14000);
+      process.stdout.write(`Chrome DevTools ready on attempt ${attempt}.\\n`);
+      return;
+    } catch {
+      chromeStartupErrors.push({ attempt, chromeExit, stderr });
+      chrome?.kill("SIGTERM");
+      await sleep(600);
+    }
+  }
+  throw new Error("Chrome CDP startup failed: " + JSON.stringify(chromeStartupErrors));
+}
+
 const state={seq:0,pending:new Map(),exceptions:[]};
 
 async function until(check,ms=16000){
@@ -89,7 +121,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
 
 try{
  await mkdir("artifacts",{recursive:true});
- await until(async()=>{const r=await fetch(endpoint+"/json/version");return r.ok},15000);
+ await bootChrome();
  await until(async()=>{const r=await fetch("http://127.0.0.1:3100/");return r.ok},15000);
  await pageScreenshot({name:"home-desktop-full",url:"http://127.0.0.1:3100/",width:1440,height:900,mobile:false,assertHome:true});
  await pageScreenshot({name:"home-mobile-full",url:"http://127.0.0.1:3100/",width:390,height:844,mobile:true,assertHome:true});
@@ -100,7 +132,7 @@ try{
  await pageScreenshot({name:"checkout-mobile-full",url:"http://127.0.0.1:3100/checkout",width:390,height:844,mobile:true,assertHome:false});
  process.stdout.write("Visual QA browser checks passed.\n");
 }finally{
- chrome.kill("SIGTERM");
+ chrome?.kill("SIGTERM");
  await sleep(250);
- if(!chrome.killed)chrome.kill("SIGKILL");
+ if(chrome && !chrome.killed)chrome.kill("SIGKILL");
 }
