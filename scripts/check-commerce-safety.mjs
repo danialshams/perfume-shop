@@ -73,3 +73,7 @@ assert.match(dbMigration, /ADD COLUMN status/);
 const paymentScreen = read("app/payment/result/page.tsx");
 assert.doesNotMatch(paymentScreen, /status === "success"/);
 assert.match(paymentScreen, /در حال بررسی/);
+
+const adminSignup = read("app/api/v1/auth/register/route.ts");
+assert.doesNotMatch(adminSignup, /authService\.register/);
+assert.match(adminSignup, /403/);

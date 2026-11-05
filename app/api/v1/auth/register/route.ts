@@ -1,14 +1,13 @@
-import { registerSchema } from "@/server/validations/auth.validation";
-import { authService } from "@/server/services/auth.service";
-import { successResponse, errorResponse } from "@/lib/response";
+import { errorResponse } from "@/lib/response";
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const validated = registerSchema.parse(body);
-    const result = await authService.register(validated);
-    return successResponse(result, "Register successful", 201);
-  } catch (error: any) {
-    return errorResponse(error?.message || "Register failed", 400);
-  }
+/**
+ * There is a separate public customer registration flow.
+ * Administrative accounts must be provisioned out-of-band by the owner.
+ * Do not issue staff JWTs or create internal users from an open endpoint.
+ */
+export async function POST() {
+  return errorResponse(
+    "ثبت‌نام عمومی حساب مدیریتی غیرفعال است.",
+    403,
+  );
 }
