@@ -9,6 +9,7 @@ import "./maison-v3.css";
 import "./maison-home-v3.css";
 import "./maison-pages-v3.css";
 import "./maison-fonts.css";
+import "./maison-commerce-v3.css";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL ||
   "https://perfume-shop-danialshams-projects.vercel.app";

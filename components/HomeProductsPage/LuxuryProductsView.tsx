@@ -48,7 +48,7 @@ export default function LuxuryProductsView() {
     });
   }, [filteredProducts, selectedSort]);
 
-  return <div className="ql-shop min-h-screen">
+  return <div className="ql-shop maison-catalog min-h-screen">
     <LuxuryNavbar />
     <main className="ql-shop-main" id="main-content">
       <div className="ql-container ql-shop-heading">

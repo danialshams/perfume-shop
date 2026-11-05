@@ -24,7 +24,7 @@ export default function AccountClientWrapper({ initialData }: Props) {
     const fullName = `${initialData.first_name} ${initialData.last_name}`.trim();
 
     return (
-        <div className="bg-[#F8F8F8]">
+        <div className="maison-account bg-[#F8F8F8]">
             <LuxuryNavbar />
 
             {/* حذف آیکن‌های بومی مرورگر روی فیلد رمز */}

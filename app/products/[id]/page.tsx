@@ -33,7 +33,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="ql-detail flex min-h-screen flex-col bg-[#F5F2ED]">
+    <div className="ql-detail maison-detail flex min-h-screen flex-col bg-[#F5F2ED]">
       <LuxuryNavbar />
 
       <main className="flex flex-1 flex-col text-[#302d29]">

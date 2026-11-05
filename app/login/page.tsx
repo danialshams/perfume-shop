@@ -682,7 +682,7 @@ function RegisterView() {
             <LuxuryNavbar />
             <main
                 dir="rtl"
-                className="min-h-screen selection:bg-[#1A1A1A] selection:text-white"
+                className="maison-auth min-h-screen selection:bg-[#1A1A1A] selection:text-white"
                 style={{ background: T.paper, color: T.ink1 }}
             >
                 {/* حذف آیکن‌های بومی مرورگر روی فیلد رمز */}
