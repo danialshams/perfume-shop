@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowUpLeft, MoveLeft } from "lucide-react";
@@ -48,19 +50,35 @@ export default function CinematicStorefront() {
   }, []);
 
   useEffect(() => {
-    if (typeof IntersectionObserver === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const elements = document.querySelectorAll("[data-ql-reveal]");
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    // A small scroll-triggered sequence: no continuous on-scroll rendering.
+    const sections = gsap.utils.toArray<HTMLElement>("[data-ql-reveal]");
+    const tweens: gsap.core.Tween[] = [];
+    const triggers = sections.map((element, index) => ScrollTrigger.create({
+      trigger: element,
+      start: "top 94%",
+      once: true,
+      onEnter: () => {
+        element.classList.add("is-visible");
+        tweens.push(gsap.fromTo(element,
+          { y: 20, opacity: 0.75 },
+          { y: 0, opacity: 1, duration: 1.05, ease: "power2.out", delay: (index % 3) * 0.06, clearProps: "transform,opacity" }
+        ));
+        const picture = element.querySelector<HTMLElement>(".ql-photo, .ql-editorial-image");
+        if (picture) {
+          tweens.push(gsap.fromTo(picture,
+            { scale: 1.045 },
+            { scale: 1, duration: 1.7, ease: "power2.out", clearProps: "transform" }
+          ));
         }
-      });
-    }, { threshold: 0.08, rootMargin: "0px 0px -30px 0px" });
-    elements.forEach(element => observer.observe(element));
-    document.documentElement.classList.add("ql-motion-ready");
-    return () => { observer.disconnect(); document.documentElement.classList.remove("ql-motion-ready"); };
+      }
+    }));
+    return () => {
+      triggers.forEach(trigger => trigger.kill());
+      tweens.forEach(tween => tween.kill());
+    };
   }, []);
 
   return (
@@ -119,7 +137,7 @@ export default function CinematicStorefront() {
             { image: photo.amber, name: "شرقی و گرم", latin: "AMBER / ORIENTAL", description: "مرموز، غنی و شاعرانه" },
           ].map((family, index) => (
             <Reveal key={family.latin} className="ql-family-reveal">
-              <Link href="/products" className="ql-family-card" aria-label={"جستجوی عطرها: " + family.name}>
+              <Link href="/products" className="ql-family-card" aria-label={"مشاهده مجموعه عطرها: " + family.name}>
                 <div className="ql-family-image">
                   <Image unoptimized fill sizes="(min-width: 920px) 32vw, (min-width: 600px) 50vw, 100vw" src={family.image} alt={"عکاسی عطر برای گروه " + family.name} className="ql-photo"/>
                   <span className="ql-family-no" lang="en" dir="ltr">0{index + 1}</span>

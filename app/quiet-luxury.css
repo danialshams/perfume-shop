@@ -100,7 +100,7 @@
 .ql-footer-links a{font-size:12px;color:#e1d8c9;transition:color .3s}.ql-footer-links a:hover{color:#fff}
 .ql-footer-bottom{display:flex;justify-content:space-between;gap:24px;border-top:1px solid #5c554d;padding-top:26px;color:#978d7f;font-family:Georgia,serif;letter-spacing:.12em;font-size:9px}
 .ql-motion-ready [data-ql-reveal]:not(.is-visible){opacity:.74;transform:translateY(16px)}
-.ql-reveal{transition:opacity .85s cubic-bezier(.2,.7,.15,1),transform .85s cubic-bezier(.2,.7,.15,1)}
+.ql-reveal{backface-visibility:hidden}
 @keyframes ql-image-open{from{transform:scale(1.075);filter:brightness(.83)}to{transform:scale(1);filter:brightness(1)}}
 @keyframes ql-text-in{from{opacity:.88;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
 @keyframes ql-line-in{from{transform:scaleX(0);transform-origin:right}to{transform:scaleX(1);transform-origin:right}}
