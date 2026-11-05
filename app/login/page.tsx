@@ -10,6 +10,8 @@ import {
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 
@@ -529,7 +531,17 @@ function ToggleReveal({
 function RegisterView() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirect = searchParams.get("redirect") || "/account";
+    const requestRedirect = searchParams.get("redirect");
+    const redirect = requestRedirect?.startsWith("/") && !requestRedirect.startsWith("//")
+        ? requestRedirect : "/account";
+    const [mode, setMode] = useState<"login" | "register">(
+        searchParams.get("mode") === "register" ? "register" : "login",
+    );
+    const [loginMobile, setLoginMobile] = useState("");
+    const [loginPassword, setLoginPassword] = useState("");
+    const [showLoginPassword, setShowLoginPassword] = useState(false);
+    const [loginBusy, setLoginBusy] = useState(false);
+    const [loginError, setLoginError] = useState("");
 
     const [registerForm, setRegisterForm] = useState<RegisterForm>(initialRegister);
     const [registerErrors, setRegisterErrors] = useState<RegisterErrors>({});
@@ -672,6 +684,90 @@ function RegisterView() {
         }
     }
 
+
+    async function handleLogin(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        if (loginBusy) return;
+        setLoginError("");
+        if (!mobileRegex.test(loginMobile) || loginPassword.length < 6) {
+            setLoginError("شماره همراه یا رمز عبور معتبر نیست.");
+            return;
+        }
+        setLoginBusy(true);
+        try {
+            const response = await fetch("/api/v1/customers/auth/login", {
+                method: "POST",
+                headers: { Accept: "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({ mobile: loginMobile, password: loginPassword }),
+            });
+            const result = await response.json();
+            if (!response.ok || result?.success === false) {
+                throw new Error(response.status === 401
+                    ? "شماره همراه یا رمز عبور اشتباه است."
+                    : "ورود انجام نشد. دوباره تلاش کنید.");
+            }
+            router.replace(redirect);
+            router.refresh();
+        } catch (error) {
+            setLoginError(error instanceof Error ? error.message : "خطا در ورود به حساب");
+        } finally {
+            setLoginBusy(false);
+        }
+    }
+
+    if (mode === "login") {
+        return (
+            <>
+                <LuxuryNavbar />
+                <main className="maison-auth maison-login" id="main-content">
+                    <div className="maison-login__layout">
+                        <figure className="maison-login__image">
+                            <Image fill priority sizes="(min-width: 900px) 48vw, 100vw"
+                                src="/maison/portrait.jpg" alt="شیشه عطر در ترکیب‌بندی هنری"
+                                className="object-cover"/>
+                            <figcaption dir="ltr" lang="en">A PERSONAL SIGNATURE — MAISON</figcaption>
+                        </figure>
+                        <section className="maison-login__content" aria-labelledby="maison-login-heading">
+                            <span className="maison-kicker" dir="ltr" lang="en">MEMBERS / MAISON</span>
+                            <h1 id="maison-login-heading">بازگشت به<br/><em>گالری شخصی.</em></h1>
+                            <p>برای مشاهدهٔ انتخاب‌ها، اطلاعات حساب و سفارش‌های خود وارد شوید.</p>
+                            <form onSubmit={handleLogin} className="maison-login__form" noValidate>
+                                <label htmlFor="maison-login-phone">شمارهٔ همراه</label>
+                                <input id="maison-login-phone" name="mobile" type="tel"
+                                    inputMode="numeric" autoComplete="tel" dir="ltr"
+                                    placeholder="09xxxxxxxxx" maxLength={11} required
+                                    value={loginMobile}
+                                    onChange={event => { setLoginMobile(normalizeMobileInput(event.target.value, loginMobile)); setLoginError(""); }}
+                                    aria-invalid={Boolean(loginError)} />
+                                <label htmlFor="maison-login-password">رمز عبور</label>
+                                <div className="maison-login__password">
+                                    <input id="maison-login-password" name="password"
+                                        type={showLoginPassword ? "text" : "password"} dir="ltr"
+                                        autoComplete="current-password" minLength={6} maxLength={100}
+                                        value={loginPassword} onChange={event=>{setLoginPassword(event.target.value);setLoginError("");}}
+                                        required aria-invalid={Boolean(loginError)}/>
+                                    <button type="button" onClick={() => setShowLoginPassword(value=>!value)}
+                                        aria-label={showLoginPassword ? "پنهان کردن رمز عبور" : "نمایش رمز عبور"}>
+                                        {showLoginPassword ? <EyeOff size={18} strokeWidth={1.4}/> : <Eye size={18} strokeWidth={1.4}/>}
+                                    </button>
+                                </div>
+                                {loginError && <p role="alert" className="maison-login__error">{loginError}</p>}
+                                <button type="submit" disabled={loginBusy} className="maison-login__submit">
+                                    {loginBusy ? "در حال ورود…" : "ورود به حساب"} <ArrowLeft size={17} strokeWidth={1.2} aria-hidden="true" />
+                                </button>
+                            </form>
+                            <div className="maison-login__switch">
+                                <span>هنوز حساب ندارید؟</span>
+                                <button type="button" onClick={() => {setMode("register");setLoginError("");}}>ایجاد حساب جدید +</button>
+                            </div>
+                        </section>
+                    </div>
+                </main>
+                <CinematicFooter />
+            </>
+        );
+    }
+
     const strength = getPasswordStrength(registerForm.password);
     const addressLength = registerForm.address.length;
     const hasPassword = registerForm.password.length > 0;
@@ -721,6 +817,9 @@ function RegisterView() {
                         >
                             ایجاد حساب
                         </h1>
+                        <button type="button" onClick={() => setMode("login")} className="maison-register__back">
+                            قبلاً ثبت‌نام کرده‌اید؟ ورود به حساب ←
+                        </button>
                     </header>
 
                     {/* ── Global error ───────────────────────────────────── */}

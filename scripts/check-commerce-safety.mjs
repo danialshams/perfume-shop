@@ -77,3 +77,8 @@ assert.match(paymentScreen, /در حال بررسی/);
 const adminSignup = read("app/api/v1/auth/register/route.ts");
 assert.doesNotMatch(adminSignup, /authService\.register/);
 assert.match(adminSignup, /403/);
+
+const loginPage = read("app/login/page.tsx");
+assert.match(loginPage, /handleLogin/);
+assert.match(loginPage, /\/api\/v1\/customers\/auth\/login/);
+assert.match(loginPage, /startsWith\("\/\/"\)/);
