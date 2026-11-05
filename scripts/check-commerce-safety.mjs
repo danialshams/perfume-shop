@@ -22,3 +22,7 @@ assert.match(database, /new Proxy\(/);
 const upload = read("app/api/v1/uploads/products/route.ts");
 assert.match(upload, /process\.env\.NODE_ENV === "production"/);
 assert.match(upload, /503/);
+
+const account = read("app/account/page.tsx");
+assert.doesNotMatch(account, /NEXT_PUBLIC_API_BASE_URL/);
+assert.match(account, /customerAuthService\.me/);

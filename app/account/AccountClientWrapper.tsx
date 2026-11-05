@@ -4,7 +4,7 @@ import { useState } from "react";
 import OrdersSection from "@/components/account/OrdersSection";
 import ProfileSection from "@/components/account/ProfileSection";
 import { ProfileForm, T } from "@/components/account/utils";
-import LuxuryFooter from "@/components/home-sections/LuxuryFooter";
+import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 
 interface Props {
@@ -135,7 +135,7 @@ export default function AccountClientWrapper({ initialData }: Props) {
                 </div>
             </main>
 
-            <LuxuryFooter />
+            <CinematicFooter />
         </div>
     );
 }

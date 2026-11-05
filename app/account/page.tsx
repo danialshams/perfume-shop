@@ -1,6 +1,9 @@
 // app/account/page.tsx
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { USER_ACCESS_COOKIE_NAME } from "@/server/constants/auth";
+import { verifyAccessToken } from "@/server/utils/jwt";
+import { customerAuthService } from "@/server/services/customer-auth.service";
 import AccountClientWrapper from "./AccountClientWrapper";
 import { ProfileForm } from "@/components/account/utils";
 
@@ -53,39 +56,30 @@ function firstFilled(...values: unknown[]): string {
 }
 
 export default async function AccountPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  // Never require a public base URL or make a localhost HTTP request on Vercel.
+  // Resolve the current user against the service directly on the server.
+  const token = (await cookies()).get(USER_ACCESS_COOKIE_NAME)?.value;
+  let customerId: number | null = null;
 
-  if (!baseUrl) {
-    throw new Error("NEXT_PUBLIC_API_BASE_URL is not defined");
+  if (token) {
+    try {
+      const session = verifyAccessToken(token);
+      if (session.role === "USER" && Number.isInteger(Number(session.userId)) && Number(session.userId) > 0) {
+        customerId = Number(session.userId);
+      }
+    } catch {
+      // Expired or invalid sessions should take the user to the login screen.
+    }
   }
 
-  const cookieStore = await cookies();
-  const allCookies = cookieStore.getAll();
+  if (!customerId) redirect("/login?redirect=%2Faccount");
 
-  const cookieHeader = allCookies
-    .map((cookie) => `${cookie.name}=${cookie.value}`)
-    .join("; ");
-
-  const res = await fetch(`${baseUrl}/api/v1/customers/auth/me`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-    },
-    cache: "no-store",
-  });
-
-  if (res.status === 401) {
-    redirect("/auth");
+  let customer: Awaited<ReturnType<typeof customerAuthService.me>>;
+  try {
+    customer = await customerAuthService.me(customerId);
+  } catch {
+    redirect("/login?redirect=%2Faccount");
   }
-
-  const result: CustomerProfileResponse = await res.json();
-
-  if (!res.ok || result.success === false || !result.data) {
-    throw new Error(result.message || "خطا در دریافت اطلاعات حساب");
-  }
-
-  const customer = result.data;
 
   // آدرس پیش‌فرض؛ اگر نبود، اولین آدرس موجود
   const address: AddressPayload =
