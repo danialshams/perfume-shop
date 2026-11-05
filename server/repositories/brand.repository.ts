@@ -103,7 +103,7 @@ export const brandRepository = {
     },
   ) {
     const fields: string[] = [];
-    const values: unknown[] = [];
+    const values: Array<string | number | boolean | null> = [];
 
     if (data.name !== undefined) {
       fields.push("name = ?");

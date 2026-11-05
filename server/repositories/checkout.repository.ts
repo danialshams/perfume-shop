@@ -197,7 +197,7 @@ export const checkoutRepository = {
         data.plaque,
         data.floor ?? null,
         data.unit ?? null,
-        data.postal_code,
+        data.postal_code ?? null,
         data.is_default ?? 1,
       ],
     );

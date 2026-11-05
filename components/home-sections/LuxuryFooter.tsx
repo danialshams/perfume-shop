@@ -62,7 +62,7 @@ export default function LuxuryFooter() {
     if (!rootRef.current) return;
 
     let observer: IntersectionObserver | null = null;
-    let safetyTimer: ReturnType<typeof window.setTimeout> | null = null;
+    let safetyTimer: number | null = null;
     let rafId: number | null = null;
 
     const prefersReducedMotion = window.matchMedia(

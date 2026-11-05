@@ -167,10 +167,6 @@ export async function addCartItem(params: {
         variantId: variant.variant_id,
         quantity: params.quantity,
         unitPrice,
-        originalPrice,
-        productName: variant.product_name,
-        variantLabel: getVariantLabel(variant),
-        productImage: variant.product_image,
       },
       connection,
     );

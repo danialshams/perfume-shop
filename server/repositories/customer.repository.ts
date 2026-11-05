@@ -16,7 +16,8 @@ type CreateCustomerAddressInput = {
   plaque: string;
   floor?: string | null;
   unit?: string | null;
-  postal_code: string;
+  postal_code?: string | null;
+  phone?: string | null;
   is_default?: number;
 };
 

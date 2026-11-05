@@ -147,10 +147,10 @@ function HeadingBlock({
   eyebrowChars,
   animated = true,
 }: {
-  blockRef?: React.RefObject<HTMLDivElement>;
-  lineWrapRef?: React.RefObject<HTMLDivElement>;
-  eyebrowRef?: React.RefObject<HTMLParagraphElement>;
-  headingRef?: React.RefObject<HTMLHeadingElement>;
+  blockRef?: React.RefObject<HTMLDivElement | null>;
+  lineWrapRef?: React.RefObject<HTMLDivElement | null>;
+  eyebrowRef?: React.RefObject<HTMLParagraphElement | null>;
+  headingRef?: React.RefObject<HTMLHeadingElement | null>;
   titleWords: string[];
   eyebrowChars: string[];
   animated?: boolean;

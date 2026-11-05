@@ -56,7 +56,7 @@ export function useCart() {
       try {
         setActionLoadingId(itemId);
         setError(null);
-        const data = await updateCartItemApi(itemId, quantity);
+        const data = await updateCartItemApi(itemId, { quantity, variant_id: Number(cart?.items.find(item => item.id === itemId)?.variant_id ?? 0) });
         setCart(data);
         updateGlobalCount(data); // ۴. آپدیت عدد سراسری
       } catch (err) {

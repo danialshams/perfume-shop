@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2";
+import type { Pool, PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 
 export type CouponStatus = "ACTIVE" | "INACTIVE";
 export type CouponDiscountType = "PERCENT" | "FIXED";
@@ -21,9 +21,7 @@ export interface CouponRow {
   updated_at: Date;
 }
 
-type DbExecutor = {
-  execute: PoolConnection["execute"];
-};
+type DbExecutor = Pool | PoolConnection;
 
 function getExecutor(connection?: PoolConnection): DbExecutor {
   return connection ?? db;

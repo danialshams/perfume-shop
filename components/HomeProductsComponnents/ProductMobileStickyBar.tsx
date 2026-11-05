@@ -15,7 +15,7 @@ type Props = {
   quantity: number;
   onIncreaseQty: () => void;
   onDecreaseQty: () => void;
-  onAddToCart: () => void | Promise<void>;
+  onAddToCart: () => void | Promise<unknown>;
   isAddingToCart?: boolean;
   cartError?: string | null;
 };
