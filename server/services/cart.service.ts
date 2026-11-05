@@ -154,12 +154,6 @@ export async function addCartItem(params: {
     }
 
     const unitPrice = toNumber(variant.discount_price ?? variant.price);
-    const originalPrice =
-      variant.compare_at_price !== null &&
-      variant.compare_at_price !== undefined
-        ? toNumber(variant.compare_at_price)
-        : toNumber(variant.price);
-
     await upsertCartItem(
       {
         cartId: cart.id,

@@ -7,11 +7,11 @@ import {
 } from "@/lib/response";
 import { couponService } from "@/server/services/coupon.service";
 import { applyCouponSchema } from "@/server/validations/coupon.validation";
-import { requireAuth } from "@/server/middlewares/auth";
+import { requireCustomerAuth } from "@/server/middlewares/customer-auth";
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAuth(request);
+    const user = await requireCustomerAuth(request);
     if (!user) {
       return unauthorizedResponse("Unauthorized");
     }
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       return validationErrorResponse(parsed.error.flatten());
     }
 
-    const result = await couponService.applyCoupon(user.id, parsed.data);
+    const result = await couponService.applyCoupon(user.userId, parsed.data);
     return successResponse(result, "Coupon applied successfully");
   } catch (error) {
     return errorResponse(error);

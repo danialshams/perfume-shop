@@ -1,6 +1,5 @@
 import { couponRepository } from "@/server/repositories/coupon.repository";
 import { cartRepository } from "@/server/repositories/cart.repository";
-import { cartItemRepository } from "@/server/repositories/cart-item.repository";
 import {
   ApplyCouponInput,
   CreateCouponInput,
@@ -116,9 +115,9 @@ export const couponService = {
       throw new Error("Coupon usage limit reached");
     }
 
-    const cartId = await cartRepository.getOrCreateCartId(userId);
-    const cartItems =
-      await cartItemRepository.findDetailedItemsByCartId(cartId);
+    const cart = await cartRepository.findActiveCartByCustomerId(userId);
+    if (!cart) throw new Error("Cart is empty");
+    const cartItems = await cartRepository.findCartItems(cart.id);
 
     if (cartItems.length === 0) {
       throw new Error("Cart is empty");
