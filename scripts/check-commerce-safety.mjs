@@ -49,3 +49,7 @@ assert.match(detail, /isPublicProduct\(result\)/);
 assert.match(productPage, /isPublicProduct\(result\)/);
 const payments = read("server/services/payment.service.ts");
 assert.match(payments, /process\.env\.VERCEL === "1"/);
+
+const productsHook = read("components/hooks/useProductsPageData.ts");
+assert.match(productsHook, /limit=100&page=/);
+assert.match(productsHook, /Promise\.all\(numbers\.map\(fetchPage\)\)/);

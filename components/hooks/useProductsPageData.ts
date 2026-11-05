@@ -189,60 +189,83 @@ export function useProductsPageData() {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
+    let loadedItems: ProductItem[] = [];
+
+    const publishItems = () => {
+      if (controller.signal.aborted) return;
+      const formattedProducts = mapApiProducts(loadedItems);
+      setRawProducts([...loadedItems]);
+      setProducts(formattedProducts);
+      setSelectedVariants(previous => {
+        const next = { ...previous };
+        formattedProducts.forEach(product => {
+          if (next[product.id] === undefined) {
+            next[product.id] = product.defaultVariantId ??
+              product.variants[0]?.id ?? product.id;
+          }
+        });
+        return next;
+      });
+    };
+
+    const fetchPage = async (page: number) => {
+      const url = createApiUrl(`/api/v1/products?limit=100&page=${page}`);
+      const response = await fetch(url, {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error(`Product catalog: ${response.status}`);
+      const json = await response.json();
+      if (json?.success === false) throw new Error("Product catalog rejected request");
+      const items = extractItems<ProductItem>(json);
+      const totalPages = Math.max(1, Number(json?.data?.meta?.totalPages ?? 1) || 1);
+      return { items, totalPages };
+    };
+
     const fetchProducts = async () => {
+      setLoadingProducts(true);
+      setProductsError(null);
       try {
-        setLoadingProducts(true);
-        setProductsError(null);
-
-        const url = createApiUrl("/api/v1/products");
-
-        const res = await fetch(url, {
-          cache: "no-store",
-        });
-
-        if (!res.ok) {
-          throw new Error(`Failed to fetch products: ${res.status}`);
-        }
-
-        const json = await res.json();
-        if (json?.success === false) throw new Error("Invalid product feed");
-
-        const items: ProductItem[] = extractItems<ProductItem>(json);
-
-        const formattedProducts = mapApiProducts(items);
-
-        console.log(
-          "[ProductsPage] Mapped products:",
-          formattedProducts.length,
-          formattedProducts,
-        );
-
-        setRawProducts(items);
-        setProducts(formattedProducts);
-
-        const initialSelectedVariants: Record<number, number> = {};
-
-        formattedProducts.forEach((product) => {
-          initialSelectedVariants[product.id] =
-            product.defaultVariantId ?? product.variants[0]?.id ?? product.id;
-        });
-
-        setSelectedVariants(initialSelectedVariants);
-      } catch (error) {
-        console.error("[ProductsPage] Failed to fetch products:", error);
-        setProductsError("ارتباط با کاتالوگ برقرار نشد. لطفاً دوباره تلاش کنید.");
-        setRawProducts([]);
-        setProducts([]);
-        setSelectedVariants({});
-      } finally {
+        const first = await fetchPage(1);
+        if (controller.signal.aborted) return;
+        loadedItems = first.items;
+        publishItems();
         setLoadingProducts(false);
+
+        // Fetch the remaining pages in small parallel batches. The first
+        // 100 cards remain interactive while the full catalog is loaded.
+        for (let page = 2; page <= first.totalPages; page += 3) {
+          const numbers = Array.from(
+            { length: Math.min(3, first.totalPages - page + 1) },
+            (_, i) => page + i,
+          );
+          const results = await Promise.all(numbers.map(fetchPage));
+          if (controller.signal.aborted) return;
+          loadedItems = loadedItems.concat(results.flatMap(result => result.items));
+          publishItems();
+        }
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        console.error("[ProductsPage] Failed to load catalog:", error);
+        setProductsError(loadedItems.length
+          ? "بارگذاری بخشی از کاتالوگ ناموفق بود؛ برای دریافت همه محصولات دوباره تلاش کنید."
+          : "ارتباط با کاتالوگ برقرار نشد. لطفاً دوباره تلاش کنید.");
+        if (loadedItems.length === 0) {
+          setRawProducts([]);
+          setProducts([]);
+          setSelectedVariants({});
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoadingProducts(false);
       }
     };
 
-    fetchProducts();
+    void fetchProducts();
+    return () => controller.abort();
   }, [reloadIndex]);
 
-  const reloadProducts = () => setReloadIndex((value) => value + 1);
+  const reloadProducts = () => setReloadIndex(value => value + 1);
 
   const activeScentFamily = useMemo(() => {
     if (!normalizedScentFamilyIdParam) return null;
