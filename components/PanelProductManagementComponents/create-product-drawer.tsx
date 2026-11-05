@@ -381,6 +381,9 @@ export default function CreateProductDrawer({
                     <ProductBasicInfoFields
                         categories={categories}
                         scentFamilies={scentFamilies}
+                        isUploading={isUploading}
+                        setImageUploading={setImageUploading}
+                        uploadProductImage={uploadProductImage}
                         validateBeforeUpload={validateBeforeUpload}
                     />
 
@@ -397,9 +400,6 @@ export default function CreateProductDrawer({
 
                     <ProductImagesList
                         form={form}
-                        isUploading={isUploading}
-                        setImageUploading={setImageUploading}
-                        uploadProductImage={uploadProductImage}
                         validateBeforeUpload={validateBeforeUpload}
                     />
 
