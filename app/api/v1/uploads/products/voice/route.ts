@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
 
   try {
     await requireAdmin(request);
-    if (process.env.NODE_ENV === "production") {
+    if ((process.env.NODE_ENV === "production" || process.env.VERCEL === "1")) {
       return errorResponse("آپلود فایل صوتی تا اتصال فضای ذخیره‌سازی دائمی فعال نیست.", 503);
     }
 

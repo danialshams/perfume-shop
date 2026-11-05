@@ -7,6 +7,7 @@ import LuxuryNavbar from "@/components/home-sections/navbar";
 import ProductDetailClient from "@/components/HomeProductsPage/ProductDetailPage";
 import type { Product } from "@/lib/product";
 import { productService } from "@/server/services/product.service";
+import { isPublicProduct, visiblePublicVariants } from "@/server/utils/product-visibility";
 
 type PageProps = {
   params: Promise<{
@@ -21,7 +22,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
   if (!Number.isInteger(productId) || productId <= 0) notFound();
   // Server components query the repository directly; localhost fetches fail on Vercel.
   const result = await productService.getById(productId);
-  const product = result ? (JSON.parse(JSON.stringify(result)) as Product) : null;
+  if (result && !isPublicProduct(result)) notFound();
+  const product = result ? (JSON.parse(JSON.stringify({
+    ...result,
+    variants: visiblePublicVariants(result.variants),
+  })) as Product) : null;
 
   if (!product) {
     notFound();

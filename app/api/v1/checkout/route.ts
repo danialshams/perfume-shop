@@ -26,7 +26,7 @@ async function getOptionalCustomerSession(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   // Do not create an unpaid real order when the only provider is a simulator.
-  if (process.env.NODE_ENV === "production") {
+  if ((process.env.NODE_ENV === "production" || process.env.VERCEL === "1")) {
     return errorResponse("ثبت سفارش تا فعال‌شدن درگاه پرداخت واقعی غیرفعال است.", 503);
   }
   try {

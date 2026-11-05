@@ -6,6 +6,7 @@ import {
   productListQuerySchema,
 } from "@/server/validations/product.validation";
 import { NextRequest } from "next/server";
+import { visiblePublicVariants } from "@/server/utils/product-visibility";
 
 function getQueryObject(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -201,10 +202,31 @@ export async function GET(request: NextRequest) {
     }
 
     const { page, limit, ...filters } = parsed.data;
+    let isAdmin = false;
+    try {
+      await requireAdmin(request);
+      isAdmin = true;
+    } catch {
+      // Anonymous or ordinary customers may only browse published products.
+    }
 
-    const result = await productService.getAll(filters, { page, limit });
+    const publicFilters = isAdmin ? filters : {
+      ...filters,
+      status: "ACTIVE" as const,
+      is_active: 1,
+      withDeleted: false,
+      onlyDeleted: false,
+    };
+    const result = await productService.getAll(publicFilters, { page, limit });
+    const data = isAdmin ? result : {
+      ...result,
+      items: result.items.map(product => ({
+        ...product,
+        variants: visiblePublicVariants(product.variants),
+      })),
+    };
 
-    return successResponse(result, "Products fetched successfully");
+    return successResponse(data, "Products fetched successfully");
   } catch (error: any) {
     console.error("Products fetch failed:", error);
     return errorResponse("Failed to fetch products", 500);

@@ -3,6 +3,7 @@ import { requireAdmin } from "@/server/middlewares/admin";
 import { productService } from "@/server/services/product.service";
 import { updateProductSchema } from "@/server/validations/product.validation";
 import { NextRequest } from "next/server";
+import { isPublicProduct, visiblePublicVariants } from "@/server/utils/product-visibility";
 
 type Context = {
   params: Promise<{ id: string }>;
@@ -184,7 +185,7 @@ function normalizeProductBody(body: any) {
   };
 }
 
-export async function GET(_request: Request, context: Context) {
+export async function GET(request: NextRequest, context: Context) {
   try {
     const { id } = await context.params;
     const productId = Number(id);
@@ -199,7 +200,20 @@ export async function GET(_request: Request, context: Context) {
       return errorResponse("Product not found", 404);
     }
 
-    return successResponse(result, "Product fetched");
+    let isAdmin = false;
+    try {
+      await requireAdmin(request);
+      isAdmin = true;
+    } catch {
+      // Public visitors cannot inspect an unpublished product.
+    }
+    if (!isAdmin && !isPublicProduct(result)) {
+      return errorResponse("Product not found", 404);
+    }
+    return successResponse(
+      isAdmin ? result : { ...result, variants: visiblePublicVariants(result.variants) },
+      "Product fetched"
+    );
   } catch (error: unknown) {
     console.error("GET /api/v1/products/[id] error:", error);
 

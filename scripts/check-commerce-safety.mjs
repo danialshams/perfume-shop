@@ -39,3 +39,13 @@ assert.match(checkoutRoute, /process\.env\.NODE_ENV === "production"/);
 assert.match(checkoutRoute, /503/);
 const checkoutPage = read("app/checkout/page.tsx");
 assert.match(checkoutPage, /!checkoutAvailable/);
+
+const publicCatalog = read("app/api/v1/products/route.ts");
+const detail = read("app/api/v1/products/[id]/route.ts");
+const productPage = read("app/products/[id]/page.tsx");
+assert.match(publicCatalog, /status: "ACTIVE"/);
+assert.match(publicCatalog, /visiblePublicVariants/);
+assert.match(detail, /isPublicProduct\(result\)/);
+assert.match(productPage, /isPublicProduct\(result\)/);
+const payments = read("server/services/payment.service.ts");
+assert.match(payments, /process\.env\.VERCEL === "1"/);

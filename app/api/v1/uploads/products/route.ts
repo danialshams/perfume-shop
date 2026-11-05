@@ -38,7 +38,7 @@ function getExtensionFromMimeType(mimeType: string) {
 export async function POST(request: NextRequest) {
   try {
     await requireAdmin(request);
-    if (process.env.NODE_ENV === "production") {
+    if ((process.env.NODE_ENV === "production" || process.env.VERCEL === "1")) {
       return errorResponse("آپلود تصویر تا اتصال فضای ذخیره‌سازی دائمی فعال نیست.", 503);
     }
 

@@ -24,7 +24,7 @@ export type VerifyPaymentResult = {
 
 /** The built-in payment flow is a simulator, never a payment gateway. */
 function assertSandboxAllowed() {
-  if (process.env.NODE_ENV === "production") {
+  if ((process.env.NODE_ENV === "production" || process.env.VERCEL === "1")) {
     throw new Error("PAYMENT_GATEWAY_NOT_CONFIGURED");
   }
 }
