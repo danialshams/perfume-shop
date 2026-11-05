@@ -626,7 +626,7 @@ export default function DesktopCategoriesDrawer(props: Props) {
                   role="dialog"
                   aria-modal="true"
                   aria-label="دسته‌بندی محصولات"
-                  className="flex h-full w-full flex-col overflow-hidden rounded-[10px] border border-white/70 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.18)]"
+                  className="maison-filter-panel flex h-full w-full flex-col overflow-hidden rounded-[10px] border border-white/70 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.18)]"
                 >
                   {/* Header */}
                   <div className="shrink-0 border-b border-black/[0.05] bg-white px-5 pb-5 pt-5">

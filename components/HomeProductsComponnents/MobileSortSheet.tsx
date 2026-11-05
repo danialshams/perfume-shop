@@ -250,7 +250,7 @@ export default function MobileSortSheet({
                   </button>
                 </div>
 
-                <div className="overflow-hidden rounded-[10px] border border-white/70 bg-[#F5F4F3] shadow-[0_28px_90px_rgba(15,23,42,0.18)]">
+                <div className="maison-filter-panel overflow-hidden rounded-[10px] border border-white/70 bg-[#F5F4F3] shadow-[0_28px_90px_rgba(15,23,42,0.18)]">
                   <div className="shrink-0 border-b border-black/[0.05] bg-[#F5F4F3] px-5 pb-5 pt-0">
                     <div
                       role="button"

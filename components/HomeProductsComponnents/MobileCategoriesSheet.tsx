@@ -565,7 +565,7 @@ export default function MobileCategoriesSheet(props: Props) {
                   </button>
                 </div>
 
-                <div className="flex h-[min(84dvh,760px)] max-h-[calc(100dvh-72px)] flex-col overflow-hidden rounded-[10px] border border-[#dad6d0] bg-[#F5F4F3] shadow-[0_28px_90px_rgba(15,23,42,0.18)]">
+                <div className="maison-filter-panel flex h-[min(84dvh,760px)] max-h-[calc(100dvh-72px)] flex-col overflow-hidden rounded-[10px] border border-[#dad6d0] bg-[#F5F4F3] shadow-[0_28px_90px_rgba(15,23,42,0.18)]">
                   <div className="shrink-0 border-b border-[#dad6d0] bg-[#F5F4F3] px-5 pb-5 pt-0">
                     <div
                       role="button"
