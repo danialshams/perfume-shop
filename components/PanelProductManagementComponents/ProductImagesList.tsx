@@ -36,7 +36,7 @@ export default function ProductImagesList({
               throw new Error("حداقل یک تصویر برای محصول وارد کنید");
             }
 
-            const hasMain = images.some((item: any) => item?.is_main);
+            const hasMain = images.some((item: { is_main?: boolean }) => Boolean(item?.is_main));
 
             if (!hasMain) {
               throw new Error("حداقل یک تصویر باید به عنوان تصویر اصلی انتخاب شود");

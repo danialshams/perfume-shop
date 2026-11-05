@@ -583,7 +583,7 @@ export default function ProductDetailsModal({
                         description="تصاویر عمومی محصول، جدا از تصاویر واریانت‌ها"
                     />
 
-                    <ProductImagesGrid images={productImages} />
+                    <ProductImagesGrid images={productImages.map((image, index) => ({ ...image, id: Number(image.id) || index + 1 }))} />
                 </section>
 
                 <Divider className="!my-4 md:!my-6" />
@@ -599,8 +599,8 @@ export default function ProductDetailsModal({
                     />
 
                     <ProductVariantsTable
-                        variants={normalizedVariants.map((variant) => ({
-                            id: variant.id,
+                        variants={normalizedVariants.map((variant, index) => ({
+                            id: Number(variant.id) || index + 1,
                             price: variant.price,
                             stock_qty: variant.stock_qty,
                             stock: variant.stock_qty,
@@ -611,7 +611,7 @@ export default function ProductDetailsModal({
                                     ? variant.is_active
                                     : 1,
                             images: Array.isArray(variant.images)
-                                ? variant.images
+                                ? variant.images.map((image, imageIndex) => ({ ...image, id: Number(image.id) || imageIndex + 1, is_main: image.is_main ?? false }))
                                 : [],
                         }))}
                     />

@@ -9,7 +9,7 @@ type VariantOption = {
     id: number | string;
     label: string;
     price: number | string;
-    stock_qty: number | string;
+    stock_qty?: number | string;
 };
 
 type Props = {

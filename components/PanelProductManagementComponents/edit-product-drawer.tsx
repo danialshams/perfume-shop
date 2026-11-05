@@ -367,7 +367,7 @@ export default function EditProductDrawer({
             try {
                 setLoading(true);
 
-                const result = await getProductById(productId);
+                const result: ProductItem = await getProductById(Number(productId));
                 const productResult = result as ProductWithExtraFields;
 
                 if (!mounted) return;
@@ -1750,7 +1750,7 @@ export default function EditProductDrawer({
 
                                         {selectedType === "GROUPED" ? (
                                             <>
-                                                <Divider orientation="right">
+                                                <Divider orientation="start">
                                                     تصاویر این واریانت
                                                 </Divider>
 
