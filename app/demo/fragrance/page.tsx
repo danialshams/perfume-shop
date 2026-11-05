@@ -18,7 +18,7 @@ function DemoContent(){
   const [voiceError,setVoiceError]=useState("");
   const utteranceRef=useRef<SpeechSynthesisUtterance|null>(null);
   const variant=product.variants[variantIndex]||product.variants[0];
-  useEffect(()=>{setVariantIndex(0);setPhotoIndex(0);setOpen(false);},[product.id]);
+  useEffect(()=>{const frame=window.requestAnimationFrame(()=>{setVariantIndex(0);setPhotoIndex(0);setOpen(false);});return()=>window.cancelAnimationFrame(frame);},[product.id]);
   useEffect(()=>{
     const handler=(event:KeyboardEvent)=>{if(event.key==="Escape")setOpen(false);};
     window.addEventListener("keydown",handler);

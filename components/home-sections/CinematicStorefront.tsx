@@ -70,10 +70,10 @@ export default function CinematicStorefront() {
     let done = false;
     try { done = window.sessionStorage.getItem("fertini:intro:seen:v3") === "1"; }
     catch { done = true; }
-    if (done) setStarted(true);
+    const frame = window.requestAnimationFrame(() => { if (done) setStarted(true); });
     const onComplete = () => setStarted(true);
     window.addEventListener("fertini:intro:complete", onComplete);
-    return () => window.removeEventListener("fertini:intro:complete", onComplete);
+    return () => { window.cancelAnimationFrame(frame); window.removeEventListener("fertini:intro:complete", onComplete); };
   }, []);
 
   useEffect(() => {
