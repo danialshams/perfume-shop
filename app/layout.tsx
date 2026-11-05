@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return <html lang="fa" dir="rtl" className="h-full antialiased">
-    <body className="flex min-h-full flex-col font-sans">
+    <body id="top" className="flex min-h-full flex-col font-sans">
       <CartCountProvider>{children}<MaisonAmbientSound /></CartCountProvider>
     </body>
   </html>;

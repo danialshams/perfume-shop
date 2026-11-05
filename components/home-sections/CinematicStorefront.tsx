@@ -282,6 +282,6 @@ export function CinematicFooter() {
         <div><h3>حساب</h3><Link href="/account">حساب کاربری</Link><Link href="/cart">سبد خرید</Link><Link href="/login">ورود / ثبت‌نام</Link></div>
       </nav>
     </div>
-    <div className="maison-wide maison-footer__bottom"><span>© 2026 MAISON — ALL RIGHTS RESERVED.</span><span lang="en" dir="ltr">THE ART OF BEING REMEMBERED</span><Link href="#main-content">بازگشت به بالا ↑</Link></div>
+    <div className="maison-wide maison-footer__bottom"><span>© 2026 MAISON — ALL RIGHTS RESERVED.</span><span lang="en" dir="ltr">THE ART OF BEING REMEMBERED</span><Link href="#top">بازگشت به بالا ↑</Link></div>
   </footer>;
 }
