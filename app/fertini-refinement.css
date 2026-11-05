@@ -10,7 +10,8 @@
 .fertini-hero__image.is-active img{transform:scale(1)}
 .fertini-hero__caption{position:absolute;bottom:32px;left:40px;z-index:3;color:#fff;font:11px "Cormorant Garamond",Georgia,serif;letter-spacing:.2em}
 .fertini-hero__text{direction:rtl;display:flex;justify-content:center;flex-direction:column;align-items:flex-start;position:relative;padding:clamp(45px,7vw,120px);background:linear-gradient(145deg,#f3f4f1 0%,#eaeeeb 100%)}
-.fertini-hero__copy{animation:fertini-copy-reveal 1.45s cubic-bezier(.19,1,.22,1) both;width:100%;max-width:630px}
+.fertini-hero__copy{width:100%;max-width:630px}
+.fertini-hero.is-ready .fertini-hero__copy{animation:fertini-copy-reveal 1.45s cubic-bezier(.19,1,.22,1) both}
 .fertini-hero__copy h1{font-size:clamp(52px,5.8vw,96px);line-height:1.53;letter-spacing:-.045em;font-weight:300;margin:35px 0 25px}
 .fertini-home em{font-weight:300;font-style:normal;color:#8c9590}
 .fertini-hero__copy p{font-size:14px;color:#6c7570;line-height:2.75;max-width:420px;margin-bottom:42px}

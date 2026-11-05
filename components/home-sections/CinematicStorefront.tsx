@@ -144,7 +144,7 @@ export default function CinematicStorefront() {
 
   return <main className="maison-home fertini-home" id="main-content" ref={mainRef}>
     {/* Chapter 01 — editorial hero. Navigation is intentionally quiet. */}
-    <section className="fertini-hero" aria-labelledby="fertini-hero-title"
+    <section className={"fertini-hero " + (started ? "is-ready" : "")} aria-labelledby="fertini-hero-title"
       onMouseEnter={() => { pausedRef.current = true; }}
       onMouseLeave={() => { pausedRef.current = false; }}
       onFocusCapture={() => { pausedRef.current = true; }}
