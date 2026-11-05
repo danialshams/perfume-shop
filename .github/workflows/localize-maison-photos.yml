@@ -35,7 +35,7 @@ jobs:
           download dark photo-1541643600914-78b084683601 1600
           download amber photo-1592945403244-b3fbafd7f539 1100
           download floral photo-1563170351-be82bc888aa4 1100
-          download woody photo-1588405748880-12d1d2a59db9 1100
+          download woody photo-1593487568720-92097fb460fb 1100
       - name: Commit verified assets only on development branch
         shell: bash
         run: |
