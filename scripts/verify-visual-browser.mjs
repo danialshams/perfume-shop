@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
+import { createServer } from "node:net";
 import { setTimeout as sleep } from "node:timers/promises";
 
 const browserPath = process.env.CHROME || "google-chrome";
@@ -7,16 +8,32 @@ let chrome = null;
 let endpoint = "";
 const chromeStartupErrors = [];
 
+async function availablePort() {
+  const server = createServer();
+  return await new Promise((resolve, reject) => {
+    server.on("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      const port = typeof address === "object" && address ? address.port : 0;
+      server.close(error => error ? reject(error) : resolve(port));
+    });
+  });
+}
+
 async function bootChrome() {
   for (let attempt = 1; attempt <= 3; attempt += 1) {
-    const userDataDir = `/tmp/maison-cdp-${process.pid}-${attempt}`;
+    const userDataDir = "/tmp/maison-cdp-" + process.pid + "-" + attempt;
+    const port = await availablePort();
+    const candidate = "http://127.0.0.1:" + port;
     let chromeExit = null;
     let stderr = "";
     chrome = spawn(browserPath, [
       "--headless=new", "--no-sandbox", "--disable-gpu",
       "--disable-dev-shm-usage", "--disable-extensions", "--no-first-run",
-      "--remote-allow-origins=*", "--remote-debugging-port=0",
-      `--user-data-dir=${userDataDir}`, "about:blank",
+      "--disable-background-networking", "--disable-breakpad",
+      "--remote-allow-origins=*",
+      "--remote-debugging-port=" + port,
+      "--user-data-dir=" + userDataDir, "about:blank",
     ], { stdio: ["ignore", "ignore", "pipe"] });
 
     chrome.stderr?.on("data", chunk => {
@@ -28,23 +45,19 @@ async function bootChrome() {
     try {
       await until(async () => {
         if (chromeExit) return false;
-        const content = await readFile(`${userDataDir}/DevToolsActivePort`, "utf8");
-        const port = Number(content.split("\n")[0]);
-        if (!Number.isInteger(port) || port <= 0) return false;
-        const candidate = `http://127.0.0.1:${port}`;
         const response = await fetch(candidate + "/json/version");
         if (response.ok) {
           endpoint = candidate;
           return true;
         }
         return false;
-      }, 14000);
-      process.stdout.write(`Chrome DevTools ready on attempt ${attempt}.\n`);
+      }, 23000);
+      process.stdout.write("Chrome DevTools ready on attempt " + attempt + ".\n");
       return;
     } catch {
-      chromeStartupErrors.push({ attempt, chromeExit, stderr });
+      chromeStartupErrors.push({ attempt, chromeExit, stderr, port });
       chrome?.kill("SIGTERM");
-      await sleep(600);
+      await sleep(700);
     }
   }
   throw new Error("Chrome CDP startup failed: " + JSON.stringify(chromeStartupErrors));
