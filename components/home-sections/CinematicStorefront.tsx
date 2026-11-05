@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowUpLeft, MoveLeft } from "lucide-react";
+import { parseNumericPrice } from "@/lib/product";
 
 const photo = {
   hero: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1800&q=85",
@@ -157,7 +158,7 @@ export default function CinematicStorefront() {
               return <Reveal key={product.id} className="ql-product-reveal"><Link href={"/products/" + product.id} className="ql-product-card">
                 <div className="ql-product-image-frame">{image ? <Image unoptimized fill sizes="(min-width: 900px) 23vw, (min-width: 600px) 44vw, 80vw" src={image} alt={product.name} className="ql-product-image"/> : <div className="ql-product-image-placeholder" aria-hidden="true"/>}<span lang="en" dir="ltr">MAISON / 0{index + 1}</span></div>
                 <h3>{product.name}</h3>
-                {product.min_price != null && <p>{Number(product.min_price).toLocaleString("fa-IR")} تومان</p>}
+                {product.min_price != null && parseNumericPrice(product.min_price) !== null && <p>{parseNumericPrice(product.min_price)?.toLocaleString("fa-IR")} تومان</p>}
               </Link></Reveal>;
             })}
           </div>
