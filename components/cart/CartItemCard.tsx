@@ -59,43 +59,40 @@ function isNonEmptyString(v: unknown): v is string {
 }
 
 function collectImageCandidates(source: unknown): string[] {
-    console.log("[ProductImage] ---------------- collectImageCandidates:start ----------------");
-    console.log("[ProductImage] source:", source);
-    console.log("[ProductImage] source type:", typeof source);
+    
+    
+    
 
     if (!source || typeof source !== "object") {
-        console.warn("[ProductImage] source معتبر نیست یا object نیست:", source);
+        
         return [];
     }
 
     const obj = source as Record<string, unknown>;
     const out: string[] = [];
 
-    console.log("[ProductImage] top-level keys:", Object.keys(obj));
-    console.log("[ProductImage] product_image exact:", obj.product_image);
-    console.log("[ProductImage] main_image exact:", obj.main_image);
-    console.log("[ProductImage] image exact:", obj.image);
-    console.log("[ProductImage] image_url exact:", obj.image_url);
-    console.log("[ProductImage] images exact:", obj.images);
-    console.log("[ProductImage] variants exact:", obj.variants);
+    
+    
+    
+    
+    
+    
+    
 
     if (obj.product_image && typeof obj.product_image === "object") {
-        console.log(
-            "[ProductImage] product_image object keys:",
-            Object.keys(obj.product_image as Record<string, unknown>),
-        );
-        console.log("[ProductImage] product_image raw object:", obj.product_image);
+        
+        
     }
 
     const pushString = (value: string, label: string) => {
         const trimmed = value.trim();
         if (!trimmed) return;
         out.push(trimmed);
-        console.log(`[ProductImage] pushed string from ${label}:`, trimmed);
+        
     };
 
     const push = (v: unknown, label = "unknown") => {
-        console.log(`[ProductImage] push() called from ${label}:`, v);
+        
 
         if (isNonEmptyString(v)) {
             pushString(v, label);
@@ -103,7 +100,7 @@ function collectImageCandidates(source: unknown): string[] {
         }
 
         if (Array.isArray(v)) {
-            console.log(`[ProductImage] ${label} is array:`, v);
+            
 
             for (let i = 0; i < v.length; i++) {
                 const item = v[i];
@@ -116,7 +113,7 @@ function collectImageCandidates(source: unknown): string[] {
 
                 if (item && typeof item === "object") {
                     const nested = item as Record<string, unknown>;
-                    console.log(`[ProductImage] ${itemLabel} object keys:`, Object.keys(nested));
+                    
 
                     if (isNonEmptyString(nested.image_url)) {
                         pushString(nested.image_url, `${itemLabel}.image_url`);
@@ -131,9 +128,7 @@ function collectImageCandidates(source: unknown): string[] {
                     } else if (isNonEmptyString(nested.file)) {
                         pushString(nested.file, `${itemLabel}.file`);
                     } else {
-                        console.log(
-                            `[ProductImage] ${itemLabel} هیچ کلید مستقیم عکسی نداشت، بررسی nested...`,
-                        );
+                        
 
                         if (Array.isArray(nested.images)) {
                             push(nested.images, `${itemLabel}.images`);
@@ -147,7 +142,7 @@ function collectImageCandidates(source: unknown): string[] {
 
         if (v && typeof v === "object") {
             const nested = v as Record<string, unknown>;
-            console.log(`[ProductImage] ${label} is object with keys:`, Object.keys(nested));
+            
 
             if (isNonEmptyString(nested.url)) {
                 pushString(nested.url, `${label}.url`);
@@ -180,16 +175,16 @@ function collectImageCandidates(source: unknown): string[] {
         }
     };
 
-    console.log("[ProductImage] before direct fields:", [...out]);
+    
     for (const f of IMAGE_FIELDS) {
         push(obj[f], `obj.${f}`);
     }
-    console.log("[ProductImage] after direct fields:", [...out]);
+    
 
     if (obj.product && typeof obj.product === "object") {
         const p = obj.product as Record<string, unknown>;
-        console.log("[ProductImage] product object detected:", p);
-        console.log("[ProductImage] product object keys:", Object.keys(p));
+        
+        
 
         for (const f of IMAGE_FIELDS) {
             push(p[f], `obj.product.${f}`);
@@ -214,28 +209,28 @@ function collectImageCandidates(source: unknown): string[] {
 
     const unique = Array.from(new Set(out));
 
-    console.log("[ProductImage] final candidates before dedupe:", out);
-    console.log("[ProductImage] final candidates unique:", unique);
-    console.log("[ProductImage] ---------------- collectImageCandidates:end ----------------");
+    
+    
+    
 
     return unique;
 }
 
 function normalizeSrc(src: string) {
-    console.log("[ProductImage] normalizeSrc input:", src);
+    
 
     if (/^(https?:)?\/\//i.test(src) || src.startsWith("data:")) {
-        console.log("[ProductImage] normalizeSrc absolute/data output:", src);
+        
         return src;
     }
 
     if (src.startsWith("/")) {
-        console.log("[ProductImage] normalizeSrc root-relative output:", src);
+        
         return src;
     }
 
     const normalized = `/${src.replace(/^\.?\//, "")}`;
-    console.log("[ProductImage] normalizeSrc normalized output:", normalized);
+    
     return normalized;
 }
 
@@ -252,37 +247,26 @@ function ProductImage({
         const raw = collectImageCandidates(source);
         const normalized = raw.map(normalizeSrc);
 
-        console.log("[ProductImage] raw candidates:", raw);
-        console.log("[ProductImage] normalized candidates:", normalized);
+        
+        
 
         return normalized;
     }, [source]);
 
     const [index, setIndex] = useState(0);
-    const warned = useRef(false);
-
-    useEffect(() => {
-        console.log("[ProductImage] candidates changed, resetting index to 0");
+useEffect(() => {
+        
         setIndex(0);
     }, [candidates]);
 
     const src = candidates[index];
 
-    console.log("[ProductImage] current index:", index);
-    console.log("[ProductImage] current src:", src);
-    console.log("[ProductImage] alt:", alt);
+    
+    
+    
 
     if (!src) {
-        if (!warned.current && process.env.NODE_ENV !== "production") {
-            warned.current = true;
-            console.warn(
-                "[CartItemCard] هیچ فیلد عکسی پیدا نشد. کلیدهای موجود:",
-                source && typeof source === "object" ? Object.keys(source as Record<string, unknown>) : source,
-            );
-            console.warn("[CartItemCard] source کامل:", source);
-        }
-
-        return (
+return (
             <div
                 className={`flex h-full w-full items-center justify-center ${className}`}
                 style={{ background: T.smoke, color: T.ink3 }}
@@ -302,11 +286,8 @@ function ProductImage({
             alt={alt}
             loading="lazy"
             decoding="async"
-            onLoad={() => {
-                console.log("[ProductImage] image loaded successfully:", src);
-            }}
-            onError={() => {
-                console.warn("[ProductImage] image failed to load, trying next candidate:", src);
+onError={() => {
+                
                 setIndex((i) => i + 1);
             }}
             className={`h-full w-full object-cover ${className}`}
@@ -449,11 +430,11 @@ export default function CartItemCard({
     });
 
     useEffect(() => {
-        console.log("[CartItemCard] item received:", item);
-        console.log("[CartItemCard] item keys:", Object.keys(item ?? {}));
-        console.log("[CartItemCard] item.product_image:", item?.product_image);
-        console.log("[CartItemCard] item.product_slug:", item?.product_slug);
-        console.log("[CartItemCard] item.product_name:", item?.product_name);
+        
+        
+        
+        
+        
     }, [item]);
 
     useEffect(() => {
@@ -502,32 +483,32 @@ export default function CartItemCard({
             setLoadingVariants(true);
             setError("");
 
-            console.log("[CartItemCard] fetching product by slug:", item.product_slug);
+            
 
             const res = await fetch(
                 `/api/v1/products?slug=${encodeURIComponent(item.product_slug)}`,
                 { credentials: "include", headers: { Accept: "application/json" } },
             );
 
-            console.log("[CartItemCard] fetchVariants status:", res.status);
+            
 
             const json = await res.json();
-            console.log("[CartItemCard] fetchVariants raw response:", json);
+            
 
             const products = json?.data?.items ?? json?.data ?? json;
             const productArray = Array.isArray(products) ? products : [products];
 
-            console.log("[CartItemCard] normalized productArray:", productArray);
+            
 
             const product = productArray.find(
                 (p: { slug: string }) => p?.slug === item.product_slug,
             );
 
-            console.log("[CartItemCard] matched product from /products:", product);
-            console.log("[CartItemCard] cart item image:", item.product_image);
-            console.log("[CartItemCard] matched product main_image:", product?.main_image);
-            console.log("[CartItemCard] matched product images:", product?.images);
-            console.log("[CartItemCard] matched product variants:", product?.variants);
+            
+            
+            
+            
+            
 
             if (!product) {
                 setError("محصول پیدا نشد");
@@ -535,7 +516,7 @@ export default function CartItemCard({
             }
 
             const variantsList: Variant[] = product?.variants ?? [];
-            console.log("[CartItemCard] extracted variantsList:", variantsList);
+            
 
             setVariants(variantsList);
 
@@ -545,8 +526,8 @@ export default function CartItemCard({
 
             const target = current ?? variantsList[0];
 
-            console.log("[CartItemCard] current variant:", current);
-            console.log("[CartItemCard] target variant:", target);
+            
+            
 
             if (target) {
                 setSelectedVariantId(target.id);
@@ -566,9 +547,9 @@ export default function CartItemCard({
         const price = Number(item.unit_price || 0);
         const formatted = stripCurrency(formatPrice(qty * price));
 
-        console.log("[CartItemCard] openModal item:", item);
-        console.log("[CartItemCard] openModal product_image:", item.product_image);
-        console.log("[CartItemCard] openModal product_slug:", item.product_slug);
+        
+        
+        
 
         setSelectedVariantId(item.variant_id ?? "");
         setSelectedVariantStock(item.stock_qty ?? 0);
@@ -732,10 +713,7 @@ export default function CartItemCard({
             setSaving(true);
             setError("");
 
-            console.log("[CartItemCard] handleSave payload:", {
-                variant_id: selectedVariantId,
-                quantity: editQuantity,
-            });
+            
 
             const res = await fetch(`/api/v1/cart/items/${item.id}`, {
                 method: "PATCH",
@@ -747,12 +725,12 @@ export default function CartItemCard({
                 }),
             });
 
-            console.log("[CartItemCard] handleSave response status:", res.status);
+            
 
             if (!res.ok) throw new Error(`خطا در بروزرسانی (${res.status})`);
 
             const result = await res.json();
-            console.log("[CartItemCard] handleSave response json:", result);
+            
 
             closeModal();
             window.location.reload();
