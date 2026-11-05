@@ -1,0 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap");
+/* Cormorant Garamond is OFL-1.1; Vazirmatn is already self-hosted locally. */
+:root{--maison-latin:"Cormorant Garamond",Georgia,serif;--maison-fa:"Vazirmatn",sans-serif}
+.maison-header__brand strong,.maison-header__brand span,.maison-footer__wordmark,.maison-intro__brand,.maison-journal-page__quote,.maison-manifesto__aside,.maison-feature__ghost,.maison-hero__image-index,.maison-kicker,.maison-overline,.maison-menu__number,.maison-menu__text small,.maison-search__result-index,.maison-footer__bottom span,.maison-journal__article span:first-child{font-family:var(--maison-latin)}
+.maison-header__brand strong{font-weight:400;letter-spacing:.16em;font-size:clamp(28px,2.5vw,33px)}
+.maison-footer__wordmark{font-weight:300}
+.maison-intro{background:#edeeea;color:#242729}
+.maison-intro__period{color:#89908b}.maison-intro__rule{background:#9da49f}
+.maison-intro__overline,.maison-intro__sub{color:#7c8480}
+.maison-sound{background:rgba(239,240,236,.86);border-color:rgba(39,46,45,.14);color:#394140}
+.maison-sound__state{color:#848c89}.maison-sound__bars i{background:#737d7a}

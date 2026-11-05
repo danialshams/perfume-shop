@@ -1,25 +1,39 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { CartCountProvider } from "@/context/CartCountContext";
+import MaisonAmbientSound from "@/components/maison/MaisonAmbientSound";
 import "./globals.css";
 import "./quiet-luxury.css";
 import "./maison-experience.css";
 import "./maison-v3.css";
 import "./maison-home-v3.css";
-import MaisonAmbientSound from "@/components/maison/MaisonAmbientSound";
+import "./maison-pages-v3.css";
+import "./maison-fonts.css";
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL ||
+  "https://perfume-shop-danialshams-projects.vercel.app";
+const isPreview = process.env.VERCEL_ENV === "preview";
 
 export const metadata: Metadata = {
-  title: "MAISON | هنر انتخاب رایحه",
-  description: "MAISON — مجموعه‌ای دست‌چین از عطرها؛ تجربه‌ای ظریف و آرام برای انتخاب رایحه شخصی شما.",
-  robots: { index: true, follow: true },
+  metadataBase: new URL(baseUrl),
+  title: { default: "MAISON | گالری عطر و رایحه", template: "%s" },
+  description: "MAISON؛ تجربه‌ای آرام، سینمایی و شخصی برای کشف دنیای عطرها و آشنایی با رایحه‌های متفاوت.",
+  applicationName: "MAISON",
+  keywords: ["عطر", "گالری عطر", "رایحه", "عطر زنانه", "عطر مردانه", "پرفیوم", "MAISON"],
+  alternates: { canonical: "/" },
+  robots: { index: !isPreview, follow: !isPreview },
+  openGraph: {
+    type: "website", locale: "fa_IR", siteName: "MAISON", title: "MAISON | گالری عطر و رایحه",
+    description: "دنیای عطرها را با نگاه یک گالری سینمایی کشف کنید.",
+    url: "/", images: [{ url: "/maison/hero.jpg", alt: "گالری عطر MAISON" }],
+  },
+  twitter: { card: "summary_large_image", title: "MAISON | گالری عطر" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  return (
-    <html lang="fa" dir="rtl" className="h-full antialiased">
-      <body className="flex min-h-full flex-col font-sans">
-        <CartCountProvider>{children}<MaisonAmbientSound /></CartCountProvider>
-      </body>
-    </html>
-  );
+  return <html lang="fa" dir="rtl" className="h-full antialiased">
+    <body className="flex min-h-full flex-col font-sans">
+      <CartCountProvider>{children}<MaisonAmbientSound /></CartCountProvider>
+    </body>
+  </html>;
 }

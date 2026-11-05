@@ -169,7 +169,7 @@ export default function CinematicStorefront() {
       <span className="maison-feature__ghost" lang="en" dir="ltr" aria-hidden="true">ÉTUDE</span>
     </section>
 
-    <section className="maison-archive maison-wide" aria-labelledby="maison-archive-title">
+    <section id="collection" className="maison-archive maison-wide" aria-labelledby="maison-archive-title">
       <div className="maison-section-heading" data-maison-motion="stagger">
         <span className="maison-kicker" lang="en" dir="ltr">03 / THE OLFACTIVE INDEX</span>
         <h2 id="maison-archive-title">سه جهان،<br/><em>بی‌نهایت احساس.</em></h2>
