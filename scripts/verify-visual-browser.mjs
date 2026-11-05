@@ -91,10 +91,14 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     const v=await evaluate(send,"document.readyState");
     return v==="complete";
   },14000);
+  if(assertHome) {
+    await until(async()=> await evaluate(send, '!document.querySelector(".maison-intro")'), 8000);
+    await sleep(900);
+  }
   await evaluate(send,`(async()=>{await document.fonts.ready;await new Promise(r=>setTimeout(r,1100));let h=document.documentElement.scrollHeight;for(let y=0;y<h;y+=650){window.scrollTo(0,y);await new Promise(r=>setTimeout(r,65));}window.scrollTo(0,0);await new Promise(r=>setTimeout(r,650));return true;})()`);
   const state=await evaluate(send,`(()=>{
-   const hero=document.querySelector(".ql-hero");
-   const img=document.querySelector(".ql-hero-image");
+   const hero=document.querySelector(".maison-hero");
+   const img=document.querySelector(".maison-hero__image img");
    const title=hero?.querySelector("h1");
    return{
     url:location.pathname,width:window.innerWidth,scrollWidth:document.documentElement.scrollWidth,
@@ -103,7 +107,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroImageLoaded:!!img?.complete&&Number(img?.naturalWidth)>50,
     heroTitleOpacity:title?Number(getComputedStyle(title).opacity):null,
     headerFound:!!document.querySelector("header"),
-    imageCount:document.querySelectorAll(".ql-main img").length
+    imageCount:document.querySelectorAll(".maison-home img").length
    };
   })()`);
   if(!state.headerFound)throw Error(name+" has no header");
@@ -111,10 +115,25 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
   if(assertHome){
    if(!state.heroFound||!state.heroImageLoaded)throw Error(name+" cinematic hero did not load: "+JSON.stringify(state));
    if(state.heroTitleOpacity!==null&&state.heroTitleOpacity<.8)throw Error(name+" text not fully visible: "+JSON.stringify(state));
-   if(state.imageCount<5)throw Error(name+" missing fragrance images: "+JSON.stringify(state));
+   if(state.imageCount<7)throw Error(name+" missing fragrance images: "+JSON.stringify(state));
   }
   const result=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true,fromSurface:true});
   await writeFile("artifacts/"+name+".png",Buffer.from(result.data,"base64"));
+   if(assertHome) {
+     const menuState=await evaluate(send,`(async()=>{
+       document.querySelector(".maison-menu-trigger")?.click();
+       await new Promise(r=>setTimeout(r,160));
+       const opened=!!document.querySelector("#maison-menu[role=dialog] .maison-menu-entry");
+       document.querySelector("#maison-menu button[aria-label='بستن منو']")?.click();
+       await new Promise(r=>setTimeout(r,50));
+       document.querySelector(".maison-header button[aria-label='جستجوی عطرها']")?.click();
+       await new Promise(r=>setTimeout(r,120));
+       const search=!!document.querySelector(".maison-search input[type=search]");
+       document.querySelector(".maison-search button[aria-label='بستن جستجو']")?.click();
+       return {opened,search};
+     })()`);
+     if(!menuState.opened || !menuState.search)throw Error(name+" navigation interactions failed "+JSON.stringify(menuState));
+   }
   process.stdout.write(name+" "+JSON.stringify(state)+"\n");
  }finally{ws.close()}
 }
