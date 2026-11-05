@@ -1,0 +1,79 @@
+/* FERTINI — a quieter four-scene editorial home. Internal legacy classes retained for safe migration. */
+.fertini-home{--maison-white:#f4f5f2}
+.fertini-quiet-link{font-size:12px;color:inherit;display:inline-flex;align-items:center;gap:26px;padding-bottom:12px;border-bottom:1px solid currentColor;transition:gap .45s cubic-bezier(.19,1,.22,1);line-height:2}
+.fertini-quiet-link:hover{gap:38px}.fertini-quiet-link__arrow{font:20px Georgia,serif}
+.fertini-hero{min-height:clamp(680px,calc(100svh - 76px),970px);display:grid;grid-template-columns:1.22fr 1fr;direction:ltr;background:#e9ebe8}
+.fertini-hero__gallery{position:relative;overflow:hidden;background:#34393a}
+.fertini-hero__image{position:absolute;inset:0;opacity:0;transition:opacity 1.75s ease;pointer-events:none}
+.fertini-hero__image.is-active{opacity:1;z-index:1}
+.fertini-hero__image img{object-fit:cover;object-position:50% 46%;filter:saturate(.72) contrast(1.04);transform:scale(1.06);transition:transform 11s ease}
+.fertini-hero__image.is-active img{transform:scale(1)}
+.fertini-hero__caption{position:absolute;bottom:32px;left:40px;z-index:3;color:#fff;font:11px "Cormorant Garamond",Georgia,serif;letter-spacing:.2em}
+.fertini-hero__text{direction:rtl;display:flex;justify-content:center;flex-direction:column;align-items:flex-start;position:relative;padding:clamp(45px,7vw,120px);background:linear-gradient(145deg,#f3f4f1 0%,#eaeeeb 100%)}
+.fertini-hero__copy{animation:fertini-copy-reveal 1.45s cubic-bezier(.19,1,.22,1) both;width:100%;max-width:630px}
+.fertini-hero__copy h1{font-size:clamp(52px,5.8vw,96px);line-height:1.53;letter-spacing:-.045em;font-weight:300;margin:35px 0 25px}
+.fertini-home em{font-weight:300;font-style:normal;color:#8c9590}
+.fertini-hero__copy p{font-size:14px;color:#6c7570;line-height:2.75;max-width:420px;margin-bottom:42px}
+.fertini-hero__controls{position:absolute;bottom:35px;right:clamp(35px,7vw,120px);left:clamp(35px,7vw,120px);display:flex;align-items:center;justify-content:space-between}
+.fertini-hero__controls>span{display:flex;align-items:center;gap:15px;font:13px "Cormorant Garamond",Georgia,serif;color:#7e8781}
+.fertini-hero__controls i{display:block;width:44px;height:1px;background:#a4ada7}
+.fertini-hero__controls>div{display:flex;gap:6px;align-items:center}
+.fertini-hero__controls button{display:grid;place-items:center;min-height:42px;min-width:38px;background:transparent;border:0;cursor:pointer}
+.fertini-hero__controls button span{width:23px;height:2px;background:#b3bbb5;transition:width .6s ease,background .6s ease}
+.fertini-hero__controls button.is-active span{width:38px;background:#313936}
+@keyframes fertini-copy-reveal{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.fertini-story{display:grid;grid-template-columns:1.18fr 1fr;gap:clamp(65px,9vw,175px);align-items:center;padding-block:clamp(145px,17vw,300px);min-height:720px}
+.fertini-story__image{position:relative;aspect-ratio:4/5;max-height:850px;overflow:hidden;background:#dadeda}
+.fertini-story__image img{object-fit:cover;object-position:49% 50%;filter:saturate(.75)}
+.fertini-story__copy{max-width:490px}
+.fertini-story__copy h2,.fertini-notes__heading h2,.fertini-edit__heading h2{font-size:clamp(40px,5vw,82px);font-weight:300;line-height:1.6;letter-spacing:-.055em}
+.fertini-story__copy h2{margin:32px 0}
+.fertini-story__copy p{font-size:14px;color:#828b84;line-height:2.75;margin-bottom:32px}
+.fertini-notes{padding-bottom:clamp(150px,18vw,310px)}
+.fertini-notes__heading{text-align:center;max-width:700px;margin:0 auto clamp(55px,8vw,125px)}
+.fertini-notes__heading h2{margin:26px 0}.fertini-notes__heading p{font-size:13px;line-height:2.6;color:#88918b}
+.fertini-notes__grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(18px,3vw,46px);align-items:start}
+.fertini-notes__card{color:#29332e;display:block}
+.fertini-notes__card:nth-child(2){margin-top:clamp(45px,7vw,115px)}
+.fertini-notes__card:nth-child(3){margin-top:clamp(20px,3.5vw,58px)}
+.fertini-notes__image{position:relative;overflow:hidden;aspect-ratio:4/5;background:#d8dcd8}
+.fertini-notes__card--square .fertini-notes__image{aspect-ratio:1/1}
+.fertini-notes__image img{object-fit:cover;object-position:center;filter:saturate(.72);transition:transform 1.7s cubic-bezier(.19,1,.22,1)}
+.fertini-notes__card:hover img{transform:scale(1.04)}
+.fertini-notes__caption{padding-top:26px}
+.fertini-notes__caption span{font:11px "Cormorant Garamond",Georgia,serif;letter-spacing:.17em;color:#919993}
+.fertini-notes__caption h3{font-size:clamp(23px,2vw,31px);font-weight:300;margin:13px 0}
+.fertini-notes__caption p{font-size:12px;color:#89918c}
+.fertini-edit{padding-bottom:clamp(160px,17vw,290px)}
+.fertini-edit__heading{margin-bottom:65px}
+.fertini-edit__heading>div{display:flex;gap:28px;align-items:end;justify-content:space-between}
+.fertini-edit__heading h2{margin:25px 0 0}
+.fertini-edit__heading .fertini-edit__note{color:#939a95;font-size:12px;line-height:2.3;margin-top:16px}
+.fertini-edit__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(18px,2.5vw,38px)}
+.fertini-edit__photo{position:relative;aspect-ratio:4/5;overflow:hidden;background:#e6e9e5}
+.fertini-edit__photo img{object-fit:contain;object-position:center;filter:saturate(.84);transition:transform 1.35s ease}
+.fertini-edit__card:hover .fertini-edit__photo img{transform:scale(1.045)}
+.fertini-edit__photo>span:not(.fertini-edit__badge){height:100%;display:grid;place-items:center;color:#a8afa9;font:32px "Cormorant Garamond",Georgia,serif}
+.fertini-edit__badge{position:absolute;top:14px;right:12px;background:rgba(245,247,244,.8);backdrop-filter:blur(12px);font-size:10px;color:#67726b;padding:7px 11px}
+.fertini-edit__label{padding-top:22px}
+.fertini-edit__label h3{font-weight:350;font-size:14px;line-height:1.8}
+.fertini-edit__label p{font-size:12px;color:#87918a;margin-top:8px}
+.fertini-edit__journal{margin-top:clamp(78px,9vw,145px);display:flex;align-items:center;gap:25px;justify-content:space-between;padding-top:23px;border-top:1px solid rgba(31,39,34,.17);color:#4f5b53;transition:padding .5s ease}
+.fertini-edit__journal:hover{padding-inline:15px}
+.fertini-edit__journal>span:first-child{color:#8f9892;font:12px "Cormorant Garamond",Georgia,serif;letter-spacing:.13em}
+.fertini-edit__journal strong{font-weight:300;font-size:17px}
+.fertini-edit__journal>span:last-child{font-size:12px}
+.fertini-footer{background:#1d2221}
+.fertini-footer .maison-footer__wordmark{font-weight:300;font-size:clamp(80px,10vw,164px);letter-spacing:.08em;white-space:nowrap}
+.fertini-footer .maison-footer__wordmark span{font-size:13px}
+.fertini-footer .maison-footer__links>div{gap:21px}
+.fertini-footer .maison-footer__links a{display:block}
+.fertini-intro{background:#e8ece8!important;color:#252e29!important}
+.fertini-intro .maison-intro__brand{font-weight:300;letter-spacing:.2em!important;font-size:clamp(64px,12vw,140px)}
+.fertini-intro .maison-intro__sub{font:12px "Cormorant Garamond",Georgia,serif;letter-spacing:.29em;color:#7d8880}
+.fertini-intro .maison-intro__content{gap:22px}
+.fertini-intro .maison-intro__overline,.fertini-intro .maison-intro__rule{display:none!important}
+@media(max-width:1050px){.fertini-hero__text{padding:50px 42px}.fertini-hero__copy h1{font-size:clamp(46px,6vw,72px)}.fertini-story{gap:60px}}
+@media(max-width:850px){.fertini-hero{grid-template-columns:1fr;min-height:0}.fertini-hero__gallery{min-height:clamp(360px,54svh,650px)}.fertini-hero__text{min-height:440px;padding:48px 40px 95px}.fertini-story{grid-template-columns:1fr;gap:54px;padding-block:125px}.fertini-story__image{aspect-ratio:4/5;min-height:0;max-width:610px}.fertini-notes__grid{grid-template-columns:repeat(2,1fr)}.fertini-notes__card:nth-child(3){margin-top:0}.fertini-edit__grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.fertini-hero__gallery{min-height:48svh}.fertini-hero__caption{left:21px;bottom:18px}.fertini-hero__text{min-height:0;padding:50px 25px 90px}.fertini-hero__copy h1{font-size:clamp(45px,11vw,65px);margin:23px 0 13px}.fertini-hero__copy p{font-size:12px;margin-bottom:28px}.fertini-hero__controls{bottom:16px;right:25px;left:25px}.fertini-story{padding-block:102px 145px;gap:39px}.fertini-story__image{aspect-ratio:4/5}.fertini-story__copy h2,.fertini-notes__heading h2,.fertini-edit__heading h2{font-size:42px}.fertini-notes{padding-bottom:125px}.fertini-notes__heading{margin-bottom:49px}.fertini-notes__grid{grid-template-columns:1fr;gap:36px}.fertini-notes__card:nth-child(2),.fertini-notes__card:nth-child(3){margin-top:0}.fertini-notes__image{aspect-ratio:1.06/1}.fertini-notes__card--square .fertini-notes__image{aspect-ratio:1/1}.fertini-notes__caption{padding-top:17px}.fertini-edit{padding-bottom:155px}.fertini-edit__heading{margin-bottom:37px}.fertini-edit__heading>div{align-items:start;flex-direction:column;gap:10px}.fertini-edit__grid{gap:28px 14px}.fertini-edit__label h3{font-size:12px}.fertini-edit__label p{font-size:10px}.fertini-edit__journal{flex-direction:column;align-items:flex-start;gap:10px}.fertini-footer .maison-footer__wordmark{font-size:clamp(67px,19vw,100px)}.fertini-intro .maison-intro__brand{font-size:clamp(58px,15vw,85px)}}
+@media(prefers-reduced-motion:reduce){.fertini-home *, .fertini-footer *{animation:none!important;transition-duration:.001ms!important}}

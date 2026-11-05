@@ -1,67 +1,50 @@
 "use client";
-
 import gsap from "gsap";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const SESSION_KEY = "maison:intro:seen:v2";
+const SESSION_KEY = "fertini:intro:seen:v3";
 
-/** Short, skippable editorial intro, mounted only on the home page. */
+/** A short, optional cinematic prelude. Never intercepts recurring navigation. */
 export default function MaisonIntro() {
   const rootRef = useRef<HTMLDivElement>(null);
   const finishedRef = useRef(false);
   const [visible, setVisible] = useState(true);
-
-  const finish = useCallback(() => {
+  const finish = useCallback(()=>{
     if (finishedRef.current) return;
-    finishedRef.current = true;
-    try { window.sessionStorage.setItem(SESSION_KEY, "1"); } catch {}
+    finishedRef.current=true;
+    try { window.sessionStorage.setItem(SESSION_KEY,"1"); } catch {}
     setVisible(false);
-    window.dispatchEvent(new Event("maison:intro:complete"));
-  }, []);
+    window.dispatchEvent(new Event("fertini:intro:complete"));
+  },[]);
 
-  useEffect(() => {
-    const root = rootRef.current;
+  useEffect(()=>{
+    const root=rootRef.current;
     if (!root) return;
-
-    let seen = false;
-    try { seen = window.sessionStorage.getItem(SESSION_KEY) === "1"; } catch {}
+    let seen=false;
+    try {seen=window.sessionStorage.getItem(SESSION_KEY)==="1";}catch{}
     if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      root.style.display = "none";
-      const id = window.requestAnimationFrame(finish);
-      return () => window.cancelAnimationFrame(id);
+      root.style.display="none";
+      const frame=window.requestAnimationFrame(finish);
+      return ()=>window.cancelAnimationFrame(frame);
     }
-
-    const scope = gsap.context(() => {
-      const sequence = gsap.timeline({ onComplete: finish });
-      sequence
-        .fromTo(".maison-intro__brand",
-          { autoAlpha: 0, y: 17, filter: "blur(6px)" },
-          { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.78, ease: "power3.out" })
-        .fromTo(".maison-intro__rule",
-          { scaleX: 0 },
-          { scaleX: 1, duration: 0.7, ease: "power2.inOut" }, "<0.12")
-        .fromTo(".maison-intro__sub",
-          { autoAlpha: 0, y: 9 },
-          { autoAlpha: 1, y: 0, duration: 0.62, ease: "power2.out" }, "<0.12")
-        .to(root, { autoAlpha: 0, yPercent: -2, duration: 0.64, ease: "power2.inOut" }, "+=0.28");
-    }, root);
-
-    return () => scope.revert();
-  }, [finish]);
+    const previous=document.body.style.overflow;
+    document.body.style.overflow="hidden";
+    const ctx=gsap.context(()=>{
+      const tl=gsap.timeline({onComplete:finish});
+      tl.fromTo(".maison-intro__brand",{autoAlpha:0,y:24,filter:"blur(10px)",letterSpacing:".34em"},
+        {autoAlpha:1,y:0,filter:"blur(0px)",letterSpacing:".20em",duration:1.1,ease:"power3.out"})
+      .fromTo(".maison-intro__sub",{autoAlpha:0,y:11},{autoAlpha:1,y:0,duration:.65,ease:"power2.out"},.55)
+      .to(root,{autoAlpha:0,duration:.65,ease:"power2.inOut"},"+=.28");
+    },root);
+    return ()=>{ctx.revert();document.body.style.overflow=previous;};
+  },[finish]);
 
   if (!visible) return null;
-
-  return (
-    <div className="maison-intro" ref={rootRef} role="status" aria-label="در حال ورود به مزون">
-      <div className="maison-intro__content" dir="ltr">
-        <span className="maison-intro__overline">THE ART OF SCENT</span>
-        <div className="maison-intro__brand">MAISON<span className="maison-intro__period">.</span></div>
-        <div className="maison-intro__rule" />
-        <span className="maison-intro__sub" dir="rtl">رایحه‌ای که می‌ماند</span>
-      </div>
-      <button type="button" className="maison-intro__skip" onClick={finish} aria-label="رد کردن نمایش آغازین">
-        عبور از مقدمه
-      </button>
+  return <div className="maison-intro fertini-intro" ref={rootRef} role="status" aria-label="در حال نمایش مقدمه فرتینی">
+    <div className="maison-intro__content" dir="ltr">
+      <div className="maison-intro__brand">FERTINI</div>
+      <span className="maison-intro__sub" dir="ltr">THE ART OF SCENT</span>
     </div>
-  );
+    <button className="maison-intro__skip" type="button" onClick={finish}>عبور از مقدمه</button>
+  </div>;
 }
