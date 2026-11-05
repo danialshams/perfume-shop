@@ -106,7 +106,7 @@ const childrenVariants = {
       opacity: {
         duration: 0.34,
         delay: 0.06,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     },
   },
@@ -120,7 +120,7 @@ const childrenVariants = {
       },
       opacity: {
         duration: 0.2,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     },
   },
@@ -496,7 +496,7 @@ export default function MobileCategoriesSheet(props: Props) {
                     },
                     opacity: {
                       duration: 0.34,
-                      ease: "easeOut",
+                      ease: "easeOut" as const,
                     },
                     scale: {
                       duration: 0.74,
@@ -515,7 +515,7 @@ export default function MobileCategoriesSheet(props: Props) {
                     },
                     opacity: {
                       duration: 0.18,
-                      ease: "easeOut",
+                      ease: "easeOut" as const,
                     },
                     scale: {
                       duration: 0.24,

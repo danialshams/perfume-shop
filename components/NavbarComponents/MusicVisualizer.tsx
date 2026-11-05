@@ -605,7 +605,7 @@ export default function MusicVisualizer({
           dataRef.current;
 
         analyser.getFloatFrequencyData(
-          frequencyData,
+          frequencyData as Float32Array<ArrayBuffer>,
         );
 
         const sampleRate =

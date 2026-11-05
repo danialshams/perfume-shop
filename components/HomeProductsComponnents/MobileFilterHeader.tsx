@@ -1,47 +1,33 @@
 "use client";
 
-import { FadersHorizontalIcon } from "@phosphor-icons/react";
+import { FadersHorizontalIcon, ArrowsDownUpIcon } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 
 type Props = {
   activeFilterLabel?: string | null;
+  activeSortLabel?: string | null;
+  hasActiveFilter?: boolean;
   openMobileCategoriesSheet?: () => void;
+  openMobileSortSheet?: () => void;
   openDesktopCategoriesDrawer?: () => void;
+  openDesktopFilterDrawer?: () => void;
   className?: string;
 };
-
 export default function MobileFilterHeader({
-  activeFilterLabel,
-  openMobileCategoriesSheet,
-  openDesktopCategoriesDrawer,
-  className = "",
-}: Props) {
-  const handleOpenCategories =
-    openDesktopCategoriesDrawer ?? openMobileCategoriesSheet;
-
-  const title = activeFilterLabel
-    ? `محصولات / گروه بویایی / ${activeFilterLabel}`
-    : "محصولات";
-
-  return (
-    <div dir="rtl" className={className}>
-      <div className="flex items-center justify-between pb-3">
-        <div className="text-right text-[13px] font-light leading-none tracking-[0.08em] text-[#7B8487]">
-          {title}
-        </div>
-
-        <motion.button
-          type="button"
-          whileTap={{ opacity: 0.92, scale: 0.985 }}
-          transition={{ duration: 0.15 }}
-          onClick={handleOpenCategories}
-          aria-label="باز کردن فیلترها"
-          className="flex cursor-pointer items-center gap-2 text-[12px] font-light text-[#33383C] focus-visible:outline-none"
-        >
-          <FadersHorizontalIcon size={22} weight="regular" />
-          <span>دسته بندی</span>
-        </motion.button>
-      </div>
-    </div>
-  );
+  activeFilterLabel, activeSortLabel, hasActiveFilter = false,
+  openMobileCategoriesSheet, openMobileSortSheet,
+  openDesktopCategoriesDrawer, openDesktopFilterDrawer, className = ""
+}:Props) {
+ const onCategories = openDesktopCategoriesDrawer ?? openMobileCategoriesSheet;
+ const onSort = openDesktopFilterDrawer ?? openMobileSortSheet;
+ return <div dir="rtl" className={className}>
+  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#dcd5ca] pb-4">
+   <div className="min-w-0 text-right"><p className="text-[12px] font-normal text-[#38332c]">{activeFilterLabel || "همه عطرها"}</p>
+   {hasActiveFilter && <p className="mt-1 text-[10px] text-[#9b8263]">فیلتر فعال</p>}</div>
+   <div className="flex shrink-0 items-center gap-4">
+    <motion.button whileTap={{scale:.96}} type="button" onClick={onCategories} aria-label="دسته‌بندی محصولات" className="inline-flex items-center gap-2 text-[12px] text-[#645647]"><FadersHorizontalIcon size={18} weight="light"/> دسته‌بندی</motion.button>
+    <motion.button whileTap={{scale:.96}} type="button" onClick={onSort} aria-label="مرتب‌سازی محصولات" className="inline-flex items-center gap-1.5 text-[12px] text-[#645647]"><ArrowsDownUpIcon size={17} weight="light"/>{activeSortLabel || "مرتب‌سازی"}</motion.button>
+   </div>
+  </div>
+ </div>;
 }

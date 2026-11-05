@@ -360,7 +360,7 @@ export default function ProductVoiceCard({
 
       const waveformData = waveformDataRef.current;
 
-      analyser.getFloatTimeDomainData(waveformData);
+      analyser.getFloatTimeDomainData(waveformData as Float32Array<ArrayBuffer>);
 
       const rawTargets = new Array<number>(BAR_COUNT).fill(0);
       const samplesPerBar = Math.max(

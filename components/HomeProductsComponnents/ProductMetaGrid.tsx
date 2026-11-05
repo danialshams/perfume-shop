@@ -9,7 +9,7 @@ export default function ProductMetaGrid({ product }: Props) {
 
     {
       label: "خانواده بویایی",
-      value: product.scent_family || "—",
+      value: typeof product.scent_family === "string" ? product.scent_family : (product.scent_family?.name || "—"),
     },
     {
       label: "دسته‌بندی",
@@ -26,10 +26,10 @@ export default function ProductMetaGrid({ product }: Props) {
   ];
 
   return (
-    <section className="rounded-[30px] border border-[#dbe5f2] bg-white/85 p-5 shadow-[0_18px_44px_rgba(15,31,61,0.06)] backdrop-blur-xl sm:p-6 lg:p-7">
+    <section className="border border-[#e0d8cc] bg-[#f9f6f0] p-5 sm:p-6 lg:p-7">
       <div className="mb-5 text-center lg:text-right">
-        <p className="text-[11px] tracking-[0.2em] text-[#6a83a3]">PRODUCT FACTS</p>
-        <h2 className="mt-2 text-[24px] font-semibold text-[#112447] sm:text-[28px]">
+        <p className="text-[11px] tracking-[0.2em] text-[#937f68]">PRODUCT FACTS</p>
+        <h2 className="mt-2 text-[24px] font-semibold text-[#302d29] sm:text-[28px]">
           مشخصات محصول
         </h2>
       </div>
@@ -38,12 +38,12 @@ export default function ProductMetaGrid({ product }: Props) {
         {items.map((item) => (
           <div
             key={item.label}
-            className="rounded-[22px] border border-[#e8eef6] bg-[#fbfdff] px-4 py-4 text-center lg:text-right"
+            className="border-b border-[#e2d9ce] bg-transparent px-4 py-4 text-center lg:text-right"
           >
-            <p className="text-[11px] tracking-[0.18em] text-[#6a83a3]">
+            <p className="text-[11px] tracking-[0.18em] text-[#937f68]">
               {item.label}
             </p>
-            <p className="mt-2 text-[15px] font-medium text-[#10213f] sm:text-[16px]">
+            <p className="mt-2 text-[15px] font-medium text-[#302d29] sm:text-[16px]">
               {item.value}
             </p>
           </div>

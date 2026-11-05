@@ -55,7 +55,7 @@ export default function ProductsFilterBar({
   activeFilterLabel: scentFamilyFilterLabel, // تغییر نام متغیر محلی برای عدم تداخل
 }: Props) {
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const mobilePathResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+  const mobilePathResetTimerRef = useRef<number | null>(
     null,
   );
 
