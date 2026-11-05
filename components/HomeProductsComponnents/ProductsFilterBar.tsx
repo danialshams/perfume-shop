@@ -1,31 +1,15 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-
-import DesktopCategoriesDrawer from "./DesktopCategoriesDrawer";
-import DesktopFilterBarSkeleton from "./DesktopFilterBarSkeleton";
-import DesktopFilterDrawer from "./DesktopFilterDrawer";
-import FilterBarSkeleton from "./FilterBarSkeleton";
-import MobileCategoriesSheet from "./MobileCategoriesSheet";
-import MobileFilterHeader from "./MobileFilterHeader";
-import MobileSortSheet, { type SortOption } from "./MobileSortSheet";
+import { Check, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
+import type { SortOption } from "./MobileSortSheet";
 
 type Category = {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string | null;
-  image_url?: string | null;
-  is_active?: boolean | number;
-  created_at?: string;
-  updated_at?: string;
-  parent_ids: number[];
-  parent_names: string[];
-  children_count?: number;
+  id: number; name: string; slug: string;
+  parent_ids: number[]; parent_names: string[];
   has_children: boolean;
+  is_active?: boolean | number;
 };
-
 type Props = {
   categories: Category[];
   activeParentId: number | null;
@@ -37,422 +21,122 @@ type Props = {
   selectedSort: SortOption;
   onSortChange: (next: SortOption) => void;
 };
-
-const springSoft = {
-  type: "spring" as const,
-  stiffness: 360,
-  damping: 34,
-  mass: 0.75,
-};
-
-const MOBILE_SHEET_CLOSE_MS = 1225;
+const sorts: { value: SortOption; label: string; helper: string }[] = [
+  { value: "newest", label: "جدیدترین", helper: "تازه‌ترین انتخاب‌ها" },
+  { value: "bestselling", label: "پرفروش‌ترین", helper: "بیشترین انتخاب" },
+  { value: "lowest", label: "قیمت از کم به زیاد", helper: "انتخاب بر اساس بودجه" },
+  { value: "highest", label: "قیمت از زیاد به کم", helper: "انتخاب‌های خاص‌تر" },
+];
 
 export default function ProductsFilterBar({
-  categories,
-  activeParentId,
-  activeChildId,
-  setActiveParentId,
-  setActiveChildId,
-  loadingCategories = false,
-  activeFilterLabel: scentFamilyFilterLabel,
-  selectedSort,
-  onSortChange,
+  categories, activeParentId, activeChildId, setActiveParentId, setActiveChildId,
+  loadingCategories, activeFilterLabel, selectedSort, onSortChange,
 }: Props) {
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  const mobilePathResetTimerRef = useRef<number | null>(
-    null,
-  );
+  const [panel, setPanel] = useState<"categories" | "sort" | null>(null);
+  const [search, setSearch] = useState("");
+  const firstFocusRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const activeCategory = categories.find(category => category.id === (activeChildId ?? activeParentId));
+  const categoryText = activeFilterLabel || activeCategory?.name || "همهٔ رایحه‌ها";
+  const sortText = sorts.find(sort => sort.value === selectedSort)?.label || "جدیدترین";
+  const visibleCategories = useMemo(() => {
+    const normalized=search.trim();
+    return categories.filter(category =>
+      (category.is_active === undefined || category.is_active === true || Number(category.is_active)===1) &&
+      (!normalized || category.name.includes(normalized) || category.parent_names?.some(name => name.includes(normalized)))
+    ).sort((a,b)=>(a.parent_ids?.length||0)-(b.parent_ids?.length||0));
+  },[categories,search]);
 
-  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
-  const [mobileSortOpen, setMobileSortOpen] = useState(false);
-
-  const [desktopCategoriesOpen, setDesktopCategoriesOpen] = useState(false);
-  const [desktopFilterOpen, setDesktopFilterOpen] = useState(false);
-
-  const [mobileCategoryPath, setMobileCategoryPath] = useState<number[]>([]);
-  const [desktopCategoryPath, setDesktopCategoryPath] = useState<number[]>([]);
-
-  const categoriesById = useMemo(() => {
-    return new Map(categories.map((category) => [category.id, category]));
-  }, [categories]);
-
-  const topParents = useMemo(() => {
-    return categories.filter(
-      (category) => (category.parent_ids?.length ?? 0) === 0,
-    );
-  }, [categories]);
-
-  const childrenByParent = useMemo(() => {
-    const map = new Map<number, Category[]>();
-
-    categories.forEach((category) => {
-      (category.parent_ids ?? []).forEach((parentId) => {
-        const current = map.get(parentId) ?? [];
-        current.push(category);
-        map.set(parentId, current);
-      });
-    });
-
-    return map;
-  }, [categories]);
-
-  const mobileCurrentCategoryId =
-    mobileCategoryPath.length > 0
-      ? mobileCategoryPath[mobileCategoryPath.length - 1]
-      : null;
-
-  const mobileRootCategoryId =
-    mobileCategoryPath.length > 0 ? mobileCategoryPath[0] : null;
-
-  const mobileCurrentCategory = useMemo(() => {
-    if (!mobileCurrentCategoryId) return null;
-    return categoriesById.get(mobileCurrentCategoryId) ?? null;
-  }, [categoriesById, mobileCurrentCategoryId]);
-
-  const mobileCurrentChildren = mobileCurrentCategoryId
-    ? childrenByParent.get(mobileCurrentCategoryId) ?? []
-    : topParents;
-
-  const desktopCurrentCategoryId =
-    desktopCategoryPath.length > 0
-      ? desktopCategoryPath[desktopCategoryPath.length - 1]
-      : null;
-
-  const desktopRootCategoryId =
-    desktopCategoryPath.length > 0 ? desktopCategoryPath[0] : null;
-
-  const desktopCurrentCategory = useMemo(() => {
-    if (!desktopCurrentCategoryId) return null;
-    return categoriesById.get(desktopCurrentCategoryId) ?? null;
-  }, [categoriesById, desktopCurrentCategoryId]);
-
-  const desktopCurrentChildren = desktopCurrentCategoryId
-    ? childrenByParent.get(desktopCurrentCategoryId) ?? []
-    : topParents;
-
-  const hasActiveFilter = Boolean(activeParentId || activeChildId || scentFamilyFilterLabel);
-
-  // محاسبه برچسب فیلتر فعال با اولویت گروه بویایی ارسال شده از والد، سپس دسته‌بندی‌ها
-  const finalActiveFilterLabel = useMemo(() => {
-    if (scentFamilyFilterLabel) {
-      return scentFamilyFilterLabel;
-    }
-
-    if (activeChildId) {
-      return categoriesById.get(activeChildId)?.name ?? null;
-    }
-
-    if (activeParentId) {
-      return categoriesById.get(activeParentId)?.name ?? null;
-    }
-
-    return null;
-  }, [categoriesById, activeParentId, activeChildId, scentFamilyFilterLabel]);
-
-  const activeSortLabel = useMemo(() => {
-    switch (selectedSort) {
-      case "lowest":
-        return "ارزان‌ترین";
-      case "highest":
-        return "گران‌ترین";
-      case "newest":
-        return "جدیدترین";
-      case "bestselling":
-        return "پرفروش‌ترین";
-      default:
-        return null;
-    }
-  }, [selectedSort]);
-
-  const clearMobilePathResetTimer = () => {
-    if (mobilePathResetTimerRef.current) {
-      clearTimeout(mobilePathResetTimerRef.current);
-      mobilePathResetTimerRef.current = null;
-    }
-  };
-
-  const resetMobileCategoryPathWithDelay = () => {
-    clearMobilePathResetTimer();
-
-    mobilePathResetTimerRef.current = window.setTimeout(() => {
-      setMobileCategoryPath([]);
-      mobilePathResetTimerRef.current = null;
-    }, MOBILE_SHEET_CLOSE_MS);
-  };
-
-  const closeMobileCategoriesSheet = () => {
-    setMobileCategoriesOpen(false);
-    resetMobileCategoryPathWithDelay();
-  };
-
-  const closeMobileSortSheet = () => {
-    setMobileSortOpen(false);
-  };
-
-  const openMobileCategoriesSheet = () => {
-    clearMobilePathResetTimer();
-
-    setMobileSortOpen(false);
-    setDesktopCategoriesOpen(false);
-    setDesktopFilterOpen(false);
-    setMobileCategoryPath([]);
-
-    requestAnimationFrame(() => {
-      setMobileCategoriesOpen(true);
-    });
-  };
-
-  const openMobileSortSheet = () => {
-    clearMobilePathResetTimer();
-
-    setMobileCategoriesOpen(false);
-    setDesktopCategoriesOpen(false);
-    setDesktopFilterOpen(false);
-    setMobileCategoryPath([]);
-
-    requestAnimationFrame(() => {
-      setMobileSortOpen(true);
-    });
-  };
-
-  const openDesktopCategoriesDrawer = () => {
-    clearMobilePathResetTimer();
-
-    setMobileCategoriesOpen(false);
-    setMobileSortOpen(false);
-    setDesktopFilterOpen(false);
-    setDesktopCategoryPath([]);
-
-    requestAnimationFrame(() => {
-      setDesktopCategoriesOpen(true);
-    });
-  };
-
-  const closeDesktopCategoriesDrawer = () => {
-    setDesktopCategoriesOpen(false);
-    setDesktopCategoryPath([]);
-  };
-
-  const openDesktopFilterDrawer = () => {
-    clearMobilePathResetTimer();
-
-    setMobileCategoriesOpen(false);
-    setMobileSortOpen(false);
-    setDesktopCategoriesOpen(false);
-
-    requestAnimationFrame(() => {
-      setDesktopFilterOpen(true);
-    });
-  };
-
-  const closeDesktopFilterDrawer = () => {
-    setDesktopFilterOpen(false);
-  };
-
-  const openMobileChildrenSheet = (categoryId: number) => {
-    setMobileCategoryPath((prev) => [...prev, categoryId]);
-  };
-
-  const goBackMobileCategoryLevel = () => {
-    setMobileCategoryPath((prev) => prev.slice(0, -1));
-  };
-
-  const openDesktopChildrenLevel = (categoryId: number) => {
-    setDesktopCategoryPath((prev) => [...prev, categoryId]);
-  };
-
-  const goBackDesktopCategoryLevel = () => {
-    setDesktopCategoryPath((prev) => prev.slice(0, -1));
-  };
-
-  const closeAllOverlays = () => {
-    setMobileCategoriesOpen(false);
-    setMobileSortOpen(false);
-    setDesktopCategoriesOpen(false);
-    setDesktopFilterOpen(false);
-
-    resetMobileCategoryPathWithDelay();
-    setDesktopCategoryPath([]);
-  };
-
-  const clearAll = () => {
-    setActiveParentId(null);
-    setActiveChildId(null);
-    onSortChange("newest");
-    closeAllOverlays();
-  };
-
-  const handleMobileCategorySelect = (
-    categoryId: number,
-    rootParentId: number,
-  ) => {
-    if (categoryId === rootParentId) {
-      setActiveParentId(rootParentId);
-      setActiveChildId(null);
-    } else {
-      setActiveParentId(rootParentId);
-      setActiveChildId(categoryId);
-    }
-
-    closeAllOverlays();
-  };
-
-  const handleDesktopCategorySelect = (
-    categoryId: number,
-    rootParentId: number,
-  ) => {
-    if (categoryId === rootParentId) {
-      setActiveParentId(rootParentId);
-      setActiveChildId(null);
-    } else {
-      setActiveParentId(rootParentId);
-      setActiveChildId(categoryId);
-    }
-
-    closeAllOverlays();
-  };
-
-  const handleSortSelect = (value: SortOption) => {
-    onSortChange(value);
-    closeMobileSortSheet();
-    closeDesktopFilterDrawer();
-  };
-
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        closeAllOverlays();
+  const close=()=>{setPanel(null);setSearch("");};
+  useEffect(()=>{
+    if (!panel) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow="hidden";
+    const onKey=(event:KeyboardEvent)=>{
+      if(event.key==="Escape") { close(); triggerRef.current?.focus(); }
+      if(event.key==="Tab"){
+        const overlay=document.querySelector<HTMLElement>(".fertini-filter-overlay");
+        const items=Array.from(overlay?.querySelectorAll<HTMLElement>('button:not([disabled]),input:not([disabled])')||[]);
+        const first=items[0],last=items[items.length-1];
+        if(event.shiftKey && document.activeElement===first){event.preventDefault();last?.focus();}
+        else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first?.focus();}
       }
     };
-
-    document.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (
-      !mobileCategoriesOpen &&
-      !mobileSortOpen &&
-      !desktopCategoriesOpen &&
-      !desktopFilterOpen
-    ) {
-      return;
-    }
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [
-    mobileCategoriesOpen,
-    mobileSortOpen,
-    desktopCategoriesOpen,
-    desktopFilterOpen,
-  ]);
-
-  useEffect(() => {
-    return () => {
-      clearMobilePathResetTimer();
-    };
-  }, []);
-
-  if (loadingCategories) {
-    return (
-      <>
-        <div className="lg:hidden">
-          <FilterBarSkeleton />
-        </div>
-
-        <div className="hidden lg:block">
-          <DesktopFilterBarSkeleton />
-        </div>
-      </>
-    );
+    document.addEventListener("keydown",onKey);
+    const id=window.requestAnimationFrame(()=>firstFocusRef.current?.focus());
+    return ()=>{document.body.style.overflow=previous;document.removeEventListener("keydown",onKey);window.cancelAnimationFrame(id);};
+  },[panel]);
+  function open(event:React.MouseEvent<HTMLButtonElement>,next:"categories"|"sort") {
+    triggerRef.current=event.currentTarget;
+    setPanel(next);
   }
-
-  return (
-    <section className="mx-auto w-full max-w-6xl px-0 pb-1 pt-2 sm:py-5">
-      <div ref={rootRef} className="relative">
-        <MobileFilterHeader
-          className="md:hidden px-4"
-          hasActiveFilter={hasActiveFilter}
-          activeFilterLabel={finalActiveFilterLabel}
-          activeSortLabel={activeSortLabel}
-          openMobileCategoriesSheet={openMobileCategoriesSheet}
-          openMobileSortSheet={openMobileSortSheet}
-        />
-
-        <motion.div
-          initial={{ opacity: 0, y: 6, scale: 0.997 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={springSoft}
-          className="hidden md:block px-4 lg:px-6"
-        >
-          <MobileFilterHeader
-            className="block"
-            hasActiveFilter={hasActiveFilter}
-            activeFilterLabel={finalActiveFilterLabel}
-            activeSortLabel={activeSortLabel}
-            openDesktopCategoriesDrawer={openDesktopCategoriesDrawer}
-            openDesktopFilterDrawer={openDesktopFilterDrawer}
-          />
-        </motion.div>
-
-        <MobileCategoriesSheet
-          open={mobileCategoriesOpen}
-          topParents={topParents}
-          activeParentId={activeParentId}
-          activeChildId={activeChildId}
-          childrenByParent={childrenByParent}
-          mobileCategoryPath={mobileCategoryPath}
-          mobileRootCategoryId={mobileRootCategoryId}
-          mobileCurrentCategory={mobileCurrentCategory}
-          mobileCurrentChildren={mobileCurrentChildren}
-          clearAll={clearAll}
-          closeMobileCategoriesSheet={closeMobileCategoriesSheet}
-          openMobileChildrenSheet={openMobileChildrenSheet}
-          goBackMobileCategoryLevel={goBackMobileCategoryLevel}
-          handleMobileCategorySelect={handleMobileCategorySelect}
-        />
-
-        <DesktopCategoriesDrawer
-          open={desktopCategoriesOpen}
-          topParents={topParents}
-          activeParentId={activeParentId}
-          activeChildId={activeChildId}
-          childrenByParent={childrenByParent}
-          desktopCategoryPath={desktopCategoryPath}
-          desktopRootCategoryId={desktopRootCategoryId}
-          desktopCurrentCategory={desktopCurrentCategory}
-          desktopCurrentChildren={desktopCurrentChildren}
-          clearAll={clearAll}
-          onClose={closeDesktopCategoriesDrawer}
-          openDesktopChildrenLevel={openDesktopChildrenLevel}
-          goBackDesktopCategoryLevel={goBackDesktopCategoryLevel}
-          handleDesktopCategorySelect={handleDesktopCategorySelect}
-        />
-
-        <MobileSortSheet
-          open={mobileSortOpen}
-          selectedSort={selectedSort}
-          onSelectSort={handleSortSelect}
-          onClose={closeMobileSortSheet}
-        />
-        <DesktopFilterDrawer
-          open={desktopFilterOpen}
-          selectedSort={selectedSort}
-          activeFilterLabel={finalActiveFilterLabel}
-          hasActiveFilter={hasActiveFilter}
-          onSelectSort={handleSortSelect}
-          onClearAll={clearAll}
-          onClose={closeDesktopFilterDrawer}
-        />
+  function selectCategory(category:Category|null) {
+    if(!category){setActiveParentId(null);setActiveChildId(null);}
+    else {
+      const root=category.parent_ids?.[0] ?? category.id;
+      setActiveParentId(root);
+      setActiveChildId(root===category.id?null:category.id);
+    }
+    close();
+  }
+  const canClear=Boolean(activeChildId||activeParentId||selectedSort!=="newest");
+  return <>
+    <div className="fertini-filter-bar" dir="rtl">
+      <div className="fertini-filter-bar__label">
+        <span dir="ltr" lang="en">THE FRAGRANCE INDEX</span>
+        <strong>{categoryText}</strong>
       </div>
-    </section>
-  );
+      <div className="fertini-filter-bar__actions">
+        <button type="button" aria-expanded={panel==="categories"} onClick={event=>open(event,"categories")}>
+          <SlidersHorizontal size={17} strokeWidth={1.35}/>
+          <span>دسته‌بندی</span><ChevronDown size={15} strokeWidth={1.3}/>
+        </button>
+        <button type="button" aria-expanded={panel==="sort"} onClick={event=>open(event,"sort")}>
+          <span>{sortText}</span><ChevronDown size={15} strokeWidth={1.3}/>
+        </button>
+        {canClear&&<button type="button" className="fertini-filter-bar__reset" onClick={()=>{setActiveParentId(null);setActiveChildId(null);onSortChange("newest");}}>
+          پاک‌کردن فیلترها <X size={13} strokeWidth={1.4}/>
+        </button>}
+      </div>
+    </div>
+    {loadingCategories&&<div className="fertini-filter-bar__loading" role="status">در حال آماده‌سازی دسته‌بندی‌ها…</div>}
+    {panel && <div className="fertini-filter-overlay" role="dialog" aria-modal="true" aria-label={panel==="sort"?"مرتب‌سازی عطرها":"دسته‌بندی عطرها"}>
+      <button type="button" className="fertini-filter-overlay__backdrop" aria-label="بستن پنجره فیلتر" onClick={close} tabIndex={-1}/>
+      <section className="fertini-filter-panel" dir="rtl">
+        <header className="fertini-filter-panel__head">
+          <div><span lang="en" dir="ltr">FERTINI / CURATION</span><h2>{panel==="sort"?"مرتب‌سازی":"خانواده‌های رایحه"}</h2></div>
+          <button className="fertini-filter-panel__close" type="button" onClick={close} aria-label="بستن"><X size={21} strokeWidth={1.2}/></button>
+        </header>
+        {panel==="categories" && <>
+          <label className="fertini-filter-panel__search"><Search size={19} strokeWidth={1.2}/>
+            <input ref={firstFocusRef} type="search" placeholder="جستجو در دسته‌بندی‌ها" value={search}
+              onChange={event=>setSearch(event.target.value)} aria-label="جستجوی دسته‌بندی" /></label>
+          <div className="fertini-filter-panel__options">
+            <button type="button" className={!activeParentId?"is-active":""} onClick={()=>selectCategory(null)}>
+              <span>همهٔ عطرها</span>{!activeParentId&&<Check size={17} strokeWidth={1.4}/>}
+            </button>
+            {visibleCategories.length ? visibleCategories.map(category=>
+              <button type="button" key={category.id}
+                className={"fertini-filter-panel__category "+((activeChildId??activeParentId)===category.id?"is-active":"")}
+                onClick={()=>selectCategory(category)}>
+                <span className={category.parent_ids?.length?"is-child":""}>
+                  {category.parent_ids?.length>0&&<small>{category.parent_names?.join(" / ")} / </small>}
+                  {category.name}
+                </span>
+                {(activeChildId??activeParentId)===category.id&&<Check size={17} strokeWidth={1.4}/>}
+              </button>) : <p>دسته‌ای با این نام پیدا نشد.</p>}
+          </div>
+        </>}
+        {panel==="sort" && <div className="fertini-filter-panel__options">
+          {sorts.map((sort,index)=><button type="button" key={sort.value} autoFocus={index===0}
+            className={selectedSort===sort.value?"is-active":""}
+            onClick={()=>{onSortChange(sort.value);close();}}>
+            <span>{sort.label}<small>{sort.helper}</small></span>
+            {selectedSort===sort.value&&<Check size={17} strokeWidth={1.4}/>}
+          </button>)}
+        </div>}
+        <p className="fertini-filter-panel__foot">انتخاب شما مستقیماً در مجموعهٔ محصولات اعمال می‌شود.</p>
+      </section>
+    </div>}
+  </>;
 }
