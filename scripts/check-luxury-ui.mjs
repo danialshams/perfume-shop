@@ -1,0 +1,34 @@
+import { readFileSync } from "node:fs";
+import assert from "node:assert/strict";
+
+const read = path => readFileSync(path, "utf8");
+const shell = read("components/HomeWrapper/home-page-shell.tsx");
+const home = read("components/home-sections/CinematicStorefront.tsx");
+const shop = read("components/HomeProductsPage/LuxuryProductsView.tsx");
+const layout = read("app/layout.tsx");
+const css = read("app/quiet-luxury.css");
+const nav = read("components/NavbarComponents/navbar.data.ts");
+const product = read("app/products/[id]/page.tsx");
+const card = read("components/HomeProductsComponnents/MobileProductCard.tsx");
+
+assert.ok(shell.includes("CinematicStorefront"), "Homepage must mount cinematic design");
+assert.ok(shell.includes("CinematicFooter"), "Homepage must include dedicated footer");
+assert.ok(!shell.includes("<InitialLoader"), "Long initial loader must not obstruct content");
+assert.ok(!layout.includes("<BackgroundMusic"), "Global autoplay audio must not ship");
+assert.ok(!layout.includes("FERTINI"), "Legacy brand must not appear in new layout");
+assert.ok(home.includes('id="collection"'), "Collection anchor required");
+assert.ok(home.includes("/api/v1/products?limit=4"), "Live products must still be read");
+assert.ok(home.includes("loaded") && home.includes("products.length > 0"), "Catalog loading fallback must exist");
+assert.ok(!home.includes("میلیون تومان"), "Do not invent product prices");
+assert.ok(shop.includes("ProductsFilterBar") && shop.includes("ProductsSection"), "Existing product controls must remain");
+assert.ok(!shop.includes('document.body.style.overflow'), "Mobile body scroll hijack must be removed");
+assert.ok(!shop.includes('transform 2s'), "Slow two-second content transition must be removed");
+assert.ok(product.includes("<CinematicFooter"), "Product detail must share new footer");
+assert.ok(card.includes("تومان"), "Product cards must present real price units");
+assert.ok(!nav.includes('href: "/about"') && !nav.includes('href: "/contact"'), "Do not link to unimplemented pages");
+assert.ok(css.includes("prefers-reduced-motion:reduce"), "Reduced motion support required");
+assert.ok(css.includes("@media(max-width:600px)") && css.includes("@media(max-width:900px)"), "Responsive layout required");
+assert.ok(css.includes(".ql-container") && css.includes("clamp("), "Editorial spacing system required");
+const remote = read("next.config.ts");
+assert.ok(remote.includes("images.unsplash.com"), "Editorial photos host must be allowed");
+console.log("Quiet Luxury visual regression checks passed.");

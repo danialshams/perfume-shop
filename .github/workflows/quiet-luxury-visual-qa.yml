@@ -1,0 +1,27 @@
+name: Quiet Luxury visual QA
+on:
+  push:
+    branches:
+      - "feature/quiet-luxury-cinematic-20261105"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Typecheck and lint
+        run: npm run lint
+      - name: Production build
+        run: npm run build
+      - name: Cinematic storefront regression
+        run: node scripts/check-luxury-ui.mjs
