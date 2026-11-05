@@ -10,7 +10,7 @@ import { ContentContainer, PageShell } from "@/components/cart/PageShell";
 import ViewportSection from "@/components/cart/ViewportSection";
 import { useViewportListReveal } from "@/components/cart/cart.hooks";
 import { getErrorText } from "@/components/cart/cart.utils";
-import LuxuryFooter from "@/components/home-sections/LuxuryFooter";
+import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import { useCart } from "@/components/hooks/useCart";
 import { CartItem } from "@/server/types/cart";
@@ -115,7 +115,7 @@ export default function CartClient() {
                     <ErrorBanner error={error} />
 
                     {/* â”€â”€ Ú†ÛŒØ¯Ù…Ø§Ù† Ø¯Ùˆ Ø³ØªÙˆÙ†Ù‡ Ø¯Ø³Ú©ØªØ§Ù¾ â”€â”€ */}
-                    <div className="lg:grid lg:grid-cols-[1fr_320px] lg:items-start lg:gap-12 bg-[#F8F8F8]">
+                    <div className="lg:grid lg:grid-cols-[1fr_320px] lg:items-start lg:gap-12 bg-[#f5f2ed]">
                         {/* â”€â”€ Ø¢ÛŒØªÙ…â€ŒÙ‡Ø§ÛŒ Ø³Ø¨Ø¯ Ø®Ø±ÛŒØ¯ (Ø¯Ø³Ú©ØªØ§Ù¾: Ø³Ù…Øª Ø±Ø§Ø³Øª) â”€â”€ */}
                         <section
                             ref={listRevealRef}
@@ -169,7 +169,7 @@ export default function CartClient() {
                 subtotal={subtotal}
             />
 
-            <LuxuryFooter />
+            <CinematicFooter />
         </>
     );
 }

@@ -3,7 +3,7 @@
 import { FormEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import LuxuryNavbar from "@/components/home-sections/navbar";
-import LuxuryFooter from "@/components/home-sections/LuxuryFooter";
+import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import { useCart } from "@/components/hooks/useCart";
 
 type FormData = {
@@ -697,7 +697,7 @@ function CheckoutPageContent() {
     return (
       <>
         <LuxuryNavbar />
-        <main className="min-h-screen bg-white">
+        <main className="min-h-screen bg-[#f5f2ed]">
           <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
             <div className="animate-pulse space-y-6">
               <div className="h-6 w-44 rounded bg-[#eeeae4]" />
@@ -720,7 +720,7 @@ function CheckoutPageContent() {
             </div>
           </div>
         </main>
-        <LuxuryFooter />
+        <CinematicFooter />
       </>
     );
   }
@@ -729,7 +729,7 @@ function CheckoutPageContent() {
     return (
       <>
         <LuxuryNavbar />
-        <main className="min-h-screen bg-white">
+        <main className="min-h-screen bg-[#f5f2ed]">
           <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 lg:px-8">
             <h1 className="text-[22px] font-light tracking-[-0.04em] text-[#2f2d29]">
               سبد خرید شما خالی است
@@ -746,7 +746,7 @@ function CheckoutPageContent() {
             </button>
           </div>
         </main>
-        <LuxuryFooter />
+        <CinematicFooter />
       </>
     );
   }
@@ -773,7 +773,7 @@ function CheckoutPageContent() {
         </div>
       )}
 
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen bg-[#f5f2ed]">
         <style jsx global>{`
           .luxury-checkout-input:-webkit-autofill,
           .luxury-checkout-input:-webkit-autofill:hover,
@@ -1244,7 +1244,7 @@ function CheckoutPageContent() {
         </div>
       </main>
 
-      <LuxuryFooter />
+      <CinematicFooter />
     </>
   );
 }

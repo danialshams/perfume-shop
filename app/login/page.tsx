@@ -11,7 +11,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import LuxuryNavbar from "@/components/home-sections/navbar";
-import LuxuryFooter from "@/components/home-sections/LuxuryFooter";
+import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 
 /* ------------------------------------------------------------------ */
 /*  Design tokens                                                      */
@@ -1250,7 +1250,7 @@ function RegisterView() {
                     </form>
                 </div>
             </main>
-            <LuxuryFooter />
+            <CinematicFooter />
         </>
     );
 }
