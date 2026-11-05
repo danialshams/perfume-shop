@@ -68,7 +68,7 @@ export default function CinematicStorefront() {
         <div className="ql-hero-visual">
           <Image unoptimized priority fill sizes="(min-width: 960px) 58vw, 100vw" src={photo.hero} alt="شیشه عطر در نور سینمایی و فضای تیره" className="ql-hero-image" />
           <div className="ql-image-shade" aria-hidden="true" />
-          <div className="ql-visual-stamp" lang="en" dir="ltr"><span>01 / 03</span><span>THE FRAGRANCE EDIT</span></div>
+          <div className="ql-visual-stamp" lang="en" dir="ltr"><span>EDITION 01</span><span>THE FRAGRANCE EDIT</span></div>
           <div className="ql-visual-bottom" lang="en" dir="ltr">A WORLD OF SCENT</div>
         </div>
         <div className="ql-hero-copy">
@@ -77,7 +77,7 @@ export default function CinematicStorefront() {
           <h1>رایحه‌ای که<br/><em>می‌ماند.</em></h1>
           <p>مجموعه‌ای دست‌چین از عطرهایی که به‌جای جلب توجه، شخصیت شما را تعریف می‌کنند.</p>
           <Link href="/products" className="ql-link-primary">کشف کالکشن <ArrowLeft size={18} strokeWidth={1.2}/></Link>
-          <div className="ql-hero-pagination" aria-hidden="true"><span className="ql-pagination-active"/><span/><span/></div>
+          <div className="ql-hero-pagination" aria-hidden="true"><span className="ql-pagination-active"/></div>
           <span className="ql-hero-index" lang="en" dir="ltr">THE ART OF SUBTLETY — 2026</span>
         </div>
       </section>

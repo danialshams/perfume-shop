@@ -9,7 +9,7 @@ import DesktopFilterDrawer from "./DesktopFilterDrawer";
 import FilterBarSkeleton from "./FilterBarSkeleton";
 import MobileCategoriesSheet from "./MobileCategoriesSheet";
 import MobileFilterHeader from "./MobileFilterHeader";
-import { type SortOption } from "./MobileSortSheet";
+import MobileSortSheet, { type SortOption } from "./MobileSortSheet";
 
 type Category = {
   id: number;
@@ -33,7 +33,9 @@ type Props = {
   setActiveParentId: (id: number | null) => void;
   setActiveChildId: (id: number | null) => void;
   loadingCategories: boolean;
-  activeFilterLabel?: string | null; // پراپ اضافه شده برای دریافت نام گروه بویایی از والد
+  activeFilterLabel?: string | null;
+  selectedSort: SortOption;
+  onSortChange: (next: SortOption) => void;
 };
 
 const springSoft = {
@@ -52,7 +54,9 @@ export default function ProductsFilterBar({
   setActiveParentId,
   setActiveChildId,
   loadingCategories = false,
-  activeFilterLabel: scentFamilyFilterLabel, // تغییر نام متغیر محلی برای عدم تداخل
+  activeFilterLabel: scentFamilyFilterLabel,
+  selectedSort,
+  onSortChange,
 }: Props) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const mobilePathResetTimerRef = useRef<number | null>(
@@ -65,7 +69,6 @@ export default function ProductsFilterBar({
   const [desktopCategoriesOpen, setDesktopCategoriesOpen] = useState(false);
   const [desktopFilterOpen, setDesktopFilterOpen] = useState(false);
 
-  const [selectedSort, setSelectedSort] = useState<SortOption>("newest");
   const [mobileCategoryPath, setMobileCategoryPath] = useState<number[]>([]);
   const [desktopCategoryPath, setDesktopCategoryPath] = useState<number[]>([]);
 
@@ -275,6 +278,7 @@ export default function ProductsFilterBar({
   const clearAll = () => {
     setActiveParentId(null);
     setActiveChildId(null);
+    onSortChange("newest");
     closeAllOverlays();
   };
 
@@ -309,7 +313,7 @@ export default function ProductsFilterBar({
   };
 
   const handleSortSelect = (value: SortOption) => {
-    setSelectedSort(value);
+    onSortChange(value);
     closeMobileSortSheet();
     closeDesktopFilterDrawer();
   };
@@ -433,6 +437,12 @@ export default function ProductsFilterBar({
           handleDesktopCategorySelect={handleDesktopCategorySelect}
         />
 
+        <MobileSortSheet
+          open={mobileSortOpen}
+          selectedSort={selectedSort}
+          onSelectSort={handleSortSelect}
+          onClose={closeMobileSortSheet}
+        />
         <DesktopFilterDrawer
           open={desktopFilterOpen}
           selectedSort={selectedSort}
