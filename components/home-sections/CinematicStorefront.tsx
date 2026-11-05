@@ -7,12 +7,12 @@ import { ArrowLeft, ArrowUpLeft, MoveLeft } from "lucide-react";
 import { parseNumericPrice } from "@/lib/product";
 
 const photo = {
-  hero: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1800&q=85",
-  portrait: "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=1200&q=83",
-  dark: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1400&q=85",
-  amber: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1100&q=83",
-  floral: "https://images.unsplash.com/photo-1563170351-be82bc888aa4?auto=format&fit=crop&w=1100&q=83",
-  woody: "https://images.unsplash.com/photo-1588405748880-12d1d2a59db9?auto=format&fit=crop&w=1100&q=83",
+  hero: "/maison/hero.jpg",
+  portrait: "/maison/portrait.jpg",
+  dark: "/maison/dark.jpg",
+  amber: "/maison/amber.jpg",
+  floral: "/maison/floral.jpg",
+  woody: "/maison/woody.jpg",
 };
 
 type PerfumePreview = {
