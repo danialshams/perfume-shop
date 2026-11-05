@@ -9,18 +9,18 @@ export default function OrderSummary({
     subtotal,
 }: SummaryProps) {
     return (
-        <aside className="cart-summary rounded-[2px] border border-[#E8E8E8] bg-white px-8 py-9">
-            <h2 className="text-center text-[14px] font-normal tracking-[0.08em] text-[#1A1A1A]">
+        <aside className="cart-summary rounded-[0px] border border-[#ded6cb] bg-[#fbfaf7] px-8 py-9">
+            <h2 className="text-center text-[14px] font-normal tracking-[0.08em] text-[#302d29]">
                 خلاصه سفارش
             </h2>
 
             <div className="mt-8 space-y-5">
                 <SummaryRow label="تعداد کالا" value={formatPrice(totalQuantity)} />
                 
-                <div className="my-6 h-[0.5px] bg-[#ECECEC]" />
+                <div className="my-6 h-[0.5px] bg-[#ded6cb]" />
 
                 <div className="flex items-end justify-between gap-4">
-                    <span className="text-[13px] font-light tracking-[0.04em] text-[#6B6B6B]">
+                    <span className="text-[13px] font-light tracking-[0.04em] text-[#81766b]">
                         مبلغ قابل پرداخت
                     </span>
 
@@ -28,7 +28,7 @@ export default function OrderSummary({
                         <span className="text-[20px] font-light tracking-[-0.01em] text-[#1A1A1A]">
                             {formatPrice(subtotal)}
                         </span>
-                        <span className="mr-2 text-[10px] font-light text-[#9A9A9A]">t</span>
+                        <span className="mr-2 text-[10px] font-light text-[#82766a]">تومان</span>
                     </div>
                 </div>
 

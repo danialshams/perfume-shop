@@ -4,94 +4,61 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { useReducedMotion } from "framer-motion";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
-
-import LuxuryFooter from "@/components/home-sections/LuxuryFooter";
 import LuxuryNavbar from "@/components/home-sections/navbar";
+import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import { PrimaryButton } from "./Buttons";
-import SectionLabel from "./SectionLabel";
 
 export default function EmptyCart() {
-    const rootRef = useRef<HTMLDivElement | null>(null);
-    const iconRef = useRef<HTMLDivElement | null>(null);
-    const prefersReducedMotion = useReducedMotion();
+  const rootRef = useRef<HTMLElement | null>(null);
+  const reducedMotion = useReducedMotion();
 
-    useEffect(() => {
-        if (prefersReducedMotion) return;
+  useEffect(() => {
+    if (reducedMotion || !rootRef.current) return;
+    const scope = gsap.context(() => {
+      gsap.fromTo(".ql-cart-empty-reveal", {
+        y: 22, opacity: 0,
+      }, {
+        y: 0, opacity: 1, duration: 0.95, stagger: 0.12,
+        ease: "power2.out", clearProps: "transform,opacity",
+      });
+    }, rootRef);
+    return () => scope.revert();
+  }, [reducedMotion]);
 
-        const ctx = gsap.context(() => {
-            gsap.fromTo(
-                ".empty-el",
-                { y: 18, autoAlpha: 0, filter: "blur(8px)" },
-                {
-                    y: 0,
-                    autoAlpha: 1,
-                    filter: "blur(0px)",
-                    duration: 0.8,
-                    stagger: 0.08,
-                    ease: "power3.out",
-                    clearProps: "transform,opacity,visibility,filter",
-                }
-            );
-
-            gsap.to(iconRef.current, {
-                y: -7,
-                duration: 2.2,
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut",
-            });
-        }, rootRef);
-
-        return () => ctx.revert();
-    }, [prefersReducedMotion]);
-
-    return (
-        <>
-            <LuxuryNavbar />
-
-            <main
-                ref={rootRef}
-                className="relative min-h-[100svh] overflow-hidden سبد خرید شما خالی است
- px-4 py-8 sm:px-6 md:py-14 lg:px-8"
-            >
-                <section className="relative mx-auto flex min-h-[calc(100svh-220px)] max-w-3xl items-center justify-center">
-                    <div className="w-full rounded-[34px] border border-[#E4EAF1]/90 سبد خرید شما خالی است
- px-6 py-14 text-center backdrop-blur-2xl sm:px-8 md:px-12 md:py-16">
-                        <div
-                            ref={iconRef}
-                            className="empty-el mx-auto mb-7 flex h-24 w-24 items-center justify-center rounded-[30px] border border-[#E6EDF5] سبد خرید شما خالی است
- text-[#17345F]"
-                        >
-                            <ShoppingBag size={38} strokeWidth={1.9} />
-                        </div>
-
-                        <div className="empty-el">
-                            <SectionLabel>YOUR CART</SectionLabel>
-                        </div>
-
-                        <h1 className="empty-el mt-3 text-2xl font-semibold tracking-[-0.04em] text-[#172033] md:text-4xl">
-                            سبد خرید شما خالی است
-                        </h1>
-
-                        <p className="empty-el mx-auto mt-4 max-w-md text-sm leading-8 text-[#6B7280] md:text-[15px]">
-                            هنوز محصولی انتخاب نکرده‌اید. محصولات را بررسی کنید و آیتم‌های موردنظرتان را به سبد اضافه کنید.
-                        </p>
-
-                        <div className="empty-el mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                            <PrimaryButton href="/products" className="px-7">
-                                مشاهده محصولات
-                                <ArrowLeft size={18} />
-                            </PrimaryButton>
-
-                            <div className="inline-flex h-12 items-center justify-center rounded-full border border-[#E4EAF1] bg-white/70 px-5 text-sm text-[#6B7280]">
-                                تجربه خریدی ساده، لوکس و مطمئن
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </main>
-
-            <LuxuryFooter />
-        </>
-    );
+  return (
+    <>
+      <LuxuryNavbar />
+      <section
+        ref={rootRef}
+        aria-labelledby="empty-cart-title"
+        className="ql-cart-empty ql-container relative flex min-h-[min(720px,80svh)] flex-col justify-center py-24 sm:py-32"
+      >
+        <div className="mx-auto w-full max-w-[680px] text-center">
+          <div className="ql-cart-empty-reveal mb-10 flex items-center justify-between gap-4 border-b border-[#d8cebf] pb-5 text-[10px] tracking-[0.18em] text-[#98856d]" lang="en" dir="ltr">
+            <span>MAISON / YOUR SELECTION</span>
+            <span>00 — ITEMS</span>
+          </div>
+          <div className="ql-cart-empty-reveal mx-auto mb-9 flex h-16 w-16 items-center justify-center border border-[#d8cebf] text-[#9b8263]">
+            <ShoppingBag size={27} strokeWidth={1.1} aria-hidden="true" />
+          </div>
+          <h1 id="empty-cart-title" className="ql-cart-empty-reveal text-[clamp(35px,6vw,65px)] font-light leading-[1.6] tracking-[-0.055em] text-[#302d29]">
+            هنوز رایحه‌ای انتخاب نکرده‌اید.
+          </h1>
+          <p className="ql-cart-empty-reveal mx-auto mt-5 max-w-[450px] text-[13px] font-light leading-[2.7] text-[#82766a] sm:text-[15px]">
+            مجموعه را کشف کنید؛ عطرهایی که ارزش مکث‌کردن و انتخاب دقیق را دارند.
+          </p>
+          <div className="ql-cart-empty-reveal mt-10 flex justify-center">
+            <PrimaryButton href="/products" className="min-w-[210px] gap-8 !rounded-none !bg-[#302d29] !px-7 !py-7 !tracking-normal hover:!bg-[#6a5641]">
+              کشف مجموعه عطرها
+              <ArrowLeft size={17} strokeWidth={1.2} aria-hidden="true" />
+            </PrimaryButton>
+          </div>
+          <div className="ql-cart-empty-reveal mt-16 border-t border-[#d8cebf] pt-5 text-[10px] tracking-[0.16em] text-[#b09f8a]" lang="en" dir="ltr">
+            A PERSONAL JOURNEY THROUGH SCENT
+          </div>
+        </div>
+      </section>
+      <CinematicFooter />
+    </>
+  );
 }

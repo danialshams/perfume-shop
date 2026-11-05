@@ -1,13 +1,5 @@
-import React from "react";
+import type { ReactNode } from "react";
 
-export default function SectionLabel({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
-    return (
-        <p className="text-[11px] font-medium tracking-[0.28em] text-[#8AA0BC]">
-            {children}
-        </p>
-    );
+export default function SectionLabel({ children }: { children: ReactNode }) {
+  return <p className="text-[10px] font-normal tracking-[0.24em] text-[#9b8263]">{children}</p>;
 }
