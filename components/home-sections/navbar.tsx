@@ -9,7 +9,7 @@ import { useCartCount } from "@/context/CartCountContext";
 import { useProductSearch } from "@/components/hooks/useProductSearch";
 
 const menuLinks = [
-  { href: "/", label: "صفحهٔ اصلی", sub: "THE MAISON" },
+  { href: "/", label: "صفحهٔ اصلی", sub: "FERTINI / HOME" },
   { href: "/products", label: "مجموعه عطرها", sub: "THE COLLECTION" },
   { href: "/journal", label: "ژورنال رایحه", sub: "THE JOURNAL" },
   { href: "/about", label: "دربارهٔ ما", sub: "OUR STORY" },
@@ -112,8 +112,8 @@ export default function LuxuryNavbar() {
               <Link href="/journal" aria-current={pathname?.startsWith("/journal") ? "page" : undefined}>ژورنال</Link>
             </nav>
           </div>
-          <Link href="/" className="maison-header__brand" aria-label="MAISON — صفحه اصلی" dir="ltr">
-            <strong>MAISON</strong><span>THE FRAGRANCE HOUSE</span>
+          <Link href="/" className="maison-header__brand" aria-label="FERTINI — صفحه اصلی" dir="ltr">
+            <strong>FERTINI</strong><span>THE FRAGRANCE HOUSE</span>
           </Link>
           <div className="maison-header__left">
             <button type="button" className="maison-icon-button" aria-label="جستجوی عطرها" aria-expanded={searchOpen} onClick={openSearch}><Search size={20} strokeWidth={1.3} /></button>
@@ -131,7 +131,7 @@ export default function LuxuryNavbar() {
           <button type="button" className="maison-overlay__backdrop" tabIndex={-1} aria-label="بستن منو" onClick={dismiss}/>
           <div className="maison-menu" ref={menuPanelRef}>
             <div className="maison-menu__head">
-              <span className="maison-overline" lang="en" dir="ltr">MAISON / INDEX</span>
+              <span className="maison-overline" lang="en" dir="ltr">FERTINI / INDEX</span>
               <button type="button" className="maison-icon-button" onClick={dismiss} aria-label="بستن منو"><X size={23} strokeWidth={1.2}/></button>
             </div>
             <nav aria-label="فهرست کامل سایت" className="maison-menu__links">
@@ -143,7 +143,7 @@ export default function LuxuryNavbar() {
                 </Link>
               ))}
             </nav>
-            <p className="maison-menu__foot" lang="en" dir="ltr">A QUIET STUDY OF SCENT — MAISON 2026</p>
+            <p className="maison-menu__foot" lang="en" dir="ltr">A QUIET STUDY OF SCENT — FERTINI 2026</p>
           </div>
         </div>
       )}
@@ -171,7 +171,7 @@ export default function LuxuryNavbar() {
               {!loading && !error && products.map((product, index) => (
                 <Link key={product.id} href={"/products/" + product.id} onClick={dismiss} className="maison-search__result">
                   <span lang="en" dir="ltr" className="maison-search__result-index">{String(index+1).padStart(2,"0")}</span>
-                  <span className="maison-search__result-name">{product.name}<small>{product.volumesMl?.length ? product.volumesMl.join(" / ") + " ml" : "MAISON COLLECTION"}</small></span>
+                  <span className="maison-search__result-name">{product.name}<small>{product.volumesMl?.length ? product.volumesMl.join(" / ") + " ml" : "FERTINI COLLECTION"}</small></span>
                   <ArrowLeft size={17} strokeWidth={1.2}/>
                 </Link>
               ))}

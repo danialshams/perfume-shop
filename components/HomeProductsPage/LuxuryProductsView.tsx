@@ -52,7 +52,7 @@ export default function LuxuryProductsView() {
     <LuxuryNavbar />
     <main className="ql-shop-main" id="main-content">
       <div className="ql-container ql-shop-heading">
-        <span className="ql-overline" lang="en" dir="ltr">MAISON — ALL FRAGRANCES</span>
+        <span className="ql-overline" lang="en" dir="ltr">FERTINI — ALL FRAGRANCES</span>
         <h1>{activeScentFamily?.name || "کالکشن عطرها"}</h1>
         <p>دنیایی از رایحه‌ها برای کشف‌کردن. بر اساس سلیقه‌تان جستجو کنید و جزئیات هر عطر را ببینید.</p>
       </div>
