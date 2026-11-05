@@ -701,24 +701,24 @@ function CheckoutPageContent() {
     return (
       <>
         <LuxuryNavbar />
-        <main className="maison-checkout min-h-screen bg-[#f5f2ed]">
+        <main className="maison-checkout min-h-screen bg-[#f3f5f1]">
           <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
             <div className="animate-pulse space-y-6">
-              <div className="h-6 w-44 rounded bg-[#eeeae4]" />
+              <div className="h-6 w-44 rounded-none bg-[#e1e7e1]" />
               <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
-                <div className="space-y-4 rounded-lg border border-black/[0.055] bg-white p-6">
+                <div className="space-y-4 rounded-none border border-black/[0.055] bg-[#eef2ed] p-6">
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="h-10 rounded bg-[#eeeae4]" />
-                    <div className="h-10 rounded bg-[#eeeae4]" />
-                    <div className="h-10 rounded bg-[#eeeae4]" />
-                    <div className="h-10 rounded bg-[#eeeae4]" />
-                    <div className="h-10 rounded bg-[#eeeae4]" />
-                    <div className="h-10 rounded bg-[#eeeae4]" />
-                    <div className="h-28 rounded bg-[#eeeae4] sm:col-span-2" />
+                    <div className="h-10 rounded-none bg-[#e1e7e1]" />
+                    <div className="h-10 rounded-none bg-[#e1e7e1]" />
+                    <div className="h-10 rounded-none bg-[#e1e7e1]" />
+                    <div className="h-10 rounded-none bg-[#e1e7e1]" />
+                    <div className="h-10 rounded-none bg-[#e1e7e1]" />
+                    <div className="h-10 rounded-none bg-[#e1e7e1]" />
+                    <div className="h-28 rounded-none bg-[#e1e7e1] sm:col-span-2" />
                   </div>
                 </div>
-                <div className="rounded-lg border border-black/[0.055] bg-white p-6">
-                  <div className="h-64 rounded bg-[#eeeae4]" />
+                <div className="rounded-none border border-black/[0.055] bg-[#eef2ed] p-6">
+                  <div className="h-64 rounded-none bg-[#e1e7e1]" />
                 </div>
               </div>
             </div>

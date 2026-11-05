@@ -139,7 +139,7 @@ export default function LuxuryNavbar() {
                 <Link key={item.href} href={item.href} onClick={dismiss} className="maison-menu-entry">
                   <span className="maison-menu__number" lang="en">{String(index+1).padStart(2,"0")}</span>
                   <span className="maison-menu__text">{item.label}<small lang="en" dir="ltr">{item.sub}</small></span>
-                  <ArrowUpLeft size={21} strokeWidth={1}/>
+                  <span className="fertini-menu-mark" aria-hidden="true" />
                 </Link>
               ))}
             </nav>

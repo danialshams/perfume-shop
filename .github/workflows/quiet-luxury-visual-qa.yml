@@ -27,7 +27,7 @@ jobs:
       - name: Verify payment safety and secret hygiene
         run: node scripts/check-commerce-safety.mjs
       - name: Lint visual storefront
-        run: npx eslint app/layout.tsx app/products/page.tsx app/cart/page.tsx components/home-sections/CinematicStorefront.tsx components/home-sections/CinematicPurchasePanel.tsx components/HomeWrapper/home-page-shell.tsx components/HomeProductsPage/LuxuryProductsView.tsx components/NavbarComponents/BrandLogo.tsx
+        run: npx eslint app/layout.tsx app/products/page.tsx app/cart/page.tsx components/home-sections/CinematicStorefront.tsx components/home-sections/CinematicPurchasePanel.tsx components/HomeWrapper/home-page-shell.tsx components/HomeProductsPage/LuxuryProductsView.tsx components/NavbarComponents/BrandLogo.tsx components/home-sections/navbar.tsx components/maison/MaisonIntro.tsx components/maison/MaisonAmbientSound.tsx components/HomeProductsComponnents/ProductsFilterBar.tsx components/HomeProductsComponnents/ProductsLoadingState.tsx app/demo/fragrance/page.tsx
       - name: Typecheck the complete project
         run: npx tsc --noEmit
       - name: Strict production build (no TypeScript bypass)

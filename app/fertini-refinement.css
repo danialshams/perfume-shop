@@ -78,3 +78,16 @@
 @media(max-width:850px){.fertini-hero{grid-template-columns:1fr;min-height:0}.fertini-hero__gallery{min-height:clamp(360px,54svh,650px)}.fertini-hero__text{min-height:440px;padding:48px 40px 95px}.fertini-story{grid-template-columns:1fr;gap:54px;padding-block:125px}.fertini-story__image{aspect-ratio:4/5;min-height:0;max-width:610px}.fertini-notes__grid{grid-template-columns:repeat(2,1fr)}.fertini-notes__card:nth-child(3){margin-top:0}.fertini-edit__grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.fertini-hero__gallery{min-height:48svh}.fertini-hero__caption{left:21px;bottom:18px}.fertini-hero__text{min-height:0;padding:50px 25px 90px}.fertini-hero__copy h1{font-size:clamp(45px,11vw,65px);margin:23px 0 13px}.fertini-hero__copy p{font-size:12px;margin-bottom:28px}.fertini-hero__controls{bottom:16px;right:25px;left:25px}.fertini-story{padding-block:102px 145px;gap:39px}.fertini-story__image{aspect-ratio:4/5}.fertini-story__copy h2,.fertini-notes__heading h2,.fertini-edit__heading h2{font-size:42px}.fertini-notes{padding-bottom:125px}.fertini-notes__heading{margin-bottom:49px}.fertini-notes__grid{grid-template-columns:1fr;gap:36px}.fertini-notes__card:nth-child(2),.fertini-notes__card:nth-child(3){margin-top:0}.fertini-notes__image{aspect-ratio:1.06/1}.fertini-notes__card--square .fertini-notes__image{aspect-ratio:1/1}.fertini-notes__caption{padding-top:17px}.fertini-edit{padding-bottom:155px}.fertini-edit__heading{margin-bottom:37px}.fertini-edit__heading>div{align-items:start;flex-direction:column;gap:10px}.fertini-edit__grid{gap:28px 14px}.fertini-edit__label h3{font-size:12px}.fertini-edit__label p{font-size:10px}.fertini-edit__journal{flex-direction:column;align-items:flex-start;gap:10px}.fertini-footer .maison-footer__wordmark{font-size:clamp(67px,19vw,100px)}.fertini-intro .maison-intro__brand{font-size:clamp(58px,15vw,85px)}}
 @media(prefers-reduced-motion:reduce){.fertini-home *, .fertini-footer *{animation:none!important;transition-duration:.001ms!important}}
+
+/* Restrained gallery overlay: quiet typography, subtle brand watermark and tactile focus. */
+.maison-menu{position:relative;background:rgba(232,237,231,.97);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);overflow-x:hidden}
+.maison-menu:after{content:"FERTINI";position:absolute;bottom:95px;left:-35px;font:300 clamp(80px,12vw,160px)/1 "Cormorant Garamond",Georgia,serif;letter-spacing:.02em;color:rgba(53,69,57,.045);pointer-events:none;z-index:0}
+.maison-menu__head,.maison-menu__links,.maison-menu__foot{position:relative;z-index:2}
+.maison-menu-entry{grid-template-columns:42px 1fr 35px;position:relative;border-bottom:1px solid rgba(50,67,53,.12)}
+.maison-menu-entry:hover{color:#27362c}
+.fertini-menu-mark{width:16px;height:1px;background:#829187;justify-self:center;transition:width .45s ease,transform .45s ease}
+.maison-menu-entry:hover .fertini-menu-mark{width:27px;transform:translateX(-5px);background:#2a3b30}
+.maison-menu__text small{letter-spacing:.13em}
+.maison-overlay__backdrop{background:rgba(16,25,18,.46);backdrop-filter:blur(11px)}
+.maison-search{background:rgba(241,244,239,.94);backdrop-filter:blur(28px)}
+@media(max-width:600px){.maison-menu:after{font-size:90px;bottom:115px;left:-20px}.maison-menu-entry{min-height:86px}}
