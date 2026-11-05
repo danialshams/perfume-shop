@@ -76,45 +76,38 @@ function isAllowedAudioFile(file: File) {
 }
 
 export async function POST(request: NextRequest) {
-  console.log("===== /api/v1/uploads/products/voice CALLED =====");
 
   try {
     await requireAdmin(request);
-    console.log("requireAdmin passed");
+    if (process.env.NODE_ENV === "production") {
+      return errorResponse("آپلود فایل صوتی تا اتصال فضای ذخیره‌سازی دائمی فعال نیست.", 503);
+    }
 
     const formData = await request.formData();
-    console.log("formData keys:", Array.from(formData.keys()));
 
     const file = formData.get("file");
 
-    console.log("file raw value:", file);
-    console.log("file instanceof File:", file instanceof File);
 
     if (file instanceof File) {
-      console.log("file details:", {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-      });
+
     }
 
     if (!file || !(file instanceof File)) {
-      console.log("NO FILE or NOT instance of File -> 400");
+
       return errorResponse("فایل صوتی ارسال نشده است", 400);
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      console.log("FILE TOO LARGE:", file.size, ">", MAX_FILE_SIZE);
+
       return errorResponse("حجم فایل بیشتر از حد مجاز است", 400, {
         maxFileSize: MAX_FILE_SIZE,
       });
     }
 
     const { valid, extension } = isAllowedAudioFile(file);
-    console.log("isAllowedAudioFile result:", { valid, extension });
 
     if (!valid) {
-      console.log("INVALID AUDIO FILE EXT OR MIME -> 400");
+
       return errorResponse("فرمت فایل صوتی مجاز نیست", 400, {
         allowedExtensions: Array.from(ALLOWED_AUDIO_EXTENSIONS),
         mimeType: file.type || null,
@@ -134,25 +127,20 @@ export async function POST(request: NextRequest) {
     );
     const filePath = path.join(uploadDir, fileName);
 
-    console.log("uploadDir:", uploadDir);
-    console.log("filePath:", filePath);
 
     if (!existsSync(uploadDir)) {
-      console.log("uploadDir does NOT exist, creating...");
+
       await fs.mkdir(uploadDir, { recursive: true });
     } else {
-      console.log("uploadDir already exists");
+
     }
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    console.log("writing file...");
     await fs.writeFile(filePath, buffer);
-    console.log("file written successfully");
 
     const fileUrl = `/uploads/products/voices/${fileName}`;
-    console.log("final fileUrl:", fileUrl);
 
     return successResponse(
       {
@@ -167,10 +155,6 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("POST /api/v1/uploads/products/voice error:", error);
 
-    return errorResponse("آپلود فایل صوتی با خطا مواجه شد", 500, {
-      message: error?.message ?? null,
-      stack:
-        process.env.NODE_ENV === "development" ? (error?.stack ?? null) : null,
-    });
+    return errorResponse("آپلود فایل صوتی با خطا مواجه شد", 500);
   }
 }

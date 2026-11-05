@@ -15,3 +15,10 @@ const cart = read("components/hooks/useCart.ts");
 assert.match(cart, /return cart !== null && cart\.items\.length === 0/);
 assert.match(cart, /throw err;/);
 console.log("Commerce safety checks passed: no committed .env, sandbox disabled in production, cart errors propagate.");
+
+const database = read("lib/db.ts");
+assert.match(database, /function getPool\(\)/);
+assert.match(database, /new Proxy\(/);
+const upload = read("app/api/v1/uploads/products/route.ts");
+assert.match(upload, /process\.env\.NODE_ENV === "production"/);
+assert.match(upload, /503/);

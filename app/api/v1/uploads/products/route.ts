@@ -38,6 +38,9 @@ function getExtensionFromMimeType(mimeType: string) {
 export async function POST(request: NextRequest) {
   try {
     await requireAdmin(request);
+    if (process.env.NODE_ENV === "production") {
+      return errorResponse("آپلود تصویر تا اتصال فضای ذخیره‌سازی دائمی فعال نیست.", 503);
+    }
 
     const formData = await request.formData();
     const file = formData.get("file");
@@ -94,10 +97,6 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("POST /api/v1/uploads/products error:", error);
 
-    return errorResponse("آپلود تصویر با خطا مواجه شد", 500, {
-      message: error?.message ?? null,
-      stack:
-        process.env.NODE_ENV === "development" ? (error?.stack ?? null) : null,
-    });
+    return errorResponse("آپلود تصویر با خطا مواجه شد", 500);
   }
 }

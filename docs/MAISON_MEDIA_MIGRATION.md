@@ -13,3 +13,5 @@ For each real product, establish a verified replacement image (and image-use rig
 ## Release status
 
 The visual experiment is isolated on `feature/quiet-luxury-cinematic-v2-20261105`; the original source remains on `main` and on `backup/before-quiet-luxury-20261105`. Do not merge or deploy to production solely on the basis of screenshot and build checks: they cannot simulate live database content, checkout, shipping or payments. Verify final photography on real mobile/desktop devices and confirm production deployment health before closing the review.
+
+**Deployment caveat:** The administration upload routes are explicitly blocked on Vercel until object storage is provisioned. A real migration therefore needs a persistent bucket (e.g., Blob/S3), correct public URL management, and a test snapshot before media cleanup. Never rewrite historical product photos to unrelated perfume brands.

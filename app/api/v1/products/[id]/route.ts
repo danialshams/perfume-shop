@@ -203,10 +203,7 @@ export async function GET(_request: Request, context: Context) {
   } catch (error: unknown) {
     console.error("GET /api/v1/products/[id] error:", error);
 
-    const message =
-      error instanceof Error ? error.message : "Failed to fetch product";
-
-    return errorResponse(message, 400);
+    return errorResponse("Failed to fetch product", 500);
   }
 }
 
@@ -248,10 +245,7 @@ export async function PUT(request: NextRequest, context: Context) {
   } catch (error: any) {
     console.error("PUT /api/v1/products/[id] error:", error);
 
-    return errorResponse("Failed to update product", 500, {
-      message: error?.message ?? null,
-      stack: process.env.NODE_ENV === "development" ? error?.stack : null,
-    });
+    return errorResponse("Failed to update product", 500);
   }
 }
 
@@ -276,10 +270,7 @@ export async function DELETE(request: NextRequest, context: Context) {
   } catch (error: any) {
     console.error("DELETE /api/v1/products/[id] error:", error);
 
-    return errorResponse("Failed to delete product", 500, {
-      message: error?.message ?? null,
-      stack: process.env.NODE_ENV === "development" ? error?.stack : null,
-    });
+    return errorResponse("Failed to delete product", 500);
   }
 }
 
@@ -310,9 +301,6 @@ export async function PATCH(request: NextRequest, context: Context) {
   } catch (error: any) {
     console.error("PATCH /api/v1/products/[id] error:", error);
 
-    return errorResponse("Failed to restore product", 500, {
-      message: error?.message ?? null,
-      stack: process.env.NODE_ENV === "development" ? error?.stack : null,
-    });
+    return errorResponse("Failed to restore product", 500);
   }
 }

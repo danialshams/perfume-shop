@@ -5,7 +5,8 @@ import { notFound } from "next/navigation";
 import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import ProductDetailClient from "@/components/HomeProductsPage/ProductDetailPage";
-import { getProductById } from "@/lib/product";
+import type { Product } from "@/lib/product";
+import { productService } from "@/server/services/product.service";
 
 type PageProps = {
   params: Promise<{
@@ -16,7 +17,11 @@ type PageProps = {
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const product = await getProductById(id);
+  const productId = Number(id);
+  if (!Number.isInteger(productId) || productId <= 0) notFound();
+  // Server components query the repository directly; localhost fetches fail on Vercel.
+  const result = await productService.getById(productId);
+  const product = result ? (JSON.parse(JSON.stringify(result)) as Product) : null;
 
   if (!product) {
     notFound();

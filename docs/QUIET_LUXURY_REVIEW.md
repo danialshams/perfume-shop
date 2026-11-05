@@ -35,3 +35,11 @@
 - Replace every legacy product/category/slider image using a verified product-to-photo mapping and database migration plan; audit licensing and retention.
 - Validate actual order creation, login, search, filtering, cart, coupon and shipping behavior against a safe test database.
 - Do not merge a draft PR simply because the isolated visual tests pass.
+
+## Operational findings (2026-11-05)
+
+- A Vercel preview build failed while collecting route data: the original `lib/db.ts` created a MySQL pool eagerly. This was refactored to create the pool only on the first query.
+- The repository previously tracked `.env`; it is removed in the feature branch, but **any exposed credentials must be rotated**, as removing a file does not erase Git history.
+- **Real payments are not configured.** The existing `payment.service` is sandbox-only and accepted a simulated callback status; both payment creation and verification are blocked in production until a real provider with server-side verification is integrated.
+- Product/voice uploads wrote to `public/uploads` at runtime. Vercel functions do not provide persistent public-file storage; these endpoints now return a controlled 503 in production rather than pretend to save permanent assets.
+- Do not sell real products or accept live payment until the gateway, durable object storage and database connectivity are provisioned and end-to-end tested.
