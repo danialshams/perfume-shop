@@ -1,0 +1,48 @@
+name: Localize MAISON fragrance photography
+on:
+  push:
+    branches:
+      - feature/quiet-luxury-cinematic-v2-20261105
+    paths:
+      - .github/workflows/localize-maison-photos.yml
+permissions:
+  contents: write
+jobs:
+  localize-photos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout experimental branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          ref: feature/quiet-luxury-cinematic-v2-20261105
+      - name: Fetch and validate six local editorial perfume photos
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p public/maison
+          download() {
+            local asset="$1"; local id="$2"; local width="$3"
+            curl --fail --location --silent --show-error --retry 3 --retry-delay 2 --max-time 50 \
+              "https://images.unsplash.com/${id}?fm=jpg&fit=crop&w=${width}&q=83" -o "public/maison/${asset}.jpg"
+            test "$(wc -c < "public/maison/${asset}.jpg")" -gt 12000
+            test "$(file -b --mime-type "public/maison/${asset}.jpg")" = "image/jpeg"
+            echo "Validated ${asset}: $(wc -c < "public/maison/${asset}.jpg") bytes"
+          }
+          download hero photo-1594035910387-fea47794261f 1800
+          download portrait photo-1615634260167-c8cdede054de 1200
+          download dark photo-1541643600914-78b084683601 1600
+          download amber photo-1592945403244-b3fbafd7f539 1100
+          download floral photo-1563170351-be82bc888aa4 1100
+          download woody photo-1588405748880-12d1d2a59db9 1100
+      - name: Commit verified assets only on development branch
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/maison/*.jpg
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Add resilient locally served luxury perfume editorial photographs"
+          git push origin HEAD:feature/quiet-luxury-cinematic-v2-20261105
