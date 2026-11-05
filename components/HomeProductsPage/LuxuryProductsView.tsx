@@ -1,6 +1,9 @@
 "use client";
 
 import LuxuryNavbar from "@/components/home-sections/navbar";
+import Image from "next/image";
+import Link from "next/link";
+import { FERTINI_DEMOS } from "@/lib/fertini-demo";
 import { useMemo, useState } from "react";
 import type { SortOption } from "@/components/HomeProductsComponnents/MobileSortSheet";
 import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
@@ -71,18 +74,27 @@ export default function LuxuryProductsView() {
           />
         </div>
         <div className="ql-products-grid-section">
-          {productsError && !loadingProducts && (
-            <section role="alert" className="mx-auto my-16 flex max-w-xl flex-col items-center gap-6 border-y border-[#d9d1c5] px-5 py-16 text-center">
-              <p className="text-sm leading-8 text-[#81776b]">{productsError}</p>
-              <button type="button" onClick={reloadProducts} className="border-b border-[#9b8263] px-4 py-3 text-sm text-[#302d29]">تلاش دوباره</button>
+          {!loadingProducts && orderedProducts.length===0 ? (
+            <section className="fertini-demo-shelf" aria-label="مجموعه عطرهای نمایشی">
+              <div className="fertini-demo-shelf__heading">
+                <div><span className="maison-kicker" lang="en" dir="ltr">FERTINI / FRAGRANCE SAMPLES</span><h2>مجموعهٔ نمایشی</h2></div>
+                <p>{productsError ? "اتصال محصولات اصلی در این پیش‌نمایش برقرار نیست." : "هنوز محصول قابل‌فروشی ثبت نشده است."} نمونه‌های زیر برای بررسی طراحی محصول هستند.</p>
+                {productsError&&<button type="button" onClick={reloadProducts}>تلاش دوباره برای محصولات واقعی</button>}
+              </div>
+              <div className="fertini-demo-shelf__grid">
+                {[...FERTINI_DEMOS].sort((a,b)=>selectedSort==="lowest" ? a.variants[0].price-b.variants[0].price : selectedSort==="highest" ? b.variants[0].price-a.variants[0].price : 0).map(item=>
+                  <Link key={item.id} className="fertini-demo-shelf__card" href={"/demo/fragrance?item="+item.id}>
+                    <div className="fertini-demo-shelf__photo"><Image fill sizes="(min-width:900px) 30vw, 88vw" src={item.image} alt={item.name}/><span>نمونهٔ آزمایشی</span></div>
+                    <div className="fertini-demo-shelf__details"><span lang="en" dir="ltr">{item.subtitle}</span><h3>{item.name}</h3><p>از {item.variants[0].price.toLocaleString("fa-IR")} تومان</p></div>
+                  </Link>)}
+              </div>
             </section>
-          )}
-          <ProductsSection
+          ) : <ProductsSection
             loadingProducts={loadingProducts}
             filteredProducts={orderedProducts}
             selectedVariants={selectedVariants}
             setSelectedVariants={setSelectedVariants}
-          />
+          />}
         </div>
       </div>
     </main>
