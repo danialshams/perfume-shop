@@ -1750,7 +1750,7 @@ export default function EditProductDrawer({
 
                                         {selectedType === "GROUPED" ? (
                                             <>
-                                                <Divider orientation="start">
+                                                <Divider>
                                                     تصاویر این واریانت
                                                 </Divider>
 

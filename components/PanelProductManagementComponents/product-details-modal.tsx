@@ -583,7 +583,7 @@ export default function ProductDetailsModal({
                         description="تصاویر عمومی محصول، جدا از تصاویر واریانت‌ها"
                     />
 
-                    <ProductImagesGrid images={productImages.map((image, index) => ({ ...image, id: Number(image.id) || index + 1 }))} />
+                    <ProductImagesGrid images={productImages.map((image, index) => ({ ...image, id: Number(image.id) || index + 1, is_main: image.is_main ?? false }))} />
                 </section>
 
                 <Divider className="!my-4 md:!my-6" />
