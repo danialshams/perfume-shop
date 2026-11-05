@@ -46,7 +46,8 @@ export function useCart() {
     } catch (err) {
       setCart(null);
       setCartCount(0);
-      setError(err instanceof Error ? err.message : "خطا در دریافت سبد خرید");
+      console.error("Cart loading failed:", err);
+      setError("در دریافت سبد خرید مشکلی پیش آمد.");
     } finally {
       setLoading(false);
     }

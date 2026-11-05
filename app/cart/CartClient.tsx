@@ -106,7 +106,7 @@ export default function CartClient() {
             <LuxuryNavbar />
             <section className="ql-container flex min-h-[65svh] flex-col items-center justify-center gap-6 py-24 text-center">
                 <h1 className="text-2xl font-light text-[#302d29]">سبد خرید بارگذاری نشد</h1>
-                <p className="max-w-md text-sm leading-8 text-[#82766a]">{error || "ارتباط با فروشگاه برقرار نشد."}</p>
+                <p className="max-w-md text-sm leading-8 text-[#82766a]">ارتباط با فروشگاه برقرار نشد. لطفاً دوباره تلاش کنید.</p>
                 <button type="button" onClick={() => void reload()} className="border border-[#302d29] px-8 py-4 text-sm text-[#302d29] transition-colors hover:bg-[#302d29] hover:text-white">تلاش دوباره</button>
             </section>
             <CinematicFooter />
@@ -120,7 +120,7 @@ export default function CartClient() {
 
             <PageShell>
                 <ContentContainer className="lg:max-w-[1080px]">
-                    <ErrorBanner error={error} />
+                    <ErrorBanner error={error ? "خطا در بروزرسانی سبد خرید؛ دوباره تلاش کنید." : null} />
 
                     {/* â”€â”€ Ú†ÛŒØ¯Ù…Ø§Ù† Ø¯Ùˆ Ø³ØªÙˆÙ†Ù‡ Ø¯Ø³Ú©ØªØ§Ù¾ â”€â”€ */}
                     <div className="lg:grid lg:grid-cols-[1fr_320px] lg:items-start lg:gap-12 bg-[#f5f2ed]">

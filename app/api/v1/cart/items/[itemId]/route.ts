@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
 import { cookies } from "next/headers";
 import { updateCartItemSchema } from "@/server/validations/cart.validation";
 import { updateCartItem, removeCartItem } from "@/server/services/cart.service";
@@ -17,7 +18,7 @@ function getStatusByError(message: string) {
     case "INSUFFICIENT_STOCK":
       return 409;
     default:
-      return 400;
+      return 503;
   }
 }
 export async function PATCH(
@@ -72,14 +73,16 @@ export async function PATCH(
   } catch (error) {
 
     const message = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+    const known = ["CART_ITEM_NOT_FOUND", "INSUFFICIENT_STOCK", "OUT_OF_STOCK"].includes(message);
+    if (!known && !(error instanceof ZodError)) console.error("Cart item mutation failed:", error);
 
     return NextResponse.json(
       {
         success: false,
-        message,
+        message: known ? message : error instanceof ZodError ? "درخواست نامعتبر است." : "امکان بروزرسانی سبد خرید وجود ندارد.",
       },
       {
-        status: getStatusByError(message),
+        status: error instanceof ZodError ? 422 : getStatusByError(message),
       },
     );
   }
@@ -131,14 +134,16 @@ export async function DELETE(
     return response;
   } catch (error) {
     const message = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+    const known = ["CART_ITEM_NOT_FOUND", "INSUFFICIENT_STOCK", "OUT_OF_STOCK"].includes(message);
+    if (!known && !(error instanceof ZodError)) console.error("Cart item mutation failed:", error);
 
     return NextResponse.json(
       {
         success: false,
-        message,
+        message: known ? message : error instanceof ZodError ? "درخواست نامعتبر است." : "امکان بروزرسانی سبد خرید وجود ندارد.",
       },
       {
-        status: getStatusByError(message),
+        status: error instanceof ZodError ? 422 : getStatusByError(message),
       },
     );
   }

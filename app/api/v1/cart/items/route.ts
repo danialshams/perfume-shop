@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
 import { cookies } from "next/headers";
 import { addCartItem } from "@/server/services/cart.service";
 import { addCartItemSchema } from "@/server/validations/cart.validation";
@@ -18,7 +19,7 @@ function getStatusByError(message: string) {
     case "INSUFFICIENT_STOCK":
       return 409;
     default:
-      return 400;
+      return 503;
   }
 }
 
@@ -26,15 +27,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    console.log("CART_POST_BODY:", body);
 
     const payload = addCartItemSchema.parse(body);
 
-    console.log("CART_POST_PAYLOAD:", payload);
 
     const token = await getCartToken();
 
-    console.log("CART_POST_COOKIE_TOKEN:", token);
 
     const cart = await addCartItem({
       token,
@@ -42,7 +40,6 @@ export async function POST(request: NextRequest) {
       quantity: payload.quantity,
     });
 
-    console.log("CART_POST_RESULT:", cart);
 
     const response = NextResponse.json({
       success: true,
@@ -60,19 +57,19 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error("CART_POST_ERROR_FULL:", error);
 
     const message = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+    const known = ["PRODUCT_VARIANT_NOT_FOUND", "OUT_OF_STOCK", "INSUFFICIENT_STOCK"].includes(message);
+    if (!known && !(error instanceof ZodError)) console.error("Cart item add failed:", error);
 
-    console.error("CART_POST_ERROR_MESSAGE:", message);
 
     return NextResponse.json(
       {
         success: false,
-        message,
+        message: known ? message : error instanceof ZodError ? "درخواست نامعتبر است." : "افزودن محصول در حال حاضر امکان‌پذیر نیست.",
       },
       {
-        status: getStatusByError(message),
+        status: error instanceof ZodError ? 422 : getStatusByError(message),
       },
     );
   }

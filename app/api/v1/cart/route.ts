@@ -5,16 +5,10 @@ import { getCart, clearCart } from "@/server/services/cart.service";
 const CART_COOKIE_NAME = "cart_token";
 
 function errorResponse(error: unknown) {
-  const message = error instanceof Error ? error.message : "UNKNOWN_ERROR";
-
+  console.error("[CART_API_ERROR]", error);
   return NextResponse.json(
-    {
-      success: false,
-      message,
-    },
-    {
-      status: 400,
-    },
+    { success: false, message: "ارتباط با سبد خرید برقرار نشد. لطفاً دوباره تلاش کنید." },
+    { status: 503 },
   );
 }
 

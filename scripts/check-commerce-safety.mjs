@@ -89,3 +89,10 @@ assert.match(sandboxPayment, /process\.env\.NODE_ENV === "production"/);
 assert.match(callback, /process\.env\.VERCEL === "1"/);
 const searchEndpoint = read("app/api/v1/products/search/route.ts");
 assert.doesNotMatch(searchEndpoint, /Failed to search products", 500, \{/);
+
+const cartApi = read("app/api/v1/cart/route.ts");
+assert.doesNotMatch(cartApi, /message,\s*\}/);
+const addCartApi = read("app/api/v1/cart/items/route.ts");
+assert.doesNotMatch(addCartApi, /CART_POST_COOKIE_TOKEN/);
+const cartClient = read("app/cart/CartClient.tsx");
+assert.doesNotMatch(cartClient, /\{error \|\|/);
