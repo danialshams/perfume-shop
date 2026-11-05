@@ -33,3 +33,9 @@ assert.match(productApi, /typeof window === "undefined"/);
 const apiClient = read("lib/api.ts");
 assert.doesNotMatch(apiClient, /"http:\/\/localhost:3000"/);
 assert.match(apiClient, /typeof window === "undefined"/);
+
+const checkoutRoute = read("app/api/v1/checkout/route.ts");
+assert.match(checkoutRoute, /process\.env\.NODE_ENV === "production"/);
+assert.match(checkoutRoute, /503/);
+const checkoutPage = read("app/checkout/page.tsx");
+assert.match(checkoutPage, /!checkoutAvailable/);

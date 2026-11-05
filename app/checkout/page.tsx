@@ -68,6 +68,10 @@ type CustomerProfileResponse = {
   };
 };
 
+// The existing backend only supports simulated payment. Real orders are disabled
+// until a verified gateway is implemented server-side.
+const checkoutAvailable = process.env.NODE_ENV !== "production";
+
 const initialForm: FormData = {
   first_name: "",
   last_name: "",
@@ -561,7 +565,7 @@ function CheckoutPageContent() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    if (submitting || authStatus === "checking") return;
+    if (submitting || authStatus === "checking" || !checkoutAvailable) return;
 
     const isValid = validateForm();
 
@@ -804,6 +808,11 @@ function CheckoutPageContent() {
           </div>
 
           <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+            {!checkoutAvailable && (
+              <p role="status" className="mb-8 border border-[#c9b9a2] bg-[#f7f1e9] px-5 py-4 text-[13px] leading-8 text-[#645644]">
+                سفارش‌گیری آنلاین تا اتصال درگاه پرداخت واقعی غیرفعال است. محصولات را می‌توانید مشاهده و بررسی کنید.
+              </p>
+            )}
             <form onSubmit={handleSubmit} className={cardClass} noValidate>
               {errors.general && (
                 <div className="mb-5 rounded-md border border-[#8a2f32]/15 bg-[#8a2f32]/[0.025] px-4 py-3 text-right text-[12px] font-light leading-7 text-[#7a262a]">
@@ -1171,15 +1180,15 @@ function CheckoutPageContent() {
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <button
                   type="submit"
-                  disabled={submitting || authStatus === "checking"}
+                  disabled={!checkoutAvailable || submitting || authStatus === "checking"}
                   className={[
                     "inline-flex items-center justify-center rounded-md px-6 py-3 text-[12px] font-light tracking-[-0.01em] transition-all duration-300",
-                    submitting || authStatus === "checking"
+                    !checkoutAvailable || submitting || authStatus === "checking"
                       ? "cursor-not-allowed border border-black/[0.08] bg-white text-[#b1aaa1] shadow-none"
                       : "bg-[#46433d] text-white shadow-[0_10px_26px_rgba(70,67,61,0.16)] hover:bg-[#34312d] hover:shadow-[0_12px_30px_rgba(52,49,45,0.2)] active:scale-[0.99]",
                   ].join(" ")}
                 >
-                  {submitting ? "در حال انتقال به درگاه..." : "ثبت سفارش"}
+                  {!checkoutAvailable ? "سفارش‌گیری فعلاً غیرفعال است" : submitting ? "در حال انتقال به درگاه..." : "ثبت سفارش"}
                 </button>
 
                 <button
