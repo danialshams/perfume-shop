@@ -1,12 +1,15 @@
+import { Suspense } from "react";
 import CartClient from "./CartClient";
 
 export const metadata = {
-  title: "Ø³Ø¨Ø¯ Ø®Ø±ÛŒØ¯",
-  description: "Ø³Ø¨Ø¯ Ø®Ø±ÛŒØ¯ Ø´Ù…Ø§",
+  title: "سبد خرید | MAISON",
+  description: "مرور عطرهای انتخاب‌شده و ادامه خرید از MAISON",
 };
 
 export default function CartPage() {
-  return<div className="bg-[#F8F8F8]">
-    <CartClient />
-  </div> ;
+  return <main className="ql-shop min-h-screen">
+    <Suspense fallback={<div className="ql-container py-20 text-center text-[#8a8176]" role="status">در حال آماده‌سازی سبد خرید…</div>}>
+      <CartClient />
+    </Suspense>
+  </main>;
 }
