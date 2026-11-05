@@ -125,6 +125,8 @@ export function useProductsPageData() {
   >({});
 
   const [loadingProducts, setLoadingProducts] = useState(true);
+  const [productsError, setProductsError] = useState<string | null>(null);
+  const [reloadIndex, setReloadIndex] = useState(0);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -190,28 +192,22 @@ export function useProductsPageData() {
     const fetchProducts = async () => {
       try {
         setLoadingProducts(true);
+        setProductsError(null);
 
         const url = createApiUrl("/api/v1/products");
-
-        console.log("[ProductsPage] Fetch products URL:", url);
 
         const res = await fetch(url, {
           cache: "no-store",
         });
-
-        console.log("[ProductsPage] Products response status:", res.status);
 
         if (!res.ok) {
           throw new Error(`Failed to fetch products: ${res.status}`);
         }
 
         const json = await res.json();
-
-        console.log("[ProductsPage] Raw products response:", json);
+        if (json?.success === false) throw new Error("Invalid product feed");
 
         const items: ProductItem[] = extractItems<ProductItem>(json);
-
-        console.log("[ProductsPage] Extracted items:", items.length, items);
 
         const formattedProducts = mapApiProducts(items);
 
@@ -234,6 +230,7 @@ export function useProductsPageData() {
         setSelectedVariants(initialSelectedVariants);
       } catch (error) {
         console.error("[ProductsPage] Failed to fetch products:", error);
+        setProductsError("ارتباط با کاتالوگ برقرار نشد. لطفاً دوباره تلاش کنید.");
         setRawProducts([]);
         setProducts([]);
         setSelectedVariants({});
@@ -243,7 +240,9 @@ export function useProductsPageData() {
     };
 
     fetchProducts();
-  }, []);
+  }, [reloadIndex]);
+
+  const reloadProducts = () => setReloadIndex((value) => value + 1);
 
   const activeScentFamily = useMemo(() => {
     if (!normalizedScentFamilyIdParam) return null;
@@ -257,16 +256,6 @@ export function useProductsPageData() {
 
   const filteredProducts = useMemo(() => {
     let result = products;
-
-    console.log("[ProductsPage] Filtering started:", {
-      totalProducts: products.length,
-      rawProducts: rawProducts.length,
-      scentFamilyIdParam,
-      normalizedScentFamilyIdParam,
-      activeScentFamily,
-      activeParentId,
-      activeChildId,
-    });
 
     if (normalizedScentFamilyIdParam !== null) {
       const activeFamilyName = normalizeText(activeScentFamily?.name);
@@ -316,11 +305,10 @@ export function useProductsPageData() {
         return false;
       });
 
-      console.log("[ProductsPage] After scent filter:", result.length, result);
     }
 
     if (activeParentId === null && activeChildId === null) {
-      console.log("[ProductsPage] Final filtered products:", result.length);
+
       return result;
     }
 
@@ -369,8 +357,6 @@ export function useProductsPageData() {
       return true;
     });
 
-    console.log("[ProductsPage] After category filter:", result.length, result);
-
     return result;
   }, [
     products,
@@ -403,6 +389,8 @@ export function useProductsPageData() {
     setSelectedVariants,
 
     loadingProducts,
+    productsError,
+    reloadProducts,
 
     activeScentFamily,
   };

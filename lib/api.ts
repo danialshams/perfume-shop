@@ -8,13 +8,13 @@ import type {
   UploadVoiceResult,
 } from "./product";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
-  "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "";
 
 function createApiUrl(path: string) {
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
-  return `${API_BASE_URL}${cleanPath}`;
+  return typeof window === "undefined" && API_BASE_URL
+    ? `${API_BASE_URL}${cleanPath}`
+    : cleanPath;
 }
 
 async function parseJsonResponse<T>(res: Response): Promise<T> {

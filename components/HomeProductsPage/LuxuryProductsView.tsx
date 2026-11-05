@@ -21,6 +21,8 @@ export default function LuxuryProductsView() {
     selectedVariants,
     setSelectedVariants,
     loadingProducts,
+    productsError,
+    reloadProducts,
     activeScentFamily,
   } = useProductsPageData();
 
@@ -69,12 +71,17 @@ export default function LuxuryProductsView() {
           />
         </div>
         <div className="ql-products-grid-section">
-          <ProductsSection
+          {productsError && !loadingProducts ? (
+            <section role="alert" className="mx-auto my-16 flex max-w-xl flex-col items-center gap-6 border-y border-[#d9d1c5] px-5 py-16 text-center">
+              <p className="text-sm leading-8 text-[#81776b]">{productsError}</p>
+              <button type="button" onClick={reloadProducts} className="border-b border-[#9b8263] px-4 py-3 text-sm text-[#302d29]">تلاش دوباره</button>
+            </section>
+          ) : <ProductsSection
             loadingProducts={loadingProducts}
             filteredProducts={orderedProducts}
             selectedVariants={selectedVariants}
             setSelectedVariants={setSelectedVariants}
-          />
+          />}
         </div>
       </div>
     </main>

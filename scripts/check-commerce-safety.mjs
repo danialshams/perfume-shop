@@ -26,3 +26,10 @@ assert.match(upload, /503/);
 const account = read("app/account/page.tsx");
 assert.doesNotMatch(account, /NEXT_PUBLIC_API_BASE_URL/);
 assert.match(account, /customerAuthService\.me/);
+
+const productApi = read("lib/product.ts");
+assert.doesNotMatch(productApi, /"http:\/\/localhost:3000"/);
+assert.match(productApi, /typeof window === "undefined"/);
+const apiClient = read("lib/api.ts");
+assert.doesNotMatch(apiClient, /"http:\/\/localhost:3000"/);
+assert.match(apiClient, /typeof window === "undefined"/);

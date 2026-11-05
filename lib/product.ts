@@ -1,8 +1,6 @@
 const LOCAL_PLACEHOLDER = "/images/placeholder-perfume.jpg";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
-  "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "";
 
 export type ProductStatus = "ACTIVE" | "DRAFT" | "INACTIVE";
 export type ProductType = "SINGLE" | "GROUPED";
@@ -472,10 +470,12 @@ export function parseNumericPrice(rawPrice?: number | string | null) {
 }
 
 export function createApiUrl(path: string) {
-  if (!API_BASE_URL) return path;
-
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
-  return `${API_BASE_URL}${cleanPath}`;
+  // Relative requests always use the deployed shop's own API in the browser.
+  // An explicit base URL remains available to server-only utilities.
+  return typeof window === "undefined" && API_BASE_URL
+    ? `${API_BASE_URL}${cleanPath}`
+    : cleanPath;
 }
 
 export function normalizeAssetUrl(url?: string | null) {
