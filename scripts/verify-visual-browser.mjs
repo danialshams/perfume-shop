@@ -149,6 +149,15 @@ try{
  await pageScreenshot({name:"cart-mobile-full",url:"http://127.0.0.1:3100/cart",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"login-mobile-full",url:"http://127.0.0.1:3100/login",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"checkout-mobile-full",url:"http://127.0.0.1:3100/checkout",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"journal-desktop-full",url:"http://127.0.0.1:3100/journal",width:1440,height:900,mobile:false,assertHome:false});
+ await pageScreenshot({name:"journal-mobile-full",url:"http://127.0.0.1:3100/journal",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"journal-article-mobile-full",url:"http://127.0.0.1:3100/journal/how-to-choose-a-fragrance",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"about-mobile-full",url:"http://127.0.0.1:3100/about",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"contact-mobile-full",url:"http://127.0.0.1:3100/contact",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"shipping-mobile-full",url:"http://127.0.0.1:3100/shipping",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"privacy-mobile-full",url:"http://127.0.0.1:3100/privacy",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"terms-mobile-full",url:"http://127.0.0.1:3100/terms",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"payment-result-mobile-full",url:"http://127.0.0.1:3100/payment/result?status=failed",width:390,height:844,mobile:true,assertHome:false});
  process.stdout.write("Visual QA browser checks passed.\n");
 }finally{
  chrome?.kill("SIGTERM");

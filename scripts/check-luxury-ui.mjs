@@ -41,6 +41,8 @@ assert.match(nav, /aria-modal="true"/);
 assert.match(app, /prefers-reduced-motion/);
 assert.match(app, /@media\(max-width:600px\)/);
 assert.ok(existsSync("app/robots.ts") && existsSync("app/sitemap.ts"));
+assert.match(read("app/sitemap.ts"), /productService\.getAll/);
+assert.match(read("app/products/[id]/page.tsx"), /generateMetadata/);
 for (const path of ["journal","about","contact","shipping","privacy","terms"]) {
  assert.ok(existsSync("app/" + path + "/page.tsx"), "missing destination: "+path);
 }

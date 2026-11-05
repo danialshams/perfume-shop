@@ -1,4 +1,5 @@
 
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -14,7 +15,32 @@ type PageProps = {
     id: string;
   }>;
 };
-// فایل: ProductDetailPage.tsx (بخش Server Component)
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const numericId = Number(id);
+  if (!Number.isSafeInteger(numericId) || numericId <= 0) return { robots: { index: false, follow: false } };
+  try {
+    const product = await productService.getById(numericId);
+    if (!product || !isPublicProduct(product)) return { robots: { index: false, follow: false } };
+    const copy = String(product.description ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    const description = (copy || "معرفی ویژگی‌ها و تنوع‌های عطر " + product.name + " در گالری عطر MAISON.").slice(0, 160);
+    const image = product.images[0]?.image_url || "/maison/hero.jpg";
+    const photo = image.startsWith("/") || image.startsWith("https://") ? image : "/" + image;
+    const title = product.name + " | گالری عطر MAISON";
+    return {
+      title, description,
+      alternates: { canonical: "/products/" + numericId },
+      openGraph: {
+        type: "website", title, description, url: "/products/" + numericId,
+        images: [{ url: photo, alt: product.name }],
+      },
+    };
+  } catch {
+    return { robots: { index: false, follow: false } };
+  }
+}
+
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { id } = await params;
@@ -32,9 +58,18 @@ export default async function ProductDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  // Escape literal '<' to prevent stored product content from closing the JSON script.
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org", "@type": "Product",
+    name: product.name,
+    description: String(product.description ?? "").replace(/<[^>]*>/g, " ").slice(0, 300),
+    image: (product.images ?? []).map(item => item.image_url).filter(Boolean),
+  }).replace(/</g, "\\u003c");
+
   return (
     <div className="ql-detail maison-detail flex min-h-screen flex-col bg-[#F5F2ED]">
       <LuxuryNavbar />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
 
       <main className="flex flex-1 flex-col text-[#302d29]">
         <ProductDetailClient product={product} />
