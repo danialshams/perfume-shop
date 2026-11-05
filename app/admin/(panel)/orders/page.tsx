@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
 type OrderListItem = {
   id: number;
@@ -392,7 +392,7 @@ function getProductImageSrc(item: OrderItem) {
   );
 }
 
-export default function AdminOrdersPage() {
+function AdminOrdersPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -1365,4 +1365,8 @@ export default function AdminOrdersPage() {
   </div>
 );
 
+}
+
+export default function AdminOrdersPage() {
+  return <Suspense fallback={<main role="status" className="p-8 text-center text-neutral-500">در حال بارگذاری…</main>}><AdminOrdersPageContent/></Suspense>;
 }

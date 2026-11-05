@@ -1,9 +1,9 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AdminLoginPage() {
+function AdminLoginPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -142,4 +142,8 @@ export default function AdminLoginPage() {
             </div>
         </main>
     );
+}
+
+export default function AdminLoginPage() {
+  return <Suspense fallback={<main role="status" className="p-8 text-center text-neutral-500">در حال بارگذاری…</main>}><AdminLoginPageContent/></Suspense>;
 }
