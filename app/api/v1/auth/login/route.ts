@@ -57,15 +57,11 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Something went wrong";
-
+    const isInvalidLogin = error instanceof Error && (error.message === "Invalid credentials" || error.message === "Your account is inactive");
+    if (!isInvalidLogin) console.error("Admin login failed:", error);
     return NextResponse.json(
-      {
-        success: false,
-        message,
-      },
-      { status: 500 },
+      { success: false, message: isInvalidLogin ? "اطلاعات ورود نامعتبر است" : "خطا در ورود. لطفاً دوباره تلاش کنید." },
+      { status: isInvalidLogin ? 401 : 500 },
     );
   }
 }

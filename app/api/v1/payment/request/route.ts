@@ -130,11 +130,10 @@ export async function POST(request: NextRequest) {
       201,
     );
   } catch (error) {
-    return errorResponse(
-      error instanceof Error
-        ? error.message
-        : "Failed to create payment request",
-      400,
-    );
+    if (error instanceof Error && error.message === "PAYMENT_GATEWAY_NOT_CONFIGURED") {
+      return errorResponse("درگاه پرداخت واقعی هنوز پیکربندی نشده است. ثبت پرداخت موقتاً غیرفعال است.", 503);
+    }
+    console.error("Payment request failed:", error);
+    return errorResponse("امکان ایجاد درخواست پرداخت وجود ندارد. لطفاً بعداً تلاش کنید.", 500);
   }
 }

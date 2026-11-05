@@ -24,6 +24,8 @@ jobs:
         run: node scripts/check-luxury-ui.mjs
       - name: Check media audit inventory without database access
         run: node scripts/audit-media-references.mjs
+      - name: Verify payment safety and secret hygiene
+        run: node scripts/check-commerce-safety.mjs
       - name: Lint visual storefront
         run: npx eslint app/layout.tsx app/products/page.tsx app/cart/page.tsx components/home-sections/CinematicStorefront.tsx components/home-sections/CinematicPurchasePanel.tsx components/HomeWrapper/home-page-shell.tsx components/HomeProductsPage/LuxuryProductsView.tsx components/NavbarComponents/BrandLogo.tsx
       - name: Typecheck the complete project

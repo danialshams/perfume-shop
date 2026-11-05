@@ -206,12 +206,8 @@ export async function GET(request: NextRequest) {
 
     return successResponse(result, "Products fetched successfully");
   } catch (error: any) {
-    return errorResponse("Failed to fetch products", 500, {
-      message: error?.message ?? null,
-      code: error?.code ?? null,
-      stack:
-        process.env.NODE_ENV === "development" ? (error?.stack ?? null) : null,
-    });
+    console.error("Products fetch failed:", error);
+    return errorResponse("Failed to fetch products", 500);
   }
 }
 
@@ -242,11 +238,6 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("POST /api/v1/products error:", error);
 
-    return errorResponse("Failed to create product", 500, {
-      message: error?.message ?? null,
-      code: error?.code ?? null,
-      stack:
-        process.env.NODE_ENV === "development" ? (error?.stack ?? null) : null,
-    });
+    return errorResponse("Failed to create product", 500);
   }
 }

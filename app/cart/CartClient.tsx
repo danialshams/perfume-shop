@@ -25,6 +25,7 @@ export default function CartClient() {
         isEmpty,
         updateQuantity,
         removeItem,
+        reload,
     } = useCart();
 
     const [optimisticQuantities, setOptimisticQuantities] = useState<
@@ -63,7 +64,6 @@ export default function CartClient() {
     const handleQuantityUpdate = async (item: CartItem, nextQuantity: number) => {
         if (nextQuantity < 1 || nextQuantity > item.stock_qty || actionLoadingId) return;
 
-        const previousQuantity = optimisticQuantities[item.id] ?? item.quantity;
         setItemErrors((prev) => ({ ...prev, [item.id]: null }));
         setOptimisticQuantities((prev) => ({ ...prev, [item.id]: nextQuantity }));
 
@@ -71,17 +71,14 @@ export default function CartClient() {
             await Promise.resolve(updateQuantity(item.id, nextQuantity));
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Ù…Ø´Ú©Ù„ÛŒ Ù¾ÛŒØ´ Ø¢Ù…Ø¯. Ù„Ø·ÙØ§Ù‹ Ø¯ÙˆØ¨Ø§Ø±Ù‡ ØªÙ„Ø§Ø´ Ú©Ù†ÛŒØ¯.";
-            setOptimisticQuantities((prev) => ({ ...prev, [item.id]: previousQuantity }));
+                err instanceof Error ? err.message : "مشکلی پیش آمد. لطفاً دوباره تلاش کنید.";
             setItemErrors((prev) => ({ ...prev, [item.id]: getErrorText(message) }));
         } finally {
-            window.setTimeout(() => {
-                setOptimisticQuantities((prev) => {
-                    const next = { ...prev };
-                    delete next[item.id];
-                    return next;
-                });
-            }, 350);
+            setOptimisticQuantities((prev) => {
+                const next = { ...prev };
+                delete next[item.id];
+                return next;
+            });
         }
     };
 
@@ -97,13 +94,24 @@ export default function CartClient() {
             await Promise.resolve(removeItem(item.id));
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Ù…Ø´Ú©Ù„ÛŒ Ù¾ÛŒØ´ Ø¢Ù…Ø¯. Ù„Ø·ÙØ§Ù‹ Ø¯ÙˆØ¨Ø§Ø±Ù‡ ØªÙ„Ø§Ø´ Ú©Ù†ÛŒØ¯.";
+                err instanceof Error ? err.message : "مشکلی پیش آمد. لطفاً دوباره تلاش کنید.";
             setItemErrors((prev) => ({ ...prev, [item.id]: getErrorText(message) }));
         }
     };
 
 
     if (loading) return <CartSkeleton />;
+    if (!cart) return (
+        <>
+            <LuxuryNavbar />
+            <section className="ql-container flex min-h-[65svh] flex-col items-center justify-center gap-6 py-24 text-center">
+                <h1 className="text-2xl font-light text-[#302d29]">سبد خرید بارگذاری نشد</h1>
+                <p className="max-w-md text-sm leading-8 text-[#82766a]">{error || "ارتباط با فروشگاه برقرار نشد."}</p>
+                <button type="button" onClick={() => void reload()} className="border border-[#302d29] px-8 py-4 text-sm text-[#302d29] transition-colors hover:bg-[#302d29] hover:text-white">تلاش دوباره</button>
+            </section>
+            <CinematicFooter />
+        </>
+    );
     if (isEmpty) return <EmptyCart />;
 
     return (

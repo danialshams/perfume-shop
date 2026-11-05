@@ -8,7 +8,7 @@ import {
 } from "@/server/services/cart-api.service";
 import { Cart } from "@/server/types/cart";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useCartCount } from "@/context/CartCountContext"; // ۱. اضافه کردن این لاین
+import { useCartCount } from "@/context/CartCountContext";
 
 export function useCart() {
   const [cart, setCart] = useState<Cart | null>(null);
@@ -18,7 +18,7 @@ export function useCart() {
   >(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { setCartCount } = useCartCount(); // ۲. گرفتن تابع آپدیت از کانتکست
+  const { setCartCount } = useCartCount();
 
   // تابع کمکی برای محاسبه تعداد کل و آپدیت کانتکست
   const updateGlobalCount = useCallback(
@@ -42,8 +42,10 @@ export function useCart() {
       setError(null);
       const data = await fetchCartApi();
       setCart(data);
-      updateGlobalCount(data); // ۳. آپدیت عدد سراسری
+      updateGlobalCount(data);
     } catch (err) {
+      setCart(null);
+      setCartCount(0);
       setError(err instanceof Error ? err.message : "خطا در دریافت سبد خرید");
     } finally {
       setLoading(false);
@@ -58,16 +60,15 @@ export function useCart() {
         setError(null);
         const data = await updateCartItemApi(itemId, { quantity, variant_id: Number(cart?.items.find(item => item.id === itemId)?.variant_id ?? 0) });
         setCart(data);
-        updateGlobalCount(data); // ۴. آپدیت عدد سراسری
+        updateGlobalCount(data);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "خطا در تغییر تعداد محصول",
-        );
+        setError(err instanceof Error ? err.message : "خطا در تغییر تعداد محصول");
+        throw err;
       } finally {
         setActionLoadingId(null);
       }
     },
-    [updateGlobalCount],
+    [cart, updateGlobalCount],
   );
 
   const removeItem = useCallback(
@@ -77,9 +78,10 @@ export function useCart() {
         setError(null);
         const data = await removeCartItemApi(itemId);
         setCart(data);
-        updateGlobalCount(data); // ۵. آپدیت عدد سراسری
+        updateGlobalCount(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "خطا در حذف محصول");
+        throw err;
       } finally {
         setActionLoadingId(null);
       }
@@ -93,11 +95,12 @@ export function useCart() {
       setError(null);
       const data = await clearCartApi();
       setCart(data);
-      updateGlobalCount(data); // ۶. آپدیت عدد سراسری
+      updateGlobalCount(data);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "خطا در خالی کردن سبد خرید",
       );
+      throw err;
     } finally {
       setActionLoadingId(null);
     }
@@ -108,7 +111,7 @@ export function useCart() {
   }, [loadCart]);
 
   const isEmpty = useMemo(() => {
-    return !cart || cart.items.length === 0;
+    return cart !== null && cart.items.length === 0;
   }, [cart]);
 
   return {

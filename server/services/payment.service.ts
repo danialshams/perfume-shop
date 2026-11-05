@@ -22,6 +22,13 @@ export type VerifyPaymentResult = {
   raw: VerifyPaymentInput;
 };
 
+/** The built-in payment flow is a simulator, never a payment gateway. */
+function assertSandboxAllowed() {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("PAYMENT_GATEWAY_NOT_CONFIGURED");
+  }
+}
+
 class PaymentService {
   private generateAuthority() {
     return `AUTH_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
@@ -53,6 +60,7 @@ class PaymentService {
   }
 
   async createPaymentIntent(input: CreatePaymentIntentInput) {
+    assertSandboxAllowed();
     const authority = this.generateAuthority();
     const paymentIntentId = this.generatePaymentIntentId(input.orderId);
 
@@ -70,6 +78,7 @@ class PaymentService {
   }
 
   async verifyPayment(input: VerifyPaymentInput): Promise<VerifyPaymentResult> {
+    assertSandboxAllowed();
     const status = this.normalizeVerificationStatus(input.status);
 
     if (status === "SUCCESS") {
