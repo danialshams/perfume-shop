@@ -66,3 +66,10 @@ for (const path of notificationPaths) {
     "Publicly accessible admin notifications: " + path);
 }
 assert.match(read("components/hooks/use-admin-notifications.ts"), /visibilityState/);
+
+const dbMigration = read("database/migrations/001_products_publication_state.sql");
+assert.match(dbMigration, /information_schema.COLUMNS/);
+assert.match(dbMigration, /ADD COLUMN status/);
+const paymentScreen = read("app/payment/result/page.tsx");
+assert.doesNotMatch(paymentScreen, /status === "success"/);
+assert.match(paymentScreen, /در حال بررسی/);

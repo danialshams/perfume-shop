@@ -3,89 +3,48 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import { fetchCartApi } from "@/server/services/cart-api.service";
-import { useCartCount } from "@/context/CartCountContext";
+import LuxuryNavbar from "@/components/home-sections/navbar";
+import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 
-function PaymentResultContent() {
-  const searchParams = useSearchParams();
-  const { setCartCount } = useCartCount();
-
-  const status = searchParams.get("status");
-  const orderId = searchParams.get("order_id");
-  const message = searchParams.get("message");
-
-  const success = status === "success";
-
-  useEffect(() => {
-    if (!success) return;
-
-    async function syncCartCount() {
-      try {
-        const cart = await fetchCartApi();
-
-        const total = Array.isArray(cart?.items)
-          ? cart.items.reduce(
-              (sum: number, item: { quantity?: number }) =>
-                sum + Number(item.quantity || 0),
-              0,
-            )
-          : 0;
-
-        setCartCount(total);
-      } catch {
-        setCartCount(0);
-      }
-    }
-
-    syncCartCount();
-  }, [success, setCartCount]);
+function PaymentStatusContent() {
+  const params = useSearchParams();
+  const unsuccessful = ["failed", "cancelled", "canceled"].includes(
+    (params.get("status") || "").toLowerCase(),
+  );
+  const id = Number(params.get("order_id") || 0);
+  const hasId = Number.isSafeInteger(id) && id > 0;
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-16">
-      <div
-        className={`rounded-3xl border p-6 shadow-sm ${
-          success
-            ? "border-emerald-200 bg-emerald-50"
-            : "border-rose-200 bg-rose-50"
-        }`}
-      >
-        <h1
-          className={`mb-3 text-2xl font-bold ${
-            success ? "text-emerald-700" : "text-rose-700"
-          }`}
-        >
-          {success ? "پرداخت با موفقیت انجام شد" : "پرداخت ناموفق بود"}
-        </h1>
-
-        {orderId ? (
-          <p className="mb-2 text-sm text-slate-700">شماره سفارش: {orderId}</p>
-        ) : null}
-
-        {message ? (
-          <p className="mb-4 text-sm text-slate-600">جزئیات: {message}</p>
-        ) : null}
-
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/"
-            className="rounded-2xl bg-slate-900 px-4 py-2 text-white"
-          >
-            بازگشت به خانه
-          </Link>
-
-          <Link
-            href="/cart"
-            className="rounded-2xl border border-slate-300 px-4 py-2 text-slate-700"
-          >
-            بازگشت به سبد خرید
-          </Link>
-        </div>
-      </div>
+    <div className="ql-shop flex min-h-screen flex-col">
+      <LuxuryNavbar />
+      <main className="ql-container flex min-h-[70svh] flex-1 items-center justify-center py-20 sm:py-28">
+        <section className="mx-auto w-full max-w-[680px] border-y border-[#d8cfc3] py-12 text-center sm:py-20" aria-labelledby="payment-state-title">
+          <span className="ql-overline" dir="ltr" lang="en">MAISON — YOUR ORDER</span>
+          <div className="mx-auto my-9 h-px w-16 bg-[#a48b6d]" aria-hidden="true" />
+          <h1 id="payment-state-title" className="text-[clamp(30px,5vw,52px)] font-light leading-[1.6] text-[#302d29]">
+            {unsuccessful ? "پرداخت تکمیل نشد." : "نتیجهٔ پرداخت در حال بررسی است."}
+          </h1>
+          <p className="mx-auto mt-6 max-w-[520px] text-[13px] font-light leading-[2.65] text-[#7c7165] sm:text-[15px]">
+            {unsuccessful
+              ? "پرداخت نهایی نشده است. برای ادامه، وضعیت سفارش خود را از حساب کاربری بررسی کنید."
+              : "نمایش این صفحه به معنی تأیید پرداخت نیست. نتیجهٔ قطعی تنها پس از تأیید تراکنش توسط سرور و درگاه پرداخت در حساب کاربری ثبت می‌شود."}
+          </p>
+          {hasId && <p className="mt-6 text-[12px] text-[#978874]">شناسه سفارش: {id.toLocaleString("fa-IR")}</p>}
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-9 gap-y-5 text-[13px]">
+            <Link href="/account" className="border-b border-[#9b8263] py-3 text-[#302d29]">پیگیری در حساب کاربری</Link>
+            <Link href="/products" className="border-b border-[#d7cab9] py-3 text-[#75685b]">بازگشت به مجموعه عطرها</Link>
+          </div>
+        </section>
+      </main>
+      <CinematicFooter />
     </div>
   );
 }
 
-export default function PaymentResultPage(){
- return <Suspense fallback={<main className="ql-shop min-h-screen p-10" role="status">در حال بارگذاری نتیجه…</main>}><PaymentResultContent/></Suspense>;
+export default function PaymentResultPage() {
+  return (
+    <Suspense fallback={<main className="ql-shop min-h-screen px-5 py-28 text-center">در حال آماده‌سازی وضعیت سفارش…</main>}>
+      <PaymentStatusContent />
+    </Suspense>
+  );
 }
