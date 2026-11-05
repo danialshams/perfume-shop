@@ -13,6 +13,9 @@ type OrderCartRow = RowDataPacket & {
 };
 
 export async function GET(request: NextRequest) {
+  if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
+    return NextResponse.redirect(new URL("/payment/result?status=failed&message=gateway_not_configured", request.url));
+  }
   try {
     const { searchParams } = new URL(request.url);
 

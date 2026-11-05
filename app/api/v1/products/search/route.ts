@@ -57,16 +57,6 @@ export async function GET(request: NextRequest) {
   } catch (error: unknown) {
     console.error("GET /api/v1/products/search error:", error);
 
-    return errorResponse("Failed to search products", 500, {
-      message: error instanceof Error ? error.message : null,
-      code:
-        typeof error === "object" && error !== null && "code" in error
-          ? String(error.code)
-          : null,
-      stack:
-        process.env.NODE_ENV === "development" && error instanceof Error
-          ? error.stack
-          : null,
-    });
+    return errorResponse("Failed to search products", 500);
   }
 }

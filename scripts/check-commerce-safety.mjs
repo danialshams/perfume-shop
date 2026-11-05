@@ -82,3 +82,10 @@ const loginPage = read("app/login/page.tsx");
 assert.match(loginPage, /handleLogin/);
 assert.match(loginPage, /\/api\/v1\/customers\/auth\/login/);
 assert.match(loginPage, /startsWith\("\/\/"\)/);
+
+const sandboxPayment = read("app/sandbox/payment/page.tsx");
+const callback = read("app/api/v1/payment/callback/route.ts");
+assert.match(sandboxPayment, /process\.env\.NODE_ENV === "production"/);
+assert.match(callback, /process\.env\.VERCEL === "1"/);
+const searchEndpoint = read("app/api/v1/products/search/route.ts");
+assert.doesNotMatch(searchEndpoint, /Failed to search products", 500, \{/);

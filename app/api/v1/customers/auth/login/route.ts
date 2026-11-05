@@ -47,15 +47,16 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Something went wrong";
+    const isInvalid = error instanceof Error && /نامعتبر|اشتباه|یافت نشد|رمز عبور/i.test(error.message);
+    if (!isInvalid) console.error("Customer login failed:", error);
+    const message = isInvalid ? "شماره همراه یا رمز عبور اشتباه است." : "ورود در حال حاضر امکان‌پذیر نیست.";
 
     return NextResponse.json(
       {
         success: false,
         message,
       },
-      { status: 401 },
+      { status: isInvalid ? 401 : 503 },
     );
   }
 }

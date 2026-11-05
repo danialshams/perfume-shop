@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import LuxuryNavbar from "@/components/home-sections/navbar";
+import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -65,6 +67,22 @@ function SandboxPaymentContent() {
   );
 }
 
-export default function SandboxPaymentPage(){
- return <Suspense fallback={<main className="ql-shop min-h-screen p-10" role="status">در حال بارگذاری نتیجه…</main>}><SandboxPaymentContent/></Suspense>;
+export default function SandboxPaymentPage() {
+  if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
+    return (
+      <div className="maison-page min-h-screen">
+        <LuxuryNavbar />
+        <main className="maison-wide flex min-h-[65svh] flex-col items-center justify-center py-24 text-center">
+          <span className="maison-kicker" lang="en" dir="ltr">MAISON — COMMERCE</span>
+          <h1 className="mt-8 text-4xl font-light">درگاه آزمایشی غیرفعال است.</h1>
+          <p className="mt-6 max-w-xl text-sm leading-9 text-[#818a85]">
+            این صفحه صرفاً برای آزمایش توسعه است. سفارش و پرداخت واقعی تا اتصال درگاه تأییدشده فعال نخواهد شد.
+          </p>
+          <Link href="/products" className="maison-link mt-10">بازگشت به گالری عطرها</Link>
+        </main>
+        <CinematicFooter />
+      </div>
+    );
+  }
+  return <Suspense fallback={<main className="ql-shop min-h-screen p-10" role="status">در حال بارگذاری نتیجه…</main>}><SandboxPaymentContent/></Suspense>;
 }
