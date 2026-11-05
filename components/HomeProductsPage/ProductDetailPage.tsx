@@ -142,7 +142,7 @@ export default function ProductDetailClient({ product }: Props) {
     });
 
     const img = new Image();
-    img.src = images[0];
+    img.src = images[0].src;
     img.onload = () => setImagesLoading(false);
     img.onerror = () => setImagesLoading(false);
   }, [images]);
@@ -604,7 +604,7 @@ export default function ProductDetailClient({ product }: Props) {
                   voiceUrl={product.voice_file}
                   productName={product.name}
                   compact
-                  isLoading={false}
+                  
                 />
               )}
 
@@ -671,7 +671,7 @@ export default function ProductDetailClient({ product }: Props) {
               voiceUrl={product.voice_file}
               productName={product.name}
               compact={false}
-              isLoading={false}
+              
             />
           </div>
         )}

@@ -21,7 +21,7 @@ export type ProductImage = {
   image_url?: string;
   url?: string;
   src?: string;
-  is_main?: boolean;
+  is_main?: boolean | number;
 };
 
 export type ProductVariant = {
@@ -35,8 +35,10 @@ export type ProductVariant = {
   compare_at_price?: number | string | null;
   compareAtPrice?: number | string | null;
   rawPrice?: number | string | null;
+  rawDiscountPrice?: number | string | null;
+  rawCompareAtPrice?: number | string | null;
   stock_qty?: number;
-  is_active?: boolean;
+  is_active?: boolean | number;
   label?: string;
   size?: string;
   image?: string | null;

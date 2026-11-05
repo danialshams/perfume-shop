@@ -1,7 +1,7 @@
 "use client";
 import {Minus,Plus,ShoppingBag} from "lucide-react";
 import {formatPrice,getVariantLabel,type ProductVariant} from "@/lib/product";
-type P={productName?:string;variants:ProductVariant[];selectedVariant:ProductVariant|null;onSelectVariant:(v:ProductVariant)=>void;quantity:number;onIncreaseQty:()=>void;onDecreaseQty:()=>void;onAddToCart:()=>void;isAddingToCart?:boolean;cartError?:string|null;currentPrice:number;currentStock:number;currentLabel:string;inStock:boolean;formatVariantLabel:(v:string)=>string};
+type P={productName?:string;variants:ProductVariant[];selectedVariant:ProductVariant|null;onSelectVariant:(v:ProductVariant)=>void;quantity:number;onIncreaseQty:()=>void;onDecreaseQty:()=>void;onAddToCart:()=>void|Promise<unknown>;isAddingToCart?:boolean;cartError?:string|null;currentPrice:number;currentStock:number;currentLabel:string;inStock:boolean;formatVariantLabel:(v:string)=>string};
 export default function CinematicPurchasePanel(p:P){
  return <section className="ql-purchase" aria-label="خرید عطر">
   {p.productName&&<h2 className="ql-purchase-mobile-title">{p.productName}</h2>}

@@ -40,6 +40,7 @@ export type ProductVariant = {
   label?: string | null;
   volume_ml?: number | null;
   volumeMl?: number | null;
+  volume?: string | number | null;
   price: number | string;
   discount_price?: number | string | null;
   compare_at_price?: number | string | null;
@@ -82,6 +83,7 @@ export type ProductItem = {
   name: string;
   slug: string;
   description: string | null;
+  short_description?: string | null;
   type: ProductType;
 
   scent_family_id?: number | null;

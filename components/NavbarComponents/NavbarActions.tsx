@@ -30,6 +30,7 @@ type NavbarActionsProps = {
   setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   updateHeaderHidden?: (hidden: boolean) => void;
   only?: "cart" | "menu" | "user" | "search";
+  className?: string;
   userProfile: CustomerProfile | null;
   setUserProfile: React.Dispatch<React.SetStateAction<CustomerProfile | null>>;
   loadingUser: boolean;
@@ -537,7 +538,7 @@ export default function NavbarActions({
 
     return (
       <div className="p-4">
-        <form onSubmit={handleQuickLogin} noValidate className="space-y-3.5">
+        <form onSubmit={handleQuickLogin} className="space-y-3.5">
           <div className="space-y-1.5">
             <label className="block text-[10px] font-light tracking-[-0.01em] text-[#33383C]">
               شماره موبایل
@@ -555,7 +556,6 @@ export default function NavbarActions({
                 inputMode="numeric"
                 maxLength={MOBILE_LENGTH}
                 pattern="09[0-9]{9}"
-                noValidate
                 placeholder="۰۹۱۲۳۴۵۶۷۸۹"
                 value={mobile}
                 onChange={(e) => {
