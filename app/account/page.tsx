@@ -74,9 +74,9 @@ export default async function AccountPage() {
 
   if (!customerId) redirect("/login?redirect=%2Faccount");
 
-  let customer: Awaited<ReturnType<typeof customerAuthService.me>>;
+  let customer: NonNullable<CustomerProfileResponse["data"]>;
   try {
-    customer = await customerAuthService.me(customerId);
+    customer = (await customerAuthService.me(customerId)) as unknown as NonNullable<CustomerProfileResponse["data"]>;
   } catch {
     redirect("/login?redirect=%2Faccount");
   }
