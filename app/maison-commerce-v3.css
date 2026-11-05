@@ -102,3 +102,25 @@
 .maison-mobile-cart-bar>a:hover{background:#464f4c}
 @media(min-width:1024px){.maison-mobile-cart-bar{display:none}}
 @media(max-width:380px){.maison-mobile-cart-bar{gap:9px}.maison-mobile-cart-bar strong{font-size:15px}.maison-mobile-cart-bar>a{padding-inline:15px}}
+
+/* Product audio, gallery detail and purchase confirmation */
+.maison-detail .maison-voice{border-block:1px solid var(--maison-line);padding-block:10px;background:transparent}
+.maison-detail .maison-voice>div>button{padding-inline:clamp(12px,3vw,35px);min-height:60px}
+.maison-detail .maison-voice :where(button,[role=slider]){touch-action:manipulation}
+.maison-detail .maison-voice :where(button):focus-visible{outline:1px solid #56615c;outline-offset:3px}
+.maison-detail .maison-voice :where([role=slider]):focus-visible{outline:2px solid #56615c;outline-offset:3px}
+.maison-detail .maison-voice :where([class*=gradient]){filter:grayscale(1)}
+.maison-add-cart-toast{
+  position:fixed;left:50%;bottom:max(23px,env(safe-area-inset-bottom));z-index:140;transform:translateX(-50%);
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px 20px;
+  width:min(95vw,640px);min-height:64px;padding:14px 19px;
+  background:rgba(237,240,236,.96);border:1px solid #bdc5bf;box-shadow:0 18px 50px #111b1b24;
+  backdrop-filter:blur(18px);color:#27312e;font-size:12px;line-height:1.9;
+  animation:maison-cart-toast-in .5s cubic-bezier(.19,1,.22,1) both;
+}
+.maison-add-cart-toast__mark{width:22px;height:22px;border:1px solid #77827c;display:grid;place-items:center;font:14px Georgia,serif;border-radius:50%}
+.maison-add-cart-toast__close{position:absolute;top:4px;left:9px;width:28px;height:28px;display:grid;place-items:center;font-size:18px;color:#65706b}
+.maison-add-cart-toast__link{border-bottom:1px solid #77817b;padding:3px 1px;margin-right:auto;font-size:11px}
+@keyframes maison-cart-toast-in{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
+@media(max-width:600px){.maison-add-cart-toast{bottom:max(85px,calc(env(safe-area-inset-bottom) + 74px));padding:18px 25px}.maison-add-cart-toast__link{margin-right:0}}
+@media(prefers-reduced-motion:reduce){.maison-add-cart-toast{animation:none}}

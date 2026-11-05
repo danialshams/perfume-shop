@@ -1010,6 +1010,7 @@ export default function ProductVoiceCard({
       dir="rtl"
       className={[
         desktop ? "hidden lg:block" : "lg:hidden",
+        "maison-voice",
         className ?? "",
       ].join(" ")}
     >
@@ -1024,8 +1025,8 @@ export default function ProductVoiceCard({
         >
           <span
             className={[
-              "max-w-[80%] bg-gradient-to-b from-[#24405f] via-[#14294a] to-[#0a1a2e]",
-              "bg-clip-text pb-[3px] text-right text-transparent",
+              "max-w-[80%] text-[#303938]",
+              "pb-[3px] text-right",
               "transition-opacity duration-700 ease-out group-hover:opacity-85",
               desktop
                 ? "text-[16.5px] leading-[2.05] lg:text-[18px]"
@@ -1043,7 +1044,7 @@ export default function ProductVoiceCard({
 
           <div
             ref={chevronRef}
-            className="shrink-0 text-[#7d8189] opacity-45 transition-opacity duration-500 ease-out group-hover:opacity-80"
+            className="shrink-0 text-[#76817b] opacity-75 transition-opacity duration-500 ease-out group-hover:opacity-100"
             style={{ willChange: "transform" }}
           >
             {isOpen ? (

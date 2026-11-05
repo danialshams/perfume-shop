@@ -396,6 +396,7 @@ export default function ProductsSection({
 
   const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const animatedCardsRef = useRef<WeakSet<Element>>(new WeakSet());
 
   const goToProduct = useCallback(
     (product: Product) => {
@@ -407,26 +408,19 @@ export default function ProductsSection({
   useEffect(() => {
     if (!filteredProducts?.length) return;
 
-    const context = gsap.context(() => {
-      const cards = gridRef.current?.querySelectorAll(".product-card");
+    const cards = [...(gridRef.current?.querySelectorAll<HTMLElement>(".product-card") ?? [])]
+      .filter(card => !animatedCardsRef.current.has(card));
 
-      if (!cards?.length) return;
+    if (!cards.length) return;
+    cards.forEach(card => animatedCardsRef.current.add(card));
 
-      gsap.fromTo(
-        cards,
-        { opacity: 0, y: 12 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.72,
-          stagger: 0.035,
-          ease: "power2.out",
-          clearProps: "transform,opacity",
-        },
-      );
-    }, sectionRef);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    return () => context.revert();
+    const tween = gsap.fromTo(cards,
+      { opacity: 0.68, y: 20 },
+      { opacity: 1, y: 0, duration: 0.86, stagger: 0.045, ease: "power3.out", clearProps: "transform,opacity" },
+    );
+    return () => { tween.kill(); gsap.set(cards, { clearProps: "transform,opacity" }); };
   }, [filteredProducts]);
 
   return (
@@ -502,15 +496,7 @@ export default function ProductsSection({
                 ? formatPrice(originalPriceValue)
                 : undefined;
 
-              if (process.env.NODE_ENV !== "production") {
-                console.log("[Product Card Data]", {
-                  productId: product.id,
-                  productName: product.name,
-                  selectedVariant,
-                  displayPrice,
-                  originalPrice,
-                });
-              }
+
 
               return (
                 <MobileProductCard

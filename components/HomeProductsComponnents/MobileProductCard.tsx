@@ -20,16 +20,6 @@ function MobileProductCard({
   const mobileDisplayPrice = displayPrice.replace(/\s*t$/i, " تومان").trim();
   const mobileOriginalPrice = originalPrice?.replace(/\s*t$/i, " تومان").trim() || null;
 
-  if (process.env.NODE_ENV !== "production") {
-    console.log("[MobileProductCard]", {
-      productId: product.id,
-      productName: product.name,
-      displayPrice,
-      originalPrice,
-      mobileDisplayPrice,
-      mobileOriginalPrice,
-    });
-  }
 
   return (
     <article
@@ -61,6 +51,10 @@ function MobileProductCard({
         [&_[data-progress-fill]]:!h-[0.5px]
       "
       onClick={onClick}
+      role="link"
+      aria-label={"مشاهده عطر " + product.name}
+      tabIndex={0}
+      onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onClick(); } }}
     >
       <div className="w-full overflow-hidden">
         <MobileProductImageSlider

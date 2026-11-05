@@ -78,6 +78,13 @@ export default function ProductDetailClient({ product }: Props) {
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [cartError, setCartError] = useState<string | null>(null);
+  const [cartSuccess, setCartSuccess] = useState(false);
+  const cartInFlightRef = useRef(false);
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (successTimerRef.current !== null) window.clearTimeout(successTimerRef.current);
+  }, []);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [imagesLoading, setImagesLoading] = useState(true);
 
@@ -282,6 +289,7 @@ export default function ProductDetailClient({ product }: Props) {
   };
 
   const handleAddToCart = async () => {
+    if (cartInFlightRef.current) return;
     if (!selectedVariant?.id) {
       const error = new Error("NO_VARIANT_SELECTED");
       setCartError("لطفاً یک مدل از محصول را انتخاب کنید.");
@@ -305,21 +313,20 @@ export default function ProductDetailClient({ product }: Props) {
     }
 
     try {
+      cartInFlightRef.current = true;
       setIsAddingToCart(true);
       setCartError(null);
+      setCartSuccess(false);
 
       const cart = await addCartItemApi({
         variant_id: Number(selectedVariant.id),
         quantity: Number(quantity),
       });
 
-      console.log("[handleAddToCart] success", {
-        selectedVariantId: selectedVariant.id,
-        quantity,
-        cart,
-      });
-
       window.dispatchEvent(new Event("cart:changed"));
+      setCartSuccess(true);
+      if (successTimerRef.current !== null) window.clearTimeout(successTimerRef.current);
+      successTimerRef.current = window.setTimeout(() => setCartSuccess(false), 4400);
       router.refresh();
       return cart;
     } catch (error) {
@@ -336,6 +343,7 @@ export default function ProductDetailClient({ product }: Props) {
       setCartError(getCartErrorText(message));
       throw error;
     } finally {
+      cartInFlightRef.current = false;
       setIsAddingToCart(false);
     }
   };
@@ -477,6 +485,14 @@ export default function ProductDetailClient({ product }: Props) {
       dir="rtl"
       className="relative overflow-x-clip bg-[#F8F8F8] px-5 pt-4 sm:px-8 lg:px-0"
     >
+      {cartSuccess && (
+        <div role="status" aria-live="polite" className="maison-add-cart-toast">
+          <span className="maison-add-cart-toast__mark" aria-hidden="true">✓</span>
+          <span>به انتخاب‌های شما اضافه شد.</span>
+          <button type="button" className="maison-add-cart-toast__close" onClick={() => setCartSuccess(false)} aria-label="بستن اعلان">×</button>
+          <button type="button" onClick={() => router.push("/cart")} className="maison-add-cart-toast__link">مشاهده سبد خرید ←</button>
+        </div>
+      )}
 
       <style jsx global>{`
         .ripple-effect {
@@ -604,7 +620,7 @@ export default function ProductDetailClient({ product }: Props) {
                   voiceUrl={product.voice_file}
                   productName={product.name}
                   compact
-                  
+                  desktop
                 />
               )}
 

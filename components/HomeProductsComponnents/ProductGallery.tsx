@@ -915,13 +915,13 @@ export default function ProductGallery({
                             e.stopPropagation();
                             openLightbox();
                         }}
-                        className="absolute bottom-4 left-4 z-40 flex h-11 w-11 items-center justify-center rounded-lg border border-[#dbe5f2]/80 bg-white/95 text-[#10213f] backdrop-blur-xl transition-transform duration-200 active:scale-95"
+                        className="absolute bottom-4 left-4 z-40 flex h-11 w-11 items-center justify-center rounded-lg border border-[#d5d9d5]/80 bg-[#f8f9f6]/95 text-[#333c39] backdrop-blur-xl transition-transform duration-200 active:scale-95"
                         aria-label="نمایش تمام صفحه تصویر"
                     >
                         <ExpandArrowsIcon className="h-5 w-5" strokeWidth={1.6} />
                     </button>
 
-                    <div className="pointer-events-none absolute bottom-4 right-4 z-40 rounded-full bg-gray-700/55 px-2.5 py-[2px] text-[10px] font-light tabular-nums tracking-[0.04em] text-white backdrop-blur-md">
+                    <div className="pointer-events-none absolute bottom-4 right-4 z-40 rounded-full bg-[#303735]/55 px-2.5 py-[2px] text-[10px] font-light tabular-nums tracking-[0.04em] text-white backdrop-blur-md">
                         {activeImageIndex + 1} / {safeImages.length}
                     </div>
 
@@ -965,7 +965,7 @@ export default function ProductGallery({
                             <X className="h-7 w-7" strokeWidth={1.2} />
                         </button>
 
-                        <div className="pointer-events-none absolute bottom-6 right-6 z-[100] rounded-full bg-gray-700/50 px-2.5 py-[2px] text-[10px] font-light tabular-nums tracking-[0.04em] text-white backdrop-blur-md">
+                        <div className="pointer-events-none absolute bottom-6 right-6 z-[100] rounded-full bg-[#303735]/50 px-2.5 py-[2px] text-[10px] font-light tabular-nums tracking-[0.04em] text-white backdrop-blur-md">
                             {lightboxIndex + 1} / {safeImages.length}
                         </div>
 
