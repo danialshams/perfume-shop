@@ -48,6 +48,7 @@ jobs:
             echo "Browser QA requires Chrome/Chromium on the runner."
             exit 1
           fi
+          "$CHROME" --version
           node scripts/verify-visual-browser.mjs
       - name: Upload visual verification screenshots
         if: always()

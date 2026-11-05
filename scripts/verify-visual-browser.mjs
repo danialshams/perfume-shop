@@ -5,13 +5,18 @@ import { setTimeout as sleep } from "node:timers/promises";
 
 const browserPath=process.env.CHROME||"google-chrome";
 const port=9000+randomInt(1000);
+let chromeErrors="";
+let chromeExit=null;
 const chrome=spawn(browserPath,[
  "--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage",
  "--hide-scrollbars","--remote-allow-origins=*",
  "--remote-debugging-port="+port,
  "--user-data-dir=/tmp/maison-cdp-"+process.pid,
  "about:blank"
-],{stdio:"ignore"});
+],{stdio:["ignore","ignore","pipe"]});
+chrome.stderr?.on("data",chunk=>{ chromeErrors=(chromeErrors+chunk.toString()).slice(-4500); });
+chrome.on("exit",(code,signal)=>{chromeExit={code,signal};});
+chrome.on("error",error=>{chromeErrors+="\\n"+error.message;});
 const endpoint="http://127.0.0.1:"+port;
 const state={seq:0,pending:new Map(),exceptions:[]};
 
