@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { rejectNonAdminNotificationRequest } from "@/server/middlewares/admin-notification-guard";
+import { NextRequest, NextResponse } from "next/server";
 import { adminNotificationService } from "@/server/services/admin-notification.service";
 
 export const runtime = "nodejs";
@@ -6,7 +7,10 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = await rejectNonAdminNotificationRequest(request);
+  if (denied) return denied;
+
   console.log("[ADMIN_NOTIFICATION_API][GET_INITIAL_START]", {
     at: new Date().toISOString(),
   });
@@ -38,7 +42,10 @@ export async function GET() {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  const denied = await rejectNonAdminNotificationRequest(request);
+  if (denied) return denied;
+
   console.log("[ADMIN_NOTIFICATION_API][DELETE_ALL_START]", {
     at: new Date().toISOString(),
   });

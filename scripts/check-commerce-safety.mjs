@@ -53,3 +53,16 @@ assert.match(payments, /process\.env\.VERCEL === "1"/);
 const productsHook = read("components/hooks/useProductsPageData.ts");
 assert.match(productsHook, /limit=100&page=/);
 assert.match(productsHook, /Promise\.all\(numbers\.map\(fetchPage\)\)/);
+
+const notificationPaths = [
+  "app/api/v1/notifications/route.ts",
+  "app/api/v1/notifications/stream/route.ts",
+  "app/api/v1/notifications/read-all/route.ts",
+  "app/api/v1/notifications/[id]/route.ts",
+  "app/api/v1/notifications/[id]/read/route.ts",
+];
+for (const path of notificationPaths) {
+  assert.match(read(path), /rejectNonAdminNotificationRequest\(request\)/,
+    "Publicly accessible admin notifications: " + path);
+}
+assert.match(read("components/hooks/use-admin-notifications.ts"), /visibilityState/);

@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { rejectNonAdminNotificationRequest } from "@/server/middlewares/admin-notification-guard";
+import { NextRequest, NextResponse } from "next/server";
 import { adminNotificationService } from "@/server/services/admin-notification.service";
 
 export const runtime = "nodejs";
@@ -7,9 +8,11 @@ export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
 export async function POST(
-  _request: Request,
+  request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
+  const denied = await rejectNonAdminNotificationRequest(request);
+  if (denied) return denied;
   console.log("[ADMIN_NOTIFICATION_API][READ_ONE_START]", {
     at: new Date().toISOString(),
   });

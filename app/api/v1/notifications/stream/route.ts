@@ -1,3 +1,5 @@
+import { rejectNonAdminNotificationRequest } from "@/server/middlewares/admin-notification-guard";
+import { NextRequest } from "next/server";
 import { adminNotificationBus } from "@/lib/admin-notification-bus";
 
 export const runtime = "nodejs";
@@ -9,7 +11,10 @@ function sseData(data: unknown) {
   return `data: ${JSON.stringify(data)}\n\n`;
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const denied = await rejectNonAdminNotificationRequest(request);
+  if (denied) return denied;
+
   console.log("[ADMIN_NOTIFICATION_SSE][REQUEST_START]", {
     at: new Date().toISOString(),
   });

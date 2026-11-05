@@ -190,12 +190,24 @@ export function useAdminNotifications() {
     void loadInitial();
     connectSSE();
 
+    // Database polling also works across isolated serverless functions and
+    // during failed EventSource connections. Pause in hidden tabs.
+    const pollId = window.setInterval(() => {
+      if (document.visibilityState === "visible") void loadInitial();
+    }, 25000);
+    const onReturn = () => {
+      if (document.visibilityState === "visible") void loadInitial();
+    };
+    document.addEventListener("visibilitychange", onReturn);
+
     return () => {
       console.log("[ADMIN_NOTIFICATION_CLIENT][HOOK_UNMOUNT]", {
         at: new Date().toISOString(),
       });
 
       mounted = false;
+      window.clearInterval(pollId);
+      document.removeEventListener("visibilitychange", onReturn);
 
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
