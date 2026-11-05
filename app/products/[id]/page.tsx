@@ -24,10 +24,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const product = await productService.getById(numericId);
     if (!product || !isPublicProduct(product)) return { robots: { index: false, follow: false } };
     const copy = String(product.description ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-    const description = (copy || "معرفی ویژگی‌ها و تنوع‌های عطر " + product.name + " در گالری عطر MAISON.").slice(0, 160);
+    const description = (copy || "معرفی ویژگی‌ها و تنوع‌های عطر " + product.name + " در گالری عطر FERTINI.").slice(0, 160);
     const image = product.images[0]?.image_url || "/maison/hero.jpg";
     const photo = image.startsWith("/") || image.startsWith("https://") ? image : "/" + image;
-    const title = product.name + " | گالری عطر MAISON";
+    const title = product.name + " | گالری عطر FERTINI";
     return {
       title, description,
       alternates: { canonical: "/products/" + numericId },

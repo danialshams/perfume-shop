@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
 export const metadata: Metadata = {
-  title: "قوانین و مقررات | MAISON",
-  description: "چارچوب اولیه استفاده از فروشگاه عطر MAISON و وضعیت سفارش‌گیری آزمایشی.",
+  title: "قوانین و مقررات | FERTINI",
+  description: "چارچوب اولیه استفاده از فروشگاه عطر FERTINI و وضعیت سفارش‌گیری آزمایشی.",
   alternates: { canonical: "/terms" },
 };
 export default function TermsPage() {
-  return <MaisonPage kicker="MAISON / TERMS OF USE" title="شفافیت، پیش از انتخاب."
+  return <MaisonPage kicker="FERTINI / TERMS OF USE" title="شفافیت، پیش از انتخاب."
     lead="این شرایط در نسخهٔ آزمایشی اطلاع‌رسانی اولیه هستند و جایگزین قوانین نهایی فروش، بازگشت کالا و خدمات پس از خرید نیستند.">
     <MaisonSection number="01" title="محتوا و تصاویر">
       <p>مطالب و تصاویر سایت برای معرفی و بررسی رایحه‌ها ارائه می‌شوند. ظاهر، حجم و جزئیات محصول باید پیش از خرید با مشخصات درج‌شده برای همان محصول تطبیق داده شود.</p>

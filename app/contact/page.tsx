@@ -3,12 +3,12 @@ import Link from "next/link";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
 export const metadata: Metadata = {
-  title: "ارتباط با MAISON",
-  description: "راهنمای پیگیری سفارش‌ها و ارتباط با فروشگاه عطر MAISON.",
+  title: "ارتباط با FERTINI",
+  description: "راهنمای پیگیری سفارش‌ها و ارتباط با فروشگاه عطر FERTINI.",
   alternates: { canonical: "/contact" },
 };
 export default function ContactPage() {
-  return <MaisonPage kicker="MAISON / CONTACT" title="در کنار انتخاب شما."
+  return <MaisonPage kicker="FERTINI / CONTACT" title="در کنار انتخاب شما."
     lead="برای بررسی اطلاعات حساب و سفارش‌های پیشین، از مسیر حساب کاربری استفاده کنید.">
     <MaisonSection number="01" title="حساب و سفارش‌ها">
       <p>جزئیات سفارش‌های ثبت‌شده و اطلاعات شخصی را از حساب کاربری خود بررسی کنید. سفارش‌گیری جدید تا فعال‌شدن پرداخت واقعی غیرفعال است.</p>

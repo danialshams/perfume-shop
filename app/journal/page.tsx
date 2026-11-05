@@ -5,12 +5,12 @@ import { ArrowUpLeft } from "lucide-react";
 import { MaisonPage } from "@/components/maison/MaisonContentPage";
 
 export const metadata: Metadata = {
-  title: "ژورنال رایحه | MAISON",
+  title: "ژورنال رایحه | FERTINI",
   description: "یادداشت‌های مزون درباره شناخت عطر، خانواده‌های بویایی و هنر انتخاب رایحه شخصی.",
   alternates: { canonical: "/journal" },
 };
 export default function JournalPage() {
-  return <MaisonPage kicker="THE MAISON JOURNAL — VOL. 01" title="یادداشت‌هایی از جهان رایحه"
+  return <MaisonPage kicker="THE FERTINI JOURNAL — VOL. 01" title="یادداشت‌هایی از جهان رایحه"
     lead="عطر فقط یک انتخاب نیست؛ بخشی از زبان شخصی ماست. اینجا از جزئیاتی می‌گوییم که انتخاب را آگاهانه‌تر می‌کنند.">
     <Link href="/journal/how-to-choose-a-fragrance" className="maison-journal-page__feature">
       <div className="maison-journal-page__image">

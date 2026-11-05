@@ -19,7 +19,7 @@ function PaymentStatusContent() {
       <LuxuryNavbar />
       <main className="ql-container flex min-h-[70svh] flex-1 items-center justify-center py-20 sm:py-28">
         <section className="mx-auto w-full max-w-[680px] border-y border-[#d8cfc3] py-12 text-center sm:py-20" aria-labelledby="payment-state-title">
-          <span className="ql-overline" dir="ltr" lang="en">MAISON — YOUR ORDER</span>
+          <span className="ql-overline" dir="ltr" lang="en">FERTINI — YOUR ORDER</span>
           <div className="mx-auto my-9 h-px w-16 bg-[#a48b6d]" aria-hidden="true" />
           <h1 id="payment-state-title" className="text-[clamp(30px,5vw,52px)] font-light leading-[1.6] text-[#302d29]">
             {unsuccessful ? "پرداخت تکمیل نشد." : "نتیجهٔ پرداخت در حال بررسی است."}

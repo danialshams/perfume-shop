@@ -3,12 +3,12 @@ import Link from "next/link";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
 export const metadata: Metadata = {
-  title: "راهنمای ارسال و سفارش | MAISON",
-  description: "راهنمای وضعیت سفارش‌گیری، آدرس و ارسال سفارش در فروشگاه MAISON.",
+  title: "راهنمای ارسال و سفارش | FERTINI",
+  description: "راهنمای وضعیت سفارش‌گیری، آدرس و ارسال سفارش در فروشگاه FERTINI.",
   alternates: { canonical: "/shipping" },
 };
 export default function ShippingPage() {
-  return <MaisonPage kicker="MAISON / ORDERS & DELIVERY" title="از انتخاب تا دریافت."
+  return <MaisonPage kicker="FERTINI / ORDERS & DELIVERY" title="از انتخاب تا دریافت."
     lead="شفافیت سفارش و اطلاعات ارسال، بخش مهمی از تجربهٔ خرید آرام است.">
     <MaisonSection number="01" title="وضعیت سفارش‌گیری">
       <p>در نسخهٔ آزمایشی فعلی، ثبت سفارش و پرداخت واقعی فعال نیست. پس از اتصال و تأیید درگاه پرداخت، امکان تکمیل سفارش فراهم خواهد شد.</p>

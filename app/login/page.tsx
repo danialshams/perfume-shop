@@ -725,10 +725,10 @@ function RegisterView() {
                             <Image fill priority sizes="(min-width: 900px) 48vw, 100vw"
                                 src="/maison/portrait.jpg" alt="شیشه عطر در ترکیب‌بندی هنری"
                                 className="object-cover"/>
-                            <figcaption dir="ltr" lang="en">A PERSONAL SIGNATURE — MAISON</figcaption>
+                            <figcaption dir="ltr" lang="en">A PERSONAL SIGNATURE — FERTINI</figcaption>
                         </figure>
                         <section className="maison-login__content" aria-labelledby="maison-login-heading">
-                            <span className="maison-kicker" dir="ltr" lang="en">MEMBERS / MAISON</span>
+                            <span className="maison-kicker" dir="ltr" lang="en">MEMBERS / FERTINI</span>
                             <h1 id="maison-login-heading">بازگشت به<br/><em>گالری شخصی.</em></h1>
                             <p>برای مشاهدهٔ انتخاب‌ها، اطلاعات حساب و سفارش‌های خود وارد شوید.</p>
                             <form onSubmit={handleLogin} className="maison-login__form" noValidate>

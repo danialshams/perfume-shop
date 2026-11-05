@@ -4,16 +4,16 @@ import Link from "next/link";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
 export const metadata: Metadata = {
-  title: "چگونه عطر مناسب انتخاب کنیم؟ | ژورنال MAISON",
+  title: "چگونه عطر مناسب انتخاب کنیم؟ | ژورنال FERTINI",
   description: "راهنمای ساده و کاربردی شناخت نت‌های اولیه، میانی و پایه، آزمایش روی پوست و انتخاب رایحه بر اساس سلیقه و موقعیت.",
   alternates: { canonical: "/journal/how-to-choose-a-fragrance" },
 };
 export default function FragranceGuide() {
-  return <MaisonPage kicker="THE MAISON JOURNAL / FIELD NOTE 001" title="چگونه عطر مناسب خود را پیدا کنیم؟"
+  return <MaisonPage kicker="THE FERTINI JOURNAL / FIELD NOTE 001" title="چگونه عطر مناسب خود را پیدا کنیم؟"
     lead="پیش از نام برند یا شکل بطری، به حسی فکر کنید که قرار است با شما بماند.">
     <figure className="maison-article__image">
       <Image fill priority sizes="(min-width: 900px) 80vw, 100vw" src="/maison/portrait.jpg" alt="چند شیشه عطر در نور ملایم" />
-      <figcaption>THE ART OF CHOOSING — MAISON JOURNAL</figcaption>
+      <figcaption>THE ART OF CHOOSING — FERTINI JOURNAL</figcaption>
     </figure>
     <div className="maison-article__chapters">
       <MaisonSection number="01" title="اول، یک حس را انتخاب کنید">

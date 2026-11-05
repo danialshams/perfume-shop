@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
 export const metadata: Metadata = {
-  title: "حفظ حریم خصوصی | MAISON",
-  description: "اطلاعات اولیه دربارهٔ داده‌های حساب کاربری، نشانی و سفارش‌ها در فروشگاه عطر MAISON.",
+  title: "حفظ حریم خصوصی | FERTINI",
+  description: "اطلاعات اولیه دربارهٔ داده‌های حساب کاربری، نشانی و سفارش‌ها در فروشگاه عطر FERTINI.",
   alternates: { canonical: "/privacy" },
 };
 export default function PrivacyPage() {
-  return <MaisonPage kicker="MAISON / PRIVACY" title="حریم خصوصی شما."
+  return <MaisonPage kicker="FERTINI / PRIVACY" title="حریم خصوصی شما."
     lead="این متن دربارهٔ داده‌هایی است که ساختار فعلی فروشگاه می‌تواند برای خدمات حساب و سفارش دریافت کند. نسخهٔ حقوقی نهایی پیش از آغاز فروش باید بررسی شود.">
     <MaisonSection number="01" title="اطلاعات حساب">
       <p>برای ثبت‌نام و ورود، نام، نام خانوادگی، شمارهٔ همراه و اطلاعات لازم برای احراز هویت دریافت می‌شود. گذرواژه در سامانه به صورت هش ذخیره می‌شود.</p>
