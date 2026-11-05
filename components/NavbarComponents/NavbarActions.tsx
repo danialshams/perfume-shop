@@ -19,7 +19,6 @@ import { createPortal } from "react-dom";
 import { HiMiniHeart } from "react-icons/hi2";
 import DesktopSearch from "./DesktopSearch";
 import MobileSearch from "./MobileSearch";
-import MusicVisualizer from "./MusicVisualizer";
 
 type CustomerProfile = {
   first_name?: string;
@@ -901,7 +900,7 @@ export default function NavbarActions({
         {LogoutModal}
         <div className="flex items-center gap-0.5">
           {MenuButton}
-          <MusicVisualizer />
+          
         </div>
       </>
     );

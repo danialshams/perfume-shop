@@ -559,13 +559,9 @@ export default function ProductDetailClient({ product }: Props) {
         <div className="flex h-[calc(100dvh-120px)] w-1/2 flex-col border-b border-gray-200 bg-[#F8F8F8]">
           <div className="flex h-full w-full flex-col items-center justify-center px-16 py-14 xl:px-20">
             <div className="pd-reveal w-full max-w-[440px] text-center">
-              <p className="text-[11px] font-light uppercase tracking-[0.4em] text-[#a0a0a0]">
-                {product.name}
-              </p>
+              <p className="text-[11px] font-light uppercase tracking-[0.4em] text-[#a18461]" lang="en" dir="ltr">MAISON — THE FRAGRANCE EDIT</p>
 
-              <h1 className="mt-8 text-[40px] font-extralight leading-[1.25] tracking-[-0.015em] text-[#2a2a2a]">
-                مشاهده جزئیات
-              </h1>
+              <h1 className="mt-8 text-[40px] font-extralight leading-[1.45] tracking-[-0.015em] text-[#302d29]">{product.name}</h1>
 
               {product.short_description && (
                 <p className="mt-8 text-[13.5px] font-light leading-[2] tracking-[0.02em] text-[#6a6a6a]">
@@ -581,7 +577,7 @@ export default function ProductDetailClient({ product }: Props) {
                 }}
                 className="relative mt-12 overflow-hidden rounded-full border border-[#d8d8d8] bg-[#F8F8F8] px-12 py-4 text-[12px] font-light tracking-[0.12em] text-[#2a2a2a] shadow-sm transition-all duration-300 hover:border-[#2a2a2a] hover:bg-[#2a2a2a] hover:text-white hover:shadow-md"
               >
-                باز کردن جزئیات
+                کشف جزئیات رایحه
               </button>
             </div>
           </div>

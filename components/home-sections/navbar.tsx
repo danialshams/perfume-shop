@@ -13,7 +13,6 @@ import DesktopNavLinks from "../NavbarComponents/DesktopNavLinks";
 import MobileMenuOverlay from "../NavbarComponents/MobileMenuOverlay";
 import { navItems } from "../NavbarComponents/navbar.data";
 import NavbarActions from "../NavbarComponents/NavbarActions";
-import MusicVisualizer from "../NavbarComponents/MusicVisualizer";
 
 type CustomerProfile = {
   first_name?: string;
@@ -316,10 +315,6 @@ export default function LuxuryNavbar() {
                     />
                   </div>
 
-                  {/* فضای ثابت دکمه ویژوالایزر */}
-                  <div className="flex w-14 shrink-0 items-center justify-center text-[#33383C]">
-                    <MusicVisualizer />
-                  </div>
                 </div>
               </div>
             </nav>

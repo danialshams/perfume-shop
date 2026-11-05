@@ -17,15 +17,8 @@ function MobileProductCard({
   originalPrice?: string;
   onClick: () => void;
 }) {
-  const mobileDisplayPrice = displayPrice.includes("تومان")
-    ? `${displayPrice.replace("تومان", "").trim()} t`
-    : displayPrice.replace(/\s*t$/g, " t");
-
-  const mobileOriginalPrice = originalPrice
-    ? originalPrice.includes("تومان")
-      ? `${originalPrice.replace("تومان", "").trim()} t`
-      : originalPrice.replace(/\s*t$/g, " t")
-    : null;
+  const mobileDisplayPrice = displayPrice.replace(/\s*t$/i, " تومان").trim();
+  const mobileOriginalPrice = originalPrice?.replace(/\s*t$/i, " تومان").trim() || null;
 
   if (process.env.NODE_ENV !== "production") {
     console.log("[MobileProductCard]", {

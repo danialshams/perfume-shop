@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import LuxuryFooter from "@/components/home-sections/LuxuryFooter";
+import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import ProductDetailClient from "@/components/HomeProductsPage/ProductDetailPage";
 import { getProductById } from "@/lib/product";
@@ -23,13 +23,13 @@ export default async function ProductDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F8F8F8]">
+    <div className="ql-detail flex min-h-screen flex-col bg-[#F5F2ED]">
       <LuxuryNavbar />
 
-      <main className="flex flex-1 flex-col text-[#10213f]">
+      <main className="flex flex-1 flex-col text-[#302d29]">
         <ProductDetailClient product={product} />
 
-        <div className="mt-64 pb-4 flex w-full justify-center sm:mt-46">
+        <div className="mt-20 pb-16 flex w-full justify-center sm:mt-28">
           <Link
             href="/products"
             dir="rtl"
@@ -58,7 +58,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
         </div>
       </main>
 
-      <LuxuryFooter />
+      <CinematicFooter />
     </div>
   );
 

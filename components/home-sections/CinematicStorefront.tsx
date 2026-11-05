@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowUpLeft, MoveLeft } from "lucide-react";
 
 const photo = {
@@ -22,7 +22,7 @@ type PerfumePreview = {
   min_price?: number | string | null;
 };
 
-function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function Reveal({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <div data-ql-reveal className={"ql-reveal " + className}>{children}</div>;
 }
 
