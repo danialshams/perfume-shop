@@ -33,6 +33,7 @@ export default function LuxuryNavbar() {
   const dismiss = useCallback(() => {
     setMenuOpen(false);
     setSearchOpen(false);
+    setQuery("");
   }, []);
 
   useEffect(() => {
@@ -75,7 +76,6 @@ export default function LuxuryNavbar() {
       const id = window.requestAnimationFrame(() => searchRef.current?.focus());
       return () => window.cancelAnimationFrame(id);
     }
-    setQuery("");
   }, [searchOpen]);
 
   useEffect(() => {
@@ -90,6 +90,7 @@ export default function LuxuryNavbar() {
   function openMenu(event: React.MouseEvent<HTMLButtonElement>) {
     lastTriggerRef.current = event.currentTarget;
     setSearchOpen(false);
+    setQuery("");
     setMenuOpen(true);
   }
   function openSearch(event: React.MouseEvent<HTMLButtonElement>) {
