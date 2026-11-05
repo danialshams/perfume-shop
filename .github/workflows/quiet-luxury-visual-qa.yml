@@ -23,6 +23,11 @@ jobs:
         run: node scripts/check-luxury-ui.mjs
       - name: Lint new visual modules
         run: npx eslint app/layout.tsx app/products/page.tsx components/home-sections/CinematicStorefront.tsx components/home-sections/CinematicPurchasePanel.tsx components/HomeWrapper/home-page-shell.tsx components/HomeProductsPage/LuxuryProductsView.tsx components/NavbarComponents/BrandLogo.tsx
+      - name: Isolated bundler smoke (temporary legacy TypeScript override — NOT production release)
+        run: |
+          node -e 'const fs=require("fs");const p="next.config.ts";let s=fs.readFileSync(p,"utf8");if(!s.includes("const nextConfig: NextConfig = {"))process.exit(2);s=s.replace("const nextConfig: NextConfig = {","const nextConfig: NextConfig = { typescript: { ignoreBuildErrors: true },");fs.writeFileSync(p,s)'
+          npm run build
+          git checkout -- next.config.ts
       - name: TypeScript correctness
         run: npx tsc --noEmit
       - name: Legacy ESLint report (existing errors, not a release gate for the visual phase)
