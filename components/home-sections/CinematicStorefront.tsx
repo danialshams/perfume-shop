@@ -182,7 +182,7 @@ export default function CinematicStorefront() {
 }
 
 export function CinematicFooter() {
-  return <footer className="ql-footer" dir="rtl">
+  return <footer id="site-footer" className="ql-footer" dir="rtl">
     <div className="ql-container ql-footer-top"><div className="ql-footer-brand">
       <Link href="/" className="ql-footer-wordmark" lang="en" dir="ltr">MAISON<span>®</span></Link>
       <p>رایحه‌ای که می‌ماند.</p>

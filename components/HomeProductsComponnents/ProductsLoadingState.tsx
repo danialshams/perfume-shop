@@ -4,12 +4,12 @@ function MobileProductSkeleton() {
   return (
     <div className="min-w-0 animate-pulse">
       <div className="overflow-hidden rounded-none">
-        <div className="aspect-[0.76/1] w-full bg-[#f2f2f2]" />
+        <div className="aspect-[0.76/1] w-full bg-[#e9e2d8]" />
       </div>
 
       <div className="mt-[16px] flex items-start justify-between gap-3 px-[4px]" dir="rtl">
-        <div className="h-[11px] w-3/5 rounded-full bg-[#f2f2f2]" />
-        <div className="h-[11px] w-1/4 rounded-full bg-[#f6f6f6]" />
+        <div className="h-[11px] w-3/5 rounded-full bg-[#e9e2d8]" />
+        <div className="h-[11px] w-1/4 rounded-full bg-[#efe9df]" />
       </div>
     </div>
   );
@@ -19,12 +19,12 @@ function DesktopProductSkeleton() {
   return (
     <div className="min-w-0 animate-pulse">
       <div className="overflow-hidden rounded-none">
-        <div className="aspect-[0.76/1] w-full bg-[#f2f2f2]" />
+        <div className="aspect-[0.76/1] w-full bg-[#e9e2d8]" />
       </div>
 
       <div className="mt-[20px] flex items-start justify-between gap-3 px-[4px]" dir="rtl">
-        <div className="h-[12px] w-3/5 rounded-full bg-[#f2f2f2]" />
-        <div className="h-[12px] w-1/4 rounded-full bg-[#f6f6f6]" />
+        <div className="h-[12px] w-3/5 rounded-full bg-[#e9e2d8]" />
+        <div className="h-[12px] w-1/4 rounded-full bg-[#efe9df]" />
       </div>
     </div>
   );

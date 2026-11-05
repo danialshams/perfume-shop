@@ -39,7 +39,7 @@ function MobileProductCard({
         min-w-0
         cursor-pointer
         select-none
-        bg-[#F8F8F8]
+        bg-[#f5f2ed]
         border-0
         rounded-none
         shadow-none

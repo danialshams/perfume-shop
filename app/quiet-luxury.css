@@ -20,12 +20,12 @@
 .ql-visual-stamp{top:clamp(30px,4.5vw,66px);left:clamp(24px,4vw,60px);right:clamp(24px,4vw,60px);display:flex;justify-content:space-between;gap:18px;font-size:9px}
 .ql-visual-bottom{bottom:39px;left:clamp(24px,4vw,60px);font-size:10px}
 .ql-hero-copy{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;position:relative;padding:clamp(50px,7vw,120px);min-width:0;background:#f4f0e9}
-.ql-hero-copy .ql-eyebrow{color:#a28e75;letter-spacing:.25em;animation:ql-text-in 1.1s .2s both}
+.ql-hero-copy .ql-eyebrow{color:#78644d;letter-spacing:.25em;animation:ql-text-in .75s .1s both}
 .ql-hairline{width:54px;height:1px;background:#a9906c;margin-top:clamp(26px,3.4vw,48px);animation:ql-line-in 1s .3s both}
-.ql-hero h1{font-size:clamp(49px,6vw,95px);font-weight:300;line-height:1.48;letter-spacing:-.06em;margin:clamp(24px,3.3vw,46px) 0 16px;animation:ql-text-in 1.2s .3s both}
+.ql-hero h1{color:#302d29;font-size:clamp(49px,6vw,95px);font-weight:300;line-height:1.48;letter-spacing:-.06em;margin:clamp(24px,3.3vw,46px) 0 16px;animation:ql-text-in .9s .14s both}
 .ql-hero h1 em{font-style:normal;color:#a18461}
-.ql-hero-copy>p{font-size:clamp(13px,1vw,16px);line-height:2.5;font-weight:300;color:#766c62;max-width:380px;animation:ql-text-in 1.1s .5s both}
-.ql-link-primary{display:inline-flex;align-items:center;justify-content:space-between;gap:38px;margin-top:clamp(26px,3vw,46px);padding:16px 0;border-bottom:1px solid #8e7555;font-size:13px;font-weight:400;min-width:170px;transition:gap .4s ease,border-color .4s ease;animation:ql-text-in 1.1s .7s both}
+.ql-hero-copy>p{font-size:clamp(13px,1vw,16px);line-height:2.5;font-weight:300;color:#766c62;max-width:380px;animation:ql-text-in .9s .25s both}
+.ql-link-primary{display:inline-flex;align-items:center;justify-content:space-between;gap:38px;margin-top:clamp(26px,3vw,46px);padding:16px 0;border-bottom:1px solid #8e7555;font-size:13px;font-weight:400;min-width:170px;transition:gap .4s ease,border-color .4s ease;animation:ql-text-in .85s .32s both}
 .ql-link-primary:hover{gap:50px;border-color:#292522}
 .ql-hero-pagination{display:flex;gap:11px;align-items:center;margin-top:clamp(56px,8vw,120px)}
 .ql-hero-pagination span{width:4px;height:4px;background:#bab0a5;border-radius:50%}
@@ -99,10 +99,10 @@
 .ql-footer-links{display:grid;grid-template-columns:repeat(2,minmax(130px,1fr));gap:24px 45px;padding-top:20px}
 .ql-footer-links a{font-size:12px;color:#e1d8c9;transition:color .3s}.ql-footer-links a:hover{color:#fff}
 .ql-footer-bottom{display:flex;justify-content:space-between;gap:24px;border-top:1px solid #5c554d;padding-top:26px;color:#978d7f;font-family:Georgia,serif;letter-spacing:.12em;font-size:9px}
-.ql-motion-ready [data-ql-reveal]:not(.is-visible){opacity:0;transform:translateY(24px)}
+.ql-motion-ready [data-ql-reveal]:not(.is-visible){opacity:.74;transform:translateY(16px)}
 .ql-reveal{transition:opacity .85s cubic-bezier(.2,.7,.15,1),transform .85s cubic-bezier(.2,.7,.15,1)}
 @keyframes ql-image-open{from{transform:scale(1.075);filter:brightness(.83)}to{transform:scale(1);filter:brightness(1)}}
-@keyframes ql-text-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ql-text-in{from{opacity:.88;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
 @keyframes ql-line-in{from{transform:scaleX(0);transform-origin:right}to{transform:scaleX(1);transform-origin:right}}
 .ql-shop .ql-shop-main{min-height:70vh;padding-top:clamp(28px,4vw,60px);padding-bottom:100px}
 .ql-shop .ql-shop-heading{border-bottom:1px solid var(--ql-rule);padding:clamp(40px,7vw,110px) 0 clamp(40px,6vw,80px);margin-bottom:clamp(26px,4vw,54px)}

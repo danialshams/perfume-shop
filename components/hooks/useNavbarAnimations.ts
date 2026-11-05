@@ -68,15 +68,15 @@ export function useNavbarAnimations({
       gsap.fromTo(
         desktopNavRef.current,
         {
-          opacity: 0,
-          y: -10,
-          filter: "blur(10px)",
+          opacity: 0.82,
+          y: -8,
+          filter: "blur(0px)",
         },
         {
           opacity: 1,
           y: 0,
           filter: "blur(0px)",
-          duration: 0.95,
+          duration: 0.64,
           ease: "power3.out",
         },
       );

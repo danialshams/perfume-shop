@@ -434,7 +434,7 @@ export default function ProductsSection({
       ref={sectionRef}
       className="
         relative
-        bg-[#F8F8F8]
+        bg-[#f5f2ed]
         px-0
         py-8
         sm:px-0
