@@ -1,339 +1,185 @@
 "use client";
 
-import localFont from "next/font/local";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useBodyScrollLock } from "../hooks/useBodyScrollLock";
-import { useNavbarAnimations } from "../hooks/useNavbarAnimations";
-import { useNavbarKeyboard } from "../hooks/useNavbarKeyboard";
-import { useNavbarOutsideClick } from "../hooks/useNavbarOutsideClick";
-import { useNavbarScroll } from "../hooks/useNavbarScroll";
-import BrandLogo from "../NavbarComponents/BrandLogo";
-import DesktopNavLinks from "../NavbarComponents/DesktopNavLinks";
-import MobileMenuOverlay from "../NavbarComponents/MobileMenuOverlay";
-import { navItems } from "../NavbarComponents/navbar.data";
-import NavbarActions from "../NavbarComponents/NavbarActions";
+import gsap from "gsap";
+import { ArrowLeft, ArrowUpLeft, Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
+import { useCartCount } from "@/context/CartCountContext";
+import { useProductSearch } from "@/components/hooks/useProductSearch";
 
-type CustomerProfile = {
-  first_name?: string;
-  last_name?: string;
-};
-
-type ApiResponse<T = unknown> = {
-  success?: boolean;
-  data?: T;
-  message?: string;
-};
-
-const vazir = localFont({
-  src: [
-    {
-      path: "../../public/fonts/Vazirmatn-Light.woff2",
-      weight: "300",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Vazirmatn-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Vazirmatn-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-  ],
-  display: "swap",
-});
+const menuLinks = [
+  { href: "/", label: "صفحهٔ اصلی", sub: "THE MAISON" },
+  { href: "/products", label: "مجموعه عطرها", sub: "THE COLLECTION" },
+  { href: "/journal", label: "ژورنال رایحه", sub: "THE JOURNAL" },
+  { href: "/about", label: "دربارهٔ ما", sub: "OUR STORY" },
+  { href: "/account", label: "حساب کاربری", sub: "YOUR ACCOUNT" },
+] as const;
 
 export default function LuxuryNavbar() {
   const pathname = usePathname();
+  const { cartCount } = useCartCount();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const menuPanelRef = useRef<HTMLDivElement>(null);
+  const lastTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const { products, loading, error, hasSearched } = useProductSearch(query, {
+    enabled: searchOpen, limit: 8, debounceMs: 250,
+  });
 
-  const desktopRootRef = useRef<HTMLElement | null>(null);
-  const desktopNavRef = useRef<HTMLDivElement | null>(null);
-
-  const mobileRootRef = useRef<HTMLElement | null>(null);
-  const mobileNavRef = useRef<HTMLDivElement | null>(null);
-
-  const panelRef = useRef<HTMLDivElement | null>(null);
-  const menuRef = useRef<HTMLDivElement | null>(null);
-
-  /**
-   * Ø§ÛŒÙ† refÙ‡Ø§ Ø¨Ø±Ø§ÛŒ hookÙ‡Ø§ÛŒ Ù‚Ø¨Ù„ÛŒ Ù†Ú¯Ù‡ Ø¯Ø§Ø´ØªÙ‡ Ø´Ø¯Ù‡â€ŒØ§Ù†Ø¯ ØªØ§ Ø³Ø§Ø®ØªØ§Ø± ÙØ¹Ù„ÛŒ navbar
-   * Ø¨Ø¯ÙˆÙ† Ù†ÛŒØ§Ø² Ø¨Ù‡ Ø¨Ø§Ø²Ù†ÙˆÛŒØ³ÛŒ hookÙ‡Ø§ Ù¾Ø§ÛŒØ¯Ø§Ø± Ø¨Ù…Ø§Ù†Ø¯.
-   * Ø³Ø±Ú† Ø¬Ø¯ÛŒØ¯ ØªÙˆØ³Ø· MobileSearch / DesktopSearch Ùˆ SearchOverlay Ú©Ù†ØªØ±Ù„ Ù…ÛŒâ€ŒØ´ÙˆØ¯.
-   */
-  const desktopSearchRef = useRef<HTMLInputElement | null>(null);
-  const mobileSearchRef = useRef<HTMLInputElement | null>(null);
-  const mobileSearchWrapperRef = useRef<HTMLDivElement | null>(null);
-  const mobileSearchInnerRef = useRef<HTMLDivElement | null>(null);
-
-  const topLineRef = useRef<HTMLDivElement | null>(null);
-
-  const mobileSearchVisibleRef = useRef(false);
-  const headerHiddenRef = useRef(false);
-
-  const [hoveredHref, setHoveredHref] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
-  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
-
-  const [userProfile, setUserProfile] = useState<CustomerProfile | null>(null);
-  const [loadingUser, setLoadingUser] = useState(true);
-
-  const isGlass = isScrolled && !isOpen;
-
-  const loadUserProfile = useCallback(async () => {
-    try {
-      const res = await fetch("/api/v1/customers/auth/me", {
-        method: "GET",
-        cache: "no-store",
-        headers: { Accept: "application/json" },
-      });
-
-      if (!res.ok) {
-        setUserProfile(null);
-        return null;
-      }
-
-      const resData: ApiResponse<CustomerProfile> = await res.json();
-
-      if (resData.success && resData.data) {
-        setUserProfile(resData.data);
-        return resData.data;
-      }
-
-      setUserProfile(null);
-      return null;
-    } catch (err) {
-      console.error(err);
-      setUserProfile(null);
-      return null;
-    }
+  const dismiss = useCallback(() => {
+    setMenuOpen(false);
+    setSearchOpen(false);
   }, []);
 
   useEffect(() => {
-    let alive = true;
+    const onScroll = () => setScrolled(window.scrollY > 18);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-    loadUserProfile().finally(() => {
-      if (alive) setLoadingUser(false);
-    });
+  useEffect(() => {
+    const id = window.requestAnimationFrame(dismiss);
+    return () => window.cancelAnimationFrame(id);
+  }, [pathname, dismiss]);
 
-    return () => {
-      alive = false;
+  const overlayOpen = menuOpen || searchOpen;
+  useEffect(() => {
+    if (!overlayOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        dismiss();
+        lastTriggerRef.current?.focus();
+      }
+      if (event.key === "Tab") {
+        const panel = document.querySelector<HTMLElement>(".maison-active-overlay");
+        if (!panel) return;
+        const focusable = [...panel.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled])')].filter(el => el.offsetParent !== null);
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
     };
-  }, [loadUserProfile]);
-
-  const isActive = useCallback(
-    (href: string) => {
-      if (!pathname) return false;
-      if (href === "/") return pathname === "/";
-      return pathname.startsWith(href);
-    },
-    [pathname]
-  );
-
-
-  const updateMobileSearchVisible = useCallback((visible: boolean) => {
-    if (mobileSearchVisibleRef.current === visible) return;
-
-    mobileSearchVisibleRef.current = visible;
-    setMobileSearchVisible(visible);
-  }, []);
-
-  const updateHeaderHidden = useCallback((hidden: boolean) => {
-    if (headerHiddenRef.current === hidden) return;
-
-    headerHiddenRef.current = hidden;
-    setIsHeaderHidden(hidden);
-  }, []);
+    document.addEventListener("keydown", onKeyDown);
+    return () => { document.body.style.overflow = previous; document.removeEventListener("keydown", onKeyDown); };
+  }, [overlayOpen, dismiss]);
 
   useEffect(() => {
-    mobileSearchVisibleRef.current = mobileSearchVisible;
-  }, [mobileSearchVisible]);
+    if (searchOpen) {
+      const id = window.requestAnimationFrame(() => searchRef.current?.focus());
+      return () => window.cancelAnimationFrame(id);
+    }
+    setQuery("");
+  }, [searchOpen]);
 
   useEffect(() => {
-    headerHiddenRef.current = isHeaderHidden;
-  }, [isHeaderHidden]);
+    if (!menuOpen || !menuPanelRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const context = gsap.context(() => {
+      gsap.fromTo(".maison-menu-entry", { y: 27, opacity: 0 },
+        { y: 0, opacity: 1, duration: .73, stagger: .075, ease: "power3.out", clearProps: "transform,opacity" });
+    }, menuPanelRef);
+    return () => context.revert();
+  }, [menuOpen]);
 
-  useEffect(() => {
-    setIsOpen(false);
-    updateHeaderHidden(false);
-    updateMobileSearchVisible(false);
-  }, [pathname, updateHeaderHidden, updateMobileSearchVisible]);
-
-  useNavbarScroll({
-    isOpen,
-    desktopSearchRef,
-    mobileSearchRef,
-    mobileSearchVisibleRef,
-    setIsScrolled,
-    updateHeaderHidden,
-  });
-
-  useNavbarKeyboard({
-    desktopSearchRef,
-    mobileSearchRef,
-    updateHeaderHidden,
-    updateMobileSearchVisible,
-    setIsOpen,
-  });
-
-  useNavbarOutsideClick({
-    isOpen,
-    setIsOpen,
-    menuRef,
-    mobileSearchRef,
-    mobileSearchWrapperRef,
-    mobileSearchVisibleRef,
-    updateMobileSearchVisible,
-  });
-
-  useNavbarAnimations({
-    desktopRootRef,
-    desktopNavRef,
-    mobileRootRef,
-    mobileNavRef,
-    panelRef,
-    menuRef,
-    mobileSearchWrapperRef,
-    mobileSearchInnerRef,
-    topLineRef,
-    isOpen,
-    isHeaderHidden,
-    mobileSearchVisible,
-  });
-
-  useBodyScrollLock(isOpen);
-
-  const navbarActionsAuthProps = {
-    userProfile,
-    setUserProfile,
-    loadingUser,
-    loadUserProfile,
-  };
+  function openMenu(event: React.MouseEvent<HTMLButtonElement>) {
+    lastTriggerRef.current = event.currentTarget;
+    setSearchOpen(false);
+    setMenuOpen(true);
+  }
+  function openSearch(event: React.MouseEvent<HTMLButtonElement>) {
+    lastTriggerRef.current = event.currentTarget;
+    setMenuOpen(false);
+    setSearchOpen(true);
+  }
 
   return (
     <>
-      <div
-        ref={topLineRef}
-        aria-hidden="true"
-        className="hidden min-[920px]:block"
-      />
-
-      {/* Mobile / Tablet Header */}
-      <header
-        ref={mobileRootRef}
-        dir="rtl"
-        className={[
-          vazir.className,
-          "fixed left-0 right-0 top-0 z-50 min-[920px]:hidden",
-          "text-[#33383C]", // اعمال رنگ دودی تیره به عنوان رنگ متن پیش‌فرض موبایل
-          "transition-[background-color,box-shadow,backdrop-filter] duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]",
-          isGlass
-            ? "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.8] supports-[backdrop-filter]:bg-white/[0.14]"
-            : "bg-[#F8F8F8] shadow-none backdrop-blur-0",
-        ].join(" ")}
-      >
-        <div className="relative">
-          <div
-            ref={mobileNavRef}
-            className="relative z-[2] flex h-[88px] items-center justify-between bg-transparent px-5 text-[#33383C]" // تضمین اعمال رنگ به آیکون‌ها و دکمه‌های ناوبری موبایل
-          >
-            <div className="flex items-center text-[#33383C]">
-              <NavbarActions
-                only="menu"
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-                updateHeaderHidden={updateHeaderHidden}
-                className="text-[#33383C]"
-                {...navbarActionsAuthProps}
-              />
-            </div>
-
-            <div className="absolute left-1/2 -translate-x-1/2 text-[#33383C]">
-              <BrandLogo />
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <NavbarActions
-                only="search"
-                updateHeaderHidden={updateHeaderHidden}
-                {...navbarActionsAuthProps}
-              />
-              <NavbarActions only="user" {...navbarActionsAuthProps} />
-              <NavbarActions only="cart" {...navbarActionsAuthProps} />
-            </div>
-
-          </div>
-        </div>
-      </header>
-
-      {/* Desktop Header */}
-      <header
-        ref={desktopRootRef}
-        dir="rtl"
-        className={[
-          vazir.className,
-          "sticky top-0 z-40 hidden w-full min-[920px]:block",
-          "text-[#33383C]", // اعمال رنگ دودی تیره به عنوان رنگ متن پیش‌فرض دسکتاپ
-          "transition-[background-color,box-shadow,backdrop-filter] duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]",
-          isGlass
-            ? "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.8] supports-[backdrop-filter]:bg-white/[0.14]"
-            : "border-b border-[#DAD6D0]/30 bg-[#F8F8F8] shadow-none backdrop-blur-0", // تغییر رنگ border هدر دسکتاپ به رنگ بوردر ملایم پالت دوم
-        ].join(" ")}
-      >
-        <div className="relative">
-          <div ref={desktopNavRef} className="relative z-[2] w-full text-[#33383C]">
-            <nav className="mx-auto w-full max-w-[1440px] px-5 min-[1100px]:px-8 min-[1280px]:px-10">
-              <div
-                className={[
-                  "grid grid-cols-[1fr_auto_1fr] items-center transition-all duration-300",
-                  isScrolled ? "h-[74px]" : "h-[86px]",
-                ].join(" ")}
-              >
-                <div className="flex min-w-0 items-center justify-start text-[#33383C]">
-                  <DesktopNavLinks
-                    navItems={navItems}
-                    hoveredHref={hoveredHref}
-                    setHoveredHref={setHoveredHref}
-                    isActive={isActive}
-                  />
-                </div>
-
-                <div className="flex items-center justify-center px-4 text-[#33383C]">
-                  <BrandLogo />
-                </div>
-
-                <div className="flex min-w-0 items-center justify-end gap-5 text-[#33383C]">
-                  <div className="min-w-0 flex-1 text-[#33383C]">
-                    <NavbarActions
-                      updateHeaderHidden={updateHeaderHidden}
-                      className="text-[#33383C]"
-                      {...navbarActionsAuthProps}
-                    />
-                  </div>
-
-                </div>
-              </div>
+      <header className={"maison-header " + (scrolled ? "maison-header--scrolled" : "")} dir="rtl">
+        <div className="maison-header__inner">
+          <div className="maison-header__right">
+            <button type="button" className="maison-icon-button maison-menu-trigger" onClick={openMenu} aria-label="باز کردن منو" aria-expanded={menuOpen} aria-controls="maison-menu">
+              <Menu size={21} strokeWidth={1.3} />
+            </button>
+            <nav className="maison-header__navigation" aria-label="ناوبری اصلی">
+              <Link href="/" aria-current={pathname === "/" ? "page" : undefined}>خانه</Link>
+              <Link href="/products" aria-current={pathname === "/products" ? "page" : undefined}>عطرها</Link>
+              <Link href="/journal" aria-current={pathname?.startsWith("/journal") ? "page" : undefined}>ژورنال</Link>
             </nav>
           </div>
+          <Link href="/" className="maison-header__brand" aria-label="MAISON — صفحه اصلی" dir="ltr">
+            <strong>MAISON</strong><span>THE FRAGRANCE HOUSE</span>
+          </Link>
+          <div className="maison-header__left">
+            <button type="button" className="maison-icon-button" aria-label="جستجوی عطرها" aria-expanded={searchOpen} onClick={openSearch}><Search size={20} strokeWidth={1.3} /></button>
+            <Link href="/account" className="maison-icon-button maison-header__account" aria-label="حساب کاربری"><UserRound size={20} strokeWidth={1.3} /></Link>
+            <Link href="/cart" className="maison-icon-button maison-header__cart" aria-label={"سبد خرید، " + cartCount + " محصول"}>
+              <ShoppingBag size={20} strokeWidth={1.3} />
+              {cartCount > 0 && <span className="maison-header__count" aria-hidden="true">{cartCount > 99 ? "+99" : cartCount}</span>}
+            </Link>
+          </div>
         </div>
       </header>
 
-      <div aria-hidden="true" className="h-[88px] min-[920px]:hidden" />
+      {menuOpen && (
+        <div id="maison-menu" className="maison-overlay maison-active-overlay" role="dialog" aria-modal="true" aria-label="منوی فروشگاه">
+          <button type="button" className="maison-overlay__backdrop" tabIndex={-1} aria-label="بستن منو" onClick={dismiss}/>
+          <div className="maison-menu" ref={menuPanelRef}>
+            <div className="maison-menu__head">
+              <span className="maison-overline" lang="en" dir="ltr">MAISON / INDEX</span>
+              <button type="button" className="maison-icon-button" onClick={dismiss} aria-label="بستن منو"><X size={23} strokeWidth={1.2}/></button>
+            </div>
+            <nav aria-label="فهرست کامل سایت" className="maison-menu__links">
+              {menuLinks.map((item, index) => (
+                <Link key={item.href} href={item.href} onClick={dismiss} className="maison-menu-entry">
+                  <span className="maison-menu__number" lang="en">{String(index+1).padStart(2,"0")}</span>
+                  <span className="maison-menu__text">{item.label}<small lang="en" dir="ltr">{item.sub}</small></span>
+                  <ArrowUpLeft size={21} strokeWidth={1}/>
+                </Link>
+              ))}
+            </nav>
+            <p className="maison-menu__foot" lang="en" dir="ltr">A QUIET STUDY OF SCENT — MAISON 2026</p>
+          </div>
+        </div>
+      )}
 
-      <MobileMenuOverlay
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        menuRef={menuRef}
-        panelRef={panelRef}
-        navItems={navItems}
-        isActive={isActive}
-        vazirClassName={`${vazir.className} text-[#33383C]`} // اعمال رنگ به متن‌های درون منوی موبایل
-      />
+      {searchOpen && (
+        <div className="maison-overlay maison-active-overlay" role="dialog" aria-modal="true" aria-label="جستجوی عطرها">
+          <button type="button" className="maison-overlay__backdrop" onClick={dismiss} aria-label="بستن جستجو" tabIndex={-1} />
+          <section className="maison-search" dir="rtl">
+            <div className="maison-search__head">
+              <span className="maison-overline" lang="en" dir="ltr">THE FRAGRANCE INDEX</span>
+              <button type="button" className="maison-icon-button" onClick={dismiss} aria-label="بستن جستجو"><X size={23} strokeWidth={1.3}/></button>
+            </div>
+            <div className="maison-search__field">
+              <Search size={21} strokeWidth={1.3} aria-hidden="true"/>
+              <input ref={searchRef} value={query} onChange={event => setQuery(event.target.value)}
+                placeholder="چه رایحه‌ای در ذهن دارید؟" type="search" inputMode="search" autoComplete="off"
+                aria-label="جستجو در مجموعه عطرها" aria-controls="maison-search-results" />
+              {query && <button type="button" onClick={() => { setQuery(""); searchRef.current?.focus(); }} aria-label="پاک کردن جستجو"><X size={17}/></button>}
+            </div>
+            <div id="maison-search-results" className="maison-search__results" aria-live="polite">
+              {!query.trim() && <p>نام عطر یا برند موردنظرتان را بنویسید.</p>}
+              {loading && query.trim() && <p>در حال جستجو در مجموعه…</p>}
+              {!loading && error && <p role="alert">جستجو در دسترس نیست. دوباره تلاش کنید.</p>}
+              {!loading && !error && hasSearched && products.length === 0 && <p>رایحه‌ای با این نام پیدا نشد.</p>}
+              {!loading && !error && products.map((product, index) => (
+                <Link key={product.id} href={"/products/" + product.id} onClick={dismiss} className="maison-search__result">
+                  <span lang="en" dir="ltr" className="maison-search__result-index">{String(index+1).padStart(2,"0")}</span>
+                  <span className="maison-search__result-name">{product.name}<small>{product.volumesMl?.length ? product.volumesMl.join(" / ") + " ml" : "MAISON COLLECTION"}</small></span>
+                  <ArrowLeft size={17} strokeWidth={1.2}/>
+                </Link>
+              ))}
+            </div>
+            <Link href="/products" onClick={dismiss} className="maison-search__all">مشاهدهٔ تمام عطرها <ArrowUpLeft size={17} strokeWidth={1.2}/></Link>
+          </section>
+        </div>
+      )}
     </>
   );
-
 }

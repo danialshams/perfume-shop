@@ -4,6 +4,7 @@ import { CartCountProvider } from "@/context/CartCountContext";
 import "./globals.css";
 import "./quiet-luxury.css";
 import "./maison-experience.css";
+import "./maison-v3.css";
 import MaisonAmbientSound from "@/components/maison/MaisonAmbientSound";
 
 export const metadata: Metadata = {
