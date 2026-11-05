@@ -80,7 +80,7 @@ export default function ProductDetailClient({ product }: Props) {
   const [cartError, setCartError] = useState<string | null>(null);
   const [cartSuccess, setCartSuccess] = useState(false);
   const cartInFlightRef = useRef(false);
-  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const successTimerRef = useRef<number | null>(null);
 
   useEffect(() => () => {
     if (successTimerRef.current !== null) window.clearTimeout(successTimerRef.current);
