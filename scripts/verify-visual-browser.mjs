@@ -23,13 +23,13 @@ async function bootChrome() {
       stderr = (stderr + String(chunk)).slice(-5000);
     });
     chrome.on("exit", (code, signal) => { chromeExit = { code, signal }; });
-    chrome.on("error", error => { stderr += "\\n" + error.message; });
+    chrome.on("error", error => { stderr += "\n" + error.message; });
 
     try {
       await until(async () => {
         if (chromeExit) return false;
         const content = await readFile(`${userDataDir}/DevToolsActivePort`, "utf8");
-        const port = Number(content.split("\\n")[0]);
+        const port = Number(content.split("\n")[0]);
         if (!Number.isInteger(port) || port <= 0) return false;
         const candidate = `http://127.0.0.1:${port}`;
         const response = await fetch(candidate + "/json/version");
@@ -39,7 +39,7 @@ async function bootChrome() {
         }
         return false;
       }, 14000);
-      process.stdout.write(`Chrome DevTools ready on attempt ${attempt}.\\n`);
+      process.stdout.write(`Chrome DevTools ready on attempt ${attempt}.\n`);
       return;
     } catch {
       chromeStartupErrors.push({ attempt, chromeExit, stderr });
