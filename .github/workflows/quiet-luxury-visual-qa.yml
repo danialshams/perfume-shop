@@ -19,15 +19,15 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
-      - name: TypeScript correctness
-        run: npx tsc --noEmit
+      - name: Cinematic storefront regression
+        run: node scripts/check-luxury-ui.mjs
       - name: Lint new visual modules
         run: npx eslint app/layout.tsx app/products/page.tsx components/home-sections/CinematicStorefront.tsx components/home-sections/CinematicPurchasePanel.tsx components/HomeWrapper/home-page-shell.tsx components/HomeProductsPage/LuxuryProductsView.tsx components/NavbarComponents/BrandLogo.tsx
+      - name: TypeScript correctness
+        run: npx tsc --noEmit
       - name: Legacy ESLint report (existing errors, not a release gate for the visual phase)
         if: always()
         continue-on-error: true
         run: npm run lint
       - name: Production build
         run: npm run build
-      - name: Cinematic storefront regression
-        run: node scripts/check-luxury-ui.mjs
