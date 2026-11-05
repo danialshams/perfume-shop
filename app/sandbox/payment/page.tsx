@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function SandboxPaymentPage() {
+function SandboxPaymentContent() {
   const searchParams = useSearchParams();
   const authority = searchParams.get("authority");
 
@@ -62,4 +63,8 @@ export default function SandboxPaymentPage() {
       </div>
     </div>
   );
+}
+
+export default function SandboxPaymentPage(){
+ return <Suspense fallback={<main className="ql-shop min-h-screen p-10" role="status">در حال بارگذاری نتیجه…</main>}><SandboxPaymentContent/></Suspense>;
 }

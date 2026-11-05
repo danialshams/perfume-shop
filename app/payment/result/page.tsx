@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { fetchCartApi } from "@/server/services/cart-api.service";
 import { useCartCount } from "@/context/CartCountContext";
 
-export default function PaymentResultPage() {
+function PaymentResultContent() {
   const searchParams = useSearchParams();
   const { setCartCount } = useCartCount();
 
@@ -83,4 +84,8 @@ export default function PaymentResultPage() {
       </div>
     </div>
   );
+}
+
+export default function PaymentResultPage(){
+ return <Suspense fallback={<main className="ql-shop min-h-screen p-10" role="status">در حال بارگذاری نتیجه…</main>}><PaymentResultContent/></Suspense>;
 }
