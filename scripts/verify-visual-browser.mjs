@@ -311,7 +311,16 @@ async function validateStorefrontInteractions(){
    await until(()=>evaluate(send,'!!document.querySelector(".maison-search input[type=search]")'),4000);
    await evaluate(send,'document.querySelector(".maison-search input[type=search]")?.focus()');
    await send("Input.insertText",{text:"Nocturne"});
-   await until(()=>evaluate(send,'!!document.querySelector(".maison-search__result[href="/fragrance/nocturne"]")'),12000);
+   await sleep(2200);
+   const searchDiagnostic=await evaluate(send,`(()=>{
+      const input=document.querySelector(".maison-search input[type=search]");
+      const list=document.querySelector(".maison-search__results");
+      return {inputValue:input?.value,html:list?.innerHTML.slice(0,2200),overlay:!!input,
+        demoAnchors:[...(list?.querySelectorAll("a")||[])].map(a=>a.getAttribute("href"))};
+   })()`);
+   process.stdout.write("SEARCH DEBUG "+JSON.stringify(searchDiagnostic)+"\\n");
+   await until(()=>evaluate(send,'!!document.querySelector(".maison-search__result[href="/fragrance/nocturne"]")'),4500)
+     .catch(()=>{throw Error("Search result not shown "+JSON.stringify(searchDiagnostic));});
    if(await evaluate(send,'!!document.querySelector(".maison-search__results [role=alert]")'))throw Error("Fallback search displayed error for sample scent");
    process.stdout.write("Guest cart, variant constraints, account field alignment (mobile/desktop) and navigation validated.\\n");
  }finally{ws.close()}
@@ -321,6 +330,7 @@ try{
  await mkdir("artifacts",{recursive:true});
  await bootChrome();
  await until(async()=>{const r=await fetch("http://127.0.0.1:3100/");return r.ok},15000);
+ await validateStorefrontInteractions();
  await validateCinematicPhotoReveal();
  await pageScreenshot({name:"home-desktop-full",url:"http://127.0.0.1:3100/",width:1440,height:900,mobile:false,assertHome:true});
  await pageScreenshot({name:"home-mobile-full",url:"http://127.0.0.1:3100/",width:390,height:844,mobile:true,assertHome:true});
@@ -342,7 +352,7 @@ try{
  await pageScreenshot({name:"privacy-mobile-full",url:"http://127.0.0.1:3100/privacy",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"terms-mobile-full",url:"http://127.0.0.1:3100/terms",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"payment-result-mobile-full",url:"http://127.0.0.1:3100/payment/result?status=failed",width:390,height:844,mobile:true,assertHome:false});
- await validateStorefrontInteractions();
+
  process.stdout.write("Visual QA browser checks passed.\n");
 }finally{
  chrome?.kill("SIGTERM");
