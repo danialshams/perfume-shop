@@ -211,6 +211,16 @@ async function validateCinematicPhotoReveal(){
   if(collections.latestCount!==6||collections.bestCount!==6||collections.gridDisplay!=="grid"||
      !collections.latestModes.includes("stretch")||!collections.bestModes.includes("up"))
     throw Error("Latest collection not fully mounted or motion modes not different "+JSON.stringify(collections));
+  await evaluate(send,'document.querySelector(".fertini-v5-new")?.scrollIntoView({block:"start",behavior:"instant"})');
+  await until(()=>evaluate(send,`(()=>{
+    const nodes=[...document.querySelectorAll(".fertini-v5-new__scroll [data-fertini-photo]")].slice(0,2);
+    return nodes.length===2&&nodes.every(x=>x.dataset.photoRevealState==="complete");
+  })()`),10000);
+  const latestImages=await evaluate(send,`(()=>{
+    const images=[...document.querySelectorAll(".fertini-v5-new__scroll img")];
+    return {count:images.length,loaded:images.filter(x=>x.complete&&x.naturalWidth>0).length};
+  })()`);
+  if(latestImages.count!==6||latestImages.loaded!==6)throw Error("Six latest images must all load "+JSON.stringify(latestImages));
   const bars=await evaluate(send,`(()=>{
     const root=document.querySelector(".fertini-header-sound--mobile .fertini-sound-meter");
     const items=[...(root?.querySelectorAll("rect")||[])];
@@ -289,6 +299,25 @@ async function validateStorefrontInteractions(){
    await until(()=>evaluate(send,'!!document.querySelector("input[name=confirm_password]")'),5500);
    const desktopGap=await inputGap();
    if(desktopGap>10)throw Error("Register labels misaligned with input top-right on desktop: "+desktopGap);
+   // Force the real API offline; demo perfumes must still be searchable and correctly linked.
+   await evaluate(send,`(()=>{
+     const original=window.fetch;
+     window.fetch=(input,init)=>String(input).includes("/api/v1/products/search")?
+       Promise.resolve(new Response(JSON.stringify({message:"Unavailable"}),{status:503,headers:{"content-type":"application/json"}})):
+       original(input,init);
+     document.querySelector(".maison-header button[aria-label='جستجوی عطرها']")?.click();
+     return true;
+   })()`);
+   await until(()=>evaluate(send,'!!document.querySelector(".maison-search input[type=search]")'),4000);
+   await evaluate(send,`(()=>{
+     const field=document.querySelector(".maison-search input[type=search]");
+     const setter=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value").set;
+     setter.call(field,"Nocturne");
+     field.dispatchEvent(new Event("input",{bubbles:true}));
+     return true;
+   })()`);
+   await until(()=>evaluate(send,'!!document.querySelector(".maison-search__result[href="/fragrance/nocturne"]")'),12000);
+   if(await evaluate(send,'!!document.querySelector(".maison-search__results [role=alert]")'))throw Error("Fallback search displayed error for sample scent");
    process.stdout.write("Guest cart, variant constraints, account field alignment (mobile/desktop) and navigation validated.\\n");
  }finally{ws.close()}
 }
