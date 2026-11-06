@@ -1,59 +1,57 @@
+"use client";
 import Link from "next/link";
-import { ArrowUpLeft, LayoutGrid, Package, Shapes, ShoppingBag } from "lucide-react";
-
-const actions = [
-  { href: "/admin/products", title: "محصولات", description: "مدیریت عکس‌ها، تنوع‌ها، قیمت و موجودی", icon: Package },
-  { href: "/admin/categories", title: "دسته‌بندی‌ها", description: "چیدمان و ارتباط گروه‌های عطر", icon: Shapes },
-  { href: "/admin/sliders", title: "اسلایدرها", description: "مدیریت تصاویر و مقصد اسلایدها", icon: LayoutGrid },
-  { href: "/admin/orders", title: "سفارش‌ها", description: "بررسی جزئیات مشتری و وضعیت سفارش", icon: ShoppingBag },
+import {useEffect,useState} from "react";
+import {Package,ShoppingBag,Shapes,Users,ArrowUpLeft,PanelsTopLeft,
+  FileAudio,Images,Database,ArrowLeft,RefreshCw} from "lucide-react";
+type Recent={id:number;order_number:string|null;customer_name:string|null;total_amount:number;status:string;created_at:string};
+type Overview={products:number;orders:number;categories:number;customers:number;notifications:number;recent:Recent[]};
+const cards=[
+ {key:"products",label:"محصولات",icon:Package},
+ {key:"orders",label:"سفارش‌ها",icon:ShoppingBag},
+ {key:"categories",label:"دسته‌بندی‌ها",icon:Shapes},
+ {key:"customers",label:"حساب‌های کاربری",icon:Users}
 ] as const;
-
-const preview = [
-  { label: "هدر و منو", grid: "sm:col-span-2", height: "h-12", href: null },
-  { label: "تصویر اصلی / هیرو", grid: "sm:col-span-1", height: "h-48", href: "/admin/sliders" },
-  { label: "متن اصلی", grid: "sm:col-span-1", height: "h-48", href: null },
-  { label: "دسته‌بندی رایحه‌ها", grid: "sm:col-span-2", height: "h-28", href: "/admin/categories" },
-  { label: "محصولات منتخب", grid: "sm:col-span-2", height: "h-32", href: "/admin/products" },
-  { label: "فوتر", grid: "sm:col-span-2", height: "h-14", href: null },
+const actions=[
+ {href:"/admin/content",title:"ویرایش صفحه اصلی",detail:"هیرو، عنوان‌ها و چیدمان بخش‌های فروشگاه",icon:PanelsTopLeft},
+ {href:"/admin/products",title:"محصولات و موجودی",detail:"افزودن، ویرایش، قیمت، تنوع و وویس",icon:Package},
+ {href:"/admin/orders",title:"مدیریت سفارش‌ها",detail:"مشتری، اقلام، پرداخت و وضعیت ارسال",icon:ShoppingBag},
+ {href:"/admin/media",title:"کتابخانه رسانه",detail:"تصویر و معرفی صوتی هر عطر",icon:FileAudio},
+ {href:"/admin/sliders",title:"اسلایدر و کمپین",detail:"انتخاب محصول و مقصد اسلاید",icon:Images},
+ {href:"/admin/database",title:"سلامت زیرساخت",detail:"اتصال دیتابیس و کنترل ساختار",icon:Database}
 ] as const;
-
-export default function AdminDashboardPage() {
-  return (
-    <main className="min-h-[75svh] bg-[#f7f5f0] px-4 pb-24 pt-8 text-[#302d29] sm:px-8 sm:pt-12">
-      <div className="mx-auto max-w-[1250px]">
-        <p className="mb-3 text-[11px] tracking-[0.15em] text-[#a38a6d]" dir="ltr">MAISON / STUDIO</p>
-        <h1 className="text-3xl font-light leading-[1.6] sm:text-4xl">مدیریت فروشگاه</h1>
-        <p className="mt-3 max-w-xl text-[13px] leading-8 text-[#7b7165]">
-          بخش‌های اصلی فروشگاه از اینجا در دسترس هستند. نمای چیدمان پایین، راهنمای ساختاری است؛
-          ویرایش مستقیمِ بخش‌های سایت هنوز به پنل متصل نشده است.
-        </p>
-        <div className="mt-9 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {actions.map(({ href, title, description, icon: Icon }) => (
-            <Link key={href} href={href}
-              className="group flex min-h-36 flex-col justify-between border border-[#e1d9cd] bg-[#fffdf9] p-5 transition-colors hover:bg-[#eee9df]">
-              <span className="flex items-center justify-between"><Icon size={21} strokeWidth={1.2} /><ArrowUpLeft size={16} strokeWidth={1.3} className="transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1" /></span>
-              <span><strong className="block text-[15px] font-normal">{title}</strong><small className="mt-2 block text-[11px] leading-6 text-[#877b70]">{description}</small></span>
-            </Link>
-          ))}
-        </div>
-        <section className="mt-12 border-t border-[#d8cfc3] pt-9" aria-label="شمای صفحه اصلی">
-          <div className="mb-7 flex flex-wrap items-end justify-between gap-3">
-            <div><p className="text-[11px] text-[#a38a6d]" lang="en">STOREFRONT BLUEPRINT</p><h2 className="mt-2 text-[22px] font-light">شمای صفحهٔ اصلی</h2></div>
-            <Link className="border-b border-[#a38a6d] pb-2 text-xs" href="/" target="_blank" rel="noopener noreferrer">مشاهدهٔ سایت</Link>
-          </div>
-          <div className="mx-auto grid max-w-[680px] grid-cols-1 gap-3 bg-[#e9e3da] p-3 sm:grid-cols-2">
-            {preview.map(item => (
-              <div key={item.label} className={item.grid}>
-                {item.href ? (
-                  <Link href={item.href} className={item.height + " flex items-center justify-center border border-[#d4c9b9] bg-[#fbfaf7] text-xs text-[#574d44] transition-colors hover:bg-white"}>{item.label}</Link>
-                ) : (
-                  <div className={item.height + " flex items-center justify-center border border-dashed border-[#d4c9b9] bg-[#f4f0e9] text-xs text-[#817566]"}>{item.label}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </main>
-  );
+export default function AdminDashboardPage(){
+ const [data,setData]=useState<Overview|null>(null),[error,setError]=useState(""),[loading,setLoading]=useState(true);
+ function reload(){
+  setLoading(true);setError("");
+  fetch("/api/v1/admin/overview",{cache:"no-store",credentials:"same-origin"})
+   .then(async r=>{const payload=await r.json();if(!r.ok)throw Error(payload.error||"خطا در دریافت آمار");return payload as Overview})
+   .then(setData).catch(e=>{setData(null);setError(e instanceof Error?e.message:"خطای اتصال")}).finally(()=>setLoading(false));
+ }
+ useEffect(()=>{reload()},[]);
+ return <div>
+  <div className="fst-page-heading"><div><small>FERTINI / STUDIO OVERVIEW</small><h1>نمای کلی فروشگاه</h1>
+   <p>آمار واقعی و دسترسی سریع به مدیریت محتوا، محصولات و سفارش‌ها.</p></div>
+   <button type="button" className="fst-btn" onClick={reload} disabled={loading}>بازخوانی آمار <RefreshCw size={16}/></button></div>
+  {error&&<div className="fst-error" role="alert">{error} <Link href="/admin/database" className="underline">بررسی اتصال</Link></div>}
+  <section className="fst-grid" aria-label="شاخص‌های فروشگاه">
+   {cards.map(x=><div className="fst-card fst-metric" key={x.key}>
+    <small>{x.label}</small><strong>{loading?"…":data?Number(data[x.key]).toLocaleString("fa-IR"):"—"}</strong>
+    <x.icon size={20} strokeWidth={1.5}/></div>)}</section>
+  <section className="fst-actions" aria-label="بخش‌های مدیریت">
+   {actions.map(a=><Link key={a.href} href={a.href} className="fst-card fst-action">
+    <span className="flex items-center justify-between"><a.icon size={22} strokeWidth={1.5}/><ArrowUpLeft size={16}/></span>
+    <span><strong className="block">{a.title}</strong><small className="block mt-2">{a.detail}</small></span></Link>)}</section>
+  <section className="fst-data-grid">
+   <div className="fst-card"><div className="flex items-center justify-between mb-4"><h2>آخرین سفارش‌ها</h2>
+    <Link href="/admin/orders" className="text-xs flex gap-2 items-center">همه سفارش‌ها <ArrowLeft size={14}/></Link></div>
+    {data?.recent?.length?data.recent.map(o=><Link href={"/admin/orders?openOrder="+o.id} className="fst-list-row" key={o.id}>
+     <span><b>{o.customer_name||"مشتری"}</b><small className="block">#{o.order_number||o.id}</small></span>
+     <span>{Number(o.total_amount||0).toLocaleString("fa-IR")} تومان</span></Link>):<p className="fst-empty">{loading?"در حال دریافت سفارش‌ها…":error?"دیتابیس متصل نیست.":"سفارشی ثبت نشده است."}</p>}
+   </div>
+   <div className="fst-card"><h2>راهنمای مدیریت</h2>
+    <p className="text-xs leading-8 text-neutral-500">برای تغییر عکس و وویس عطر، محصول را باز و گزینه «ویرایش» را انتخاب کنید. مدیریت وضعیت پرداخت و اقلام سفارش در صفحه سفارش‌ها انجام می‌شود.</p>
+    <Link href="/admin/content" className="fst-btn mt-5">تنظیمات صفحه اصلی <ArrowLeft size={15}/></Link>
+   </div>
+  </section>
+ </div>;
 }
