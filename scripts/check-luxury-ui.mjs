@@ -32,6 +32,7 @@ assert.match(home, /fertini:intro:complete/);
 assert.match(home, /ScrollTrigger\.create/);
 assert.match(home, /FERTINI_DEMOS/);
 assert.match(read("components/maison/FertiniVoicePlayer.tsx"), /speechSynthesis/);
+assert.match(read("app/account/page.tsx"), /AccountGuest/);
 assert.match(read("components/HomeProductsComponnents/ProductsFilterBar.tsx"), /fertini-filter-panel/);
 assert.doesNotMatch(home, /میلیون تومان/);
 assert.match(shop, /ProductsFilterBar/);

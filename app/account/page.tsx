@@ -1,10 +1,10 @@
 // app/account/page.tsx
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { USER_ACCESS_COOKIE_NAME } from "@/server/constants/auth";
 import { verifyAccessToken } from "@/server/utils/jwt";
 import { customerAuthService } from "@/server/services/customer-auth.service";
 import AccountClientWrapper from "./AccountClientWrapper";
+import AccountGuest from "./AccountGuest";
 import { ProfileForm } from "@/components/account/utils";
 
 type AddressPayload = {
@@ -72,13 +72,13 @@ export default async function AccountPage() {
     }
   }
 
-  if (!customerId) redirect("/login?redirect=%2Faccount");
+  if (!customerId) return <AccountGuest />;
 
   let customer: NonNullable<CustomerProfileResponse["data"]>;
   try {
     customer = (await customerAuthService.me(customerId)) as unknown as NonNullable<CustomerProfileResponse["data"]>;
   } catch {
-    redirect("/login?redirect=%2Faccount");
+    return <AccountGuest serviceUnavailable />;
   }
 
   // آدرس پیش‌فرض؛ اگر نبود، اولین آدرس موجود
