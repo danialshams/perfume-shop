@@ -2,6 +2,7 @@
 
 import { toSlug } from "@/lib/utils";
 import {validateMediaMeta} from "@/lib/admin-media-validation";
+import {uploadAdminFile} from "@/lib/admin-upload-client";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import {
     App,
@@ -581,74 +582,13 @@ export default function EditProductDrawer({
     }, [scentFamilies]);
 
 
-    const uploadFile = async (file: File) => {
-        const checked=validateMediaMeta(file,"image");
-        if(!checked.ok)throw new Error(checked.error);
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await fetch("/api/v1/uploads/products", {
-            method: "POST",
-            body: formData,
-            credentials: "include",
-        });
-
-        const result: {
-            message?: string;
-            data?: { url?: string };
-        } = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result?.message || "خطا در آپلود");
-        }
-
-        const uploadedUrl = result?.data?.url;
-
-        if (!uploadedUrl) {
-            throw new Error("آدرس تصویر آپلود شده معتبر نیست");
-        }
-
-        return uploadedUrl;
+    const uploadFile=async(file:File)=>{
+        const response=await uploadAdminFile(file,"image");
+        return response.url;
     };
-
-    const uploadVoiceFile = async (
-        file: File,
-        options?: { onProgress?: (percent: number) => void }
-    ) => {
-        const checked=validateMediaMeta(file,"voice");
-        if(!checked.ok)throw new Error(checked.error);
-        const formData = new FormData();
-        formData.append("file", file);
-
-        options?.onProgress?.(20);
-
-        const response = await fetch("/api/v1/uploads/products/voice", {
-            method: "POST",
-            body: formData,
-            credentials: "include",
-        });
-
-        options?.onProgress?.(80);
-
-        const result: {
-            message?: string;
-            data?: { url?: string };
-            url?: string;
-        } = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result?.message || "خطا در آپلود فایل صوتی");
-        }
-
-        const uploadedUrl = result?.data?.url || result?.url;
-
-        if (!uploadedUrl) {
-            throw new Error("آدرس فایل صوتی آپلود شده معتبر نیست");
-        }
-
-        options?.onProgress?.(100);
-
-        return uploadedUrl;
+    const uploadVoiceFile=async(file:File,options?:{onProgress?:(percent:number)=>void})=>{
+        const response=await uploadAdminFile(file,"voice",options?.onProgress);
+        return response.url;
     };
 
     const validateVoiceBeforeUpload = (file: File) => {

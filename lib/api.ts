@@ -7,6 +7,7 @@ import type {
   UploadImageResult,
   UploadVoiceResult,
 } from "./product";
+import {uploadAdminFile} from "./admin-upload-client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "";
 
@@ -69,48 +70,11 @@ export async function createProduct(payload: CreateProductPayload) {
   }>(res);
 }
 
-export async function uploadProductImage(
-  file: File,
-): Promise<UploadImageResult> {
-  const actualFile = (file as any).originFileObj || file;
-
-  const formData = new FormData();
-  formData.append("file", actualFile);
-
-  const res = await fetch(createApiUrl("/api/v1/uploads/products"), {
-    method: "POST",
-    body: formData,
-    credentials: "include",
-  });
-
-  const json = await parseJsonResponse<{
-    success: boolean;
-    message: string;
-    data: UploadImageResult;
-  }>(res);
-
-  return json.data;
+export async function uploadProductImage(file:File):Promise<UploadImageResult>{
+ const actual=(file as File&{originFileObj?:File}).originFileObj||file;
+ return uploadAdminFile(actual,"image");
 }
-
-export async function uploadProductVoice(
-  file: File,
-): Promise<UploadVoiceResult> {
-  const actualFile = (file as any).originFileObj || file;
-
-  const formData = new FormData();
-  formData.append("file", actualFile);
-
-  const res = await fetch(createApiUrl("/api/v1/uploads/products/voice"), {
-    method: "POST",
-    body: formData,
-    credentials: "include",
-  });
-
-  const json = await parseJsonResponse<{
-    success: boolean;
-    message: string;
-    data: UploadVoiceResult;
-  }>(res);
-
-  return json.data;
+export async function uploadProductVoice(file:File):Promise<UploadVoiceResult>{
+ const actual=(file as File&{originFileObj?:File}).originFileObj||file;
+ return uploadAdminFile(actual,"voice");
 }
