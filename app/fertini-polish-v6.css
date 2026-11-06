@@ -199,3 +199,31 @@ html,body{max-width:100%;overflow-x:clip}
 html.fertini-intro-seen .maison-intro{display:none!important}
 /* GSAP alone owns visual zoom. Hover may change saturation, never scale. */
 .fertini-v5 [data-fertini-photo] img{transition-property:filter!important}
+
+/* V8: five honest waveform bars, with fixed proportional heights at rest. */
+.fertini-sound-equalizer{display:inline-flex;direction:ltr;align-items:center;justify-content:center;gap:2.5px;width:31px;height:27px}
+.fertini-sound-equalizer i,.fertini-header-sound.is-playing .fertini-sound-equalizer i{
+  display:block!important;flex:0 0 2px;width:2px;min-width:2px;
+  border-radius:3px;background:currentColor;animation:none!important;
+  transition:none!important;transform-origin:center center
+}
+.fertini-sound-equalizer i:nth-child(1){height:10px;transform:scaleY(.63)}
+.fertini-sound-equalizer i:nth-child(2){height:17px;transform:scaleY(.86)}
+.fertini-sound-equalizer i:nth-child(3){height:22px;transform:scaleY(.99)}
+.fertini-sound-equalizer i:nth-child(4){height:15px;transform:scaleY(.79)}
+.fertini-sound-equalizer i:nth-child(5){height:11px;transform:scaleY(.57)}
+/* Underlines now sit immediately below each field label, not 44px away. */
+.fertini-account-gateway__field{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:0!important}
+.fertini-account-gateway__field>span{flex:0 0 auto;display:block!important;margin:0!important;padding:0!important;line-height:1.5!important;font-size:12px!important}
+.fertini-account-gateway__field>input{
+ flex:0 0 29px!important;box-sizing:border-box;width:100%;
+ min-height:29px!important;height:29px!important;
+ margin:0!important;padding:0 2px 2px!important;line-height:1.25!important;border-radius:0
+}
+.fertini-account-gateway__form{gap:15px!important}
+.fertini-account-gateway__pair{align-items:start;gap:20px}
+.fertini-voice-v6--text{display:block;min-height:0;padding:26px 0;margin-top:45px}
+.fertini-voice-v6--text .fertini-voice-v6__info p{font-size:12px;line-height:2.1}
+.fertini-voice-v6--text details{font-size:12px;line-height:2.1;margin-top:14px;color:#657366}
+.fertini-voice-v6--text summary{cursor:pointer;text-decoration:underline;text-underline-offset:6px}
+.fertini-voice-v6--text details p{padding-top:12px;line-height:2.4}

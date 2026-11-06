@@ -98,7 +98,7 @@ export default function FertiniFragranceDetail({productId}:{productId:string}){
        </div>
      </div>
      <section className="fertini-fragrance__pyramid" aria-label="نت‌های عطر">
-       <span className="maison-kicker" lang="en" dir="ltr">THE OLFACTIVE PYRAMID</span>
+       <span className="maison-kicker">ساختار رایحه</span>
        <h2>از آغاز تا ماندگاری</h2>
        <div>{([["01","نت‌های اولیه",product.notes.top],["02","نت‌های میانی",product.notes.heart],["03","نت‌های پایه",product.notes.base]] as const).map(([number,name,notes])=>
         <article key={number}><span lang="en">{number}</span><h3>{name}</h3><p>{notes.join(" · ")}</p></article>)}</div>

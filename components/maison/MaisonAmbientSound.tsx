@@ -6,7 +6,7 @@ import gsap from "gsap";
 const TRACK_SRC = "/audio/luxury-piano.mp3";
 const TARGET_VOLUME = 0.12;
 type AmbientContext = { enabled:boolean; playing:boolean; toggle:()=>void; getLevels:()=>number[] };
-const AmbientSoundContext = createContext<AmbientContext>({enabled:false,playing:false,toggle:()=>{},getLevels:()=>[0,0,0,0]});
+const AmbientSoundContext = createContext<AmbientContext>({enabled:false,playing:false,toggle:()=>{},getLevels:()=>[0,0,0,0,0]});
 export function useAmbientSound(){ return useContext(AmbientSoundContext); }
 
 /** Single audio source with a live frequency analyser; UI controls are in the header. */
@@ -19,15 +19,15 @@ export default function MaisonAmbientSound({children}:{children:ReactNode}){
   const samplesRef=useRef<Uint8Array<ArrayBuffer>|null>(null);
   const getLevels=useCallback(()=>{
     const analyser=analyserRef.current;
-    if(!analyser || audioContextRef.current?.state!=="running")return [0,0,0,0];
+    if(!analyser || audioContextRef.current?.state!=="running")return [0,0,0,0,0];
     if(!samplesRef.current || samplesRef.current.length!==analyser.frequencyBinCount)
       samplesRef.current=new Uint8Array(analyser.frequencyBinCount);
     const samples=samplesRef.current;
     analyser.getByteFrequencyData(samples);
-    return [[0,3],[3,7],[7,15],[15,31]].map(([start,end])=>{
+    return [[0,3],[3,6],[6,11],[11,19],[19,35]].map(([start,end])=>{
       let total=0;
       for(let i=start;i<end;i++)total+=samples[i]||0;
-      return Math.min(1,total/((end-start)*150));
+      return Math.min(1,total/((end-start)*105));
     });
   },[]);
   const wants=useRef(false), voiceLocks=useRef(0), resume=useRef(false);
