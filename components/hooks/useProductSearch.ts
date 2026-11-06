@@ -486,10 +486,13 @@ export function useProductSearch(
         const controller =
             new AbortController();
 
-        setProducts([]);
-        setLoading(true);
+        // Show matching demo inventory immediately while the live API is queried.
+        // This remains useful when the preview's database is intentionally offline.
+        const immediateDemos=demoResults(normalizedQuery,limit);
+        setProducts(immediateDemos);
+        setLoading(immediateDemos.length===0);
         setError(null);
-        setHasSearched(false);
+        setHasSearched(immediateDemos.length>0);
 
         const timeoutId = window.setTimeout(
             async () => {

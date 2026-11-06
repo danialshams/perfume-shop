@@ -309,13 +309,8 @@ async function validateStorefrontInteractions(){
      return true;
    })()`);
    await until(()=>evaluate(send,'!!document.querySelector(".maison-search input[type=search]")'),4000);
-   await evaluate(send,`(()=>{
-     const field=document.querySelector(".maison-search input[type=search]");
-     const setter=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value").set;
-     setter.call(field,"Nocturne");
-     field.dispatchEvent(new Event("input",{bubbles:true}));
-     return true;
-   })()`);
+   await evaluate(send,'document.querySelector(".maison-search input[type=search]")?.focus()');
+   await send("Input.insertText",{text:"Nocturne"});
    await until(()=>evaluate(send,'!!document.querySelector(".maison-search__result[href="/fragrance/nocturne"]")'),12000);
    if(await evaluate(send,'!!document.querySelector(".maison-search__results [role=alert]")'))throw Error("Fallback search displayed error for sample scent");
    process.stdout.write("Guest cart, variant constraints, account field alignment (mobile/desktop) and navigation validated.\\n");
