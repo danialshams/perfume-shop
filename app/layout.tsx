@@ -14,6 +14,7 @@ import "./fertini-refinement.css";
 import "./fertini-commerce.css";
 import "./fertini-skeleton.css";
 import "./fertini-nav-v5.css";
+import "./fertini-home-v5.css";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL ||
   "https://perfume-shop-danialshams-projects.vercel.app";
