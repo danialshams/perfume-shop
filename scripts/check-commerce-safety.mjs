@@ -20,8 +20,14 @@ const database = read("lib/db.ts");
 assert.match(database, /function getPool\(\)/);
 assert.match(database, /new Proxy\(/);
 const upload = read("app/api/v1/uploads/products/route.ts");
-assert.match(upload, /process\.env\.NODE_ENV === "production"/);
+const mediaStorage = read("server/storage/save-media.ts");
+assert.match(upload, /saveMedia/);
+assert.match(upload, /StorageNotConfiguredError/);
 assert.match(upload, /503/);
+assert.match(mediaStorage, /process\.env\.NODE_ENV==="production"/);
+assert.match(mediaStorage, /process\.env\.VERCEL==="1"/);
+assert.match(mediaStorage, /validateMediaBytes/);
+assert.match(mediaStorage, /putObject/);
 
 const account = read("app/account/page.tsx");
 assert.doesNotMatch(account, /NEXT_PUBLIC_API_BASE_URL/);
