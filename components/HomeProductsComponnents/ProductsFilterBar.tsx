@@ -34,6 +34,8 @@ export default function ProductsFilterBar({
   loadingCategories, activeFilterLabel, selectedSort, onSortChange,
 }: Props) {
   const [panel, setPanel] = useState<"categories" | "sort" | null>(null);
+  const [closing, setClosing] = useState(false);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [search, setSearch] = useState("");
   const firstFocusRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -48,7 +50,13 @@ export default function ProductsFilterBar({
     ).sort((a,b)=>(a.parent_ids?.length||0)-(b.parent_ids?.length||0));
   },[categories,search]);
 
-  const close=()=>{setPanel(null);setSearch("");};
+  const close=()=>{
+    if(closing || !panel)return;
+    setClosing(true);
+    if(closeTimerRef.current)window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current=window.setTimeout(()=>{setPanel(null);setClosing(false);setSearch("");closeTimerRef.current=null;},440);
+  };
+  useEffect(()=>()=>{if(closeTimerRef.current)window.clearTimeout(closeTimerRef.current);},[]);
   useEffect(()=>{
     if (!panel) return;
     const releaseScroll = lockDocumentScroll();
@@ -68,6 +76,9 @@ export default function ProductsFilterBar({
   },[panel]);
   function open(event:React.MouseEvent<HTMLButtonElement>,next:"categories"|"sort") {
     triggerRef.current=event.currentTarget;
+    if(closeTimerRef.current)window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current=null;
+    setClosing(false);
     setPanel(next);
   }
   function selectCategory(category:Category|null) {
@@ -100,7 +111,7 @@ export default function ProductsFilterBar({
       </div>
     </div>
     {loadingCategories&&<div className="fertini-filter-bar__loading" role="status">در حال آماده‌سازی دسته‌بندی‌ها…</div>}
-    {panel && <div className="fertini-filter-overlay" role="dialog" aria-modal="true" aria-label={panel==="sort"?"مرتب‌سازی عطرها":"دسته‌بندی عطرها"}>
+    {panel && <div className={"fertini-filter-overlay"+(closing?" is-closing":"")} role="dialog" aria-modal="true" aria-label={panel==="sort"?"مرتب‌سازی عطرها":"دسته‌بندی عطرها"}>
       <button type="button" className="fertini-filter-overlay__backdrop" aria-label="بستن پنجره فیلتر" onClick={close} tabIndex={-1}/>
       <section className="fertini-filter-panel" dir="rtl">
         <header className="fertini-filter-panel__head">

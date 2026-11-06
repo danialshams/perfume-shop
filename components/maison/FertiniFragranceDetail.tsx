@@ -12,7 +12,7 @@ import FertiniVoicePlayer from "@/components/maison/FertiniVoicePlayer";
 
 export default function FertiniFragranceDetail({productId}:{productId:string}){
  const product=FERTINI_DEMOS.find(item=>item.id===productId)||FERTINI_DEMOS[0];
- const [quantities,setQuantities]=useState<number[]>(()=>product.variants.map((_,index)=>index===1?1:0));
+ const [quantities,setQuantities]=useState<number[]>(()=>product.variants.map((_,index)=>index===1&&product.variants[index].stock>0?1:0));
  const [photoIndex,setPhotoIndex]=useState(0);
  const [lightbox,setLightbox]=useState(false);
  const [notice,setNotice]=useState("");
@@ -74,7 +74,6 @@ export default function FertiniFragranceDetail({productId}:{productId:string}){
                <div className="fertini-fragrance__variant-details">
                  <strong>{v.volume.toLocaleString("fa-IR")} میل</strong>
                  <span>{v.price.toLocaleString("fa-IR")} تومان</span>
-                 {v.stock<1&&<small>ناموجود</small>}
                </div>
                <div className="fertini-fragrance__quantity" aria-label={"تعداد عطر "+v.volume+" میل"}>
                  <button type="button" aria-label={"کاهش تعداد "+v.volume+" میل"} disabled={quantities[index]===0} onClick={()=>changeQuantity(index,-1)}>

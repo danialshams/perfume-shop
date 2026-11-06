@@ -7,7 +7,7 @@
 .maison-catalog .ql-shop-heading{padding-block:clamp(80px,9vw,135px) clamp(53px,6vw,95px);margin-bottom:30px;border-color:var(--maison-line)}
 .maison-catalog .ql-shop-heading h1{font-size:clamp(43px,6vw,83px);font-weight:300;line-height:1.6;letter-spacing:-.055em}
 .maison-catalog .ql-shop-heading p{font-size:13px;line-height:2.7;color:#888d89;max-width:660px}
-.maison-catalog .ql-shop-filter{padding:clamp(14px,2vw,25px) 0;border-bottom:1px solid var(--maison-line)}
+.maison-catalog .ql-shop-filter{padding:clamp(14px,2vw,25px) 0}
 .maison-catalog .ql-products-grid-section{padding-top:clamp(40px,5vw,83px);padding-bottom:clamp(75px,9vw,155px)}
 .maison-catalog .ql-products-grid-section>section{background:transparent!important;padding:0}
 .maison-catalog .ql-products-grid-section .grid{column-gap:clamp(14px,2.3vw,37px)!important;row-gap:clamp(36px,5vw,85px)!important}

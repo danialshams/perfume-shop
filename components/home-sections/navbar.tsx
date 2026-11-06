@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ArrowLeft, ArrowUpLeft, Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import { useAmbientSound } from "@/components/maison/MaisonAmbientSound";
+import MaisonSoundBars from "@/components/maison/MaisonSoundBars";
 import { lockDocumentScroll } from "@/lib/document-scroll-lock";
 import { useCartCount } from "@/context/CartCountContext";
 import { useGuestCart } from "@/lib/fertini-guest-cart";
@@ -16,7 +17,6 @@ const menuLinks = [
   { href: "/products", label: "مجموعه عطرها", sub: "THE COLLECTION" },
   { href: "/journal", label: "ژورنال رایحه", sub: "THE JOURNAL" },
   { href: "/about", label: "درباره ما", sub: "OUR STORY" },
-  { href: "/account", label: "حساب کاربری", sub: "YOUR ACCOUNT" },
 ] as const;
 
 export default function LuxuryNavbar() {
@@ -120,6 +120,10 @@ export default function LuxuryNavbar() {
             <button type="button" className="maison-icon-button maison-menu-trigger" onClick={openMenu} aria-label="باز کردن منو" aria-expanded={menuOpen} aria-controls="maison-menu">
               <Menu size={21} strokeWidth={1.3} />
             </button>
+            {soundEnabled && <button type="button" className={"maison-icon-button fertini-header-sound fertini-header-sound--mobile"+(soundPlaying?" is-playing":"")} onClick={toggleSound}
+              aria-label={soundPlaying ? "قطع موسیقی" : "پخش موسیقی محیط"} aria-pressed={soundPlaying}>
+              <MaisonSoundBars />
+            </button>}
             <nav className="maison-header__navigation" aria-label="ناوبری اصلی">
               <Link href="/" aria-current={pathname === "/" ? "page" : undefined}>خانه</Link>
               <Link href="/products" aria-current={pathname === "/products" ? "page" : undefined}>عطرها</Link>
@@ -130,10 +134,10 @@ export default function LuxuryNavbar() {
             <strong>FERTINI</strong><span>THE FRAGRANCE HOUSE</span>
           </Link>
           <div className="maison-header__left">
-            {soundEnabled && <button type="button" className={"maison-icon-button fertini-header-sound"+(soundPlaying?" is-playing":"")} onClick={toggleSound}
+            {soundEnabled && <button type="button" className={"maison-icon-button fertini-header-sound fertini-header-sound--desktop"+(soundPlaying?" is-playing":"")} onClick={toggleSound}
               aria-label={soundPlaying ? "قطع موسیقی" : "پخش موسیقی محیط"} aria-pressed={soundPlaying}
               title={soundPlaying ? "Sound on" : "Sound off"}>
-              <span className="fertini-sound-equalizer" aria-hidden="true"><i/><i/><i/><i/></span>
+              <MaisonSoundBars />
             </button>}
             <button type="button" className="maison-icon-button" aria-label="جستجوی عطرها" aria-expanded={searchOpen} onClick={openSearch}><Search size={20} strokeWidth={1.3} /></button>
             <Link href="/account" className="maison-icon-button maison-header__account" aria-label="حساب کاربری"><UserRound size={20} strokeWidth={1.3} /></Link>
@@ -161,10 +165,6 @@ export default function LuxuryNavbar() {
                 </Link>
               ))}
             </nav>
-            {soundEnabled && <button type="button" className="fertini-menu-sound" onClick={toggleSound} aria-pressed={soundPlaying}>
-              <span className={"fertini-sound-equalizer"+(soundPlaying?" is-playing":"")} aria-hidden="true"><i/><i/><i/><i/></span>
-              <span>موسیقی محیط</span><small lang="en" dir="ltr">{soundPlaying ? "ON" : "OFF"}</small>
-            </button>}
             <p className="maison-menu__foot" lang="en" dir="ltr">A QUIET STUDY OF SCENT — FERTINI 2026</p>
           </div>
         </div>

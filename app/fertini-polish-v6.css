@@ -83,7 +83,7 @@ html[dir="rtl"] body{font-synthesis:none}
 .fertini-fragrance__variant-details span{font-size:12px;color:#859186}
 .fertini-fragrance__variant-details small{font-size:11px;color:#955c50}
 .fertini-fragrance__quantity{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.fertini-fragrance__quantity button{width:38px;height:38px;min-width:38px;display:grid;place-items:center;border:1px solid #bccabe!important;background:transparent!important;color:#344939}
+.fertini-fragrance__variants .fertini-fragrance__quantity button{box-sizing:border-box;width:38px;height:38px;min-width:38px;min-height:38px;padding:0!important;display:grid;place-items:center;border:1px solid #bccabe!important;background:transparent!important;color:#344939;line-height:1}
 .fertini-fragrance__quantity button:disabled{opacity:.28;cursor:not-allowed}
 .fertini-fragrance__quantity output{font-variant-numeric:tabular-nums;min-width:26px;text-align:center;font-size:14px}
 .fertini-fragrance__price{margin:28px 0 22px!important;display:flex!important;flex-direction:row!important;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
@@ -93,12 +93,12 @@ html[dir="rtl"] body{font-synthesis:none}
 /* B: the progress ring is the entire player. Real file duration drives the ring;
    Web Speech gives word boundary position only, never a fabricated timecode. */
 .fertini-voice-v6{position:relative;display:flex;align-items:center;gap:23px;padding:27px 0;margin-top:55px;border-top:1px solid rgba(50,69,53,.14);min-width:0}
-.fertini-voice-v6__disc{width:92px;height:92px;position:relative;flex:0 0 92px;display:grid;place-items:center;border-radius:50%;color:#344739;transition:transform .45s ease}
+.fertini-voice-v6__disc{width:76px;height:76px;position:relative;flex:0 0 76px;display:grid;place-items:center;border-radius:50%;color:#344739;transition:transform .45s ease}
 .fertini-voice-v6__disc:hover{transform:scale(1.035)}
-.fertini-voice-v6__disc svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.fertini-voice-v6__disc > svg{position:absolute;inset:0;width:100%;height:100%;overflow:hidden}
 .fertini-voice-v6__track{fill:none;stroke:rgba(61,85,68,.19);stroke-width:2.3}
 .fertini-voice-v6__progress{fill:none;stroke:#465b49;stroke-width:2.4;stroke-linecap:round;transition:stroke-dashoffset .32s linear}
-.fertini-voice-v6__disc>span{width:59px;height:59px;border-radius:50%;background:rgba(227,237,225,.65);display:grid;place-items:center;transition:background .35s ease,box-shadow .35s ease}
+.fertini-voice-v6__disc>span{width:48px;height:48px;border-radius:50%;background:rgba(227,237,225,.65);display:grid;place-items:center;transition:background .35s ease,box-shadow .35s ease}
 .fertini-voice-v6__disc.is-playing>span{background:rgba(211,224,211,.87);box-shadow:0 0 0 7px rgba(72,110,83,.035)}
 .fertini-voice-v6__info{flex:1;min-width:0}
 .fertini-voice-v6__overline{display:block;color:#85998b;font:11px "Cormorant Garamond",Georgia,serif;letter-spacing:.11em;margin-bottom:5px}
@@ -111,12 +111,12 @@ html[dir="rtl"] body{font-synthesis:none}
 .fertini-voice-v6__error{position:absolute;top:calc(100% - 16px);right:0;color:#a76c60;font-size:11px}
 @media(max-width:600px){
  .fertini-voice-v6{gap:14px}
- .fertini-voice-v6__disc{width:72px;height:72px;flex-basis:72px}
- .fertini-voice-v6__disc>span{width:45px;height:45px}
+ .fertini-voice-v6__disc{width:62px;height:62px;flex-basis:62px}
+ .fertini-voice-v6__disc>span{width:39px;height:39px}
  .fertini-voice-v6__info h2{font-size:17px}
  .fertini-voice-v6__overline{font-size:9px}
  .fertini-fragrance__quantity{gap:5px}
- .fertini-fragrance__quantity button{width:34px;height:34px;min-width:34px}
+ .fertini-fragrance__variants .fertini-fragrance__quantity button{width:34px;height:34px;min-width:34px;min-height:34px}
  .fertini-fragrance__variant-row{gap:8px}
 }
 @media(prefers-reduced-motion:reduce){
@@ -128,3 +128,48 @@ html[dir="rtl"] body{font-synthesis:none}
 @media(max-width:600px){
  .fertini-v5 .fertini-v5-hero .fertini-hero__image img{object-position:12% 50%!important}
 }
+
+/* V7: actual layout fixes, not global button sizing fallbacks. */
+.fertini-fragrance__variants .fertini-fragrance__quantity{flex:0 0 auto;display:grid;grid-template-columns:38px minmax(23px,auto) 38px;align-items:center;justify-items:center;gap:8px;direction:ltr}
+.fertini-fragrance__variants .fertini-fragrance__quantity svg{display:block;width:16px;height:16px;flex-shrink:0}
+.fertini-fragrance__variants .fertini-fragrance__quantity output{display:block;line-height:1;text-align:center;min-width:23px}
+.fertini-fragrance__variant-details{min-width:0}
+.fertini-fragrance__variant-details span{overflow-wrap:anywhere}
+.fertini-voice-v6__disc>span svg{position:static!important;width:18px!important;height:18px!important;overflow:visible!important}
+.fertini-voice-v6__disc{padding:0!important;overflow:hidden}
+.fertini-voice-v6__disc>span{position:relative;z-index:1}
+.fertini-voice-v6__info{min-width:0;overflow-wrap:anywhere}
+.fertini-account-gateway__field{display:grid!important;grid-template-rows:auto 44px;align-content:start;gap:1px!important;margin:0!important;padding:0!important}
+.fertini-account-gateway__field>span{display:block;align-self:end;margin:0!important;padding:0!important;line-height:1.45!important}
+.fertini-account-gateway__field>input{display:block;width:100%;height:44px;min-height:44px!important;box-sizing:border-box;margin:0!important;padding:7px 2px 5px!important;line-height:1.45!important}
+.fertini-account-gateway__pair{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fertini-filter-overlay__backdrop{animation:fertini-filter-dim-in .42s ease both}
+.fertini-filter-overlay.is-closing{pointer-events:none}
+.fertini-filter-overlay.is-closing .fertini-filter-panel{animation:fertini-filter-panel-out .44s cubic-bezier(.55,0,.35,1) both}
+.fertini-filter-overlay.is-closing .fertini-filter-overlay__backdrop{animation:fertini-filter-dim-out .44s ease both}
+@keyframes fertini-filter-panel-out{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(55px)}}
+@keyframes fertini-filter-dim-in{from{opacity:0}to{opacity:1}}
+@keyframes fertini-filter-dim-out{from{opacity:1}to{opacity:0}}
+.fertini-header-sound--mobile{display:none!important}
+.fertini-header-sound--desktop{display:inline-grid!important}
+.fertini-sound-equalizer i,.fertini-header-sound.is-playing .fertini-sound-equalizer i{animation:none!important;transition:none!important;transform-origin:center}
+html,body{max-width:100%;overflow-x:clip}
+.ql-home,.ql-shop,.ql-detail,.maison-page,.fertini-fragrance,.fertini-account-gateway{max-width:100%;min-width:0}
+.fertini-v5-new__scroll{max-width:100%;min-width:0}
+@media(max-width:600px){
+ .maison-header__inner{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:2px}
+ .maison-header__brand strong{font-size:clamp(18px,5.2vw,22px)}
+ .maison-header__brand span{font-size:5.5px}
+ .maison-header__left,.maison-header__right{min-width:0;gap:0}
+ .maison-header__left .maison-icon-button,.maison-header__right .maison-icon-button{width:clamp(31px,9.3vw,38px);height:42px}
+ .maison-header__account{display:inline-grid!important}
+ .fertini-header-sound--mobile{display:inline-grid!important}
+ .fertini-header-sound--desktop{display:none!important}
+ .fertini-fragrance__variants .fertini-fragrance__quantity{grid-template-columns:34px minmax(20px,auto) 34px;gap:4px}
+ .fertini-fragrance__variant-row{gap:8px;min-width:0}
+ .fertini-voice-v6{gap:12px}
+ .fertini-voice-v6__info h2{font-size:16px}
+ .fertini-filter-overlay.is-closing .fertini-filter-panel{animation:fertini-filter-panel-down .44s cubic-bezier(.55,0,.35,1) both}
+}
+@keyframes fertini-filter-panel-down{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(60px)}}
+@media(prefers-reduced-motion:reduce){.fertini-filter-overlay.is-closing .fertini-filter-panel,.fertini-filter-overlay.is-closing .fertini-filter-overlay__backdrop{animation-duration:.01ms!important}}

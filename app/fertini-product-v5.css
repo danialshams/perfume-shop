@@ -17,8 +17,8 @@
 .fertini-fragrance__accords span{font-size:11px;color:#859389;background:#e8ede8;padding:7px 13px}
 .fertini-fragrance__variants h2{font-size:13px;font-weight:350;margin-bottom:15px}
 .fertini-fragrance__variants>div{display:flex;gap:9px;flex-wrap:wrap}
-.fertini-fragrance__variants button{background:transparent;border:1px solid #c4cfc4;padding:13px 18px;min-width:85px;font-size:12px;transition:background .3s}
-.fertini-fragrance__variants button.is-active{border-color:#576a58;background:#e7ede6}
+.fertini-fragrance__variants > div > button{background:transparent;border:1px solid #c4cfc4;padding:13px 18px;min-width:85px;font-size:12px;transition:background .3s}
+.fertini-fragrance__variants > div > button.is-active{border-color:#576a58;background:#e7ede6}
 .fertini-fragrance__price{display:flex;flex-direction:column;gap:10px;margin:38px 0 28px}
 .fertini-fragrance__price strong{font-size:26px;font-weight:350}
 .fertini-fragrance__price span{font-size:12px;color:#8f9b90}
