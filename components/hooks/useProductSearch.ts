@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { FERTINI_DEMOS } from "@/lib/fertini-demo";
 
 export type SearchProduct = {
     id: number | string;
@@ -8,6 +9,8 @@ export type SearchProduct = {
     slug: string;
     image: string | null;
     volumesMl: number[];
+    href?: string;
+    demo?: boolean;
 };
 
 type UseProductSearchOptions = {
@@ -418,6 +421,24 @@ function extractErrorMessage(
     return null;
 }
 
+function normalized(value:string){
+  return value.toLocaleLowerCase("fa").normalize("NFKC")
+    .replace(/[\u064B-\u065F\u0670]/g,"").replace(/ي/g,"ی").replace(/ك/g,"ک").trim();
+}
+/** Clearly identified demo results are used when the real products API is offline. */
+function demoResults(query:string,limit:number):SearchProduct[]{
+  const q=normalized(query);
+  return FERTINI_DEMOS.filter(product=>{
+    const family=product.family==="woody"?"چوبی دودی":product.family==="floral"?"گلی لطیف":"گرم شرقی";
+    const terms=[product.name,product.id,product.description,product.subtitle,family,"عطر",
+      ...product.accords,...product.notes.top,...product.notes.heart,...product.notes.base].join(" ");
+    return normalized(terms).includes(q);
+  }).slice(0,limit).map(product=>({
+    id:product.id,name:product.name,slug:product.id,image:product.image,
+    volumesMl:product.variants.map(v=>v.volume),href:"/fragrance/"+product.id,demo:true,
+  }));
+}
+
 export function useProductSearch(
     query: string,
     options: UseProductSearchOptions = {},
@@ -517,9 +538,10 @@ export function useProductSearch(
                         return;
                     }
 
-                    setProducts(
-                        normalizeProducts(payload),
-                    );
+                    const live=normalizeProducts(payload);
+                    const samples=demoResults(normalizedQuery,limit);
+                    const known=new Set(live.map(item=>normalized(item.name)));
+                    setProducts([...live,...samples.filter(item=>!known.has(normalized(item.name)))].slice(0,limit));
 
                     setHasSearched(true);
                 } catch (
@@ -540,9 +562,10 @@ export function useProductSearch(
                         return;
                     }
 
-                    setProducts([]);
+                    const samples=demoResults(normalizedQuery,limit);
+                    setProducts(samples);
                     setHasSearched(true);
-
+                    if(samples.length){setError(null);return;}
                     setError(
                         requestError instanceof Error
                             ? requestError.message

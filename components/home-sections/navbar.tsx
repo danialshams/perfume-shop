@@ -191,9 +191,9 @@ export default function LuxuryNavbar() {
               {!loading && error && <p role="alert">جستجو در دسترس نیست. دوباره تلاش کنید.</p>}
               {!loading && !error && hasSearched && products.length === 0 && <p>رایحه‌ای با این نام پیدا نشد.</p>}
               {!loading && !error && products.map((product, index) => (
-                <Link key={product.id} href={"/products/" + product.id} onClick={dismiss} className="maison-search__result">
+                <Link key={product.id} href={product.href || "/products/" + product.id} onClick={dismiss} className="maison-search__result">
                   <span lang="en" dir="ltr" className="maison-search__result-index">{String(index+1).padStart(2,"0")}</span>
-                  <span className="maison-search__result-name">{product.name}<small>{product.volumesMl?.length ? product.volumesMl.join(" / ") + " ml" : "FERTINI COLLECTION"}</small></span>
+                  <span className="maison-search__result-name">{product.name}<small>{product.demo?"نمونه نمایشی · ":null}{product.volumesMl?.length ? product.volumesMl.join(" / ") + " ml" : "FERTINI COLLECTION"}</small></span>
                   <ArrowLeft size={17} strokeWidth={1.2}/>
                 </Link>
               ))}
