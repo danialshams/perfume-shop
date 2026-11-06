@@ -57,7 +57,7 @@ export default function FertiniVoicePlayer({productName,voiceUrl,script,classNam
    };
    frame=window.requestAnimationFrame(draw);
    return()=>window.cancelAnimationFrame(frame);
- },[voiceUrl,duration,speechProgress,playing,current]);
+ },[voiceUrl,duration,speechProgress,playing]);
  const lock=useCallback(()=>{
   if(lockRef.current)return;
   lockRef.current=true;
@@ -144,6 +144,11 @@ export default function FertiniVoicePlayer({productName,voiceUrl,script,classNam
            const value=Number(event.target.value);
            if(audioRef.current)audioRef.current.currentTime=value;
            setCurrent(value);
+           if(progressRingRef.current&&duration>0){
+             renderedProgressRef.current=Math.min(1,Math.max(0,value/duration));
+             progressRingRef.current.setAttribute("stroke-dashoffset",
+               String(circumference*(1-renderedProgressRef.current)));
+           }
          }}/>
        <span dir="ltr" lang="en">{time(current)} / {time(duration)}</span>
      </div>:<p>{playing?"در حال پخش روایت":"معرفی صوتی عطر"}</p>}
