@@ -8,6 +8,7 @@ on:
     branches:
       - feature/quiet-luxury-cinematic-v2-20261105
       - feature/fertini-cinematic-mobile-fixes-20261106
+      - feature/fertini-essential-admin-studio-20261106
 
 jobs:
   verify:
@@ -25,6 +26,10 @@ jobs:
         run: node scripts/check-luxury-ui.mjs
       - name: Verify V7 mobile layout, controls, stock privacy and real audio
         run: node scripts/check-fertini-v7.mjs
+      - name: Validate actual media signatures and file-size boundaries
+        run: node --experimental-strip-types scripts/test-admin-media.mjs
+      - name: Check admin studio routes, DB migration safety and notification integration
+        run: node scripts/check-admin-studio.mjs
       - name: Check media audit inventory without database access
         run: node scripts/audit-media-references.mjs
       - name: Verify payment safety and secret hygiene
@@ -36,6 +41,8 @@ jobs:
       - name: Strict production build (no TypeScript bypass)
         run: npm run build
       - name: Full page browser and responsive QA without Vercel
+        env:
+          JWT_ACCESS_SECRET: "fertini-ci-only-session-secret-2026-no-production-use"
         run: |
           npm run start -- -p 3100 > /tmp/maison-next.log 2>&1 &
           for attempt in $(seq 1 40); do
