@@ -12,7 +12,7 @@ export function useAmbientSound(){ return useContext(AmbientSoundContext); }
 /** Global audio lifecycle; controls are rendered only in the header and mobile menu. */
 export default function MaisonAmbientSound({children}:{children:ReactNode}){
   const pathname = usePathname() || "/";
-  const enabled = pathname === "/" || pathname === "/products" || pathname.startsWith("/products/") || pathname.startsWith("/demo/fragrance");
+  const enabled = pathname === "/" || pathname === "/products" || pathname.startsWith("/products/") || pathname.startsWith("/fragrance/") || pathname.startsWith("/journal") || pathname === "/about";
   const ref=useRef<HTMLAudioElement>(null);
   const wants=useRef(false), voiceLocks=useRef(0), resume=useRef(false);
   const [playing,setPlaying]=useState(false);

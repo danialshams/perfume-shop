@@ -8,7 +8,6 @@ import {
     useMemo,
     useState,
 } from "react";
-import { usePathname } from "next/navigation";
 
 type CartCountContextValue = {
     cartCount: number;
@@ -34,7 +33,6 @@ function getCountFromCartResponse(data: any): number {
 
 export function CartCountProvider({ children }: { children: React.ReactNode }) {
     const [cartCount, setCartCount] = useState(0);
-    const pathname = usePathname();
 
     const refreshCartCount = useCallback(async () => {
         try {
@@ -58,7 +56,7 @@ export function CartCountProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         refreshCartCount();
-    }, [refreshCartCount, pathname]);
+    }, [refreshCartCount]);
 
     useEffect(() => {
         const handleCartChanged = () => {
