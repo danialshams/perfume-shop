@@ -19,10 +19,6 @@ export default function ProductMetaGrid({ product }: Props) {
       label: "تعداد واریانت",
       value: String(product.variant_count ?? 0),
     },
-    {
-      label: "موجودی کل",
-      value: String(product.total_stock ?? 0),
-    },
   ];
 
   return (

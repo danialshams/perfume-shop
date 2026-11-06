@@ -186,3 +186,11 @@ html,body{max-width:100%;overflow-x:clip}
 .fertini-v5 .fertini-v5-hero .fertini-hero__autoplay:hover{opacity:1}
 .fertini-v5 .fertini-v5-hero .fertini-hero__autoplay svg{width:16px;height:16px}
 @media(prefers-reduced-motion:reduce){.fertini-v5 .fertini-v7-curtain{display:none!important}}
+
+/* Keep one hairline on filter row and center both quantity controls precisely. */
+.maison-catalog .ql-shop-filter{border-bottom:0!important}
+.fertini-filter-bar{border-bottom:1px solid rgba(35,46,41,.14)}
+.ql-quantity{display:grid;grid-template-columns:28px minmax(20px,auto) 28px;align-items:center;justify-items:center;gap:7px;padding:5px 8px;flex-shrink:0}
+.ql-quantity button{display:grid;place-items:center;box-sizing:border-box;padding:0!important;width:28px;height:30px;min-width:28px;line-height:1}
+.ql-quantity svg{width:15px;height:15px;display:block}
+@media(max-width:420px){.ql-purchase-main{flex-wrap:wrap}.ql-purchase-main strong{white-space:normal;overflow-wrap:anywhere}}

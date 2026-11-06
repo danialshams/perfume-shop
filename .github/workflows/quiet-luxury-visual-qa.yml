@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - feature/quiet-luxury-cinematic-v2-20261105
+      - feature/fertini-cinematic-mobile-fixes-20261106
 
 jobs:
   verify:
@@ -22,12 +23,14 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Test cinematic storefront structure
         run: node scripts/check-luxury-ui.mjs
+      - name: Verify V7 mobile layout, controls, stock privacy and real audio
+        run: node scripts/check-fertini-v7.mjs
       - name: Check media audit inventory without database access
         run: node scripts/audit-media-references.mjs
       - name: Verify payment safety and secret hygiene
         run: node scripts/check-commerce-safety.mjs
       - name: Lint visual storefront
-        run: npx eslint app/layout.tsx app/products/page.tsx app/cart/page.tsx components/home-sections/CinematicStorefront.tsx components/home-sections/CinematicPurchasePanel.tsx components/HomeWrapper/home-page-shell.tsx components/HomeProductsPage/LuxuryProductsView.tsx components/NavbarComponents/BrandLogo.tsx components/home-sections/navbar.tsx components/maison/MaisonIntro.tsx components/maison/MaisonAmbientSound.tsx components/HomeProductsComponnents/ProductsFilterBar.tsx components/HomeProductsComponnents/ProductsLoadingState.tsx app/demo/fragrance/page.tsx
+        run: npx eslint app/layout.tsx app/products/page.tsx app/cart/page.tsx components/home-sections/CinematicStorefront.tsx components/home-sections/CinematicPurchasePanel.tsx components/HomeWrapper/home-page-shell.tsx components/HomeProductsPage/LuxuryProductsView.tsx components/NavbarComponents/BrandLogo.tsx components/home-sections/navbar.tsx components/maison/MaisonIntro.tsx components/maison/MaisonAmbientSound.tsx components/maison/MaisonSoundBars.tsx components/maison/FertiniEditorialMotion.tsx components/maison/FertiniFragranceDetail.tsx components/maison/FertiniVoicePlayer.tsx components/home-sections/FertiniHomeV5.tsx components/HomeProductsComponnents/ProductsFilterBar.tsx components/HomeProductsComponnents/ProductsLoadingState.tsx app/demo/fragrance/page.tsx
       - name: Typecheck the complete project
         run: npx tsc --noEmit
       - name: Strict production build (no TypeScript bypass)
