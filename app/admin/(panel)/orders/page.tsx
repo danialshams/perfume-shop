@@ -558,7 +558,7 @@ function AdminOrdersPageContent() {
       const result: ApiListResponse = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.message || "خطا در دریافت سفارش‌ها");
+        throw new Error(response.status>=500?"اتصال دیتابیس سفارش‌ها برقرار نیست.":result.message||"دریافت سفارش‌ها ممکن نیست.");
       }
 
       setOrders(result.data.items);
@@ -589,7 +589,7 @@ function AdminOrdersPageContent() {
       const result: ApiDetailsResponse = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.message || "خطا در دریافت جزئیات سفارش");
+        throw new Error(response.status>=500?"جزئیات سفارش از دیتابیس دریافت نشد.":result.message||"دریافت جزئیات ناموفق بود.");
       }
 
       const details = result.data;
