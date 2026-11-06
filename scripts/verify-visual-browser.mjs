@@ -93,7 +93,7 @@ async function evaluate(send,expression){
  return result.result?.value;
 }
 async function pageScreenshot({name,url,width,height,mobile,assertHome}){
- const {ws,send}=await open(url);
+ const {ws,send}=await open("about:blank");
  try{
   await send("Page.enable");
   await send("Runtime.enable");
@@ -101,14 +101,14 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
   await send("Emulation.setTouchEmulationEnabled",{enabled:mobile});
   await send("Page.navigate",{url});
   await until(async()=>{
-    const v=await evaluate(send,"document.readyState");
-    return v==="complete";
-  },14000);
+    const v=await evaluate(send,'location.pathname === ' + JSON.stringify(new URL(url).pathname) + ' && document.readyState === "complete" && !!document.querySelector("main")');
+    return v===true;
+  },38000);
   if(assertHome) {
     await until(async()=> await evaluate(send, '!document.querySelector(".maison-intro")'), 8000);
     await sleep(900);
   }
-  await evaluate(send,`(async()=>{await document.fonts.ready;await new Promise(r=>setTimeout(r,1100));let h=document.documentElement.scrollHeight;for(let y=0;y<h;y+=650){window.scrollTo(0,y);await new Promise(r=>setTimeout(r,65));}window.scrollTo(0,0);await new Promise(r=>setTimeout(r,650));return true;})()`);
+  await evaluate(send,`(async()=>{await document.fonts.ready;await new Promise(r=>setTimeout(r,850));let h=document.documentElement.scrollHeight;for(let y=0;y<h;y+=650){window.scrollTo(0,y);await new Promise(r=>setTimeout(r,150));}await new Promise(r=>setTimeout(r,2000));window.scrollTo(0,0);await new Promise(r=>setTimeout(r,900));return true;})()`);
   const state=await evaluate(send,`(()=>{
    const hero=document.querySelector(".fertini-hero");
    const img=document.querySelector(".fertini-hero__image.is-active img");
@@ -124,6 +124,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     documentScrollUnlocked: getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden"
    };
   })()`);
+  if(state.url!==new URL(url).pathname)throw Error(name+" unexpected route: "+JSON.stringify(state));
   if(!state.headerFound)throw Error(name+" has no header");
   if(state.scrollWidth>state.width+4)throw Error(name+" has horizontal overflow "+JSON.stringify(state));
   if(assertHome){
