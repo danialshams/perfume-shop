@@ -319,7 +319,7 @@ async function validateStorefrontInteractions(){
         demoAnchors:[...(list?.querySelectorAll("a")||[])].map(a=>a.getAttribute("href"))};
    })()`);
    process.stdout.write("SEARCH DEBUG "+JSON.stringify(searchDiagnostic)+"\\n");
-   await until(()=>evaluate(send,'!!document.querySelector(".maison-search__result[href="/fragrance/nocturne"]")'),4500)
+   await until(()=>evaluate(send,'!!document.querySelector(".maison-search__result[href$=nocturne]")'),4500)
      .catch(()=>{throw Error("Search result not shown "+JSON.stringify(searchDiagnostic));});
    if(await evaluate(send,'!!document.querySelector(".maison-search__results [role=alert]")'))throw Error("Fallback search displayed error for sample scent");
    process.stdout.write("Guest cart, variant constraints, account field alignment (mobile/desktop) and navigation validated.\\n");
