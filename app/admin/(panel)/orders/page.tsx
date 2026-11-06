@@ -419,6 +419,7 @@ function AdminOrdersPageContent() {
   const [actionLoading, setActionLoading] = useState(false);
 
   const [selectedOrder, setSelectedOrder] = useState<OrderDetails | null>(null);
+  const [adminNoteDraft,setAdminNoteDraft]=useState("");
   const [openDetails, setOpenDetails] = useState(false);
 
   const query = useMemo(() => {
@@ -594,6 +595,7 @@ function AdminOrdersPageContent() {
       const firstProductName = details.items[0]?.product_name || "";
 
       setSelectedOrder(details);
+      setAdminNoteDraft(details.admin_notes||"");
 
       if (firstProductName) {
         setOrderProductNames((currentNames) => ({
@@ -613,36 +615,19 @@ function AdminOrdersPageContent() {
     }
   }
 
-  async function deleteOrder(orderId: number) {
-    const confirmed = window.confirm("آیا از حذف این سفارش مطمئن هستید؟");
-
-    if (!confirmed) {
-      return;
-    }
-
+  async function saveAdminNote(){
+    if(!selectedOrder||adminNoteDraft.length>1000)return;
     setActionLoading(true);
-
-    try {
-      const response = await fetch(`/api/v1/orders/${orderId}`, {
-        method: "DELETE",
+    try{
+      const response=await fetch(`/api/v1/orders/${selectedOrder.id}`,{
+        method:"PATCH",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({admin_notes:adminNoteDraft}),
       });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "خطا در حذف سفارش");
-      }
-
-      setOpenDetails(false);
-      setSelectedOrder(null);
-
-      await fetchOrders();
-    } catch (error) {
-      console.error(error);
-      alert(error instanceof Error ? error.message : "خطا در حذف سفارش");
-    } finally {
-      setActionLoading(false);
-    }
+      const data=await response.json();
+      if(!response.ok||!data.success)throw new Error(data.message||"ذخیره یادداشت ناموفق بود");
+      await fetchOrderDetails(selectedOrder.id);
+    }catch(e){alert(e instanceof Error?e.message:"ذخیره یادداشت ممکن نشد")}
+    finally{setActionLoading(false)}
   }
 
   async function toggleOrderShipped(
@@ -691,10 +676,7 @@ function AdminOrdersPageContent() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          status: nextStatus,
-          payment_status: order.payment_status,
-        }),
+        body: JSON.stringify({status: nextStatus}),
       });
 
       const result = await response.json();
@@ -955,7 +937,7 @@ function AdminOrdersPageContent() {
                     <div className="mt-1 flex items-center gap-2">
                       <ShipToggle
                         shipped={shipped}
-                        disabled={actionLoading}
+                        disabled={actionLoading || order.payment_status!=="PAID" || !["SHIPPED","PROCESSING"].includes(order.status)}
                         onChange={(next) =>
                           void toggleOrderShipped(order, next)
                         }
@@ -981,15 +963,8 @@ function AdminOrdersPageContent() {
                   >
                     جزئیات
                   </button>
-                  <span className="w-px bg-zinc-100" />
-                  <button
-                    type="button"
-                    onClick={() => void deleteOrder(order.id)}
-                    disabled={actionLoading}
-                    className="flex-1 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-40"
-                  >
-                    حذف
-                  </button>
+                  
+                  
                 </div>
               </article>
             );
@@ -1077,7 +1052,7 @@ function AdminOrdersPageContent() {
                         <div className="flex items-center gap-2">
                           <ShipToggle
                             shipped={shipped}
-                            disabled={actionLoading}
+                            disabled={actionLoading || order.payment_status!=="PAID" || !["SHIPPED","PROCESSING"].includes(order.status)}
                             onChange={(next) =>
                               void toggleOrderShipped(order, next)
                             }
@@ -1101,14 +1076,7 @@ function AdminOrdersPageContent() {
                           >
                             جزئیات
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => void deleteOrder(order.id)}
-                            disabled={actionLoading}
-                            className="rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-40"
-                          >
-                            حذف
-                          </button>
+                          
                         </div>
                       </td>
                     </tr>
@@ -1335,6 +1303,20 @@ function AdminOrdersPageContent() {
                     {selectedOrder.notes || "—"}
                   </p>
                 </Section>
+                <Section title="یادداشت داخلی مدیر">
+                  <label className="block text-xs text-zinc-600 mb-2" htmlFor="admin-order-note">
+                    یادداشت فقط برای مدیر نمایش داده می‌شود.
+                  </label>
+                  <textarea id="admin-order-note" value={adminNoteDraft} maxLength={1000}
+                    onChange={e=>setAdminNoteDraft(e.target.value)}
+                    className="w-full min-h-24 border border-zinc-200 rounded-lg bg-white p-3 text-sm outline-none focus:border-zinc-500"
+                    placeholder="پیگیری ارسال، هماهنگی با مشتری و…"/>
+                  <div className="flex justify-between items-center mt-2">
+                    <small className="text-xs text-zinc-400">{adminNoteDraft.length} / 1000</small>
+                    <button type="button" disabled={actionLoading || adminNoteDraft===(selectedOrder.admin_notes||"")}
+                      onClick={()=>void saveAdminNote()} className="fst-btn fst-btn-primary disabled:opacity-40">ذخیره یادداشت</button>
+                  </div>
+                </Section>
               </div>
             )}
           </div>
@@ -1349,14 +1331,7 @@ function AdminOrdersPageContent() {
               >
                 بستن
               </button>
-              <button
-                type="button"
-                onClick={() => void deleteOrder(selectedOrder.id)}
-                disabled={actionLoading}
-                className="rounded-xl border border-red-200 px-4 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-40"
-              >
-                حذف سفارش
-              </button>
+              
             </div>
           </div>
         </div>
