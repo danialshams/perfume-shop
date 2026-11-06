@@ -2,7 +2,7 @@
 import Link from "next/link";
 import {useEffect,useState} from "react";
 import {Package,ShoppingBag,Shapes,Users,ArrowUpLeft,PanelsTopLeft,
-  FileAudio,Images,Database,ArrowLeft,RefreshCw} from "lucide-react";
+  FileAudio,Images,Database,ArrowLeft,RefreshCw,TicketPercent,MessageSquare} from "lucide-react";
 type Recent={id:number;order_number:string|null;customer_name:string|null;total_amount:number;status:string;created_at:string};
 type Overview={products:number;orders:number;categories:number;customers:number;notifications:number;recent:Recent[]};
 const cards=[
@@ -17,7 +17,10 @@ const actions=[
  {href:"/admin/orders",title:"مدیریت سفارش‌ها",detail:"مشتری، اقلام، پرداخت و وضعیت ارسال",icon:ShoppingBag},
  {href:"/admin/media",title:"کتابخانه رسانه",detail:"تصویر و معرفی صوتی هر عطر",icon:FileAudio},
  {href:"/admin/sliders",title:"اسلایدر و کمپین",detail:"انتخاب محصول و مقصد اسلاید",icon:Images},
- {href:"/admin/database",title:"سلامت زیرساخت",detail:"اتصال دیتابیس و کنترل ساختار",icon:Database}
+ {href:"/admin/database",title:"سلامت زیرساخت",detail:"اتصال دیتابیس و کنترل ساختار",icon:Database},
+ {href:"/admin/customers",title:"مشتریان",detail:"نمایش جزئیات و مدیریت وضعیت حساب",icon:Users},
+ {href:"/admin/coupons",title:"کدهای تخفیف",detail:"ساخت، مشاهده و فعال‌سازی تخفیف‌ها",icon:TicketPercent},
+ {href:"/admin/reviews",title:"مدیریت دیدگاه‌ها",detail:"بررسی و تأیید یا رد نظرات",icon:MessageSquare}
 ] as const;
 export default function AdminDashboardPage(){
  const [data,setData]=useState<Overview|null>(null),[error,setError]=useState(""),[loading,setLoading]=useState(true);

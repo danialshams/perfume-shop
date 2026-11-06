@@ -2,7 +2,7 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {LayoutDashboard,Package,Shapes,ShoppingBag,PanelsTopLeft,Images,
-  FileAudio,Database,ChevronLeft,ExternalLink} from "lucide-react";
+  FileAudio,Database,ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,CreditCard,Tag} from "lucide-react";
 
 const groups=[
  {title:"محتوا و ظاهر فروشگاه",links:[
@@ -12,7 +12,13 @@ const groups=[
  {title:"مدیریت فروشگاه",links:[
   {href:"/admin/products",title:"محصولات و موجودی",icon:Package},
   {href:"/admin/categories",title:"دسته‌بندی‌ها",icon:Shapes},
-  {href:"/admin/orders",title:"سفارش‌ها و پرداخت‌ها",icon:ShoppingBag}]},
+  {href:"/admin/orders",title:"سفارش‌ها",icon:ShoppingBag},
+  {href:"/admin/coupons",title:"کدهای تخفیف",icon:TicketPercent},
+  {href:"/admin/brands",title:"برندها",icon:Tag}]},
+ {title:"سفارش‌ها و مشتریان",links:[
+  {href:"/admin/customers",title:"مشتریان",icon:Users},
+  {href:"/admin/payments",title:"تراکنش‌ها",icon:CreditCard},
+  {href:"/admin/reviews",title:"دیدگاه‌ها",icon:MessageSquare}]},
  {title:"سیستم",links:[{href:"/admin/database",title:"سلامت اتصال و دیتابیس",icon:Database}]}
 ];
 export const adminSections=groups;
