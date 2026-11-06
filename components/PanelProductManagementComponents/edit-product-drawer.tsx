@@ -1,6 +1,7 @@
 "use client";
 
 import { toSlug } from "@/lib/utils";
+import {validateMediaMeta} from "@/lib/admin-media-validation";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import {
     App,
@@ -581,6 +582,8 @@ export default function EditProductDrawer({
 
 
     const uploadFile = async (file: File) => {
+        const checked=validateMediaMeta(file,"image");
+        if(!checked.ok)throw new Error(checked.error);
         const formData = new FormData();
         formData.append("file", file);
 
@@ -612,6 +615,8 @@ export default function EditProductDrawer({
         file: File,
         options?: { onProgress?: (percent: number) => void }
     ) => {
+        const checked=validateMediaMeta(file,"voice");
+        if(!checked.ok)throw new Error(checked.error);
         const formData = new FormData();
         formData.append("file", file);
 
@@ -647,24 +652,8 @@ export default function EditProductDrawer({
     };
 
     const validateVoiceBeforeUpload = (file: File) => {
-        const isAudio =
-            file.type.startsWith("audio/") ||
-            ALLOWED_AUDIO_EXTENSIONS.some((ext) =>
-                file.name.toLowerCase().endsWith(ext)
-            );
-
-        if (!isAudio) {
-            message.error("فقط فایل صوتی مجاز است");
-            return Upload.LIST_IGNORE;
-        }
-
-        const isValidSize = file.size / 1024 / 1024 <= MAX_AUDIO_SIZE_MB;
-
-        if (!isValidSize) {
-            message.error(`حداکثر حجم فایل صوتی ${MAX_AUDIO_SIZE_MB} مگابایت است`);
-            return Upload.LIST_IGNORE;
-        }
-
+        const checked=validateMediaMeta(file,"voice");
+        if(!checked.ok){message.error(checked.error);return Upload.LIST_IGNORE}
         return true;
     };
 
