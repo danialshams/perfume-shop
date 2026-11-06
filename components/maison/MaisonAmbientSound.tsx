@@ -1,55 +1,67 @@
 "use client";
-
-import gsap from "gsap";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { Play, Pause } from "lucide-react";
+import gsap from "gsap";
 
-const TRACK_SRC="/audio/luxury-piano.mp3";
-const TARGET_VOLUME=.13;
-export default function MaisonAmbientSound(){
-  const pathname=usePathname();
-  const onStorefront=pathname==="/"||pathname==="/products"||pathname.startsWith("/products/")||pathname.startsWith("/demo/fragrance");
-  const audioRef=useRef<HTMLAudioElement>(null);
-  const wantedRef=useRef(false),voiceLocksRef=useRef(0),resumeRef=useRef(false);
-  const [playing,setPlaying]=useState(false),[error,setError]=useState(false);
+const TRACK_SRC = "/audio/luxury-piano.mp3";
+const TARGET_VOLUME = 0.12;
+type AmbientContext = { enabled:boolean; playing:boolean; toggle:()=>void };
+const AmbientSoundContext = createContext<AmbientContext>({enabled:false,playing:false,toggle:()=>{}});
+export function useAmbientSound(){ return useContext(AmbientSoundContext); }
 
-  const fadeOut=useCallback(()=>{
-    const audio=audioRef.current;if(!audio||audio.paused)return;
+/** Global audio lifecycle; controls are rendered only in the header and mobile menu. */
+export default function MaisonAmbientSound({children}:{children:ReactNode}){
+  const pathname = usePathname() || "/";
+  const enabled = pathname === "/" || pathname === "/products" || pathname.startsWith("/products/") || pathname.startsWith("/demo/fragrance");
+  const ref=useRef<HTMLAudioElement>(null);
+  const wants=useRef(false), voiceLocks=useRef(0), resume=useRef(false);
+  const [playing,setPlaying]=useState(false);
+  const fade=useCallback(()=>{
+    const audio=ref.current;
+    if(!audio || audio.paused)return;
     gsap.killTweensOf(audio);
-    gsap.to(audio,{volume:0,duration:.48,ease:"power2.inOut",onComplete:()=>audio.pause()});
+    gsap.to(audio,{volume:0,duration:.5,ease:"power2.out",onComplete:()=>audio.pause()});
   },[]);
   const start=useCallback(async()=>{
-    const audio=audioRef.current;if(!audio||voiceLocksRef.current>0)return;
-    gsap.killTweensOf(audio);audio.volume=0;
+    const audio=ref.current;
+    if(!audio || !enabled || voiceLocks.current>0)return;
+    gsap.killTweensOf(audio);
+    audio.volume=0;
     try{
-      await audio.play();wantedRef.current=true;setError(false);setPlaying(true);
-      gsap.to(audio,{volume:TARGET_VOLUME,duration:1.5,ease:"power2.out"});
-    }catch{wantedRef.current=false;setPlaying(false);setError(true);}
-  },[]);
-  const toggle=()=>{
-    if(wantedRef.current){wantedRef.current=false;resumeRef.current=false;setPlaying(false);fadeOut();}
-    else void start();
-  };
+      await audio.play();
+      wants.current=true;
+      setPlaying(true);
+      gsap.to(audio,{volume:TARGET_VOLUME,duration:1.4,ease:"power2.out"});
+    }catch{
+      wants.current=false;
+      setPlaying(false);
+    }
+  },[enabled]);
+  const toggle=useCallback(()=>{
+    if(wants.current){
+      wants.current=false;resume.current=false;
+      setPlaying(false);fade();
+    }else{ void start(); }
+  },[start,fade]);
   useEffect(()=>{
-    if(onStorefront)return;
-    wantedRef.current=false;resumeRef.current=false;voiceLocksRef.current=0;
-    const audio=audioRef.current;
+    if(enabled)return;
+    wants.current=false;resume.current=false;voiceLocks.current=0;
+    const audio=ref.current;
     if(audio){gsap.killTweensOf(audio);audio.pause();}
-    const frame=requestAnimationFrame(()=>setPlaying(false));
-    return()=>cancelAnimationFrame(frame);
-  },[onStorefront]);
+    const id=requestAnimationFrame(()=>setPlaying(false));
+    return()=>cancelAnimationFrame(id);
+  },[enabled]);
   useEffect(()=>{
     const voiceStart=()=>{
-      voiceLocksRef.current+=1;
-      if(wantedRef.current&&audioRef.current&&!audioRef.current.paused){
-        resumeRef.current=true;fadeOut();setPlaying(false);
+      voiceLocks.current+=1;
+      if(wants.current && ref.current && !ref.current.paused){
+        resume.current=true;fade();setPlaying(false);
       }
     };
     const voiceStop=()=>{
-      voiceLocksRef.current=Math.max(0,voiceLocksRef.current-1);
-      if(!voiceLocksRef.current&&resumeRef.current&&onStorefront&&wantedRef.current){
-        resumeRef.current=false;void start();
+      voiceLocks.current=Math.max(0,voiceLocks.current-1);
+      if(voiceLocks.current===0 && resume.current && wants.current){
+        resume.current=false;void start();
       }
     };
     window.addEventListener("background-music:pause-for-voice",voiceStart);
@@ -58,20 +70,14 @@ export default function MaisonAmbientSound(){
       window.removeEventListener("background-music:pause-for-voice",voiceStart);
       window.removeEventListener("background-music:resume-after-voice",voiceStop);
     };
-  },[onStorefront,start,fadeOut]);
+  },[start,fade]);
   useEffect(()=>()=>{
-    const audio=audioRef.current;
+    const audio=ref.current;
     if(audio){gsap.killTweensOf(audio);audio.pause();}
   },[]);
-  return <>
-    <audio ref={audioRef} src={TRACK_SRC} preload="none" loop playsInline aria-hidden="true" />
-    {onStorefront&&<button type="button" className={"fertini-ambient "+(playing?"is-playing":"")}
-      aria-label={playing?"خاموش کردن موسیقی پس‌زمینه":"روشن کردن موسیقی پس‌زمینه"}
-      aria-pressed={playing} title={error?"فایل صدا در دسترس نیست":"Fertini / Ambient"}
-      onClick={toggle}>
-      <span className="fertini-ambient__record" aria-hidden="true"><span><i/></span></span>
-      <span className="fertini-ambient__details"><strong lang="en" dir="ltr">FERTINI RADIO</strong><small>{error?"صدا در دسترس نیست":playing?"در حال پخش":"موسیقی محیط"}</small></span>
-      <span className="fertini-ambient__action">{playing?<Pause size={16} fill="currentColor"/>:<Play size={16} fill="currentColor"/>}</span>
-    </button>}
-  </>;
+  const value=useMemo(()=>({enabled,playing,toggle}),[enabled,playing,toggle]);
+  return <AmbientSoundContext.Provider value={value}>
+    {children}
+    <audio ref={ref} src={TRACK_SRC} preload="none" loop playsInline aria-hidden="true" />
+  </AmbientSoundContext.Provider>;
 }

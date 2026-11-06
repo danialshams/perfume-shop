@@ -13,6 +13,7 @@ import "./maison-commerce-v3.css";
 import "./fertini-refinement.css";
 import "./fertini-commerce.css";
 import "./fertini-skeleton.css";
+import "./fertini-nav-v5.css";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL ||
   "https://perfume-shop-danialshams-projects.vercel.app";
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return <html lang="fa" dir="rtl" className="h-full antialiased">
     <body id="top" className="flex min-h-full flex-col font-sans">
-      <CartCountProvider>{children}<MaisonAmbientSound /></CartCountProvider>
+      <MaisonAmbientSound><CartCountProvider>{children}</CartCountProvider></MaisonAmbientSound>
     </body>
   </html>;
 }

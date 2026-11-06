@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { ArrowLeft, ArrowUpLeft, Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
+import { ArrowLeft, ArrowUpLeft, Menu, Search, ShoppingBag, UserRound, X, Volume2, VolumeX } from "lucide-react";
+import { useAmbientSound } from "@/components/maison/MaisonAmbientSound";
+import { lockDocumentScroll } from "@/lib/document-scroll-lock";
 import { useCartCount } from "@/context/CartCountContext";
 import { useProductSearch } from "@/components/hooks/useProductSearch";
 
@@ -19,6 +21,7 @@ const menuLinks = [
 export default function LuxuryNavbar() {
   const pathname = usePathname();
   const { cartCount } = useCartCount();
+  const { enabled: soundEnabled, playing: soundPlaying, toggle: toggleSound } = useAmbientSound();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -51,8 +54,7 @@ export default function LuxuryNavbar() {
   const overlayOpen = menuOpen || searchOpen;
   useEffect(() => {
     if (!overlayOpen) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const releaseScroll = lockDocumentScroll();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         dismiss();
@@ -68,7 +70,7 @@ export default function LuxuryNavbar() {
       }
     };
     document.addEventListener("keydown", onKeyDown);
-    return () => { document.body.style.overflow = previous; document.removeEventListener("keydown", onKeyDown); };
+    return () => { releaseScroll(); document.removeEventListener("keydown", onKeyDown); };
   }, [overlayOpen, dismiss]);
 
   useEffect(() => {
@@ -117,6 +119,11 @@ export default function LuxuryNavbar() {
             <strong>FERTINI</strong><span>THE FRAGRANCE HOUSE</span>
           </Link>
           <div className="maison-header__left">
+            {soundEnabled && <button type="button" className="maison-icon-button fertini-header-sound" onClick={toggleSound}
+              aria-label={soundPlaying ? "قطع موسیقی" : "پخش موسیقی محیط"} aria-pressed={soundPlaying}
+              title={soundPlaying ? "Sound on" : "Sound off"}>
+              {soundPlaying ? <Volume2 size={19} strokeWidth={1.25} /> : <VolumeX size={19} strokeWidth={1.25} />}
+            </button>}
             <button type="button" className="maison-icon-button" aria-label="جستجوی عطرها" aria-expanded={searchOpen} onClick={openSearch}><Search size={20} strokeWidth={1.3} /></button>
             <Link href="/account" className="maison-icon-button maison-header__account" aria-label="حساب کاربری"><UserRound size={20} strokeWidth={1.3} /></Link>
             <Link href="/cart" className="maison-icon-button maison-header__cart" aria-label={"سبد خرید، " + cartCount + " محصول"}>
@@ -144,6 +151,10 @@ export default function LuxuryNavbar() {
                 </Link>
               ))}
             </nav>
+            {soundEnabled && <button type="button" className="fertini-menu-sound" onClick={toggleSound} aria-pressed={soundPlaying}>
+              {soundPlaying ? <Volume2 size={17} strokeWidth={1.2}/> : <VolumeX size={17} strokeWidth={1.2}/>}
+              <span>موسیقی محیط</span><small lang="en" dir="ltr">{soundPlaying ? "ON" : "OFF"}</small>
+            </button>}
             <p className="maison-menu__foot" lang="en" dir="ltr">A QUIET STUDY OF SCENT — FERTINI 2026</p>
           </div>
         </div>

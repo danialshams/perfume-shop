@@ -1,0 +1,10 @@
+
+/* FERTINI: sound is a quiet navigation affordance, not a floating card. */
+.fertini-menu-sound{display:none}
+.fertini-header-sound{opacity:.75;transition:opacity .3s ease}
+.fertini-header-sound:hover{opacity:1}
+@media(max-width:650px){
+  .fertini-header-sound{display:none!important}
+  .fertini-menu-sound{display:flex;width:100%;align-items:center;gap:12px;min-height:50px;padding:11px 0;color:#536159;font-size:12px}
+  .fertini-menu-sound small{margin-inline-start:auto;letter-spacing:.16em;font:12px "Cormorant Garamond",serif;color:#8b968d}
+}

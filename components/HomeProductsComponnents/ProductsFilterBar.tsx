@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
+import { lockDocumentScroll } from "@/lib/document-scroll-lock";
 import type { SortOption } from "./MobileSortSheet";
 
 type Category = {
@@ -50,8 +51,7 @@ export default function ProductsFilterBar({
   const close=()=>{setPanel(null);setSearch("");};
   useEffect(()=>{
     if (!panel) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow="hidden";
+    const releaseScroll = lockDocumentScroll();
     const onKey=(event:KeyboardEvent)=>{
       if(event.key==="Escape") { close(); triggerRef.current?.focus(); }
       if(event.key==="Tab"){
@@ -64,7 +64,7 @@ export default function ProductsFilterBar({
     };
     document.addEventListener("keydown",onKey);
     const id=window.requestAnimationFrame(()=>firstFocusRef.current?.focus());
-    return ()=>{document.body.style.overflow=previous;document.removeEventListener("keydown",onKey);window.cancelAnimationFrame(id);};
+    return ()=>{releaseScroll();document.removeEventListener("keydown",onKey);window.cancelAnimationFrame(id);};
   },[panel]);
   function open(event:React.MouseEvent<HTMLButtonElement>,next:"categories"|"sort") {
     triggerRef.current=event.currentTarget;

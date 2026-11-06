@@ -27,8 +27,6 @@ export default function MaisonIntro() {
       const frame=window.requestAnimationFrame(finish);
       return ()=>window.cancelAnimationFrame(frame);
     }
-    const previous=document.body.style.overflow;
-    document.body.style.overflow="hidden";
     const ctx=gsap.context(()=>{
       const tl=gsap.timeline({onComplete:finish});
       tl.fromTo(".maison-intro__brand",{autoAlpha:0,y:24,filter:"blur(10px)",letterSpacing:".34em"},
@@ -36,7 +34,7 @@ export default function MaisonIntro() {
       .fromTo(".maison-intro__sub",{autoAlpha:0,y:11},{autoAlpha:1,y:0,duration:.65,ease:"power2.out"},.55)
       .to(root,{autoAlpha:0,duration:.65,ease:"power2.inOut"},"+=.28");
     },root);
-    return ()=>{ctx.revert();document.body.style.overflow=previous;};
+    return ()=>{ctx.revert();};
   },[finish]);
 
   if (!visible) return null;
