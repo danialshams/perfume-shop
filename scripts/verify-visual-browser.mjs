@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import jwt from "jsonwebtoken";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
 import { setTimeout as sleep } from "node:timers/promises";
@@ -326,6 +327,48 @@ async function validateStorefrontInteractions(){
  }finally{ws.close()}
 }
 
+async function validateAdminScreens(){
+  const base="http://127.0.0.1:3100";
+  const unauthorized=await fetch(base+"/admin/dashboard",{redirect:"manual"});
+  if(![302,303,307,308].includes(unauthorized.status))throw Error("Unauthorized admin must redirect: "+unauthorized.status);
+  if(!process.env.JWT_ACCESS_SECRET)throw Error("CI JWT_ACCESS_SECRET missing");
+  const token=jwt.sign({userId:1,role:"ADMIN",email:"ci-test@local.invalid"},process.env.JWT_ACCESS_SECRET,{expiresIn:"20m"});
+  const {ws,send}=await open("about:blank");
+  try{
+    await send("Network.enable");
+    const result=await send("Network.setCookie",{name:"admin_access_token",value:token,url:base,secure:false,httpOnly:true,sameSite:"Lax"});
+    if(!result.success)throw Error("Admin cookie test setup failed");
+  }finally{ws.close()}
+  await pageScreenshot({name:"admin-dashboard-mobile",url:base+"/admin/dashboard",width:390,height:844,mobile:true,assertHome:false});
+  await pageScreenshot({name:"admin-dashboard-desktop",url:base+"/admin/dashboard",width:1440,height:900,mobile:false,assertHome:false});
+  await pageScreenshot({name:"admin-products-mobile",url:base+"/admin/products",width:390,height:844,mobile:true,assertHome:false});
+  await pageScreenshot({name:"admin-orders-mobile",url:base+"/admin/orders",width:390,height:844,mobile:true,assertHome:false});
+  await pageScreenshot({name:"admin-content-mobile",url:base+"/admin/content",width:390,height:844,mobile:true,assertHome:false});
+  await pageScreenshot({name:"admin-media-mobile",url:base+"/admin/media",width:390,height:844,mobile:true,assertHome:false});
+  await pageScreenshot({name:"admin-coupons-mobile",url:base+"/admin/coupons",width:390,height:844,mobile:true,assertHome:false});
+  await pageScreenshot({name:"admin-database-desktop",url:base+"/admin/database",width:1440,height:900,mobile:false,assertHome:false});
+  const {ws:checkWs,send:check}=await open("about:blank");
+  try{
+    await check("Page.enable");
+    await check("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true});
+    await check("Page.navigate",{url:base+"/admin/dashboard"});
+    await until(()=>evaluate(check,'!!document.querySelector(".fst-mobile-bottom")&&document.readyState==="complete"'),24000);
+    const state=await evaluate(check,`(async()=>{
+      const bottom=document.querySelector(".fst-mobile-bottom");
+      const trigger=bottom?.querySelector('button[aria-label="سایر بخش‌های مدیریت"]');
+      trigger?.click();await new Promise(r=>setTimeout(r,480));
+      const open=document.querySelector(".fst-sidebar")?.classList.contains("is-open");
+      const nav=document.querySelector('.fst-sidebar-nav a[href="/admin/content"]');
+      const visible=!!nav;
+      document.querySelector(".fst-sidebar-close")?.click();
+      await new Promise(r=>setTimeout(r,400));
+      return {bottom:!!bottom,open,visible,closed:!document.querySelector(".fst-sidebar")?.classList.contains("is-open")};
+    })()`);
+    if(!state.bottom||!state.open||!state.visible||!state.closed)throw Error("Admin mobile nav interaction failed "+JSON.stringify(state));
+  }finally{checkWs.close()}
+  process.stdout.write("Authenticated Essential-style admin mobile/desktop visual routes and navigation passed.\n");
+}
+
 try{
  await mkdir("artifacts",{recursive:true});
  await bootChrome();
@@ -352,6 +395,7 @@ try{
  await pageScreenshot({name:"privacy-mobile-full",url:"http://127.0.0.1:3100/privacy",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"terms-mobile-full",url:"http://127.0.0.1:3100/terms",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"payment-result-mobile-full",url:"http://127.0.0.1:3100/payment/result?status=failed",width:390,height:844,mobile:true,assertHome:false});
+ await validateAdminScreens();
 
  process.stdout.write("Visual QA browser checks passed.\n");
 }finally{
