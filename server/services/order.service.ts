@@ -122,8 +122,18 @@ export const orderService = {
       throw new Error("Order not found");
     }
 
-    await orderRepository.updateAdminOrder(id, data);
-
+    if(data.payment_status!==undefined)throw new Error("Payment status is gateway-controlled");
+    if(data.status!==undefined){
+      if(existing.payment_status!=="PAID")throw new Error("امکان ارسال سفارش پرداخت‌نشده وجود ندارد.");
+      const transitions:Record<string,string[]>={
+        PROCESSING:["PROCESSING","SHIPPED"],
+        SHIPPED:["PROCESSING","SHIPPED"],
+        DELIVERED:["SHIPPED","DELIVERED"]
+      };
+      if(!transitions[data.status]?.includes(existing.status))
+        throw new Error("انتقال وضعیت سفارش مجاز نیست.");
+    }
+    await orderRepository.updateAdminOrder(id,{status:data.status,admin_notes:data.admin_notes});
     return await this.getAdminById(id);
   },
 
@@ -134,9 +144,8 @@ export const orderService = {
       throw new Error("Order not found");
     }
 
-    await orderRepository.deleteOrder(id);
-
-    return { id };
+    // Preserve the paid transaction history and reserved inventory integrity.
+    throw new Error("حذف دائمی سفارش غیرفعال است.");
   },
 
   async getById(id: number) {
