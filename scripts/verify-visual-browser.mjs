@@ -128,7 +128,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     documentScrollUnlocked: getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden",
     firstCardFinished:document.querySelector(".fertini-v5-best__grid [data-fertini-card]")?.getAttribute("data-fertini-motion-done")==="true",
     firstCardCoverGone:!document.querySelector(".fertini-v5-best__grid [data-fertini-card] .fertini-v7-curtain:not([style*='display: none'])"),
-    waveformCount:document.querySelector(".fertini-header-sound--mobile .fertini-sound-equalizer")?.childElementCount ?? 0,
+    waveformCount:document.querySelector(".fertini-header-sound--mobile .fertini-sound-meter")?.querySelectorAll("rect").length ?? 0,
     heroProgressFound:!!document.querySelector(".fertini-hero__progress > span")
    };
   })()`);
@@ -201,14 +201,24 @@ async function validateCinematicPhotoReveal(){
   await sleep(500);
   const returned=await evaluate(send,'(()=>{const f=document.querySelector(".fertini-v5-best__grid [data-fertini-photo]");return {state:f?.dataset.photoRevealState,clip:getComputedStyle(f).clipPath};})()');
   if(returned.state!=="complete"||returned.clip!=="none")throw Error("Photo restarted after scrolling back "+JSON.stringify(returned));
-  const bars=await evaluate(send,`(()=>{
-    const root=document.querySelector(".fertini-header-sound--mobile .fertini-sound-equalizer");
-    const items=[...(root?.querySelectorAll("i")||[])];
-    const middle=items[2]?.getBoundingClientRect(),container=root?.getBoundingClientRect();
-    return {widths:items.map(i=>i.getBoundingClientRect().width),
-      center:middle&&container?Math.abs((middle.left+middle.right-container.left-container.right)/2):999};
+  const collections=await evaluate(send,`(()=>{
+    const latest=[...document.querySelectorAll(".fertini-v5-new__scroll [data-fertini-photo]")];
+    const best=[...document.querySelectorAll(".fertini-v5-best__grid [data-fertini-photo]")];
+    return{latestCount:latest.length,bestCount:best.length,
+      latestModes:latest.map(x=>x.dataset.cinematicMode),bestModes:best.map(x=>x.dataset.cinematicMode),
+      gridDisplay:getComputedStyle(document.querySelector(".fertini-v5-new__scroll")).display};
   })()`);
-  if(bars.widths.length!==5||bars.widths.some(w=>Math.abs(w-2)>.1)||bars.center>1.05)
+  if(collections.latestCount!==6||collections.bestCount!==6||collections.gridDisplay!=="grid"||
+     !collections.latestModes.includes("stretch")||!collections.bestModes.includes("up"))
+    throw Error("Latest collection not fully mounted or motion modes not different "+JSON.stringify(collections));
+  const bars=await evaluate(send,`(()=>{
+    const root=document.querySelector(".fertini-header-sound--mobile .fertini-sound-meter");
+    const items=[...(root?.querySelectorAll("rect")||[])];
+    const center=items[2]?Number(items[2].getAttribute("x"))+Number(items[2].getAttribute("width"))/2:999;
+    return {widths:items.map(i=>Number(i.getAttribute("width"))),
+      center:Math.abs(center-15)};
+  })()`);
+  if(bars.widths.length!==5||bars.widths.some(w=>Math.abs(w-2)>.001)||bars.center>.001)
    throw Error("Header waveform bars are not uniform and centered "+JSON.stringify(bars));
   const progress=await evaluate(send,`(()=>{
     document.querySelector(".fertini-hero__controls button[aria-label^='نمایش اسلاید']")?.click();
@@ -264,19 +274,21 @@ async function validateStorefrontInteractions(){
    await until(()=>evaluate(send,'!!document.querySelector("input[name=confirm_password]")'),5500);
    const inputGap=()=>evaluate(send,`(()=>{
      const labels=[...document.querySelectorAll(".fertini-account-gateway__field")];
-     return Math.max(...labels.map(label=>{
+     return labels.reduce((max,label)=>{
        const span=label.querySelector("span"),input=label.querySelector("input");
-       return span&&input?input.getBoundingClientRect().bottom-span.getBoundingClientRect().bottom:0;
-     }));
+       if(!span||!input)return max;
+       const a=span.getBoundingClientRect(),b=input.getBoundingClientRect();
+       return Math.max(max,Math.abs(b.top-a.bottom),Math.abs(b.right-a.right));
+     },0);
    })()`);
    const mobileGap=await inputGap();
-   if(mobileGap>35)throw Error("Register labels far from input on mobile: "+mobileGap);
+   if(mobileGap>10)throw Error("Register labels misaligned with input top-right on mobile: "+mobileGap);
    await send("Emulation.setDeviceMetricsOverride",{width:1440,height:900,deviceScaleFactor:1,mobile:false,screenWidth:1440,screenHeight:900});
    await navigate("/account");
    await evaluate(send,'[...document.querySelectorAll("button")].find(x=>x.textContent?.trim()==="ایجاد حساب")?.click()');
    await until(()=>evaluate(send,'!!document.querySelector("input[name=confirm_password]")'),5500);
    const desktopGap=await inputGap();
-   if(desktopGap>35)throw Error("Register labels far from input on desktop: "+desktopGap);
+   if(desktopGap>10)throw Error("Register labels misaligned with input top-right on desktop: "+desktopGap);
    process.stdout.write("Guest cart, variant constraints, account field alignment (mobile/desktop) and navigation validated.\\n");
  }finally{ws.close()}
 }

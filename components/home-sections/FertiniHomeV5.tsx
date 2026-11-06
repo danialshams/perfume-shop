@@ -107,7 +107,7 @@ export default function FertiniHomeV5(){
         <h2 id="fertini-best-title">پرفروش‌ترین‌ها</h2>
         <p>شش انتخاب ماندگار از مجموعه فرتینی.</p>
       </header>
-      <div className="fertini-v5-best__grid">{bestselling.map((product,index)=><ProductCard key={product.id} product={product} mode={(["up","fade","right","left"] as const)[index%4]}/>)}</div>
+      <div className="fertini-v5-best__grid">{bestselling.map((product,index)=><ProductCard key={product.id} product={product} mode={(["up","right"] as const)[index%2]}/>)}</div>
     </section>
 
     <section className="fertini-v5-new maison-wide" aria-labelledby="fertini-new-title">
@@ -117,7 +117,7 @@ export default function FertiniHomeV5(){
         <p>رایحه‌هایی تازه برای سلیقه‌هایی که در جست‌وجوی تجربه‌ای متفاوت‌اند.</p>
       </header>
       <div className="fertini-v5-new__scroll" aria-label="شش عطر جدید از مجموعه فرتینی">
-        {latest.map((product,index)=><ProductCard key={product.id} product={product} large mode={(["stretch","fade","left","stretch","right","fade"] as const)[index%6]}/>)}
+        {latest.map((product,index)=><ProductCard key={product.id} product={product} large mode={(["stretch","fade"] as const)[index%2]}/>)}
       </div>
       <div className="fertini-v5-new__bottom"><span lang="en" dir="ltr">SIX NEW SCENTS / 06</span><Link href="/products" className="fertini-v5-cta">مشاهده همه عطرها</Link></div>
     </section>
