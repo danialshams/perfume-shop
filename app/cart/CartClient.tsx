@@ -18,7 +18,7 @@ import FertiniGuestCart from "@/components/cart/FertiniGuestCart";
 import { CartItem } from "@/server/types/cart";
 import { useMemo, useState } from "react";
 
-export default function CartClient() {
+export default function CartClient({isAuthenticated}:{isAuthenticated:boolean}) {
     const { count: guestCount } = useGuestCart();
     const {
         cart,
@@ -29,7 +29,7 @@ export default function CartClient() {
         updateQuantity,
         removeItem,
         reload,
-    } = useCart({enabled: guestCount===0});
+    } = useCart({enabled: isAuthenticated && guestCount===0});
 
     const [optimisticQuantities, setOptimisticQuantities] = useState<
         Record<string | number, number>
@@ -103,6 +103,7 @@ export default function CartClient() {
     };
 
 
+    if (!isAuthenticated) return guestCount>0 ? <FertiniGuestCart /> : <EmptyCart />;
     if (guestCount>0) return <FertiniGuestCart />;
     if (loading) return <CartSkeleton />;
     if (!cart) return (
