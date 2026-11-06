@@ -120,7 +120,8 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroImageLoaded:!!img?.complete&&Number(img?.naturalWidth)>50,
     heroTitleOpacity:title?Number(getComputedStyle(title).opacity):null,
     headerFound:!!document.querySelector("header"),
-    imageCount:document.querySelectorAll(".fertini-v5 img").length
+    imageCount:document.querySelectorAll(".fertini-v5 img").length,
+    documentScrollUnlocked: getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden"
    };
   })()`);
   if(!state.headerFound)throw Error(name+" has no header");
@@ -129,6 +130,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    if(!state.heroFound||!state.heroImageLoaded)throw Error(name+" cinematic hero did not load: "+JSON.stringify(state));
    if(state.heroTitleOpacity!==null&&state.heroTitleOpacity<.8)throw Error(name+" text not fully visible: "+JSON.stringify(state));
    if(state.imageCount<7)throw Error(name+" missing fragrance images: "+JSON.stringify(state));
+   if(!state.documentScrollUnlocked)throw Error(name+" document remains scroll locked after intro: "+JSON.stringify(state));
   }
   const result=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true,fromSurface:true});
   await writeFile("artifacts/"+name+".png",Buffer.from(result.data,"base64"));
@@ -146,6 +148,8 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
        return {opened,search};
      })()`);
      if(!menuState.opened || !menuState.search)throw Error(name+" navigation interactions failed "+JSON.stringify(menuState));
+     const unlocked=await evaluate(send,'getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden"');
+     if(!unlocked)throw Error(name+" document scroll lock was not released after menus");
    }
   process.stdout.write(name+" "+JSON.stringify(state)+"\n");
  }finally{ws.close()}
@@ -159,6 +163,9 @@ try{
  await pageScreenshot({name:"home-mobile-full",url:"http://127.0.0.1:3100/",width:390,height:844,mobile:true,assertHome:true});
  await pageScreenshot({name:"products-desktop-full",url:"http://127.0.0.1:3100/products",width:1440,height:900,mobile:false,assertHome:false});
  await pageScreenshot({name:"products-mobile-full",url:"http://127.0.0.1:3100/products",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"account-mobile-full",url:"http://127.0.0.1:3100/account",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"fragrance-mobile-full",url:"http://127.0.0.1:3100/fragrance/demo-001",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"fragrance-desktop-full",url:"http://127.0.0.1:3100/fragrance/demo-001",width:1440,height:900,mobile:false,assertHome:false});
  await pageScreenshot({name:"cart-mobile-full",url:"http://127.0.0.1:3100/cart",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"login-mobile-full",url:"http://127.0.0.1:3100/login",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"checkout-mobile-full",url:"http://127.0.0.1:3100/checkout",width:390,height:844,mobile:true,assertHome:false});
@@ -171,8 +178,6 @@ try{
  await pageScreenshot({name:"privacy-mobile-full",url:"http://127.0.0.1:3100/privacy",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"terms-mobile-full",url:"http://127.0.0.1:3100/terms",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"payment-result-mobile-full",url:"http://127.0.0.1:3100/payment/result?status=failed",width:390,height:844,mobile:true,assertHome:false});
- await pageScreenshot({name:"demo-mobile-full",url:"http://127.0.0.1:3100/demo/fragrance?item=demo-001",width:390,height:844,mobile:true,assertHome:false});
- await pageScreenshot({name:"demo-desktop-full",url:"http://127.0.0.1:3100/demo/fragrance?item=demo-001",width:1440,height:900,mobile:false,assertHome:false});
  process.stdout.write("Visual QA browser checks passed.\n");
 }finally{
  chrome?.kill("SIGTERM");

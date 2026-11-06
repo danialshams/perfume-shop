@@ -108,3 +108,5 @@ body:has(.maison-detail) .fertini-ambient,body:has(.fertini-demo) .fertini-ambie
 .fertini-demo-shelf__details h3{font:350 clamp(21px,2.6vw,35px) "Cormorant Garamond",Georgia,serif;line-height:1.4;margin:11px 0}
 .fertini-demo-shelf__details p{font-size:12px;color:#869288}
 @media(max-width:700px){.fertini-demo-shelf__heading{align-items:flex-start;flex-direction:column}.fertini-demo-shelf__grid{grid-template-columns:1fr;gap:44px}.fertini-demo-shelf__photo{aspect-ratio:1/1.1}}
+
+.fertini-demo-shelf__photo img{object-fit:cover;object-position:center}

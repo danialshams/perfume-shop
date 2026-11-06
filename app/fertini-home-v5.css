@@ -61,3 +61,6 @@
  .fertini-v5-family__info h3{font-size:26px}
 }
 @media(prefers-reduced-motion:reduce){.fertini-v5 *{transition-duration:.001ms!important;animation:none!important}}
+
+/* Editorial photography fills every actual picture frame. */
+.fertini-v5-card__media img{object-fit:cover;object-position:center}

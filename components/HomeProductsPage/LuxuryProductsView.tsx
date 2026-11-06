@@ -96,9 +96,9 @@ export default function LuxuryProductsView() {
         </div>
         <div className="ql-products-grid-section">
           {!loadingProducts && orderedProducts.length===0 ? (
-            <section className="fertini-demo-shelf" aria-label="مجموعه عطرهای نمایشی">
+            <section className="fertini-demo-shelf" aria-label="مجموعهٔ عطرها">
               <div className="fertini-demo-shelf__heading">
-                <div><span className="maison-kicker" lang="en" dir="ltr">FERTINI / FRAGRANCE SAMPLES</span><h2>مجموعهٔ فرتینی</h2></div>
+                <div><span className="maison-kicker" lang="en" dir="ltr">FERTINI / THE COLLECTION</span><h2>مجموعهٔ فرتینی</h2></div>
                 <p>رایحه‌های منتخب فرتینی را کشف کنید.</p>
                 
               </div>
