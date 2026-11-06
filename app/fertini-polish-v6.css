@@ -176,3 +176,13 @@ html,body{max-width:100%;overflow-x:clip}
 
 /* The sound bars follow the Web Audio analyser, never a simulated CSS beat. */
 .fertini-sound-equalizer i,.fertini-header-sound.is-playing .fertini-sound-equalizer i{animation:none!important;transition:none!important}
+
+/* V7: varied cinematic masks for images already laid out at their full size. */
+.fertini-v5 [data-fertini-photo]{isolation:isolate}
+.fertini-v5 .fertini-v7-curtain{position:absolute;inset:0;z-index:2;display:flex;pointer-events:none;opacity:0;overflow:hidden;will-change:transform,opacity}
+.fertini-v5 .fertini-v7-curtain i{display:block;flex:0 0 50%;height:100%;background:#e3e8e2;will-change:transform}
+.fertini-v5-family .fertini-v7-curtain i{background:#dfe5de}
+.fertini-v5 .fertini-v5-hero .fertini-hero__autoplay{min-width:38px;color:#f7f9f4;opacity:.85;transition:opacity .3s}
+.fertini-v5 .fertini-v5-hero .fertini-hero__autoplay:hover{opacity:1}
+.fertini-v5 .fertini-v5-hero .fertini-hero__autoplay svg{width:16px;height:16px}
+@media(prefers-reduced-motion:reduce){.fertini-v5 .fertini-v7-curtain{display:none!important}}

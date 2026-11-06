@@ -4,6 +4,7 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef, useState } from "react";
+import { Pause, Play } from "lucide-react";
 import { FERTINI_DEMOS, FERTINI_FAMILIES, type FertiniDemo } from "@/lib/fertini-demo";
 
 const slides = [
@@ -15,6 +16,7 @@ function ProductCard({product,large=false}:{product:FertiniDemo;large?:boolean})
   return <Link href={"/fragrance/"+product.id} className={"fertini-v5-card"+(large?" fertini-v5-card--large":"")} data-fertini-card>
     <div className="fertini-v5-card__media" data-fertini-photo>
       <Image src={product.image} alt={product.name} fill sizes={large?"(min-width:960px) 32vw, 68vw":"(min-width:960px) 27vw, (min-width:600px) 46vw, 45vw"} />
+      <span className="fertini-v7-curtain" aria-hidden="true"><i/><i/></span>
     </div>
     <div className="fertini-v5-card__info" data-fertini-caption>
       <span lang="en" dir="ltr">{product.subtitle.split(" — ")[0]}</span>
@@ -25,8 +27,8 @@ function ProductCard({product,large=false}:{product:FertiniDemo;large?:boolean})
 }
 export default function FertiniHomeV5(){
   const root=useRef<HTMLElement>(null);
-  const paused=useRef(false);
   const [active,setActive]=useState(0);
+  const [autoPlay,setAutoPlay]=useState(true);
   const [ready,setReady]=useState(false);
 
   useEffect(()=>{
@@ -34,14 +36,15 @@ export default function FertiniHomeV5(){
     try{complete=window.sessionStorage.getItem("fertini:intro:seen:v3")==="1";}catch{complete=true;}
     const start=()=>setReady(true);
     const id=complete?window.requestAnimationFrame(start):0;
+    const failsafe=window.setTimeout(start,4500);
     window.addEventListener("fertini:intro:complete",start);
-    return()=>{if(id)window.cancelAnimationFrame(id);window.removeEventListener("fertini:intro:complete",start);};
+    return()=>{if(id)window.cancelAnimationFrame(id);window.clearTimeout(failsafe);window.removeEventListener("fertini:intro:complete",start);};
   },[]);
   useEffect(()=>{
-    if(!ready||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
-    const id=window.setInterval(()=>{if(!paused.current&&!document.hidden)setActive(index=>(index+1)%slides.length);},10000);
+    if(!ready||!autoPlay||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+    const id=window.setInterval(()=>{if(!document.hidden)setActive(index=>(index+1)%slides.length);},6800);
     return()=>window.clearInterval(id);
-  },[ready]);
+  },[ready,autoPlay]);
   useEffect(()=>{
     if(!ready||!root.current||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
     gsap.registerPlugin(ScrollTrigger);
@@ -57,12 +60,34 @@ export default function FertiniHomeV5(){
         const photo=frame?.querySelector("img");
         const text=[...card.querySelectorAll<HTMLElement>("[data-fertini-caption] > *")];
         const tl=gsap.timeline({paused:true});
-        // Image stays full size from the first paint: no clip-path and no half-image flash.
-        if(frame)tl.fromTo(frame,{autoAlpha:.80,y:18},{autoAlpha:1,y:0,duration:1.45,ease:"power2.out",clearProps:"opacity,visibility,transform"},0);
-        if(photo)tl.fromTo(photo,{scale:1.065},{scale:1,duration:2.1,ease:"power2.out",clearProps:"transform"},0);
-        if(text.length)tl.fromTo(text,{autoAlpha:0,y:14},{autoAlpha:1,y:0,duration:.85,stagger:.12,ease:"power2.out",clearProps:"opacity,visibility,transform"},.48);
-        const scene=ScrollTrigger.create({trigger:card,start:"top 98%",once:true,onEnter:()=>tl.play()});
-        if(scene.isActive)tl.play();
+        const curtain=frame?.querySelector<HTMLElement>(".fertini-v7-curtain");
+        const shutters=curtain?.querySelectorAll<HTMLElement>("i");
+        const variant=i%4;
+        const isAhead=card.getBoundingClientRect().top>window.innerHeight*.86;
+        // The image remains full-size; smooth shutters uncover it instead of clipping half the photo.
+        if(curtain)gsap.set(curtain,{autoAlpha:isAhead?1:0});
+        if(curtain && isAhead){
+          if(variant===0 && shutters?.length===2){
+            tl.to(shutters[0],{xPercent:-101,duration:1.55,ease:"power3.inOut"},0)
+              .to(shutters[1],{xPercent:101,duration:1.55,ease:"power3.inOut"},0);
+          }else if(variant===1){
+            tl.to(curtain,{autoAlpha:0,duration:1.5,ease:"power2.inOut"},0);
+          }else if(variant===2){
+            tl.to(curtain,{xPercent:101,duration:1.65,ease:"power3.inOut"},0);
+          }else{
+            tl.to(curtain,{yPercent:-101,duration:1.55,ease:"power3.inOut"},0);
+          }
+          tl.set(curtain,{autoAlpha:0},1.7);
+        }
+        if(frame)tl.fromTo(frame,{y:isAhead?(variant%2===0?18:-12):0},{y:0,duration:1.6,ease:"power3.out",clearProps:"transform"},0);
+        if(photo)tl.fromTo(photo,{scale:1.1},{scale:1,duration:3.6,ease:"power2.out",clearProps:"transform"},0);
+        if(text.length)tl.fromTo(text,{autoAlpha:0,y:15},{autoAlpha:1,y:0,duration:.9,stagger:.13,ease:"power3.out",clearProps:"opacity,visibility,transform"},.33);
+        const playWhenLoaded=()=>{
+          if(!photo||photo.complete)tl.play();
+          else{photo.addEventListener("load",()=>tl.play(),{once:true});photo.addEventListener("error",()=>tl.play(),{once:true});}
+        };
+        const scene=ScrollTrigger.create({trigger:card,start:"top bottom+=170",once:true,onEnter:playWhenLoaded});
+        if(scene.isActive)playWhenLoaded();
       });
     },root);
     return()=>ctx.revert();
@@ -71,9 +96,7 @@ export default function FertiniHomeV5(){
   const bestselling=FERTINI_DEMOS.filter(product=>product.collection==="bestseller").slice(0,6);
   const latest=FERTINI_DEMOS.filter(product=>product.collection==="new").slice(0,6);
   return <main ref={root} className="maison-home fertini-v5" id="main-content">
-    <section className="fertini-hero fertini-v5-hero fertini-hero--immersive" aria-labelledby="fertini-hero-title"
-      onMouseEnter={()=>{paused.current=true;}} onMouseLeave={()=>{paused.current=false;}}
-      onFocusCapture={()=>{paused.current=true;}} onBlurCapture={event=>{if(!event.currentTarget.contains(event.relatedTarget))paused.current=false;}}>
+    <section className="fertini-hero fertini-v5-hero fertini-hero--immersive" aria-labelledby="fertini-hero-title">
       <h1 id="fertini-hero-title" className="sr-only">FERTINI — خانه عطر فرتینی</h1>
       <div className="fertini-hero__gallery">
         {slides.map((slide,index)=><div key={slide.photo} className={"fertini-hero__image"+(index===active?" is-active":"")} aria-hidden={index!==active}>
@@ -81,7 +104,9 @@ export default function FertiniHomeV5(){
         </div>)}
         <div className="fertini-hero__controls" role="group" aria-label="اسلایدهای معرفی">
           <span lang="en" dir="ltr">{String(active+1).padStart(2,"0")} / {String(slides.length).padStart(2,"0")}</span>
-          <div>{slides.map((slide,index)=><button type="button" key={slide.photo} className={active===index?"is-active":""} aria-pressed={active===index} aria-label={"نمایش اسلاید "+(index+1)} onClick={()=>setActive(index)}><span/></button>)}</div>
+          <div>{slides.map((slide,index)=><button type="button" key={slide.photo} className={active===index?"is-active":""} aria-pressed={active===index} aria-label={"نمایش اسلاید "+(index+1)} onClick={()=>setActive(index)}><span/></button>)}
+            <button type="button" className="fertini-hero__autoplay" aria-label={autoPlay?"توقف جابه‌جایی خودکار اسلایدها":"ادامه جابه‌جایی خودکار اسلایدها"} aria-pressed={autoPlay} onClick={()=>setAutoPlay(value=>!value)}>{autoPlay?<Pause size={15}/>:<Play size={15}/>}</button>
+          </div>
         </div>
       </div>
     </section>
@@ -118,6 +143,7 @@ export default function FertiniHomeV5(){
           className={"fertini-v5-family fertini-v5-family--"+family.id} data-fertini-card>
           <div data-fertini-photo className="fertini-v5-family__photo">
             <Image fill sizes="(min-width:950px) 30vw,100vw" src={family.image} alt={"دسته عطرهای "+family.name}/>
+            <span className="fertini-v7-curtain" aria-hidden="true"><i/><i/></span>
           </div>
           <div data-fertini-caption className="fertini-v5-family__info">
             <span dir="ltr" lang="en">{String(index+1).padStart(2,"0")} / {family.subtitle}</span>
