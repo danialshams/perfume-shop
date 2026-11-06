@@ -147,6 +147,15 @@ export default function ProductsManagement() {
         setEditOpen(true);
     }, []);
 
+    // Deep link from media library opens the existing full editor (images, variants and voice).
+    useEffect(() => {
+      const id=Number(new URLSearchParams(window.location.search).get("editProduct"));
+      if(Number.isSafeInteger(id)&&id>0){
+        setEditingProductId(id);
+        setEditOpen(true);
+      }
+    }, []);
+
     const closeEditDrawer = useCallback(() => {
         setEditOpen(false);
         setEditingProductId(null);

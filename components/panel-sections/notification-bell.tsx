@@ -126,6 +126,7 @@ export default function NotificationBell() {
     items,
     unreadCount,
     hasNewEffect,
+    connection,
     markAllAsRead,
     markOneAsRead,
     deleteOne,
@@ -257,6 +258,7 @@ export default function NotificationBell() {
         <div className="relative flex items-center justify-between gap-3 border-b border-black/5 px-4 py-3">
           <div className="min-w-0">
             <h3 className="text-sm font-bold text-neutral-900">اعلان‌ها</h3>
+            <small className="text-[10px] text-neutral-500">{connection==="live"?"دریافت زنده فعال":connection==="polling"?"همگام‌سازی هر ۱۰ ثانیه":connection==="offline"?"اتصال اعلان‌ها برقرار نیست":"در حال اتصال…"}</small>
           </div>
 
           <div className="flex items-center gap-2">
