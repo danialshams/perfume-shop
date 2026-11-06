@@ -59,6 +59,7 @@ jobs:
             exit 1
           fi
           "$CHROME" --version
+          node scripts/test-admin-http.mjs
           node scripts/verify-visual-browser.mjs
       - name: Upload visual verification screenshots
         if: always()
