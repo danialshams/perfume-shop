@@ -6,11 +6,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { FERTINI_DEMOS, FERTINI_FAMILIES, type FertiniDemo } from "@/lib/fertini-demo";
+import {DEFAULT_SITE_CONTENT,type FertiniSiteContent} from "@/lib/fertini-site-content";
 
-const slides = [
-  {photo:"/fertini/hero-01.svg",alt:"شیشه عطر فرتینی در نورپردازی سینمایی"},
-  {photo:"/fertini/hero-02.svg",alt:"عطر فرتینی در نور ملایم و سایه‌های عمیق"},
-] as const;
+
 
 function ProductCard({product,large=false,mode="up"}:{product:FertiniDemo;large?:boolean;mode?:"up"|"fade"|"right"|"left"|"stretch"}){
   return <Link href={"/fragrance/"+product.id} className={"fertini-v5-card"+(large?" fertini-v5-card--large":"")} data-fertini-card>
@@ -24,7 +22,8 @@ function ProductCard({product,large=false,mode="up"}:{product:FertiniDemo;large?
     </div>
   </Link>;
 }
-export default function FertiniHomeV5(){
+export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT}:{content?:FertiniSiteContent}){
+  const slides=content.heroSlides;
   const root=useRef<HTMLElement>(null);
   const [active,setActive]=useState(0);
   const [autoPlay,setAutoPlay]=useState(true);
@@ -82,8 +81,8 @@ export default function FertiniHomeV5(){
     return()=>ctx.revert();
   },[ready]);
 
-  const bestselling=FERTINI_DEMOS.filter(product=>product.collection==="bestseller").slice(0,6);
-  const latest=FERTINI_DEMOS.filter(product=>product.collection==="new").slice(0,6);
+  const bestselling=content.bestsellerIds.map(id=>FERTINI_DEMOS.find(product=>product.id===id)).filter((x):x is FertiniDemo=>Boolean(x));
+  const latest=content.latestIds.map(id=>FERTINI_DEMOS.find(product=>product.id===id)).filter((x):x is FertiniDemo=>Boolean(x));
   return <main ref={root} className="maison-home fertini-v5" id="main-content">
     <section className="fertini-hero fertini-v5-hero fertini-hero--immersive" aria-labelledby="fertini-hero-title">
       <h1 id="fertini-hero-title" className="sr-only">FERTINI — خانه عطر فرتینی</h1>
@@ -104,8 +103,8 @@ export default function FertiniHomeV5(){
     <section className="fertini-v5-best maison-wide" aria-labelledby="fertini-best-title">
       <header className="fertini-v5-heading" data-fertini-heading>
         <span className="maison-kicker" lang="en" dir="ltr">01 / THE MOST LOVED</span>
-        <h2 id="fertini-best-title">پرفروش‌ترین‌ها</h2>
-        <p>شش انتخاب ماندگار از مجموعه فرتینی.</p>
+        <h2 id="fertini-best-title">{content.bestsellerTitle}</h2>
+        <p>{content.bestsellerDescription}</p>
       </header>
       <div className="fertini-v5-best__grid">{bestselling.map((product,index)=><ProductCard key={product.id} product={product} mode={(["up","right"] as const)[index%2]}/>)}</div>
     </section>
@@ -113,8 +112,8 @@ export default function FertiniHomeV5(){
     <section className="fertini-v5-new maison-wide" aria-labelledby="fertini-new-title">
       <header className="fertini-v5-heading" data-fertini-heading>
         <span className="maison-kicker" lang="en" dir="ltr">02 / JUST ARRIVED</span>
-        <h2 id="fertini-new-title">جدیدترین عطرها</h2>
-        <p>رایحه‌هایی تازه برای سلیقه‌هایی که در جست‌وجوی تجربه‌ای متفاوت‌اند.</p>
+        <h2 id="fertini-new-title">{content.latestTitle}</h2>
+        <p>{content.latestDescription}</p>
       </header>
       <div className="fertini-v5-new__scroll" aria-label="شش عطر جدید از مجموعه فرتینی">
         {latest.map((product,index)=><ProductCard key={product.id} product={product} large mode={(["stretch","fade"] as const)[index%2]}/>)}
