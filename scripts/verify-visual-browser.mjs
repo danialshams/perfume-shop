@@ -156,6 +156,38 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
  }finally{ws.close()}
 }
 
+
+async function validateStorefrontInteractions(){
+ const {ws,send}=await open("about:blank");
+ const navigate=async(path)=>{
+   await send("Page.navigate",{url:"http://127.0.0.1:3100"+path});
+   await until(()=>evaluate(send,'location.pathname==='+JSON.stringify(path)+' && document.readyState==="complete" && !!document.querySelector("main")'),38000);
+   await sleep(1150);
+ };
+ try{
+   await send("Page.enable");
+   await send("Runtime.enable");
+   await send("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true,screenWidth:390,screenHeight:844});
+   await navigate("/fragrance/demo-001");
+   const add=await evaluate(send,'(()=>{const b=document.querySelector(".fertini-fragrance__buy"); if(!b)return null;b.click();return JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]");})()');
+   if(!add || add.length!==1 || add[0].productId!=="demo-001" || add[0].quantity!==1)throw Error("Add-to-cart interaction failed: "+JSON.stringify(add));
+   await navigate("/cart");
+   const updated=await evaluate(send,'(()=>{const plus=document.querySelector(".fertini-guest-cart__quantity button[aria-label=\\u0022افزایش تعداد\\u0022]");if(!plus)return null;plus.click();return JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]");})()');
+   if(!updated || updated[0]?.quantity!==2)throw Error("Cart quantity change failed: "+JSON.stringify(updated));
+   await send("Page.reload",{ignoreCache:false});
+   await until(()=>evaluate(send,'location.pathname==="/cart" && document.readyState==="complete" && !!document.querySelector(".fertini-guest-cart__header")'),14000);
+   const retained=await evaluate(send,'JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]")[0]?.quantity');
+   if(retained!==2)throw Error("Cart not persisted after refresh: "+retained);
+   const emptied=await evaluate(send,'(()=>{document.querySelector(".fertini-guest-cart__clear")?.click();return JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]").length;})()');
+   if(emptied!==0)throw Error("Cart clear failed: "+emptied);
+   await navigate("/account");
+   const tabs=await evaluate(send,'(()=>{const b=[...document.querySelectorAll("button")].find(x=>x.textContent?.trim()==="ایجاد حساب"); const login=[...document.querySelectorAll("button")].find(x=>x.textContent?.trim()==="ورود");b?.click();return{register:!!b,login:!!login};})()');
+   if(!tabs?.register || !tabs?.login)throw Error("Account gateway tabs unavailable: "+JSON.stringify(tabs));
+   await until(()=>evaluate(send,'!!document.querySelector("input[name=confirm_password]")'),5500);
+   process.stdout.write("Guest cart addition, quantity, persistence, clear, and account gateway validated.\n");
+ }finally{ws.close()}
+}
+
 try{
  await mkdir("artifacts",{recursive:true});
  await bootChrome();
@@ -179,6 +211,7 @@ try{
  await pageScreenshot({name:"privacy-mobile-full",url:"http://127.0.0.1:3100/privacy",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"terms-mobile-full",url:"http://127.0.0.1:3100/terms",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"payment-result-mobile-full",url:"http://127.0.0.1:3100/payment/result?status=failed",width:390,height:844,mobile:true,assertHome:false});
+ await validateStorefrontInteractions();
  process.stdout.write("Visual QA browser checks passed.\n");
 }finally{
  chrome?.kill("SIGTERM");
