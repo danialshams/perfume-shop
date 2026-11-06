@@ -64,3 +64,6 @@
 
 /* Editorial photography fills every actual picture frame. */
 .fertini-v5-card__media img{object-fit:cover;object-position:center}
+
+/* Keep the cinematic bottle centered on narrow screens. */
+@media(max-width:600px){.fertini-v5-hero .fertini-hero__image img{object-position:23% 50%}}

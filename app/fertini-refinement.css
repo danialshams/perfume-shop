@@ -91,3 +91,6 @@
 .maison-overlay__backdrop{background:rgba(16,25,18,.46);backdrop-filter:blur(11px)}
 .maison-search{background:rgba(241,244,239,.94);backdrop-filter:blur(28px)}
 @media(max-width:600px){.maison-menu:after{font-size:90px;bottom:115px;left:-20px}.maison-menu-entry{min-height:86px}}
+
+/* Correct cover geometry for tall screens; no stretches. */
+.fertini-v5-card__media img,.fertini-v5-family__photo img{height:100%;width:100%}

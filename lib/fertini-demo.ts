@@ -49,4 +49,4 @@ export const FERTINI_DEMOS: FertiniDemo[] = seeds.map(seed=>({
     {volume:100,price:Math.round(seed.price*1.56/10000)*10000,stock:5},
   ],
 }));
-export const FERTINI_FAMILIES = (Object.entries(familyLabels) as Array<[FertiniFamily,typeof familyLabels[FertiniFamily]]>).map(([id,detail])=>({id,...detail,image:id==="woody"?"/maison/woody.jpg":id==="floral"?"/maison/floral.jpg":"/maison/amber.jpg"}));
+export const FERTINI_FAMILIES = (Object.entries(familyLabels) as Array<[FertiniFamily,typeof familyLabels[FertiniFamily]]>).map(([id,detail])=>({id,...detail,image:id==="woody"?"/fertini/nocturne-front.svg":id==="floral"?"/fertini/lumiere-front.svg":"/fertini/sillage-front.svg"}));
