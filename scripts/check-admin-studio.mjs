@@ -24,4 +24,7 @@ assert.match(content,/method:"PUT"/);
 assert.match(read("app/page.tsx"),/readSiteContent/);
 assert.match(migration,/CREATE TABLE IF NOT EXISTS storefront_content/);
 assert.doesNotMatch(migration,/\bDROP\s+TABLE\b/i);
+assert.doesNotMatch(read("app/admin/(panel)/orders/page.tsx"),/deleteOrder\(/);
+assert.match(read("app/admin/(panel)/orders/page.tsx"),/saveAdminNote/);
+assert.match(read("server/services/order.service.ts"),/Payment status is gateway-controlled/);
 console.log("Authenticated editor, management navigation, storage, DB migration and live notifications wired.");
