@@ -173,3 +173,6 @@ html,body{max-width:100%;overflow-x:clip}
 }
 @keyframes fertini-filter-panel-down{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(60px)}}
 @media(prefers-reduced-motion:reduce){.fertini-filter-overlay.is-closing .fertini-filter-panel,.fertini-filter-overlay.is-closing .fertini-filter-overlay__backdrop{animation-duration:.01ms!important}}
+
+/* The sound bars follow the Web Audio analyser, never a simulated CSS beat. */
+.fertini-sound-equalizer i,.fertini-header-sound.is-playing .fertini-sound-equalizer i{animation:none!important;transition:none!important}

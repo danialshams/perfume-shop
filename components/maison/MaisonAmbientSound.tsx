@@ -5,15 +5,31 @@ import gsap from "gsap";
 
 const TRACK_SRC = "/audio/luxury-piano.mp3";
 const TARGET_VOLUME = 0.12;
-type AmbientContext = { enabled:boolean; playing:boolean; toggle:()=>void };
-const AmbientSoundContext = createContext<AmbientContext>({enabled:false,playing:false,toggle:()=>{}});
+type AmbientContext = { enabled:boolean; playing:boolean; toggle:()=>void; getLevels:()=>number[] };
+const AmbientSoundContext = createContext<AmbientContext>({enabled:false,playing:false,toggle:()=>{},getLevels:()=>[0,0,0,0]});
 export function useAmbientSound(){ return useContext(AmbientSoundContext); }
 
-/** Global audio lifecycle; controls are rendered only in the header and mobile menu. */
+/** Single audio source with a live frequency analyser; UI controls are in the header. */
 export default function MaisonAmbientSound({children}:{children:ReactNode}){
   const pathname = usePathname() || "/";
   const enabled = pathname === "/" || pathname === "/products" || pathname.startsWith("/products/") || pathname.startsWith("/fragrance/") || pathname.startsWith("/journal") || pathname === "/about";
   const ref=useRef<HTMLAudioElement>(null);
+  const audioContextRef=useRef<AudioContext|null>(null);
+  const analyserRef=useRef<AnalyserNode|null>(null);
+  const samplesRef=useRef<Uint8Array<ArrayBuffer>|null>(null);
+  const getLevels=useCallback(()=>{
+    const analyser=analyserRef.current;
+    if(!analyser || audioContextRef.current?.state!=="running")return [0,0,0,0];
+    if(!samplesRef.current || samplesRef.current.length!==analyser.frequencyBinCount)
+      samplesRef.current=new Uint8Array(analyser.frequencyBinCount);
+    const samples=samplesRef.current;
+    analyser.getByteFrequencyData(samples);
+    return [[0,3],[3,7],[7,15],[15,31]].map(([start,end])=>{
+      let total=0;
+      for(let i=start;i<end;i++)total+=samples[i]||0;
+      return Math.min(1,total/((end-start)*150));
+    });
+  },[]);
   const wants=useRef(false), voiceLocks=useRef(0), resume=useRef(false);
   const [playing,setPlaying]=useState(false);
   const fade=useCallback(()=>{
@@ -28,6 +44,18 @@ export default function MaisonAmbientSound({children}:{children:ReactNode}){
     gsap.killTweensOf(audio);
     audio.volume=0;
     try{
+      if(!audioContextRef.current && typeof AudioContext!=="undefined"){
+        const context=new AudioContext();
+        const source=context.createMediaElementSource(audio);
+        const analyser=context.createAnalyser();
+        analyser.fftSize=512;
+        analyser.smoothingTimeConstant=.83;
+        source.connect(analyser);
+        analyser.connect(context.destination);
+        audioContextRef.current=context;
+        analyserRef.current=analyser;
+      }
+      if(audioContextRef.current?.state==="suspended")await audioContextRef.current.resume();
       await audio.play();
       wants.current=true;
       setPlaying(true);
@@ -74,8 +102,11 @@ export default function MaisonAmbientSound({children}:{children:ReactNode}){
   useEffect(()=>()=>{
     const audio=ref.current;
     if(audio){gsap.killTweensOf(audio);audio.pause();}
+    if(audioContextRef.current){void audioContextRef.current.close();audioContextRef.current=null;}
+    analyserRef.current=null;
+    samplesRef.current=null;
   },[]);
-  const value=useMemo(()=>({enabled,playing,toggle}),[enabled,playing,toggle]);
+  const value=useMemo(()=>({enabled,playing,toggle,getLevels}),[enabled,playing,toggle,getLevels]);
   return <AmbientSoundContext.Provider value={value}>
     {children}
     <audio ref={ref} src={TRACK_SRC} preload="none" loop playsInline aria-hidden="true" />

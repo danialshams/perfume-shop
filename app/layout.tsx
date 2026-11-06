@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { CartCountProvider } from "@/context/CartCountContext";
 import MaisonAmbientSound from "@/components/maison/MaisonAmbientSound";
+import FertiniEditorialMotion from "@/components/maison/FertiniEditorialMotion";
 import "./globals.css";
 import "./quiet-luxury.css";
 import "./maison-experience.css";
@@ -44,7 +45,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return <html lang="fa" dir="rtl" className="h-full antialiased">
     <body id="top" className="flex min-h-full flex-col font-sans">
-      <MaisonAmbientSound><CartCountProvider>{children}</CartCountProvider></MaisonAmbientSound>
+      <MaisonAmbientSound><CartCountProvider>{children}<FertiniEditorialMotion/></CartCountProvider></MaisonAmbientSound>
     </body>
   </html>;
 }
