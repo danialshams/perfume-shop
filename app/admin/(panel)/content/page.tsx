@@ -23,7 +23,7 @@ export default function AdminContentPage(){
  async function load(){
   setBusy(true);setError("");setSuccess("");
   try{const r=await fetch("/api/v1/admin/content",{cache:"no-store"});
-   const data=await r.json();if(!r.ok)throw Error(data.error||"خطای دریافت محتوا");
+   const data=await r.json().catch(()=>null);if(!r.ok)throw Error(data?.error||"اتصال دیتابیس محتوای سایت برقرار نیست.");if(!data)throw Error("داده‌های محتوا دریافت نشد.");
    setContent(data.content);setConnected(true);
   }catch(e){setConnected(false);setError(e instanceof Error?e.message:"اتصال برقرار نشد")}
   finally{setBusy(false)}
@@ -47,7 +47,7 @@ export default function AdminContentPage(){
   event.preventDefault();if(!connected)return;
   setBusy(true);setError("");setSuccess("");
   try{const r=await fetch("/api/v1/admin/content",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(content)});
-   const v=await r.json();if(!r.ok)throw Error(v.error||"ذخیره ناموفق");
+   const v=await r.json().catch(()=>null);if(!r.ok)throw Error(v?.error||"ذخیره محتوا در دیتابیس ممکن نیست.");if(!v)throw Error("پاسخ ذخیره‌سازی معتبر نیست.");
    setContent(v.content);setSuccess("محتوای صفحه اصلی در دیتابیس ذخیره شد.");
   }catch(e){setError(e instanceof Error?e.message:"خطای ذخیره")}
   finally{setBusy(false)}
