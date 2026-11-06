@@ -362,14 +362,20 @@ export default function ProductsManagement() {
 
                     <div className="md:hidden">
                         {mobileView === "cards" ? (
-                            <div className="grid grid-cols-1 gap-4">
+                            <div className="grid grid-cols-1 gap-3">
                                 {data.items.map((product) => (
                                     <MobileProductCard
                                         key={product.id}
                                         product={product}
                                         onView={() => openDetailsModal(product)}
+                                        onEdit={() => openEditDrawer(product)}
                                     />
                                 ))}
+                                <div className="flex items-center justify-between gap-2 p-3 border border-[#e7e2da] rounded-lg bg-[#fffefa]">
+                                 <Button disabled={data.meta.page<=1} onClick={()=>handlePageChange(data.meta.page-1,data.meta.limit)}>صفحه قبل</Button>
+                                 <span className="text-xs text-neutral-500">{data.meta.page.toLocaleString("fa-IR")} / {data.meta.totalPages.toLocaleString("fa-IR")}</span>
+                                 <Button disabled={data.meta.page>=data.meta.totalPages} onClick={()=>handlePageChange(data.meta.page+1,data.meta.limit)}>صفحه بعد</Button>
+                                </div>
                             </div>
                         ) : (
                             <AdminDataTable<ProductItem>

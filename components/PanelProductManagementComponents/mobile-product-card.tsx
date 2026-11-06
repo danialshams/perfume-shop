@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Button, Card, Space } from "antd";
-import { Eye } from "lucide-react";
+import { Eye, PencilLine } from "lucide-react";
 
 import AdminStatusBadge from "../panel-sections/admin-status-badge";
 import { formatPrice, getMainImage, getTotalStock, getVariantPriceInfo, ProductItem } from "@/lib/product";
@@ -11,11 +11,13 @@ import { formatNumber, boolify } from "../panel-sections/persian-number";
 type MobileProductCardProps = {
     product: ProductItem;
     onView: () => void;
+    onEdit: () => void;
 };
 
 export default function MobileProductCard({
     product,
     onView,
+    onEdit,
 }: MobileProductCardProps) {
     const image = getMainImage(product);
     const totalStock = getTotalStock(product);
@@ -24,9 +26,9 @@ export default function MobileProductCard({
         getVariantPriceInfo(product);
 
     return (
-        <Card className="overflow-hidden rounded-[28px]">
+        <Card className="overflow-hidden !rounded-[11px] !border-[#e7e2da] !bg-[#fffefa]">
             <div className="flex gap-4">
-                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-neutral-100">
+                <div className="relative h-24 w-20 shrink-0 overflow-hidden rounded-md bg-[#ece8e0]">
                     {image ? (
                         <Image
                             src={image}
@@ -43,7 +45,7 @@ export default function MobileProductCard({
                 </div>
 
                 <div className="min-w-0 flex-1">
-                    <h3 className="line-clamp-2 text-sm font-black text-neutral-900">
+                    <h3 className="line-clamp-2 text-sm font-semibold text-neutral-900">
                         {product.name}
                     </h3>
 
@@ -97,13 +99,12 @@ export default function MobileProductCard({
                         </div>
                     </div>
 
-                    <Space className="mt-4">
-                        <Button
-                            type="primary"
-                            icon={<Eye size={16} />}
-                            onClick={onView}
-                        >
-                            مشاهده کامل
+                    <Space className="mt-4" wrap>
+                        <Button type="primary" onClick={onEdit}>
+                            ویرایش محصول <PencilLine size={15}/>
+                        </Button>
+                        <Button onClick={onView}>
+                            جزئیات <Eye size={15}/>
                         </Button>
                     </Space>
                 </div>
