@@ -32,6 +32,8 @@ assert.match(home, /fertini:intro:complete/);
 assert.match(home, /ScrollTrigger\.create/);
 assert.match(home, /FERTINI_DEMOS/);
 assert.match(read("components/maison/FertiniVoicePlayer.tsx"), /speechSynthesis/);
+assert.match(read("components/maison/FertiniFragranceDetail.tsx"), /addGuestCartProducts/);
+assert.match(read("lib/fertini-guest-cart.ts"), /addGuestCartProducts/);
 assert.match(read("app/account/page.tsx"), /AccountGuest/);
 assert.match(read("components/HomeProductsComponnents/ProductsFilterBar.tsx"), /fertini-filter-panel/);
 assert.doesNotMatch(home, /میلیون تومان/);

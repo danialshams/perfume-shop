@@ -46,6 +46,25 @@ export function addGuestCartProduct(productId:string,volume:number,quantity=1):b
  else current.push({productId,volume,quantity:Math.min(variant.stock,quantity)});
  persist(current);return true;
 }
+/** Atomically add a selection of multiple fragrance volumes to the local showroom cart. */
+export function addGuestCartProducts(productId:string,selection:Array<{volume:number;quantity:number}>):boolean{
+ const product=FERTINI_DEMOS.find(item=>item.id===productId);
+ if(!product||selection.length===0)return false;
+ const unique=new Set(selection.map(item=>item.volume));
+ if(unique.size!==selection.length)return false;
+ const next=readGuestCart().map(item=>({...item}));
+ for(const item of selection){
+  if(!Number.isSafeInteger(item.quantity)||item.quantity<1)return false;
+  const variant=product.variants.find(v=>v.volume===item.volume);
+  if(!variant)return false;
+  const existing=next.find(line=>line.productId===productId&&line.volume===item.volume);
+  if((existing?.quantity??0)+item.quantity>variant.stock)return false;
+  if(existing)existing.quantity+=item.quantity;
+  else next.push({productId,volume:item.volume,quantity:item.quantity});
+ }
+ persist(next);
+ return true;
+}
 export function changeGuestCartQuantity(productId:string,volume:number,quantity:number){
  const product=FERTINI_DEMOS.find(p=>p.id===productId);
  const variant=product?.variants.find(v=>v.volume===volume);

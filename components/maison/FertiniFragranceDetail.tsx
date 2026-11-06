@@ -2,21 +2,27 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import { FERTINI_DEMOS } from "@/lib/fertini-demo";
-import { addGuestCartProduct } from "@/lib/fertini-guest-cart";
+import { addGuestCartProducts } from "@/lib/fertini-guest-cart";
 import { lockDocumentScroll } from "@/lib/document-scroll-lock";
 import FertiniVoicePlayer from "@/components/maison/FertiniVoicePlayer";
 
 export default function FertiniFragranceDetail({productId}:{productId:string}){
  const product=FERTINI_DEMOS.find(item=>item.id===productId)||FERTINI_DEMOS[0];
- const [variantIndex,setVariantIndex]=useState(1);
+ const [quantities,setQuantities]=useState<number[]>(()=>product.variants.map((_,index)=>index===1?1:0));
  const [photoIndex,setPhotoIndex]=useState(0);
  const [lightbox,setLightbox]=useState(false);
  const [notice,setNotice]=useState("");
- const variant=product.variants[variantIndex]||product.variants[0];
+ const selectedTotal=product.variants.reduce((sum,item,index)=>sum+item.price*(quantities[index]||0),0);
+ const selectedCount=quantities.reduce((sum,value)=>sum+value,0);
+ function changeQuantity(index:number,delta:number){
+   const limit=product.variants[index]?.stock??0;
+   setQuantities(current=>current.map((value,i)=>i===index?Math.max(0,Math.min(limit,value+delta)):value));
+   setNotice("");
+ }
  const nextPhoto=useCallback((delta:number)=>setPhotoIndex(i=>(i+delta+product.photos.length)%product.photos.length),[product.photos.length]);
  useEffect(()=>{
    if(!lightbox)return;
@@ -30,8 +36,10 @@ export default function FertiniFragranceDetail({productId}:{productId:string}){
    return()=>{unlock();window.removeEventListener("keydown",key);};
  },[lightbox,nextPhoto]);
  function addToCart(){
-   const result=addGuestCartProduct(product.id,variant.volume,1);
-   setNotice(result?"عطر به سبد خرید اضافه شد.":"افزودن محصول ممکن نشد.");
+   const selected=product.variants.flatMap((item,index)=>quantities[index]>0?[{volume:item.volume,quantity:quantities[index]}]:[]);
+   if(!selected.length){setNotice("برای افزودن به سبد، تعداد حداقل یک حجم را انتخاب کنید.");return;}
+   const result=addGuestCartProducts(product.id,selected);
+   setNotice(result?"عطرهای انتخابی به سبد خرید اضافه شدند.":"تعداد انتخابی از موجودی قابل افزودن به سبد بیشتر است؛ تعداد را کاهش دهید.");
  }
  const speech="معرفی رایحه "+product.name+". "+product.description+" نت‌های اولیه: "+product.notes.top.join(" و ")+". نت‌های میانی: "+product.notes.heart.join(" و ")+". نت‌های پایه: "+product.notes.base.join(" و ")+".";
  const others=FERTINI_DEMOS.filter(item=>item.id!==product.id && item.family===product.family).slice(0,3);
@@ -59,15 +67,33 @@ export default function FertiniFragranceDetail({productId}:{productId:string}){
          <h1>{product.name}</h1>
          <p className="fertini-fragrance__description">{product.description}</p>
          <div className="fertini-fragrance__accords">{product.accords.map(x=><span key={x}>{x}</span>)}</div>
-         <div className="fertini-fragrance__variants" role="group" aria-label="انتخاب حجم عطر">
-           <h2>حجم عطر</h2>
-           <div>{product.variants.map((v,index)=><button type="button" key={v.volume} className={variantIndex===index?"is-active":""}
-             onClick={()=>{setVariantIndex(index);setNotice("");}} aria-pressed={variantIndex===index}>{v.volume.toLocaleString("fa-IR")} میل</button>)}</div>
+         <div className="fertini-fragrance__variants fertini-fragrance__variants--multi" role="group" aria-label="انتخاب تعداد برای هر حجم عطر">
+           <h2>انتخاب حجم و تعداد</h2>
+           <div className="fertini-fragrance__variant-list">
+             {product.variants.map((v,index)=><div className={"fertini-fragrance__variant-row"+(quantities[index]>0?" is-selected":"")} key={v.volume}>
+               <div className="fertini-fragrance__variant-details">
+                 <strong>{v.volume.toLocaleString("fa-IR")} میل</strong>
+                 <span>{v.price.toLocaleString("fa-IR")} تومان</span>
+                 {v.stock<1&&<small>ناموجود</small>}
+               </div>
+               <div className="fertini-fragrance__quantity" aria-label={"تعداد عطر "+v.volume+" میل"}>
+                 <button type="button" aria-label={"کاهش تعداد "+v.volume+" میل"} disabled={quantities[index]===0} onClick={()=>changeQuantity(index,-1)}>
+                   <Minus size={17} strokeWidth={1.35}/>
+                 </button>
+                 <output aria-live="polite">{(quantities[index]||0).toLocaleString("fa-IR")}</output>
+                 <button type="button" aria-label={"افزایش تعداد "+v.volume+" میل"} disabled={quantities[index]>=v.stock} onClick={()=>changeQuantity(index,1)}>
+                   <Plus size={17} strokeWidth={1.35}/>
+                 </button>
+               </div>
+             </div>)}
+           </div>
          </div>
-         <div className="fertini-fragrance__price"><strong>{variant.price.toLocaleString("fa-IR")} تومان</strong><span>موجودی: {variant.stock.toLocaleString("fa-IR")} عدد</span></div>
-         <button type="button" className="fertini-fragrance__buy" onClick={addToCart} disabled={variant.stock<1}>افزودن به سبد خرید</button>
+         <div className="fertini-fragrance__price"><span>جمع انتخاب‌ها</span><strong>{selectedTotal.toLocaleString("fa-IR")} تومان</strong></div>
+         <button type="button" className="fertini-fragrance__buy" onClick={addToCart} disabled={selectedCount===0}>
+           افزودن {selectedCount.toLocaleString("fa-IR")} عطر به سبد خرید
+         </button>
          {notice&&<div className="fertini-fragrance__notice" role="status">
-           <span>{notice}</span>{notice.includes("اضافه")&&<Link href="/cart">مشاهدهٔ سبد خرید</Link>}
+           <span>{notice}</span>{notice.includes("اضافه")&&<Link href="/cart">مشاهده سبد خرید</Link>}
          </div>}
          <FertiniVoicePlayer productName={product.name} script={speech}/>
        </div>

@@ -70,3 +70,55 @@ body[dir="rtl"]{font-synthesis:none}
  .maison-overlay--menu .maison-menu,.maison-overlay--menu .maison-overlay__backdrop{animation-duration:.01ms!important}
  .is-playing .fertini-sound-equalizer i,.fertini-sound-equalizer.is-playing i{animation:none!important}
 }
+
+/* independently editable per-volume quantities; no stock counts exposed */
+.fertini-fragrance__variants--multi{margin-top:32px}
+.fertini-fragrance__variants--multi h2{font-size:13px;font-weight:400;margin-bottom:13px}
+.fertini-fragrance__variant-list{display:flex!important;flex-direction:column;gap:0!important}
+.fertini-fragrance__variant-row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 2px;border-bottom:1px solid rgba(41,65,46,.13)}
+.fertini-fragrance__variant-row:first-child{border-top:1px solid rgba(41,65,46,.13)}
+.fertini-fragrance__variant-row.is-selected{background:rgba(231,239,231,.34)}
+.fertini-fragrance__variant-details{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fertini-fragrance__variant-details strong{font-size:15px;font-weight:450}
+.fertini-fragrance__variant-details span{font-size:12px;color:#859186}
+.fertini-fragrance__variant-details small{font-size:11px;color:#955c50}
+.fertini-fragrance__quantity{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.fertini-fragrance__quantity button{width:38px;height:38px;min-width:38px;display:grid;place-items:center;border:1px solid #bccabe!important;background:transparent!important;color:#344939}
+.fertini-fragrance__quantity button:disabled{opacity:.28;cursor:not-allowed}
+.fertini-fragrance__quantity output{font-variant-numeric:tabular-nums;min-width:26px;text-align:center;font-size:14px}
+.fertini-fragrance__price{margin:28px 0 22px!important;display:flex!important;flex-direction:row!important;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.fertini-fragrance__price span{font-size:12px;color:#859186}
+.fertini-fragrance__price strong{font-size:21px;font-weight:400}
+.fertini-fragrance__buy:disabled{cursor:not-allowed;opacity:.37}
+/* B: the progress ring is the entire player. Real file duration drives the ring;
+   Web Speech gives word boundary position only, never a fabricated timecode. */
+.fertini-voice-v6{position:relative;display:flex;align-items:center;gap:23px;padding:27px 0;margin-top:55px;border-top:1px solid rgba(50,69,53,.14);min-width:0}
+.fertini-voice-v6__disc{width:92px;height:92px;position:relative;flex:0 0 92px;display:grid;place-items:center;border-radius:50%;color:#344739;transition:transform .45s ease}
+.fertini-voice-v6__disc:hover{transform:scale(1.035)}
+.fertini-voice-v6__disc svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.fertini-voice-v6__track{fill:none;stroke:rgba(61,85,68,.19);stroke-width:2.3}
+.fertini-voice-v6__progress{fill:none;stroke:#465b49;stroke-width:2.4;stroke-linecap:round;transition:stroke-dashoffset .32s linear}
+.fertini-voice-v6__disc>span{width:59px;height:59px;border-radius:50%;background:rgba(227,237,225,.65);display:grid;place-items:center;transition:background .35s ease,box-shadow .35s ease}
+.fertini-voice-v6__disc.is-playing>span{background:rgba(211,224,211,.87);box-shadow:0 0 0 7px rgba(72,110,83,.035)}
+.fertini-voice-v6__info{flex:1;min-width:0}
+.fertini-voice-v6__overline{display:block;color:#85998b;font:11px "Cormorant Garamond",Georgia,serif;letter-spacing:.11em;margin-bottom:5px}
+.fertini-voice-v6__info h2{font-size:20px;font-weight:380;line-height:1.6}
+.fertini-voice-v6__info p{font-size:11px;color:#89988d;margin-top:7px}
+.fertini-voice-v6__rate{flex-shrink:0;color:#7c9181;font-size:11px;padding:12px 2px}
+.fertini-voice-v6__timeline{display:flex;align-items:center;gap:11px;margin-top:11px}
+.fertini-voice-v6__timeline input{flex:1;min-width:40px;accent-color:#526d59;height:16px}
+.fertini-voice-v6__timeline span{color:#94a195;font-size:10px;white-space:nowrap}
+.fertini-voice-v6__error{position:absolute;top:calc(100% - 16px);right:0;color:#a76c60;font-size:11px}
+@media(max-width:600px){
+ .fertini-voice-v6{gap:14px}
+ .fertini-voice-v6__disc{width:72px;height:72px;flex-basis:72px}
+ .fertini-voice-v6__disc>span{width:45px;height:45px}
+ .fertini-voice-v6__info h2{font-size:17px}
+ .fertini-voice-v6__overline{font-size:9px}
+ .fertini-fragrance__quantity{gap:5px}
+ .fertini-fragrance__quantity button{width:34px;height:34px;min-width:34px}
+ .fertini-fragrance__variant-row{gap:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ .fertini-voice-v6__progress,.fertini-voice-v6__disc{transition:none!important}
+}
