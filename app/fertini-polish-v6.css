@@ -1,9 +1,9 @@
 /* FERTINI v6: compositor-first motion, gallery hero, real exit transitions, Persian UI. */
 :root{--maison-fa:"Vazirmatn RD","Vazirmatn",sans-serif}
-body[dir="rtl"],body[dir="rtl"] button,body[dir="rtl"] input,body[dir="rtl"] select,body[dir="rtl"] textarea,
+html[dir="rtl"] body,html[dir="rtl"] button,html[dir="rtl"] input,html[dir="rtl"] select,html[dir="rtl"] textarea,
 .fertini-v5,.maison-menu,.fertini-account-gateway,.fertini-fragrance,.maison-page,
 .fertini-journal-v5,.ql-shop{font-family:"Vazirmatn RD","Vazirmatn",sans-serif}
-body[dir="rtl"]{font-synthesis:none}
+html[dir="rtl"] body{font-synthesis:none}
 .fertini-v5-heading h2,.fertini-v5-family__info h3,.fertini-fragrance__pyramid h2,
 .fertini-journal-v5__hero-content h1,.fertini-account-gateway__body h1{letter-spacing:normal}
 .fertini-v5-card__media,.fertini-v5-family__photo{contain:paint}

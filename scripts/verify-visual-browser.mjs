@@ -188,10 +188,11 @@ async function validateStorefrontInteractions(){
    const emptied=await evaluate(send,'(()=>{document.querySelector(".fertini-guest-cart__clear")?.click();return JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]").length;})()');
    if(emptied!==0)throw Error("Cart clear failed: "+emptied);
    await navigate("/fragrance/nocturne");
-   const multi=await evaluate(send,`(()=>{
+   const multi=await evaluate(send,`(async()=>{
       const buttons=[...document.querySelectorAll(".fertini-fragrance__quantity button[aria-label^='افزایش تعداد']")];
       if(buttons.length!==3)return null;
       buttons[0].click(); buttons[2].click();
+      await new Promise(resolve=>setTimeout(resolve,180));
       document.querySelector(".fertini-fragrance__buy")?.click();
       return JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]");
     })()`);
