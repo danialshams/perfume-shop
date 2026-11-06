@@ -125,7 +125,10 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroImagePosition:img?getComputedStyle(img).objectPosition:null,
     persianFont:getComputedStyle(document.body).fontFamily,
     clipPathAnimations:[...document.querySelectorAll(".fertini-v5 [data-fertini-photo]")].some(el=>getComputedStyle(el).clipPath!=="none"),
-    documentScrollUnlocked: getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden"
+    documentScrollUnlocked: getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden",
+    firstCardFinished:document.querySelector(".fertini-v5-best__grid [data-fertini-card]")?.getAttribute("data-fertini-motion-done")==="true",
+    firstCardCoverGone:!document.querySelector(".fertini-v5-best__grid [data-fertini-card] .fertini-v7-curtain:not([style*='display: none'])"),
+    waveformCount:document.querySelector(".fertini-header-sound--mobile .fertini-sound-equalizer")?.childElementCount ?? 0
    };
   })()`);
   if(state.url!==new URL(url).pathname)throw Error(name+" unexpected route: "+JSON.stringify(state));
@@ -140,6 +143,8 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    if(!state.persianFont.includes("Vazirmatn"))throw Error(name+" Persian font not applied");
    if(state.clipPathAnimations)throw Error(name+" deprecated clipped reveal is still active");
    if(!state.documentScrollUnlocked)throw Error(name+" document remains scroll locked after intro: "+JSON.stringify(state));
+   if(!state.firstCardFinished||!state.firstCardCoverGone)throw Error(name+" photo reveal restarted or failed to finish: "+JSON.stringify(state));
+   if(state.waveformCount!==5)throw Error(name+" music indicator must have five bars: "+JSON.stringify(state));
   }
   const result=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true,fromSurface:true});
   await writeFile("artifacts/"+name+".png",Buffer.from(result.data,"base64"));
@@ -207,7 +212,22 @@ async function validateStorefrontInteractions(){
    const tabs=await evaluate(send,'(()=>{const b=[...document.querySelectorAll("button")].find(x=>x.textContent?.trim()==="ایجاد حساب"); const login=[...document.querySelectorAll("button")].find(x=>x.textContent?.trim()==="ورود");b?.click();return{register:!!b,login:!!login};})()');
    if(!tabs?.register || !tabs?.login)throw Error("Account gateway tabs unavailable: "+JSON.stringify(tabs));
    await until(()=>evaluate(send,'!!document.querySelector("input[name=confirm_password]")'),5500);
-   process.stdout.write("Guest cart, 3 independently selected volumes, persistence, clear, menu exit, and account gateway validated.\n");
+   const inputGap=()=>evaluate(send,`(()=>{
+     const labels=[...document.querySelectorAll(".fertini-account-gateway__field")];
+     return Math.max(...labels.map(label=>{
+       const span=label.querySelector("span"),input=label.querySelector("input");
+       return span&&input?input.getBoundingClientRect().bottom-span.getBoundingClientRect().bottom:0;
+     }));
+   })()`);
+   const mobileGap=await inputGap();
+   if(mobileGap>35)throw Error("Register labels far from input on mobile: "+mobileGap);
+   await send("Emulation.setDeviceMetricsOverride",{width:1440,height:900,deviceScaleFactor:1,mobile:false,screenWidth:1440,screenHeight:900});
+   await navigate("/account");
+   await evaluate(send,'[...document.querySelectorAll("button")].find(x=>x.textContent?.trim()==="ایجاد حساب")?.click()');
+   await until(()=>evaluate(send,'!!document.querySelector("input[name=confirm_password]")'),5500);
+   const desktopGap=await inputGap();
+   if(desktopGap>35)throw Error("Register labels far from input on desktop: "+desktopGap);
+   process.stdout.write("Guest cart, variant constraints, account field alignment (mobile/desktop) and navigation validated.\\n");
  }finally{ws.close()}
 }
 
@@ -220,6 +240,7 @@ try{
  await pageScreenshot({name:"products-desktop-full",url:"http://127.0.0.1:3100/products",width:1440,height:900,mobile:false,assertHome:false});
  await pageScreenshot({name:"products-mobile-full",url:"http://127.0.0.1:3100/products",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"account-mobile-full",url:"http://127.0.0.1:3100/account",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"account-desktop-full",url:"http://127.0.0.1:3100/account",width:1440,height:900,mobile:false,assertHome:false});
  await pageScreenshot({name:"fragrance-mobile-full",url:"http://127.0.0.1:3100/fragrance/nocturne",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"fragrance-desktop-full",url:"http://127.0.0.1:3100/fragrance/nocturne",width:1440,height:900,mobile:false,assertHome:false});
  await pageScreenshot({name:"cart-mobile-full",url:"http://127.0.0.1:3100/cart",width:390,height:844,mobile:true,assertHome:false});
