@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowUpLeft, Menu, Search, ShoppingBag, UserRound, X, Volume
 import { useAmbientSound } from "@/components/maison/MaisonAmbientSound";
 import { lockDocumentScroll } from "@/lib/document-scroll-lock";
 import { useCartCount } from "@/context/CartCountContext";
+import { useGuestCart } from "@/lib/fertini-guest-cart";
 import { useProductSearch } from "@/components/hooks/useProductSearch";
 
 const menuLinks = [
@@ -21,6 +22,8 @@ const menuLinks = [
 export default function LuxuryNavbar() {
   const pathname = usePathname();
   const { cartCount } = useCartCount();
+  const { count: guestCartCount } = useGuestCart();
+  const displayedCartCount = cartCount + guestCartCount;
   const { enabled: soundEnabled, playing: soundPlaying, toggle: toggleSound } = useAmbientSound();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -126,9 +129,9 @@ export default function LuxuryNavbar() {
             </button>}
             <button type="button" className="maison-icon-button" aria-label="جستجوی عطرها" aria-expanded={searchOpen} onClick={openSearch}><Search size={20} strokeWidth={1.3} /></button>
             <Link href="/account" className="maison-icon-button maison-header__account" aria-label="حساب کاربری"><UserRound size={20} strokeWidth={1.3} /></Link>
-            <Link href="/cart" className="maison-icon-button maison-header__cart" aria-label={"سبد خرید، " + cartCount + " محصول"}>
+            <Link href="/cart" className="maison-icon-button maison-header__cart" aria-label={"سبد خرید، " + displayedCartCount + " محصول"}>
               <ShoppingBag size={20} strokeWidth={1.3} />
-              {cartCount > 0 && <span className="maison-header__count" aria-hidden="true">{cartCount > 99 ? "+99" : cartCount}</span>}
+              {displayedCartCount > 0 && <span className="maison-header__count" aria-hidden="true">{displayedCartCount > 99 ? "+99" : displayedCartCount}</span>}
             </Link>
           </div>
         </div>

@@ -1,0 +1,30 @@
+/* FERTINI local guest-cart experience. Sample checkout intentionally disabled. */
+.fertini-guest-cart{background:#f4f5f2;color:#2b3630}
+.fertini-guest-cart__main{padding-block:clamp(65px,10vw,145px) clamp(120px,13vw,190px)}
+.fertini-guest-cart__header{margin-bottom:clamp(40px,6vw,85px)}
+.fertini-guest-cart__header h1{font-size:clamp(40px,5vw,74px);font-weight:300;line-height:1.6;margin:18px 0 6px}
+.fertini-guest-cart__header p{font-size:13px;color:#849188}
+.fertini-guest-cart__layout{display:grid;grid-template-columns:1.7fr 1fr;gap:clamp(40px,7vw,120px);align-items:start}
+.fertini-guest-cart__item{display:flex;align-items:start;gap:clamp(18px,3vw,40px);padding:0 0 34px;margin-bottom:35px;border-bottom:1px solid rgba(39,52,42,.12)}
+.fertini-guest-cart__photo{position:relative;width:clamp(95px,15vw,185px);aspect-ratio:4/5;flex:none;background:#e4eae2}
+.fertini-guest-cart__photo img{object-fit:contain;filter:saturate(.78)}
+.fertini-guest-cart__detail{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:0;flex:1}
+.fertini-guest-cart__detail>span{font:10px "Cormorant Garamond",Georgia,serif;letter-spacing:.1em;color:#89978b}
+.fertini-guest-cart__detail h2{font:350 clamp(25px,2.6vw,40px) "Cormorant Garamond",Georgia,serif}
+.fertini-guest-cart__detail p{font-size:12px;color:#8d9990}
+.fertini-guest-cart__detail strong{font-size:15px;font-weight:350}
+.fertini-guest-cart__controls{display:flex;align-items:center;gap:20px;margin-top:auto;flex-wrap:wrap;padding-top:13px}
+.fertini-guest-cart__quantity{display:flex;align-items:center;gap:18px}
+.fertini-guest-cart__quantity button{border:1px solid #c6d0c6;width:36px;height:36px;display:grid;place-items:center}
+.fertini-guest-cart__quantity button:disabled{opacity:.25}
+.fertini-guest-cart__quantity span{font-size:14px;font-variant-numeric:tabular-nums}
+.fertini-guest-cart__remove,.fertini-guest-cart__clear{font-size:12px;color:#8b958d;display:flex;align-items:center;gap:6px}
+.fertini-guest-cart__summary{padding:clamp(27px,3vw,48px);border:1px solid rgba(50,65,53,.13);background:rgba(244,247,242,.66)}
+.fertini-guest-cart__summary h2{font-size:25px;font-weight:300;margin-bottom:34px}
+.fertini-guest-cart__summary>div{display:flex;align-items:center;justify-content:space-between;padding-block:16px;font-size:13px;color:#758277}
+.fertini-guest-cart__summary>div strong{color:#334237;font-weight:400}
+.fertini-guest-cart__summary>button{margin-top:32px;width:100%;background:#4c5c50;color:#fff;min-height:56px;opacity:.5;cursor:not-allowed}
+.fertini-guest-cart__summary>p{font-size:11px;line-height:2.5;color:#949f95;margin-top:16px}
+.fertini-guest-cart__summary>a{display:inline-flex;font-size:12px;margin-top:23px;border-bottom:1px solid #89978a;padding-bottom:9px}
+@media(max-width:800px){.fertini-guest-cart__layout{grid-template-columns:1fr}.fertini-guest-cart__summary{max-width:none}}
+@media(max-width:600px){.fertini-guest-cart__photo{width:108px}.fertini-guest-cart__detail h2{font-size:24px}.fertini-guest-cart__item{gap:14px}.fertini-guest-cart__controls{gap:12px}.fertini-guest-cart__quantity{gap:11px}}

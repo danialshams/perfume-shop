@@ -10,7 +10,7 @@ import { Cart } from "@/server/types/cart";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useCartCount } from "@/context/CartCountContext";
 
-export function useCart() {
+export function useCart({enabled=true}:{enabled?:boolean}={}) {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState<
@@ -108,8 +108,8 @@ export function useCart() {
   }, [updateGlobalCount]);
 
   useEffect(() => {
-    loadCart();
-  }, [loadCart]);
+    if(enabled) void loadCart();
+  }, [enabled,loadCart]);
 
   const isEmpty = useMemo(() => {
     return cart !== null && cart.items.length === 0;

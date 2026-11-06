@@ -13,10 +13,13 @@ import { getErrorText } from "@/components/cart/cart.utils";
 import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import { useCart } from "@/components/hooks/useCart";
+import { useGuestCart } from "@/lib/fertini-guest-cart";
+import FertiniGuestCart from "@/components/cart/FertiniGuestCart";
 import { CartItem } from "@/server/types/cart";
 import { useMemo, useState } from "react";
 
 export default function CartClient() {
+    const { count: guestCount } = useGuestCart();
     const {
         cart,
         loading,
@@ -26,7 +29,7 @@ export default function CartClient() {
         updateQuantity,
         removeItem,
         reload,
-    } = useCart();
+    } = useCart({enabled: guestCount===0});
 
     const [optimisticQuantities, setOptimisticQuantities] = useState<
         Record<string | number, number>
@@ -100,14 +103,15 @@ export default function CartClient() {
     };
 
 
+    if (guestCount>0) return <FertiniGuestCart />;
     if (loading) return <CartSkeleton />;
     if (!cart) return (
         <>
             <LuxuryNavbar />
             <section className="ql-container flex min-h-[65svh] flex-col items-center justify-center gap-6 py-24 text-center">
-                <h1 className="text-2xl font-light text-[#302d29]">سبد خرید بارگذاری نشد</h1>
-                <p className="max-w-md text-sm leading-8 text-[#82766a]">ارتباط با فروشگاه برقرار نشد. لطفاً دوباره تلاش کنید.</p>
-                <button type="button" onClick={() => void reload()} className="border border-[#302d29] px-8 py-4 text-sm text-[#302d29] transition-colors hover:bg-[#302d29] hover:text-white">تلاش دوباره</button>
+                <h1 className="text-2xl font-light text-[#302d29]">سبد خرید شما</h1>
+                <p className="max-w-md text-sm leading-8 text-[#82766a]">در این مرورگر هنوز محصولی به سبد اضافه نشده است. بررسی سبد آنلاینِ حساب کاربری در حال حاضر در دسترس نیست.</p>
+                <button type="button" onClick={() => void reload()} className="border border-[#302d29] px-8 py-4 text-sm text-[#302d29] transition-colors hover:bg-[#302d29] hover:text-white">بررسی مجدد سبد آنلاین</button>
             </section>
             <CinematicFooter />
         </>

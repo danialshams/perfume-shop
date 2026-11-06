@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import CartClient from "./CartClient";
 
 export const metadata = {
-  title: "سبد خرید | MAISON",
-  description: "مرور عطرهای انتخاب‌شده و ادامه خرید از MAISON",
+  title: "سبد خرید | FERTINI",
+  description: "مرور عطرهای انتخاب‌شده و ادامه خرید از FERTINI",
 };
 
 export default function CartPage() {
