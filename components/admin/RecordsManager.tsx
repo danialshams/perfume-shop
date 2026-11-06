@@ -32,8 +32,8 @@ export default function RecordsManager({resource}:{resource:Resource}){
  const load=useCallback(async(nextPage=1)=>{
   setLoading(true);setError("");
   try{const r=await fetch(url+"?page="+nextPage+"&limit=30",{cache:"no-store"});
-   const data=await r.json();
-   if(!r.ok)throw Error(data.error||"خطا در دریافت اطلاعات");
+   const data=await r.json().catch(()=>null);
+   if(!r.ok)throw Error(data?.error||"دریافت اطلاعات از دیتابیس ممکن نیست.");
    setRows(prev=>nextPage===1?data.items:[...prev,...data.items]);
    setHasNext(!!data.hasNext);setPage(nextPage);
   }catch(e){setError(e instanceof Error?e.message:"دریافت اطلاعات ممکن نشد")}finally{setLoading(false)}
@@ -44,7 +44,7 @@ export default function RecordsManager({resource}:{resource:Resource}){
   if(!confirm)return;
   setSaving(true);setError("");
   try{const r=await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(confirm)});
-   const d=await r.json();if(!r.ok)throw Error(d.error||"تغییر وضعیت انجام نشد");
+   const d=await r.json().catch(()=>null);if(!r.ok)throw Error(d?.error||"تغییر وضعیت انجام نشد");
    setRows(prev=>prev.map(x=>x.id===confirm.id?{...x,status:confirm.status}:x));
    setSuccess("وضعیت ذخیره شد.");setConfirm(null);
   }catch(e){setError(e instanceof Error?e.message:"خطای ذخیره")}finally{setSaving(false)}
@@ -54,7 +54,7 @@ export default function RecordsManager({resource}:{resource:Resource}){
   try{
    const data=resource==="coupons"?{code:form.code,title:form.title,discount_type:form.discount_type,discount_value:Number(form.discount_value)}:{name:form.name,slug:form.slug};
    const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
-   const result=await r.json();if(!r.ok)throw Error(result.error||"ثبت اطلاعات ممکن نشد");
+   const result=await r.json().catch(()=>null);if(!r.ok)throw Error(result?.error||"ثبت اطلاعات ممکن نشد");
    setCreating(false);setSuccess("رکورد در دیتابیس ثبت شد.");await load(1);
   }catch(e){setError(e instanceof Error?e.message:"خطای ثبت")}finally{setSaving(false)}
  }
