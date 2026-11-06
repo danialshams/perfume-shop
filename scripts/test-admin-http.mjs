@@ -11,6 +11,18 @@ for(const path of ["/api/v1/admin/records/customers","/api/v1/admin/content","/a
  assert.equal(r.status,403,"Unauthorized access allowed to "+path);
  await r.body?.cancel();
 }
+const unauthenticatedOrder=await get("/api/v1/orders/1");
+assert.equal(unauthenticatedOrder.status,403,"Private orders must reject anonymous access");
+const forbiddenPayment=await fetch(base+"/api/v1/orders/1",{method:"PATCH",
+ headers:{...authenticated,"content-type":"application/json"},
+ body:JSON.stringify({payment_status:"PAID"})});
+assert.equal(forbiddenPayment.status,422,"Manual payment settlement must be blocked");
+const invalidOrderStatus=await fetch(base+"/api/v1/orders/1",{method:"PATCH",
+ headers:{...authenticated,"content-type":"application/json"},
+ body:JSON.stringify({status:"PAID"})});
+assert.equal(invalidOrderStatus.status,422,"Order status is not a payment method");
+const forbiddenDelete=await fetch(base+"/api/v1/orders/1",{method:"DELETE",headers:authenticated});
+assert.equal(forbiddenDelete.status,405,"Financial order history must never be destructively deleted");
 const invalidContent=await fetch(base+"/api/v1/admin/content",{method:"PUT",headers:{...authenticated,"content-type":"application/json"},body:JSON.stringify({heroSlides:[]})});
 assert.equal(invalidContent.status,422,"Malformed editorial content must be rejected");
 const invalidEdit=await fetch(base+"/api/v1/admin/records/reviews",{method:"PATCH",headers:{...authenticated,"content-type":"application/json"},body:JSON.stringify({id:0,status:"APPROVED"})});
