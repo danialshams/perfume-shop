@@ -1,0 +1,72 @@
+/* FERTINI v6: compositor-first motion, gallery hero, real exit transitions, Persian UI. */
+:root{--maison-fa:"Vazirmatn RD","Vazirmatn",sans-serif}
+body[dir="rtl"],body[dir="rtl"] button,body[dir="rtl"] input,body[dir="rtl"] select,body[dir="rtl"] textarea,
+.fertini-v5,.maison-menu,.fertini-account-gateway,.fertini-fragrance,.maison-page,
+.fertini-journal-v5,.ql-shop{font-family:"Vazirmatn RD","Vazirmatn",sans-serif}
+body[dir="rtl"]{font-synthesis:none}
+.fertini-v5-heading h2,.fertini-v5-family__info h3,.fertini-fragrance__pyramid h2,
+.fertini-journal-v5__hero-content h1,.fertini-account-gateway__body h1{letter-spacing:normal}
+.fertini-v5-card__media,.fertini-v5-family__photo{contain:paint}
+.fertini-v5-card__media img,.fertini-v5-family__photo img{will-change:transform;backface-visibility:hidden;transform:translateZ(0)}
+.fertini-v5 .fertini-v5-hero{display:block!important;min-height:0!important;width:100%;height:calc(100svh - 76px);max-height:1100px;background:#202725;overflow:hidden}
+.fertini-v5 .fertini-v5-hero .fertini-hero__gallery{height:100%;min-height:100%;width:100%}
+.fertini-v5 .fertini-v5-hero .fertini-hero__image img{object-fit:cover;object-position:50% 50%;filter:saturate(.79);transform:scale(1.045);transition:transform 11.5s cubic-bezier(.22,1,.36,1)}
+.fertini-v5 .fertini-v5-hero .fertini-hero__image.is-active img{transform:scale(1)}
+.fertini-v5 .fertini-v5-hero .fertini-hero__controls{z-index:5;inset:auto clamp(28px,5vw,90px) 26px clamp(28px,5vw,90px);color:#f7f9f4;display:flex;justify-content:space-between;align-items:center;pointer-events:auto}
+.fertini-v5 .fertini-v5-hero .fertini-hero__controls>span{color:#edf2eb;text-shadow:0 1px 12px rgba(0,0,0,.4)}
+.fertini-v5 .fertini-v5-hero .fertini-hero__controls button span{background:rgba(247,249,245,.45)}
+.fertini-v5 .fertini-v5-hero .fertini-hero__controls button.is-active span{background:#fff}
+.maison-header,.ql-home>.maison-header,.ql-shop>.maison-header,.ql-detail>.maison-header,
+.maison-page>.maison-header,.fertini-account-gateway>.maison-header,.fertini-fragrance>.maison-header{
+ background:rgba(223,232,225,.78)!important;
+ backdrop-filter:blur(28px) saturate(1.18)!important;
+ -webkit-backdrop-filter:blur(28px) saturate(1.18)!important;
+ border-bottom:1px solid rgba(255,255,255,.24)!important;
+ box-shadow:0 6px 26px rgba(30,44,34,.055)!important
+}
+.maison-header--scrolled{background:rgba(227,234,226,.84)!important}
+.maison-menu{background:rgba(234,240,234,.89)!important;backdrop-filter:blur(30px) saturate(1.12);-webkit-backdrop-filter:blur(30px) saturate(1.12)}
+.maison-menu:after{display:none!important}
+.maison-menu-entry{grid-template-columns:42px minmax(0,1fr)!important;border:0!important;gap:16px!important}
+.maison-menu-entry:hover{padding-inline-start:0!important;color:#516755}
+.fertini-menu-mark{display:none!important}
+.maison-menu__text{font-family:"Vazirmatn RD","Vazirmatn",sans-serif}
+.maison-overlay--menu.is-open .maison-overlay__backdrop{animation:fertini-backdrop-in .63s ease both}
+.maison-overlay--menu.is-open .maison-menu{animation:fertini-panel-in .7s cubic-bezier(.19,1,.22,1) both}
+.maison-overlay--menu.is-closing{pointer-events:none}
+.maison-overlay--menu.is-closing .maison-overlay__backdrop{animation:fertini-backdrop-out .5s ease both}
+.maison-overlay--menu.is-closing .maison-menu{animation:fertini-panel-out .54s cubic-bezier(.55,0,.35,1) both}
+@keyframes fertini-panel-in{from{opacity:.52;transform:translate3d(60px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes fertini-panel-out{from{opacity:1;transform:translate3d(0,0,0)}to{opacity:0;transform:translate3d(65px,0,0)}}
+@keyframes fertini-backdrop-in{from{opacity:0}to{opacity:1}}
+@keyframes fertini-backdrop-out{from{opacity:1}to{opacity:0}}
+.fertini-sound-equalizer{display:inline-flex;align-items:center;justify-content:center;gap:2px;width:25px;height:25px}
+.fertini-sound-equalizer i{display:block;width:1.5px;height:8px;border-radius:1px;background:currentColor;transform-origin:center;opacity:.75}
+.fertini-sound-equalizer i:nth-child(2){height:16px}.fertini-sound-equalizer i:nth-child(3){height:12px}.fertini-sound-equalizer i:nth-child(4){height:6px}
+.is-playing .fertini-sound-equalizer i,.fertini-sound-equalizer.is-playing i{animation:fertini-sound-level 1.05s ease-in-out infinite alternate}
+.is-playing .fertini-sound-equalizer i:nth-child(2),.fertini-sound-equalizer.is-playing i:nth-child(2){animation-delay:-.31s}
+.is-playing .fertini-sound-equalizer i:nth-child(3),.fertini-sound-equalizer.is-playing i:nth-child(3){animation-delay:-.55s}
+.is-playing .fertini-sound-equalizer i:nth-child(4),.fertini-sound-equalizer.is-playing i:nth-child(4){animation-delay:-.18s}
+@keyframes fertini-sound-level{from{transform:scaleY(.43)}to{transform:scaleY(1.12)}}
+.fertini-account-gateway__layout{display:block!important;min-height:calc(100svh - 76px);direction:rtl}
+.fertini-account-gateway__picture{display:none!important}
+.fertini-account-gateway__body{width:100%;max-width:550px!important;margin:0 auto;padding:clamp(72px,9vw,130px) 25px clamp(115px,12vw,190px)!important}
+.fertini-account-gateway__body h1{font-size:clamp(44px,5vw,66px);line-height:1.5;margin:15px 0 8px}
+.fertini-account-gateway__intro{margin-bottom:24px}
+.fertini-account-gateway__tabs{margin-bottom:26px}
+.fertini-account-gateway__form{gap:16px!important}
+.fertini-account-gateway__field{gap:3px!important}
+.fertini-account-gateway__field>span{font-size:12px;line-height:1.55}
+.fertini-account-gateway__field input{min-height:43px!important;padding:6px 2px 7px!important;line-height:1.5}
+.fertini-account-gateway__toggle{margin-top:-8px}
+.fertini-v5-heading,.fertini-v5-family__info,.fertini-v5-card__info{direction:rtl}
+@media(max-width:600px){
+ .fertini-v5 .fertini-v5-hero{height:calc(100svh - 68px);min-height:440px!important}
+ .fertini-v5 .fertini-v5-hero .fertini-hero__image img{object-position:center center}
+ .fertini-account-gateway__body{padding:58px 22px 105px!important}
+ .maison-menu-entry{min-height:74px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .maison-overlay--menu .maison-menu,.maison-overlay--menu .maison-overlay__backdrop{animation-duration:.01ms!important}
+ .is-playing .fertini-sound-equalizer i,.fertini-sound-equalizer.is-playing i{animation:none!important}
+}

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { ArrowLeft, ArrowUpLeft, Menu, Search, ShoppingBag, UserRound, X, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, ArrowUpLeft, Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import { useAmbientSound } from "@/components/maison/MaisonAmbientSound";
 import { lockDocumentScroll } from "@/lib/document-scroll-lock";
 import { useCartCount } from "@/context/CartCountContext";
@@ -12,10 +12,10 @@ import { useGuestCart } from "@/lib/fertini-guest-cart";
 import { useProductSearch } from "@/components/hooks/useProductSearch";
 
 const menuLinks = [
-  { href: "/", label: "صفحهٔ اصلی", sub: "FERTINI / HOME" },
+  { href: "/", label: "صفحه اصلی", sub: "FERTINI / HOME" },
   { href: "/products", label: "مجموعه عطرها", sub: "THE COLLECTION" },
   { href: "/journal", label: "ژورنال رایحه", sub: "THE JOURNAL" },
-  { href: "/about", label: "دربارهٔ ما", sub: "OUR STORY" },
+  { href: "/about", label: "درباره ما", sub: "OUR STORY" },
   { href: "/account", label: "حساب کاربری", sub: "YOUR ACCOUNT" },
 ] as const;
 
@@ -26,6 +26,7 @@ export default function LuxuryNavbar() {
   const displayedCartCount = cartCount + guestCartCount;
   const { enabled: soundEnabled, playing: soundPlaying, toggle: toggleSound } = useAmbientSound();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuMounted, setMenuMounted] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
@@ -54,7 +55,7 @@ export default function LuxuryNavbar() {
     return () => window.cancelAnimationFrame(id);
   }, [pathname, dismiss]);
 
-  const overlayOpen = menuOpen || searchOpen;
+  const overlayOpen = menuMounted || searchOpen;
   useEffect(() => {
     if (!overlayOpen) return;
     const releaseScroll = lockDocumentScroll();
@@ -96,11 +97,18 @@ export default function LuxuryNavbar() {
     lastTriggerRef.current = event.currentTarget;
     setSearchOpen(false);
     setQuery("");
+    setMenuMounted(true);
     setMenuOpen(true);
   }
+  useEffect(() => {
+    if (!menuMounted || menuOpen) return;
+    const timeout=window.setTimeout(()=>setMenuMounted(false),580);
+    return ()=>window.clearTimeout(timeout);
+  },[menuMounted,menuOpen]);
   function openSearch(event: React.MouseEvent<HTMLButtonElement>) {
     lastTriggerRef.current = event.currentTarget;
     setMenuOpen(false);
+    setMenuMounted(false);
     setSearchOpen(true);
   }
 
@@ -122,10 +130,10 @@ export default function LuxuryNavbar() {
             <strong>FERTINI</strong><span>THE FRAGRANCE HOUSE</span>
           </Link>
           <div className="maison-header__left">
-            {soundEnabled && <button type="button" className="maison-icon-button fertini-header-sound" onClick={toggleSound}
+            {soundEnabled && <button type="button" className={"maison-icon-button fertini-header-sound"+(soundPlaying?" is-playing":"")} onClick={toggleSound}
               aria-label={soundPlaying ? "قطع موسیقی" : "پخش موسیقی محیط"} aria-pressed={soundPlaying}
               title={soundPlaying ? "Sound on" : "Sound off"}>
-              {soundPlaying ? <Volume2 size={19} strokeWidth={1.25} /> : <VolumeX size={19} strokeWidth={1.25} />}
+              <span className="fertini-sound-equalizer" aria-hidden="true"><i/><i/><i/><i/></span>
             </button>}
             <button type="button" className="maison-icon-button" aria-label="جستجوی عطرها" aria-expanded={searchOpen} onClick={openSearch}><Search size={20} strokeWidth={1.3} /></button>
             <Link href="/account" className="maison-icon-button maison-header__account" aria-label="حساب کاربری"><UserRound size={20} strokeWidth={1.3} /></Link>
@@ -137,8 +145,8 @@ export default function LuxuryNavbar() {
         </div>
       </header>
 
-      {menuOpen && (
-        <div id="maison-menu" className="maison-overlay maison-active-overlay" role="dialog" aria-modal="true" aria-label="منوی فروشگاه">
+      {menuMounted && (
+        <div id="maison-menu" className={"maison-overlay maison-active-overlay maison-overlay--menu"+(menuOpen?" is-open":" is-closing") } role="dialog" aria-modal="true" aria-label="منوی فروشگاه">
           <button type="button" className="maison-overlay__backdrop" tabIndex={-1} aria-label="بستن منو" onClick={dismiss}/>
           <div className="maison-menu" ref={menuPanelRef}>
             <div className="maison-menu__head">
@@ -150,12 +158,11 @@ export default function LuxuryNavbar() {
                 <Link key={item.href} href={item.href} onClick={dismiss} className="maison-menu-entry">
                   <span className="maison-menu__number" lang="en">{String(index+1).padStart(2,"0")}</span>
                   <span className="maison-menu__text">{item.label}<small lang="en" dir="ltr">{item.sub}</small></span>
-                  <span className="fertini-menu-mark" aria-hidden="true" />
                 </Link>
               ))}
             </nav>
             {soundEnabled && <button type="button" className="fertini-menu-sound" onClick={toggleSound} aria-pressed={soundPlaying}>
-              {soundPlaying ? <Volume2 size={17} strokeWidth={1.2}/> : <VolumeX size={17} strokeWidth={1.2}/>}
+              <span className={"fertini-sound-equalizer"+(soundPlaying?" is-playing":"")} aria-hidden="true"><i/><i/><i/><i/></span>
               <span>موسیقی محیط</span><small lang="en" dir="ltr">{soundPlaying ? "ON" : "OFF"}</small>
             </button>}
             <p className="maison-menu__foot" lang="en" dir="ltr">A QUIET STUDY OF SCENT — FERTINI 2026</p>
@@ -191,7 +198,7 @@ export default function LuxuryNavbar() {
                 </Link>
               ))}
             </div>
-            <Link href="/products" onClick={dismiss} className="maison-search__all">مشاهدهٔ تمام عطرها <ArrowUpLeft size={17} strokeWidth={1.2}/></Link>
+            <Link href="/products" onClick={dismiss} className="maison-search__all">مشاهده تمام عطرها <ArrowUpLeft size={17} strokeWidth={1.2}/></Link>
           </section>
         </div>
       )}

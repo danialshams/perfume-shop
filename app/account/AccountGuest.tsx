@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type InputHTMLAttributes } from "react";
@@ -53,15 +52,11 @@ export default function AccountGuest({serviceUnavailable=false}:{serviceUnavaila
  return <div className="fertini-account-gateway">
   <LuxuryNavbar/>
   <main className="fertini-account-gateway__layout" id="main-content">
-    <figure className="fertini-account-gateway__picture">
-      <Image fill priority src="/fertini/iris-front.svg" sizes="(min-width:900px) 48vw, 100vw" alt="فضای آرام و هنری رایحه‌های فرتینی"/>
-      <figcaption lang="en" dir="ltr">FERTINI / A PERSONAL SIGNATURE</figcaption>
-    </figure>
     <section className="fertini-account-gateway__body" dir="rtl">
       <span className="maison-kicker" lang="en" dir="ltr">FERTINI / MY ACCOUNT</span>
       <h1>حساب شخصی<br/><em>شما.</em></h1>
       <p className="fertini-account-gateway__intro">ورود به حساب، پیگیری سفارش‌ها و مدیریت اطلاعات شخصی در یک مکان.</p>
-      {serviceUnavailable&&<p className="fertini-account-gateway__service" role="status">اطلاعات حساب قبلی فعلاً در دسترس نیست؛ در صورت نیاز دوباره وارد شوید.</p>}
+      {serviceUnavailable&&<p className="fertini-account-gateway__service" role="status">اطلاعات حساب قبلی فعلا در دسترس نیست؛ در صورت نیاز دوباره وارد شوید.</p>}
       <div className="fertini-account-gateway__tabs" role="group" aria-label="انتخاب ورود یا ثبت‌نام">
         <button type="button" className={mode==="login"?"is-active":""} aria-pressed={mode==="login"} onClick={()=>{setMode("login");setError("");}}>ورود</button>
         <button type="button" className={mode==="register"?"is-active":""} aria-pressed={mode==="register"} onClick={()=>{setMode("register");setError("");}}>ایجاد حساب</button>
