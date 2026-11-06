@@ -11,6 +11,12 @@ for(const path of ["/api/v1/admin/records/customers","/api/v1/admin/content","/a
  assert.equal(r.status,403,"Unauthorized access allowed to "+path);
  await r.body?.cancel();
 }
+const privateOrderList=await get("/api/v1/orders");
+assert.equal(privateOrderList.status,403,"Order list must be admin-only");
+const invalidPagination=await get("/api/v1/orders?page=Infinity",true);
+assert.equal(invalidPagination.status,422,"Non-finite pagination must be rejected");
+const invalidPaymentFilter=await get("/api/v1/orders?payment_status=APPROVED",true);
+assert.equal(invalidPaymentFilter.status,422,"Invalid payment filter must be rejected");
 const unauthenticatedOrder=await get("/api/v1/orders/1");
 assert.equal(unauthenticatedOrder.status,403,"Private orders must reject anonymous access");
 const forbiddenPayment=await fetch(base+"/api/v1/orders/1",{method:"PATCH",
