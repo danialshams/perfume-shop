@@ -6,6 +6,7 @@ import type { FormInstance, UploadProps } from "antd";
 import { FileAudio, Trash2, UploadCloud } from "lucide-react";
 import { uploadProductVoice } from "@/lib/api";
 import { formatBytes } from "@/lib/utils";
+import {validateMediaMeta} from "@/lib/admin-media-validation";
 
 type VoiceUploaderProps = {
     form: FormInstance;
@@ -27,7 +28,9 @@ export default function VoiceUploader({
             setIsUploading(true);
 
             // گرفتن فایل واقعی از Antd
-            const actualFile = (file as any).originFileObj || file; // مهم
+            const actualFile = file as File;
+            const result=validateMediaMeta(actualFile,"voice");
+            if(!result.ok)throw Error(result.error);
 
             const uploaded = await uploadProductVoice(actualFile as File);
 
@@ -79,7 +82,7 @@ export default function VoiceUploader({
                                 accept=".mp3,.wav,.ogg,.oga,.m4a,.aac,.flac,.webm,.mp4,.mpeg,.mpga,.opus,.3gp,.amr,.aiff,.aif,.caf,.wma"
                                 maxCount={1}
                                 showUploadList={false}
-                                beforeUpload={(file) => validateBeforeUpload(file as File)}
+                                beforeUpload={(file) => {const v=validateMediaMeta(file,"voice");if(!v.ok){message.error(v.error);return Upload.LIST_IGNORE}return validateBeforeUpload(file as File)}}
                                 customRequest={customRequest}
                             >
                                 <Button
@@ -126,7 +129,7 @@ export default function VoiceUploader({
                             accept=".mp3,.wav,.ogg,.oga,.m4a,.aac,.flac,.webm,.mp4,.mpeg,.mpga,.opus,.3gp,.amr,.aiff,.aif,.caf,.wma"
                             maxCount={1}
                             showUploadList={false}
-                            beforeUpload={(file) => validateBeforeUpload(file as File)}
+                            beforeUpload={(file) => {const v=validateMediaMeta(file,"voice");if(!v.ok){message.error(v.error);return Upload.LIST_IGNORE}return validateBeforeUpload(file as File)}}
                             customRequest={customRequest}
                         >
                             <Button

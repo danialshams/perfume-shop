@@ -1,102 +1,20 @@
-import { NextRequest } from "next/server";
-import path from "path";
-import fs from "fs/promises";
-import { existsSync } from "fs";
-
-import { requireAdmin } from "@/server/middlewares/admin";
-import { errorResponse, successResponse } from "@/lib/response";
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-
-function sanitizeBaseName(fileName: string) {
-  const ext = path.extname(fileName);
-  const base = path.basename(fileName, ext);
-
-  return base
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9-_]/gi, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function getExtensionFromMimeType(mimeType: string) {
-  switch (mimeType) {
-    case "image/jpeg":
-    case "image/jpg":
-      return ".jpg";
-    case "image/png":
-      return ".png";
-    case "image/webp":
-      return ".webp";
-    default:
-      return "";
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    await requireAdmin(request);
-    if ((process.env.NODE_ENV === "production" || process.env.VERCEL === "1")) {
-      return errorResponse("آپلود تصویر تا اتصال فضای ذخیره‌سازی دائمی فعال نیست.", 503);
-    }
-
-    const formData = await request.formData();
-    const file = formData.get("file");
-
-    if (!file || !(file instanceof File)) {
-      return errorResponse("فایل تصویر ارسال نشده است", 400);
-    }
-
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return errorResponse("فرمت فایل مجاز نیست", 400, {
-        allowedTypes: ALLOWED_TYPES,
-      });
-    }
-
-    if (file.size > MAX_FILE_SIZE) {
-      return errorResponse("حجم فایل بیشتر از حد مجاز است", 400, {
-        maxFileSize: MAX_FILE_SIZE,
-      });
-    }
-
-    const extension = getExtensionFromMimeType(file.type);
-
-    if (!extension) {
-      return errorResponse("پسوند فایل قابل تشخیص نیست", 400);
-    }
-
-    const safeBaseName = sanitizeBaseName(file.name) || "product-image";
-    const fileName = `${Date.now()}-${safeBaseName}${extension}`;
-
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "products");
-    const filePath = path.join(uploadDir, fileName);
-
-    if (!existsSync(uploadDir)) {
-      await fs.mkdir(uploadDir, { recursive: true });
-    }
-
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    await fs.writeFile(filePath, buffer);
-
-    const fileUrl = `/uploads/products/${fileName}`;
-
-    return successResponse(
-      {
-        url: fileUrl,
-        file_name: fileName,
-        size: file.size,
-        mime_type: file.type,
-      },
-      "تصویر محصول با موفقیت آپلود شد",
-      201,
-    );
-  } catch (error: any) {
-    console.error("POST /api/v1/uploads/products error:", error);
-
-    return errorResponse("آپلود تصویر با خطا مواجه شد", 500);
-  }
+import {NextRequest} from "next/server";
+import {requireAdmin} from "@/server/middlewares/admin";
+import {successResponse,errorResponse} from "@/lib/response";
+import {saveMedia} from "@/server/storage/save-media";
+import {StorageNotConfiguredError} from "@/server/storage/s3-object";
+export const runtime="nodejs";
+export async function POST(request:NextRequest){
+ try{await requireAdmin(request)}catch{return errorResponse("دسترسی مدیر لازم است.",403)}
+ try{
+  const data=await request.formData(),file=data.get("file");
+  if(!(file instanceof File))return errorResponse("فایل ارسال نشده است.",400);
+  const saved=await saveMedia(file,"image");
+  if(!saved.ok)return errorResponse(saved.error,saved.status);
+  return successResponse(saved,"فایل ذخیره شد",201);
+ }catch(e){
+  if(e instanceof StorageNotConfiguredError)return errorResponse(e.message,503);
+  console.error("[ADMIN_UPLOAD]",e instanceof Error?e.name:"unknown");
+  return errorResponse("آپلود فایل ناموفق بود.",500);
+ }
 }

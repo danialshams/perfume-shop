@@ -10,6 +10,7 @@ import ProductBasicInfoFields from "./ProductBasicInfoFields";
 import ProductImagesList from "./ProductImagesList";
 import ProductVariantsList from "./ProductVariantsList";
 import VoiceUploader from "./VoiceUploader";
+import {validateMediaMeta} from "@/lib/admin-media-validation";
 
 type ProductType = "SINGLE" | "GROUPED";
 
@@ -91,36 +92,8 @@ export default function CreateProductDrawer({
         }));
     };
 
-    const validateBeforeUpload = (file: File) => {
-        const isValidType = [
-            "image/jpeg",
-            "image/png",
-            "image/webp",
-            "image/jpg",
-        ].includes(file.type);
-
-        const isValidSize = file.size <= 5 * 1024 * 1024;
-
-        if (!isValidType) {
-            throw new Error("فرمت فایل تصویر مجاز نیست");
-        }
-
-        if (!isValidSize) {
-            throw new Error("حجم تصویر بیشتر از حد مجاز است");
-        }
-
-        return true;
-    };
-
-    const validateVoiceBeforeUpload = (file: File) => {
-        const isValidSize = file.size <= 20 * 1024 * 1024;
-
-        if (!isValidSize) {
-            throw new Error("حجم فایل صوتی بیشتر از حد مجاز است");
-        }
-
-        return true;
-    };
+    const validateBeforeUpload=(file:File)=>{const x=validateMediaMeta(file,"image");if(!x.ok)throw Error(x.error);return true};
+    const validateVoiceBeforeUpload=(file:File)=>{const x=validateMediaMeta(file,"voice");if(!x.ok)throw Error(x.error);return true};
 
     const normalizeVariants = (variants: any[], type: ProductType) => {
         if (type === "SINGLE") {
