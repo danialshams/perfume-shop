@@ -1007,7 +1007,7 @@ export default function EditProductDrawer({
             title={title}
             open={open}
             onClose={handleClose}
-            width={920}
+            width="min(100vw, 920px)"
             destroyOnClose
             extra={
                 <Space>

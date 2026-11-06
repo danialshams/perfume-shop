@@ -25,7 +25,7 @@ export function validateMediaBytes(file:Meta,kind:Kind,b:Uint8Array):Verdict{
  if(b.length<12)return{ok:false,error:"فایل ناقص است."};
  const e=file.name.toLowerCase().split(".").pop();
  const ok=e==="jpg"||e==="jpeg"?b[0]===255&&b[1]===216&&b[2]===255:
- e==="png"?b[0]===137&&matches(b,1,"PNG")&&b[4]===13:
+ e==="png"?b[0]===137&&matches(b,1,"PNG")&&b[4]===13&&b[5]===10&&b[6]===26&&b[7]===10:
  e==="webp"?matches(b,0,"RIFF")&&matches(b,8,"WEBP"):
  e==="mp3"?matches(b,0,"ID3")||(b[0]===255&&(b[1]&0xe0)===0xe0):
  e==="wav"?matches(b,0,"RIFF")&&matches(b,8,"WAVE"):

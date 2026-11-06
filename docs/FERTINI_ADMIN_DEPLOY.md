@@ -1,0 +1,41 @@
+# FERTINI admin — readiness and safe deployment (2026-11-06)
+
+## What changed
+The protected admin uses Essential 2's editorial navigation and mobile bottom bar, retaining FERTINI's legacy MySQL APIs for orders, products, images, variants, and per-product voice. Added read-only database diagnostics, homepage content editing, and customer, coupon, brand, payment and review panels. Payment success records stay read-only: only a verified payment callback may settle orders.
+
+## Staging prerequisites (not applied automatically)
+1. Create an encrypted SQL backup of the actual MySQL/MariaDB database and archive all referenced product, category, slider and voice assets. Do NOT put customer data or password hashes in a public Git repository.
+2. Restore into an isolated staging database. Inspect the legacy dump and compare the live tables. The current audit (`database/MAISON_DB_AUDIT.md`) identifies `categories_old`, `categories_backup`, parallel stock columns and duplicated foreign keys. Do not remove these without reference checks and verified restore.
+3. Apply `database/migrations/001_products_publication_state.sql` only if needed, inspect the result, then apply `database/migrations/002_storefront_content.sql` to enable the homepage editor. Both should be staged/tested before production changes.
+4. Configure valid `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` and `DB_NAME` for Vercel Preview and Production. The safe read-only checker at `/admin/database` requires an ADMIN session. Environment variable names being present does not prove connection or credentials work.
+5. Review product, customer, coupon, payment, review and order workflows on sanitized staging data before changing any production records.
+
+## Durable images and voice
+Vercel Functions have a 4.5 MB request-body limit, so 5 MB images and 20 MB voice **must** use client-side direct-to-storage uploads. Set:
+
+```env
+S3_ENDPOINT=https://your-storage-api.example
+S3_BUCKET=private-or-public-media-bucket
+S3_REGION=us-east-1
+S3_ACCESS_KEY_ID=...
+S3_SECRET_ACCESS_KEY=...
+S3_PUBLIC_BASE_URL=https://your-public-media-cdn.example
+```
+
+Create the bucket and set CORS to permit authenticated site origins to issue PUT with `Content-Type`; allow the S3 API to GET objects from the backend for verification. A public media/CDN URL must serve the **validated** objects for storefront playback. Never expose S3 keys in `NEXT_PUBLIC_*`.
+
+Flow: admin-only start request -> short-lived signed PUT -> browser sends file directly to S3 -> admin-only complete request -> backend fetches object and verifies exact bytes/size/MIME -> product form stores the returned URL. Failed verifications are not written to product records. Set up cleanup of abandoned staging objects before live use.
+
+Accepted images: JPEG, PNG, WebP (max 5 MiB). Audio: MP3, WAV, OGG, M4A, AAC, FLAC, WebM (max 20 MiB). Client and server both validate metadata; the backend verifies file signatures. Full audio decoding and transcoding are not implemented.
+
+## Live notifications
+The SSE endpoint checks durable MySQL notification records roughly every eight seconds; the client reconnects and also polls. This supports independent serverless instances but is **near-real-time**, not push-instant. Live order/payment-event E2E verification still requires a connected staging database.
+
+## QA / release gate
+The GitHub Action runs static checks, TypeScript, production build, browser screenshots (public and authenticated admin), upload boundary tests and authenticated HTTP guard tests. The branch is isolated from `main` until CI is green and its staging database/storage are operational.
+
+## Known dependencies
+- Direct S3 upload cannot be tested end-to-end until real S3 credentials, CORS and a public URL exist.
+- MySQL mutations and cleanups cannot be validated live until the database is reachable with a staging dataset.
+- The homepage curated lists currently operate on FERTINI's demo fragrance catalog; actual database products are managed in the product panel. Unifying both catalogs requires database-backed storefront migration.
+- The visual content editor uses `storefront_content` and requires migration 002.

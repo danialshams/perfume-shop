@@ -79,7 +79,7 @@ export default function VoiceUploader({
 
                         <div className="mt-3 flex flex-wrap gap-2">
                             <Upload
-                                accept=".mp3,.wav,.ogg,.oga,.m4a,.aac,.flac,.webm,.mp4,.mpeg,.mpga,.opus,.3gp,.amr,.aiff,.aif,.caf,.wma"
+                                accept=".mp3,.wav,.ogg,.m4a,.aac,.flac,.webm"
                                 maxCount={1}
                                 showUploadList={false}
                                 beforeUpload={(file) => {const v=validateMediaMeta(file,"voice");if(!v.ok){message.error(v.error);return Upload.LIST_IGNORE}return validateBeforeUpload(file as File)}}
@@ -126,7 +126,7 @@ export default function VoiceUploader({
                         </div>
 
                         <Upload
-                            accept=".mp3,.wav,.ogg,.oga,.m4a,.aac,.flac,.webm,.mp4,.mpeg,.mpga,.opus,.3gp,.amr,.aiff,.aif,.caf,.wma"
+                            accept=".mp3,.wav,.ogg,.m4a,.aac,.flac,.webm"
                             maxCount={1}
                             showUploadList={false}
                             beforeUpload={(file) => {const v=validateMediaMeta(file,"voice");if(!v.ok){message.error(v.error);return Upload.LIST_IGNORE}return validateBeforeUpload(file as File)}}

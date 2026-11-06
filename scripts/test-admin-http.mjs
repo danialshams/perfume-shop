@@ -6,7 +6,7 @@ if(!secret)throw Error("Test JWT secret not configured");
 const token=jwt.sign({userId:1,role:"ADMIN",email:"ci-test@local.invalid"},secret,{expiresIn:"10m"});
 const authenticated={"Cookie":"admin_access_token="+token};
 async function get(path,auth=false){return fetch(base+path,{headers:auth?authenticated:{},redirect:"manual"})}
-for(const path of ["/api/v1/admin/records/customers","/api/v1/admin/content","/api/v1/admin/health","/api/v1/notifications/stream"]){
+for(const path of ["/api/v1/admin/records/customers","/api/v1/admin/content","/api/v1/admin/health","/api/v1/admin/media-assets","/api/v1/notifications/stream"]){
  const r=await get(path);
  assert.equal(r.status,403,"Unauthorized access allowed to "+path);
  await r.body?.cancel();
@@ -15,6 +15,14 @@ const invalidContent=await fetch(base+"/api/v1/admin/content",{method:"PUT",head
 assert.equal(invalidContent.status,422,"Malformed editorial content must be rejected");
 const invalidEdit=await fetch(base+"/api/v1/admin/records/reviews",{method:"PATCH",headers:{...authenticated,"content-type":"application/json"},body:JSON.stringify({id:0,status:"APPROVED"})});
 assert.equal(invalidEdit.status,422,"Nonpositive record ID must be rejected");
+const malformedMedia=await fetch(base+"/api/v1/admin/media-upload/start",{method:"POST",
+ headers:{...authenticated,"content-type":"application/json"},
+ body:JSON.stringify({kind:"voice",name:"voice.mp3",type:"audio/mpeg",size:25*1024*1024})});
+assert.equal(malformedMedia.status,422,"Voice preflight must reject files over 20MB");
+const missingStorage=await fetch(base+"/api/v1/admin/media-upload/start",{method:"POST",
+ headers:{...authenticated,"content-type":"application/json"},
+ body:JSON.stringify({kind:"voice",name:"voice.mp3",type:"audio/mpeg",size:1024})});
+assert.equal(missingStorage.status,503,"Unconfigured S3 must fail closed");
 const invalidCoupon=await fetch(base+"/api/v1/admin/records/coupons",{method:"POST",headers:{...authenticated,"content-type":"application/json"},body:JSON.stringify({code:"TEST",discount_type:"PERCENT",discount_value:120})});
 assert.equal(invalidCoupon.status,422,"Coupon percentages >100 must be rejected");
 async function upload(route,name,type,bytes,expected){

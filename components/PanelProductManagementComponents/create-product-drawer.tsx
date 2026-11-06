@@ -306,7 +306,7 @@ export default function CreateProductDrawer({
             open={open}
             onClose={onClose}
             title="ایجاد محصول"
-            width={1000}
+            width="min(100vw, 1000px)"
             destroyOnClose
             placement="left"
         >
