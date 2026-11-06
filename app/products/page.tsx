@@ -3,10 +3,10 @@ import { Suspense } from "react";
 import LuxuryProductsView from "@/components/HomeProductsPage/LuxuryProductsView";
 
 export const metadata: Metadata = {
-  title: "کالکشن عطرها | MAISON",
-  description: "گالری عطرهای MAISON؛ کشف رایحه‌های مختلف با فیلترها، معرفی کامل، تصاویر و مشخصات هر محصول.",
+  title: "کالکشن عطرها | FERTINI",
+  description: "گالری عطرهای FERTINI؛ کشف رایحه‌های مختلف با فیلترها، معرفی کامل، تصاویر و مشخصات هر محصول.",
   alternates: { canonical: "/products" },
-  openGraph: { type: "website", title: "کالکشن عطرها | MAISON", url: "/products", images: ["/maison/portrait.jpg"] },
+  openGraph: { type: "website", title: "کالکشن عطرها | FERTINI", url: "/products", images: ["/maison/portrait.jpg"] },
 };
 
 export default function ProductsPage() {

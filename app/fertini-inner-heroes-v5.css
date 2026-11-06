@@ -1,0 +1,28 @@
+/* Image-led headers for journal and catalog; restrained titles, no extra arrows. */
+.fertini-catalog-v5__hero{display:grid;grid-template-columns:1.1fr 1fr;direction:ltr;min-height:clamp(370px,39vw,650px);background:#e9ece7}
+.fertini-catalog-v5__image{position:relative;background:#cbd4cb;overflow:hidden}
+.fertini-catalog-v5__image img{object-fit:cover;object-position:center;filter:saturate(.74)}
+.fertini-catalog-v5__copy{padding:clamp(35px,6vw,110px);display:flex;flex-direction:column;justify-content:center;direction:rtl}
+.fertini-catalog-v5__copy h1{font-size:clamp(46px,5.5vw,85px);font-weight:300;line-height:1.4;letter-spacing:-.045em;margin:25px 0}
+.fertini-catalog-v5__copy p{font-size:13px;line-height:2.7;color:#8c958e;max-width:450px}
+.fertini-journal-v5{background:#f3f5f1}
+.fertini-journal-v5__hero{height:clamp(520px,65vw,820px);position:relative;isolation:isolate;background:#202b28;overflow:hidden}
+.fertini-journal-v5__hero>img{object-fit:cover;object-position:center;filter:saturate(.68) brightness(.73)}
+.fertini-journal-v5__hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 28%,rgba(12,20,16,.66) 100%);z-index:1}
+.fertini-journal-v5__hero-content{position:relative;z-index:2;height:100%;padding:clamp(38px,8vw,145px);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;direction:rtl;color:#f1f4ef}
+.fertini-journal-v5__hero-content>.maison-kicker{color:#cad6cb}
+.fertini-journal-v5__hero-content h1{font-size:clamp(66px,8vw,132px);font-weight:300;line-height:1.25;letter-spacing:-.055em;margin:30px 0}
+.fertini-journal-v5__hero-content p{font-size:13px;line-height:2.5;color:#d0d8d0}
+.fertini-journal-v5__body{padding-block:clamp(110px,13vw,200px) clamp(120px,13vw,210px)}
+.fertini-journal-v5__lead{max-width:730px;margin-bottom:clamp(50px,7vw,115px)}
+.fertini-journal-v5__lead>span{color:#97a399;font:12px "Cormorant Garamond",Georgia,serif;letter-spacing:.15em}
+.fertini-journal-v5__lead h2{font-size:clamp(39px,5.4vw,80px);font-weight:300;line-height:1.55;margin:25px 0}
+.fertini-journal-v5__lead p{font-size:13px;color:#869489;line-height:2.7}
+.fertini-journal-v5__article{display:block;color:inherit}
+.fertini-journal-v5__article>div{position:relative;aspect-ratio:16/9;background:#d7ded7;overflow:hidden}
+.fertini-journal-v5__article img{object-fit:cover;filter:saturate(.72);transition:transform 2s cubic-bezier(.19,1,.22,1)}
+.fertini-journal-v5__article:hover img{transform:scale(1.035)}
+.fertini-journal-v5__article>span{display:inline-flex;margin-top:25px;border-bottom:1px solid #637567;padding-bottom:10px;font-size:12px}
+.fertini-journal-v5__end{font:clamp(20px,4vw,55px) "Cormorant Garamond",Georgia,serif;letter-spacing:.09em;color:#afbcb0;text-align:center;padding-top:clamp(120px,14vw,215px)}
+@media(max-width:850px){.fertini-catalog-v5__hero{grid-template-columns:1fr}.fertini-catalog-v5__image{min-height:clamp(270px,42vw,430px)}.fertini-catalog-v5__copy{padding:50px 35px 75px}.fertini-journal-v5__hero{height:580px}}
+@media(max-width:600px){.fertini-catalog-v5__image{min-height:310px}.fertini-catalog-v5__copy{padding:42px 23px 60px}.fertini-catalog-v5__copy h1{font-size:48px}.fertini-journal-v5__hero{height:560px}.fertini-journal-v5__hero-content{padding:60px 27px}.fertini-journal-v5__hero-content h1{font-size:77px}.fertini-journal-v5__body{padding-block:90px 125px}.fertini-journal-v5__lead h2{font-size:44px}}

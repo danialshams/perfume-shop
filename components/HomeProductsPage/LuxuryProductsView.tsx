@@ -3,8 +3,9 @@
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import Image from "next/image";
 import Link from "next/link";
-import { FERTINI_DEMOS } from "@/lib/fertini-demo";
+import { FERTINI_DEMOS, FERTINI_FAMILIES } from "@/lib/fertini-demo";
 import { useMemo, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import type { SortOption } from "@/components/HomeProductsComponnents/MobileSortSheet";
 import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import ProductsFilterBar from "@/components/HomeProductsComponnents/ProductsFilterBar";
@@ -13,6 +14,10 @@ import { useProductsPageData } from "@/components/hooks/useProductsPageData";
 
 export default function LuxuryProductsView() {
   const [selectedSort, setSelectedSort] = useState<SortOption>("newest");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const familyFromUrl = searchParams.get("family");
+  const fallbackCategories = FERTINI_FAMILIES.map((family,index)=>({id:index+9001,name:family.name,slug:family.id,parent_ids:[] as number[],parent_names:[] as string[],has_children:false,is_active:true}));
   const {
     categories,
     activeParentId,
@@ -51,24 +56,40 @@ export default function LuxuryProductsView() {
     });
   }, [filteredProducts, selectedSort]);
 
+  const sampleMode=categories.length===0;
+  const sampleFamilyFromFilter=fallbackCategories.find(category=>category.id===activeParentId)?.slug;
+  const selectedSampleFamily=sampleFamilyFromFilter||familyFromUrl;
+  const currentFamily=FERTINI_FAMILIES.find(item=>item.id===selectedSampleFamily);
+  const sampleProducts=FERTINI_DEMOS.filter(item=>!selectedSampleFamily||item.family===selectedSampleFamily);
+  sampleProducts.sort((a,b)=>selectedSort==="lowest" ? a.variants[1].price-b.variants[1].price : selectedSort==="highest" ? b.variants[1].price-a.variants[1].price : selectedSort==="bestselling"?Number(b.collection==="bestseller")-Number(a.collection==="bestseller"):a.collection===b.collection?0:a.collection==="new"?-1:1);
+  const onSelectParent=(id:number|null)=>{
+    setActiveParentId(id);
+    if(sampleMode){
+      const slug=fallbackCategories.find(category=>category.id===id)?.slug;
+      router.replace(slug?"/products?family="+slug:"/products",{scroll:false});
+    }
+  };
   return <div className="ql-shop maison-catalog min-h-screen">
     <LuxuryNavbar />
     <main className="ql-shop-main" id="main-content">
-      <div className="ql-container ql-shop-heading">
-        <span className="ql-overline" lang="en" dir="ltr">FERTINI — ALL FRAGRANCES</span>
-        <h1>{activeScentFamily?.name || "کالکشن عطرها"}</h1>
-        <p>دنیایی از رایحه‌ها برای کشف‌کردن. بر اساس سلیقه‌تان جستجو کنید و جزئیات هر عطر را ببینید.</p>
-      </div>
+      <section className="fertini-catalog-v5__hero" aria-labelledby="fertini-catalog-title">
+        <div className="fertini-catalog-v5__image"><Image src="/maison/portrait.jpg" alt="چیدمان هنری بطری‌های عطر در نور نرم" fill priority sizes="(min-width:850px) 52vw,100vw"/></div>
+        <div className="fertini-catalog-v5__copy">
+          <span className="maison-kicker" dir="ltr" lang="en">FERTINI / THE FRAGRANCE COLLECTION</span>
+          <h1 id="fertini-catalog-title">{activeScentFamily?.name||currentFamily?.name||"گالری عطرها"}</h1>
+          <p>مجموعه‌ای از رایحه‌ها، برای یافتن آنچه به شما نزدیک‌تر است.</p>
+        </div>
+      </section>
       <div className="ql-container">
         <div className="ql-shop-filter">
           <ProductsFilterBar
-            categories={categories}
+            categories={sampleMode?fallbackCategories:categories}
             activeParentId={activeParentId}
             activeChildId={activeChildId}
-            setActiveParentId={setActiveParentId}
+            setActiveParentId={onSelectParent}
             setActiveChildId={setActiveChildId}
             loadingCategories={loadingCategories}
-            activeFilterLabel={activeScentFamily?.name ?? null}
+            activeFilterLabel={activeScentFamily?.name ?? currentFamily?.name ?? null}
             selectedSort={selectedSort}
             onSortChange={setSelectedSort}
           />
@@ -78,14 +99,14 @@ export default function LuxuryProductsView() {
             <section className="fertini-demo-shelf" aria-label="مجموعه عطرهای نمایشی">
               <div className="fertini-demo-shelf__heading">
                 <div><span className="maison-kicker" lang="en" dir="ltr">FERTINI / FRAGRANCE SAMPLES</span><h2>مجموعهٔ فرتینی</h2></div>
-                <p>{productsError ? "اتصال محصولات اصلی در این پیش‌نمایش برقرار نیست." : "هنوز محصول قابل‌فروشی ثبت نشده است."} رایحه‌های منتخب را کشف کنید.</p>
-                {productsError&&<button type="button" onClick={reloadProducts}>تلاش دوباره برای محصولات واقعی</button>}
+                <p>رایحه‌های منتخب فرتینی را کشف کنید.</p>
+                
               </div>
               <div className="fertini-demo-shelf__grid">
-                {[...FERTINI_DEMOS].sort((a,b)=>selectedSort==="lowest" ? a.variants[0].price-b.variants[0].price : selectedSort==="highest" ? b.variants[0].price-a.variants[0].price : 0).map(item=>
+                {sampleProducts.map(item=>
                   <Link key={item.id} className="fertini-demo-shelf__card" href={"/fragrance/"+item.id}>
                     <div className="fertini-demo-shelf__photo"><Image fill sizes="(min-width:900px) 30vw, 88vw" src={item.image} alt={item.name}/></div>
-                    <div className="fertini-demo-shelf__details"><span lang="en" dir="ltr">{item.subtitle}</span><h3>{item.name}</h3><p>از {item.variants[0].price.toLocaleString("fa-IR")} تومان</p></div>
+                    <div className="fertini-demo-shelf__details"><span lang="en" dir="ltr">{item.subtitle}</span><h3>{item.name}</h3><p>از {item.variants[1].price.toLocaleString("fa-IR")} تومان</p></div>
                   </Link>)}
               </div>
             </section>
