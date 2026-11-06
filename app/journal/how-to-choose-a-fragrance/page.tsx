@@ -12,7 +12,7 @@ export default function FragranceGuide() {
   return <MaisonPage kicker="THE FERTINI JOURNAL / FIELD NOTE 001" title="چگونه عطر مناسب خود را پیدا کنیم؟"
     lead="پیش از نام برند یا شکل بطری، به حسی فکر کنید که قرار است با شما بماند.">
     <figure className="maison-article__image">
-      <Image fill priority sizes="(min-width: 900px) 80vw, 100vw" src="/maison/portrait.jpg" alt="چند شیشه عطر در نور ملایم" />
+      <Image fill priority sizes="(min-width: 900px) 80vw, 100vw" src="/fertini/hero-02.svg" alt="چند شیشه عطر در نور ملایم" />
       <figcaption>THE ART OF CHOOSING — FERTINI JOURNAL</figcaption>
     </figure>
     <div className="maison-article__chapters">

@@ -73,7 +73,7 @@ export default function LuxuryProductsView() {
     <LuxuryNavbar />
     <main className="ql-shop-main" id="main-content">
       <section className="fertini-catalog-v5__hero" aria-labelledby="fertini-catalog-title">
-        <div className="fertini-catalog-v5__image"><Image src="/maison/portrait.jpg" alt="چیدمان هنری بطری‌های عطر در نور نرم" fill priority sizes="(min-width:850px) 52vw,100vw"/></div>
+        <div className="fertini-catalog-v5__image"><Image src="/fertini/hero-02.svg" alt="چیدمان هنری بطری‌های عطر در نور نرم" fill priority sizes="(min-width:850px) 52vw,100vw"/></div>
         <div className="fertini-catalog-v5__copy">
           <span className="maison-kicker" dir="ltr" lang="en">FERTINI / THE FRAGRANCE COLLECTION</span>
           <h1 id="fertini-catalog-title">{activeScentFamily?.name||currentFamily?.name||"گالری عطرها"}</h1>

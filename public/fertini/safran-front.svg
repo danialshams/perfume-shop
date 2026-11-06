@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1125" viewBox="0 0 900 1125" role="img" aria-label="Fertini Safran original fragrance concept">
+<defs>
+ <linearGradient id="bga120" x1="0" y1="0" x2=".87" y2="1"><stop stop-color="#624431"/><stop offset=".45" stop-color="#ac7454"/><stop offset="1" stop-color="#624431"/></linearGradient>
+ <radialGradient id="mista120"><stop stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+ <linearGradient id="glassa120" x1="0" y1="0" x2="1" y2=".09"><stop stop-color="#fff" stop-opacity=".43"/><stop offset=".11" stop-color="#fff" stop-opacity=".1"/><stop offset=".3" stop-color="#c2c5c2" stop-opacity=".11"/><stop offset=".58" stop-color="#fff" stop-opacity=".06"/><stop offset=".83" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#fff" stop-opacity=".7"/></linearGradient>
+ <linearGradient id="juicea120" x1="0" y1="0" x2=".2" y2="1"><stop stop-color="#e6b87e" stop-opacity=".5"/><stop offset=".3" stop-color="#e6b87e" stop-opacity=".72"/><stop offset="1" stop-color="#2e211b" stop-opacity=".9"/></linearGradient>
+ <linearGradient id="capa120" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#080e0d"/><stop offset=".16" stop-color="#2c302d"/><stop offset=".44" stop-color="#101413"/><stop offset=".67" stop-color="#444746"/><stop offset=".83" stop-color="#1b1b1b"/><stop offset="1" stop-color="#070a09"/></linearGradient>
+ <linearGradient id="labela120" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f9f5eb"/><stop offset="1" stop-color="#d8d1c4"/></linearGradient>
+ <filter id="blura120"><feGaussianBlur stdDeviation="40"/></filter>
+ <filter id="softa120"><feGaussianBlur stdDeviation="15"/></filter>
+ <filter id="graina120"><feTurbulence type="fractalNoise" baseFrequency=".38" numOctaves="3" seed="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+</defs>
+<rect width="900" height="1125" fill="url(#bga120)"/>
+<ellipse cx="670" cy="190" rx="470" ry="420" fill="url(#mista120)" opacity=".62" filter="url(#blura120)"/>
+<path d="M0 890 Q210 844 420 868 T900 838 V1125 H0Z" fill="#2e211b" opacity=".55"/>
+<path d="M-70 330 Q130 200 340 70" stroke="#fff" stroke-width="90" stroke-opacity=".04" fill="none" filter="url(#blura120)"/>
+<g transform=""><g>
+ <ellipse cx="450" cy="880" rx="290" ry="72" fill="#050706" opacity=".58" filter="url(#softa120)"/>
+ <g transform="">
+  <path d="M353 210 L547 210 L557 332 L343 332Z" fill="url(#capa120)" stroke="#a9aaa3" stroke-opacity=".48" stroke-width="3"/>
+  <rect x="352" y="220" width="196" height="100" rx="8" fill="url(#capa120)"/>
+  <path d="M358 239 V294" stroke="#fff" stroke-opacity=".42" stroke-width="7"/>
+  <path d="M524 226 V308" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+  <rect x="363" y="314" width="174" height="32" rx="5" fill="#aeaba0" opacity=".65"/>
+  <rect x="246" y="342" width="408" height="540" rx="46" fill="#bfc7bf" fill-opacity=".2" stroke="#fff" stroke-opacity=".52" stroke-width="7"/>
+  <rect x="262" y="476" width="376" height="382" rx="29" fill="url(#juicea120)" opacity=".85"/>
+  <rect x="246" y="342" width="408" height="540" rx="46" fill="url(#glassa120)" stroke="#fff" stroke-opacity=".32" stroke-width="4"/>
+  <path d="M280 393 Q270 620 278 794" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="12" stroke-linecap="round"/>
+  <path d="M614 388 Q627 590 615 820" fill="none" stroke="#fff" stroke-opacity=".43" stroke-width="10" stroke-linecap="round"/>
+  <path d="M310 364 H594" stroke="#fff" stroke-opacity=".4" stroke-width="6" stroke-linecap="round"/>
+  <path d="M289 849 Q451 862 605 849" stroke="#fff" stroke-opacity=".45" stroke-width="9" fill="none"/>
+  <rect x="307" y="555" width="286" height="195" rx="1" fill="url(#labela120)" stroke="#e8e4d6" stroke-width="2"/>
+  <rect x="319" y="567" width="262" height="171" fill="none" stroke="#9f9d91" stroke-opacity=".48" stroke-width="1"/>
+  <text x="450" y="613" fill="#31362f" font-family="Georgia,serif" font-size="26" letter-spacing="7" text-anchor="middle">FERTINI</text>
+  <path d="M374 634 H526" stroke="#81877b" stroke-width="1"/>
+  <text x="450" y="674" fill="#4b5047" font-family="Georgia,serif" font-size="26" letter-spacing="3" text-anchor="middle">SAFRAN</text>
+  <text x="450" y="707" fill="#777c71" font-family="Georgia,serif" font-size="12" letter-spacing="4" text-anchor="middle">EAU DE PARFUM</text>
+  <text x="450" y="730" fill="#747b6f" font-family="Georgia,serif" font-size="9" letter-spacing="2" text-anchor="middle">50 ML</text>
+ </g>
+</g></g>
+<rect width="900" height="1125" fill="#fff" filter="url(#graina120)" opacity=".038"/>
+</svg>

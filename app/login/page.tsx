@@ -723,7 +723,7 @@ function RegisterView() {
                     <div className="maison-login__layout">
                         <figure className="maison-login__image">
                             <Image fill priority sizes="(min-width: 900px) 48vw, 100vw"
-                                src="/maison/portrait.jpg" alt="شیشه عطر در ترکیب‌بندی هنری"
+                                src="/fertini/iris-front.svg" alt="شیشه عطر در ترکیب‌بندی هنری"
                                 className="object-cover"/>
                             <figcaption dir="ltr" lang="en">A PERSONAL SIGNATURE — FERTINI</figcaption>
                         </figure>

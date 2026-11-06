@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website", locale: "fa_IR", siteName: "FERTINI", title: "FERTINI | گالری عطر و رایحه",
     description: "دنیای عطرها را با نگاه یک گالری سینمایی کشف کنید.",
-    url: "/", images: [{ url: "/maison/hero.jpg", alt: "گالری عطر FERTINI" }],
+    url: "/", images: [{ url: "/fertini/hero-01.svg", alt: "گالری عطر FERTINI" }],
   },
   twitter: { card: "summary_large_image", title: "FERTINI | گالری عطر" },
 };

@@ -7,9 +7,9 @@ import { useEffect, useRef, useState } from "react";
 import { FERTINI_DEMOS, FERTINI_FAMILIES, type FertiniDemo } from "@/lib/fertini-demo";
 
 const slides = [
-  { photo:"/maison/hero.jpg",alt:"عطری با نورپردازی سینمایی در فضای تیره",kicker:"FERTINI / THE FRAGRANCE HOUSE",
+  { photo:"/fertini/hero-01.svg",alt:"عطری با نورپردازی سینمایی در فضای تیره",kicker:"FERTINI / THE FRAGRANCE HOUSE",
     title:<>رایحه،<br/>شکل دیگری<br/>از <em>حضور.</em></>,body:"انتخابی بی‌شتاب، برای خاطره‌هایی که می‌مانند." },
-  { photo:"/maison/dark.jpg",alt:"شیشه عطر در سایه‌های عمیق و نور نرم",kicker:"FERTINI / AN INVISIBLE SIGNATURE",
+  { photo:"/fertini/hero-02.svg",alt:"شیشه عطر در سایه‌های عمیق و نور نرم",kicker:"FERTINI / AN INVISIBLE SIGNATURE",
     title:<>زیبایی،<br/>در <em>سکوت</em><br/>ماندگار است.</>,body:"جایی برای کشف امضای شخصی در جهان رایحه." },
 ] as const;
 

@@ -54,7 +54,7 @@ export default function AccountGuest({serviceUnavailable=false}:{serviceUnavaila
   <LuxuryNavbar/>
   <main className="fertini-account-gateway__layout" id="main-content">
     <figure className="fertini-account-gateway__picture">
-      <Image fill priority src="/maison/portrait.jpg" sizes="(min-width:900px) 48vw, 100vw" alt="فضای آرام و هنری رایحه‌های فرتینی"/>
+      <Image fill priority src="/fertini/iris-front.svg" sizes="(min-width:900px) 48vw, 100vw" alt="فضای آرام و هنری رایحه‌های فرتینی"/>
       <figcaption lang="en" dir="ltr">FERTINI / A PERSONAL SIGNATURE</figcaption>
     </figure>
     <section className="fertini-account-gateway__body" dir="rtl">
