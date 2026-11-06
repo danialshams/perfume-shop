@@ -29,12 +29,12 @@ export default function FertiniEditorialMotion(){
   let sequenceIndex=0,scanFrame=0,scrollFrame=0;
   const visible=(el:Element)=>{
    const r=el.getBoundingClientRect();
-   return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight*.85;
+   return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight*.85&&r.right>0&&r.left<innerWidth*.94;
   };
   const passed=(el:Element)=>el.getBoundingClientRect().bottom< -innerHeight*.15;
   const warming=new IntersectionObserver(es=>{
    es.forEach(e=>{if(!e.isIntersecting)return;items.find(x=>x.element===e.target)?.prepare();warming.unobserve(e.target);});
-  },{rootMargin:"0px 0px 1300px 0px",threshold:0});
+  },{rootMargin:"500px 700px 1300px 700px",threshold:0});
   const entering=new IntersectionObserver(es=>{
    es.forEach(e=>{if(!e.isIntersecting)return;const x=items.find(x=>x.element===e.target);x?.prepare();x?.play();});
   },{rootMargin:"0px 0px -15% 0px",threshold:0});

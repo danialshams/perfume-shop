@@ -173,6 +173,54 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
 }
 
 
+async function validateCinematicPhotoReveal(){
+ const {ws,send}=await open("about:blank");
+ const photoSelector=".fertini-v5-best__grid [data-fertini-photo]";
+ try{
+  await send("Page.enable");
+  await send("Runtime.enable");
+  await send("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true,screenWidth:390,screenHeight:844});
+  await send("Page.navigate",{url:"http://127.0.0.1:3100/"});
+  await until(()=>evaluate(send,'document.readyState==="complete" && !!document.querySelector('+JSON.stringify(photoSelector)+')'),38000);
+  await until(()=>evaluate(send,'!document.querySelector(".maison-intro")'),10000);
+  await evaluate(send,'(()=>{const f=document.querySelector('+JSON.stringify(photoSelector)+');window.scrollTo({top:Math.max(0,scrollY+f.getBoundingClientRect().top-innerHeight*.42),behavior:"instant"});return true})()');
+  await until(()=>evaluate(send,'document.querySelector('+JSON.stringify(photoSelector)+')?.dataset.photoRevealState==="playing"'),9500);
+  const first=await evaluate(send,'Number(document.querySelector('+JSON.stringify(photoSelector)+')?.dataset.photoRevealProgress)');
+  await sleep(330);
+  const second=await evaluate(send,'Number(document.querySelector('+JSON.stringify(photoSelector)+')?.dataset.photoRevealProgress)');
+  if(!(second>first && second<1.001))throw Error("Cinematic clip did not advance smoothly "+JSON.stringify({first,second}));
+  await until(()=>evaluate(send,'document.querySelector('+JSON.stringify(photoSelector)+')?.dataset.photoRevealState==="complete"'),7600);
+  const finished=await evaluate(send,`(()=>{
+    const f=document.querySelector(".fertini-v5-best__grid [data-fertini-photo]");
+    const img=f?.querySelector("img");
+    return {complete:f?.dataset.photoRevealState==="complete",clip:getComputedStyle(f).clipPath,
+      scale:img?new DOMMatrixReadOnly(getComputedStyle(img).transform).a:null};
+  })()`);
+  if(!finished.complete||finished.clip!=="none"||Math.abs(finished.scale-1)>.009)throw Error("Photo did not settle to its final still frame "+JSON.stringify(finished));
+  await evaluate(send,'window.scrollTo({top:0,behavior:"instant"})');
+  await sleep(500);
+  const returned=await evaluate(send,'(()=>{const f=document.querySelector(".fertini-v5-best__grid [data-fertini-photo]");return {state:f?.dataset.photoRevealState,clip:getComputedStyle(f).clipPath};})()');
+  if(returned.state!=="complete"||returned.clip!=="none")throw Error("Photo restarted after scrolling back "+JSON.stringify(returned));
+  const bars=await evaluate(send,`(()=>{
+    const root=document.querySelector(".fertini-header-sound--mobile .fertini-sound-equalizer");
+    const items=[...(root?.querySelectorAll("i")||[])];
+    const middle=items[2]?.getBoundingClientRect(),container=root?.getBoundingClientRect();
+    return {widths:items.map(i=>i.getBoundingClientRect().width),
+      center:middle&&container?Math.abs((middle.left+middle.right-container.left-container.right)/2):999};
+  })()`);
+  if(bars.widths.length!==5||bars.widths.some(w=>Math.abs(w-2)>.1)||bars.center>1.05)
+   throw Error("Header waveform bars are not uniform and centered "+JSON.stringify(bars));
+  const progress=await evaluate(send,`(()=>{
+    document.querySelector(".fertini-hero__controls button[aria-label^='نمایش اسلاید']")?.click();
+    return Number(document.querySelector(".fertini-hero__progress > span")?.style.transform.match(/scaleX\\(([\\d.]+)\\)/)?.[1]||0);
+  })()`);
+  await sleep(400);
+  const advanced=await evaluate(send,'Number(document.querySelector(".fertini-hero__progress > span")?.style.transform.match(/scaleX\\(([\\d.]+)\\)/)?.[1]||0)');
+  if(!(advanced>progress && advanced<1))throw Error("Hero progress not synchronized with active slideshow "+JSON.stringify({progress,advanced}));
+  process.stdout.write("Essential 2 reveal progression, settled image, return-scroll, five-bar center and hero timer verified.\\n");
+ }finally{ws.close()}
+}
+
 async function validateStorefrontInteractions(){
  const {ws,send}=await open("about:blank");
  const navigate=async(path)=>{
@@ -237,6 +285,7 @@ try{
  await mkdir("artifacts",{recursive:true});
  await bootChrome();
  await until(async()=>{const r=await fetch("http://127.0.0.1:3100/");return r.ok},15000);
+ await validateCinematicPhotoReveal();
  await pageScreenshot({name:"home-desktop-full",url:"http://127.0.0.1:3100/",width:1440,height:900,mobile:false,assertHome:true});
  await pageScreenshot({name:"home-mobile-full",url:"http://127.0.0.1:3100/",width:390,height:844,mobile:true,assertHome:true});
  await pageScreenshot({name:"products-desktop-full",url:"http://127.0.0.1:3100/products",width:1440,height:900,mobile:false,assertHome:false});
