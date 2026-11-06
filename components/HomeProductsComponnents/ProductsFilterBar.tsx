@@ -35,7 +35,7 @@ export default function ProductsFilterBar({
 }: Props) {
   const [panel, setPanel] = useState<"categories" | "sort" | null>(null);
   const [closing, setClosing] = useState(false);
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
   const [search, setSearch] = useState("");
   const firstFocusRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
