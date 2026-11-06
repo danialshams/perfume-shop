@@ -55,7 +55,7 @@ const orderStatusLabelMap: Record<Order["status"], string> = {
     CANCELLED: "لغو شده",
 };
 
-const PENDING_TONE = "#B58A3A"; // امبر ملایم هم‌خانوادهٔ طیف رمز
+const PENDING_TONE = "#B58A3A"; // امبر ملایم هم‌خانواده طیف رمز
 
 function getOrderStatusMeta(
     status: Order["status"],
@@ -324,7 +324,7 @@ export default function OrdersSection() {
                                         </span>
                                     </div>
 
-                                    {/* دکمهٔ جزئیات */}
+                                    {/* دکمه جزئیات */}
                                     <button
                                         type="button"
                                         onClick={() => toggleExpand(order.id)}

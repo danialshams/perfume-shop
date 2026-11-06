@@ -98,7 +98,7 @@ const persianArabicDigitsMap: Record<string, string> = {
 };
 
 const mobileRegex = /^09\d{9}$/;
-/** تلفن ثابت: فقط شروع با ۰ و مجموعاً ۱۱ رقم — بدون محدودیت کد شهر */
+/** تلفن ثابت: فقط شروع با ۰ و مجموعا ۱۱ رقم — بدون محدودیت کد شهر */
 const landlineRegex = /^0\d{10}$/;
 const postalCodeRegex = /^\d{10}$/;
 const nameRegex = /^[\u0600-\u06FFa-zA-Z\s‌-]+$/;
@@ -304,7 +304,7 @@ function validateRegisterForm(form: RegisterForm): RegisterErrors {
 
     // اختیاری
     if (form.postal_code.trim() && !postalCodeRegex.test(form.postal_code.trim())) {
-        errors.postal_code = "کد پستی باید دقیقاً ۱۰ رقم باشد";
+        errors.postal_code = "کد پستی باید دقیقا ۱۰ رقم باشد";
     }
 
     // اختیاری — بدون وابستگی به کد شهر
@@ -319,7 +319,7 @@ function validateRegisterForm(form: RegisterForm): RegisterErrors {
 /*  UI primitives                                                      */
 /* ------------------------------------------------------------------ */
 
-/** سکشن: خط مو در بالا، سپس شمارهٔ ریز و عنوان */
+/** سکشن: خط مو در بالا، سپس شماره ریز و عنوان */
 function Section({
     index,
     title,
@@ -425,8 +425,8 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 }
 
 /**
- * Field: پوستهٔ هر ورودی.
- * خطا و شمارنده همیشه مستقیماً زیر همان ورودی رندر می‌شوند.
+ * Field: پوسته هر ورودی.
+ * خطا و شمارنده همیشه مستقیما زیر همان ورودی رندر می‌شوند.
  */
 function Field({
     width = "w-full",
@@ -481,7 +481,7 @@ function Field({
     );
 }
 
-/** کلاس پایهٔ فیلدها */
+/** کلاس پایه فیلدها */
 function fieldClass(opts: {
     hasError?: boolean;
     valid?: boolean;
@@ -500,7 +500,7 @@ function fieldClass(opts: {
     ].join(" ");
 }
 
-/** دکمهٔ نمایش/پنهان — دقیقاً روی خط انتهایی فیلد */
+/** دکمه نمایش/پنهان — دقیقا روی خط انتهایی فیلد */
 function ToggleReveal({
     shown,
     onToggle,
@@ -553,7 +553,7 @@ function RegisterView() {
 
     const addressRef = useRef<HTMLTextAreaElement | null>(null);
 
-    /** ارتفاع نشانی دقیقاً به اندازهٔ محتوا */
+    /** ارتفاع نشانی دقیقا به اندازه محتوا */
     useEffect(() => {
         const el = addressRef.current;
         if (!el) return;
@@ -634,7 +634,7 @@ function RegisterView() {
         );
 
         if (Object.keys(errors).length > 0) {
-            setError("لطفاً موارد مشخص‌شده را اصلاح کنید.");
+            setError("لطفا موارد مشخص‌شده را اصلاح کنید.");
             return;
         }
 
@@ -730,9 +730,9 @@ function RegisterView() {
                         <section className="maison-login__content" aria-labelledby="maison-login-heading">
                             <span className="maison-kicker" dir="ltr" lang="en">MEMBERS / FERTINI</span>
                             <h1 id="maison-login-heading">بازگشت به<br/><em>گالری شخصی.</em></h1>
-                            <p>برای مشاهدهٔ انتخاب‌ها، اطلاعات حساب و سفارش‌های خود وارد شوید.</p>
+                            <p>برای مشاهده انتخاب‌ها، اطلاعات حساب و سفارش‌های خود وارد شوید.</p>
                             <form onSubmit={handleLogin} className="maison-login__form" noValidate>
-                                <label htmlFor="maison-login-phone">شمارهٔ همراه</label>
+                                <label htmlFor="maison-login-phone">شماره همراه</label>
                                 <input id="maison-login-phone" name="mobile" type="tel"
                                     inputMode="numeric" autoComplete="tel" dir="ltr"
                                     placeholder="09xxxxxxxxx" maxLength={11} required
@@ -818,7 +818,7 @@ function RegisterView() {
                             ایجاد حساب
                         </h1>
                         <button type="button" onClick={() => setMode("login")} className="maison-register__back">
-                            قبلاً ثبت‌نام کرده‌اید؟ ورود به حساب ←
+                            قبلا ثبت‌نام کرده‌اید؟ ورود به حساب ←
                         </button>
                     </header>
 

@@ -123,7 +123,7 @@ export default function ProfileSection({ initialData }: ProfileSectionProps) {
 
     /* ── Effects ────────────────────────────────────────────── */
 
-    /** ارتفاع نشانی دقیقاً به اندازهٔ محتوا */
+    /** ارتفاع نشانی دقیقا به اندازه محتوا */
     useEffect(() => {
         const el = addressRef.current;
         if (!el) return;
@@ -268,7 +268,7 @@ export default function ProfileSection({ initialData }: ProfileSectionProps) {
         );
 
         if (Object.keys(errors).length > 0) {
-            showToast("لطفاً موارد مشخص‌شده را اصلاح کنید", "error");
+            showToast("لطفا موارد مشخص‌شده را اصلاح کنید", "error");
             return;
         }
 
@@ -329,7 +329,7 @@ export default function ProfileSection({ initialData }: ProfileSectionProps) {
         });
 
         if (Object.keys(errors).length > 0) {
-            showToast("لطفاً موارد مشخص‌شده را اصلاح کنید", "error");
+            showToast("لطفا موارد مشخص‌شده را اصلاح کنید", "error");
             return;
         }
 
