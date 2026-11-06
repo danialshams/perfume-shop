@@ -39,7 +39,9 @@ export function proxy(request: NextRequest) {
   const isAdminLoginRoute =
     pathname === "/admin" || pathname === "/admin/login";
 
-  const protectedUserRoutes = ["/account", "/complete-profile"];
+  // The /account route presents an in-page login/register gateway to guests.
+  // Only flows that require a logged-in customer must be gated here.
+  const protectedUserRoutes = ["/complete-profile"];
   const isProtectedUserRoute = protectedUserRoutes.some((route) =>
     pathname.startsWith(route),
   );
@@ -134,7 +136,6 @@ export const config = {
   matcher: [
     "/admin/:path*",
     "/auth",
-    "/account/:path*",
     "/complete-profile",
   ],
 };
