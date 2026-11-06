@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: publicSite
       ? [{ userAgent: "*", allow: "/", disallow: [
         "/admin", "/account", "/checkout", "/cart", "/api", "/payment",
-        "/sandbox", "/login", "/demo",
+        "/sandbox", "/login", "/demo", "/fragrance",
       ] }]
       : [{ userAgent: "*", disallow: "/" }],
     sitemap: publicSite ? base.replace(/\/$/, "") + "/sitemap.xml" : undefined,

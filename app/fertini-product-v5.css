@@ -1,0 +1,66 @@
+/* FERTINI - product detail and restrained editorial audio. */
+.fertini-fragrance{min-height:100dvh;color:#29352c;background:#f4f6f2}
+.fertini-fragrance__main{padding:24px 0 clamp(115px,14vw,220px)}
+.fertini-fragrance__breadcrumb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:#909c92;font-size:11px;padding:22px 0 48px}
+.fertini-fragrance__layout{display:grid;grid-template-columns:1.12fr 1fr;gap:clamp(45px,7.5vw,140px);align-items:start}
+.fertini-fragrance__large{display:block;position:relative;width:100%;aspect-ratio:4/5;background:#e1e7df;border:0;overflow:hidden}
+.fertini-fragrance__large img{object-fit:cover;object-position:center;filter:saturate(.73);transition:transform 1.2s cubic-bezier(.19,1,.22,1)}
+.fertini-fragrance__large:hover img{transform:scale(1.04)}
+.fertini-fragrance__thumbs{display:flex;gap:12px;margin-top:18px}
+.fertini-fragrance__thumbs>button{position:relative;width:84px;aspect-ratio:4/5;background:#e3e8e2;border:1px solid transparent;overflow:hidden}
+.fertini-fragrance__thumbs>button.is-active{border-color:#5a6a5d}
+.fertini-fragrance__thumbs img{object-fit:cover;filter:saturate(.78)}
+.fertini-fragrance__details{padding-top:clamp(22px,4vw,65px)}
+.fertini-fragrance__details>h1{font:350 clamp(53px,6vw,91px)/1.15 "Cormorant Garamond",Georgia,serif;margin:29px 0}
+.fertini-fragrance__description{font-size:14px;color:#728176;font-weight:350;line-height:2.8;max-width:570px}
+.fertini-fragrance__accords{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0 47px}
+.fertini-fragrance__accords span{font-size:11px;color:#859389;background:#e8ede8;padding:7px 13px}
+.fertini-fragrance__variants h2{font-size:13px;font-weight:350;margin-bottom:15px}
+.fertini-fragrance__variants>div{display:flex;gap:9px;flex-wrap:wrap}
+.fertini-fragrance__variants button{background:transparent;border:1px solid #c4cfc4;padding:13px 18px;min-width:85px;font-size:12px;transition:background .3s}
+.fertini-fragrance__variants button.is-active{border-color:#576a58;background:#e7ede6}
+.fertini-fragrance__price{display:flex;flex-direction:column;gap:10px;margin:38px 0 28px}
+.fertini-fragrance__price strong{font-size:26px;font-weight:350}
+.fertini-fragrance__price span{font-size:12px;color:#8f9b90}
+.fertini-fragrance__buy{background:#334539;color:#fff;min-height:62px;width:100%;font-size:13px;transition:background .3s}
+.fertini-fragrance__buy:hover{background:#4a5b4f}
+.fertini-fragrance__buy:disabled{opacity:.35}
+.fertini-fragrance__notice{display:flex;align-items:center;gap:20px;flex-wrap:wrap;font-size:12px;color:#4b6d53;padding:17px 0}
+.fertini-fragrance__notice a{border-bottom:1px solid #4b6d53;padding-bottom:4px}
+.fertini-voice-v5{margin-top:64px;padding:26px 0 19px;border-top:1px solid rgba(44,60,47,.15);color:#334339}
+.fertini-voice-v5__top{display:flex;justify-content:space-between;align-items:center;gap:20px}
+.fertini-voice-v5__top>div>span{font:11px "Cormorant Garamond",Georgia,serif;letter-spacing:.15em;color:#8d9b8e}
+.fertini-voice-v5__top h2{font-size:22px;font-weight:350;line-height:1.6;margin-top:9px}
+.fertini-voice-v5__play{display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:50%;background:#364b3c;color:white;transition:background .3s}
+.fertini-voice-v5__play:hover{background:#637d68}
+.fertini-voice-v5__wave{height:52px;display:flex;align-items:center;justify-content:space-between;gap:3px;margin:27px 0 14px;color:#859d8c}
+.fertini-voice-v5__wave span{display:block;flex:1;max-width:3px;min-height:4px;background:currentColor;border-radius:4px;transition:height .5s ease,opacity .35s}
+.fertini-voice-v5__wave.is-playing span:nth-child(3n){animation:fertini-audio-bar .95s ease-in-out infinite alternate}
+.fertini-voice-v5__wave.is-playing span:nth-child(4n){animation:fertini-audio-bar 1.2s ease-in-out infinite alternate-reverse}
+@keyframes fertini-audio-bar{to{transform:scaleY(.62)}}
+.fertini-voice-v5__bottom{display:flex;align-items:center;gap:17px;color:#92a095;font-size:11px}
+.fertini-voice-v5__bottom input{flex:1;accent-color:#526a57;height:2px}
+.fertini-voice-v5__bottom>button{margin-inline-start:auto;padding:8px 0 8px 10px;color:#536658}
+.fertini-voice-v5__error{margin-top:13px;color:#a65f5f;font-size:12px}
+.fertini-fragrance__pyramid{padding-top:clamp(120px,14vw,220px)}
+.fertini-fragrance__pyramid h2{font-size:clamp(40px,5vw,76px);font-weight:300;line-height:1.6;margin:27px 0 57px}
+.fertini-fragrance__pyramid>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(22px,4vw,60px)}
+.fertini-fragrance__pyramid article{border-top:1px solid rgba(45,63,48,.15);padding-top:25px}
+.fertini-fragrance__pyramid article>span{font:24px "Cormorant Garamond",Georgia,serif;color:#b2bcb1}
+.fertini-fragrance__pyramid h3{font-size:19px;font-weight:350;margin:18px 0}
+.fertini-fragrance__pyramid article p{font-size:13px;line-height:2.5;color:#88988b}
+.fertini-fragrance__related{padding-top:clamp(110px,13vw,190px)}
+.fertini-fragrance__related h2{font-size:clamp(34px,4vw,54px);font-weight:300;margin-bottom:45px}
+.fertini-fragrance__related>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(15px,3vw,40px)}
+.fertini-fragrance__related a>div{position:relative;aspect-ratio:4/5;background:#e5ebe2;overflow:hidden}
+.fertini-fragrance__related a img{object-fit:cover;filter:saturate(.75);transition:transform 1.2s}
+.fertini-fragrance__related a:hover img{transform:scale(1.05)}
+.fertini-fragrance__related a>span{display:block;margin-top:19px;font:26px "Cormorant Garamond",Georgia,serif}
+.fertini-fragrance__lightbox{position:fixed;inset:0;z-index:200;background:rgba(16,24,19,.95);display:grid;place-items:center}
+.fertini-fragrance__lightbox>button{position:absolute;z-index:2;color:white;width:48px;height:48px;display:grid;place-items:center}
+.fertini-fragrance__lb-close{top:23px;right:23px}.fertini-fragrance__lb-prev{right:18px;top:50%}.fertini-fragrance__lb-next{left:18px;top:50%}
+.fertini-fragrance__lb-image{position:absolute;inset:6%;pointer-events:none}
+.fertini-fragrance__lb-image img{object-fit:contain}
+@media(max-width:900px){.fertini-fragrance__layout{grid-template-columns:1fr;gap:33px}.fertini-fragrance__details{padding-top:15px}}
+@media(max-width:600px){.fertini-fragrance__main{padding-bottom:100px}.fertini-fragrance__breadcrumb{padding:10px 0 24px}.fertini-fragrance__details h1{font-size:57px}.fertini-fragrance__details .fertini-voice-v5{margin-top:46px}.fertini-fragrance__pyramid>div{grid-template-columns:1fr;gap:38px}.fertini-fragrance__related>div{grid-template-columns:repeat(2,minmax(0,1fr))}.fertini-fragrance__related a>span{font-size:21px}}
+@media(prefers-reduced-motion:reduce){.fertini-voice-v5__wave span{animation:none!important}}

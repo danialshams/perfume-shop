@@ -77,14 +77,14 @@ export default function LuxuryProductsView() {
           {!loadingProducts && orderedProducts.length===0 ? (
             <section className="fertini-demo-shelf" aria-label="مجموعه عطرهای نمایشی">
               <div className="fertini-demo-shelf__heading">
-                <div><span className="maison-kicker" lang="en" dir="ltr">FERTINI / FRAGRANCE SAMPLES</span><h2>مجموعهٔ نمایشی</h2></div>
-                <p>{productsError ? "اتصال محصولات اصلی در این پیش‌نمایش برقرار نیست." : "هنوز محصول قابل‌فروشی ثبت نشده است."} نمونه‌های زیر برای بررسی طراحی محصول هستند.</p>
+                <div><span className="maison-kicker" lang="en" dir="ltr">FERTINI / FRAGRANCE SAMPLES</span><h2>مجموعهٔ فرتینی</h2></div>
+                <p>{productsError ? "اتصال محصولات اصلی در این پیش‌نمایش برقرار نیست." : "هنوز محصول قابل‌فروشی ثبت نشده است."} رایحه‌های منتخب را کشف کنید.</p>
                 {productsError&&<button type="button" onClick={reloadProducts}>تلاش دوباره برای محصولات واقعی</button>}
               </div>
               <div className="fertini-demo-shelf__grid">
                 {[...FERTINI_DEMOS].sort((a,b)=>selectedSort==="lowest" ? a.variants[0].price-b.variants[0].price : selectedSort==="highest" ? b.variants[0].price-a.variants[0].price : 0).map(item=>
-                  <Link key={item.id} className="fertini-demo-shelf__card" href={"/demo/fragrance?item="+item.id}>
-                    <div className="fertini-demo-shelf__photo"><Image fill sizes="(min-width:900px) 30vw, 88vw" src={item.image} alt={item.name}/><span>نمونهٔ آزمایشی</span></div>
+                  <Link key={item.id} className="fertini-demo-shelf__card" href={"/fragrance/"+item.id}>
+                    <div className="fertini-demo-shelf__photo"><Image fill sizes="(min-width:900px) 30vw, 88vw" src={item.image} alt={item.name}/></div>
                     <div className="fertini-demo-shelf__details"><span lang="en" dir="ltr">{item.subtitle}</span><h3>{item.name}</h3><p>از {item.variants[0].price.toLocaleString("fa-IR")} تومان</p></div>
                   </Link>)}
               </div>
