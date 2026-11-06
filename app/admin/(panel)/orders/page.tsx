@@ -417,6 +417,7 @@ function AdminOrdersPageContent() {
   const [loading, setLoading] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [operationError,setOperationError]=useState("");
 
   const [selectedOrder, setSelectedOrder] = useState<OrderDetails | null>(null);
   const [adminNoteDraft,setAdminNoteDraft]=useState("");
@@ -547,7 +548,7 @@ function AdminOrdersPageContent() {
   }
 
   async function fetchOrders() {
-    setLoading(true);
+    setLoading(true);setOperationError("");
 
     try {
       const response = await fetch(`/api/v1/orders?${query}`, {
@@ -571,7 +572,7 @@ function AdminOrdersPageContent() {
       void fetchOrderProductNames(result.data.items);
     } catch (error) {
       console.error(error);
-      alert(error instanceof Error ? error.message : "خطا در دریافت سفارش‌ها");
+      setOperationError(error instanceof Error ? error.message : "خطا در دریافت سفارش‌ها");
     } finally {
       setLoading(false);
     }
@@ -607,7 +608,7 @@ function AdminOrdersPageContent() {
       setOpenDetails(true);
     } catch (error) {
       console.error(error);
-      alert(
+      setOperationError(
         error instanceof Error ? error.message : "خطا در دریافت جزئیات سفارش"
       );
     } finally {
@@ -626,7 +627,7 @@ function AdminOrdersPageContent() {
       const data=await response.json();
       if(!response.ok||!data.success)throw new Error(data.message||"ذخیره یادداشت ناموفق بود");
       await fetchOrderDetails(selectedOrder.id);
-    }catch(e){alert(e instanceof Error?e.message:"ذخیره یادداشت ممکن نشد")}
+    }catch(e){setOperationError(e instanceof Error?e.message:"ذخیره یادداشت ممکن نشد")}
     finally{setActionLoading(false)}
   }
 
@@ -715,7 +716,7 @@ function AdminOrdersPageContent() {
         );
       }
 
-      alert(
+      setOperationError(
         error instanceof Error
           ? error.message
           : "خطا در تغییر وضعیت ارسال سفارش"
@@ -788,9 +789,9 @@ function AdminOrdersPageContent() {
 
 
  return (
-  <div className="min-h-screen bg-zinc-50 text-zinc-900" dir="rtl">
+  <div className="min-w-0 text-[#292621]" dir="rtl">
     {/* ---------- Header ---------- */}
-    <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white/90 backdrop-blur">
+    <div className="fst-page-heading">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
         <div className="min-w-0">
           <h1 className="truncate text-base font-semibold md:text-lg">
@@ -809,9 +810,9 @@ function AdminOrdersPageContent() {
           {showFilters ? "بستن فیلتر" : "فیلتر"}
         </button>
       </div>
-    </header>
-
-    <main className="mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-6">
+    </div>
+    {operationError&&<div className="fst-error" role="alert">{operationError}</div>}
+    <main className="mx-auto w-full max-w-7xl py-4 md:py-6">
       {/* ---------- Filters ---------- */}
       <div
         className={`${
