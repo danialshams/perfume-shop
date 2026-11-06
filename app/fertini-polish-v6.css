@@ -122,3 +122,9 @@ html[dir="rtl"] body{font-synthesis:none}
 @media(prefers-reduced-motion:reduce){
  .fertini-voice-v6__progress,.fertini-voice-v6__disc{transition:none!important}
 }
+
+/* Mobile bottle framing: original SVG puts the bottle at x≈250–650 of 1600.
+   object-fit:cover centers a 1600×1000 artwork too far right in portrait view. */
+@media(max-width:600px){
+ .fertini-v5 .fertini-v5-hero .fertini-hero__image img{object-position:16% 50%!important}
+}

@@ -122,6 +122,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     headerFound:!!document.querySelector("header"),
     imageCount:document.querySelectorAll(".fertini-v5 img").length,
     heroHasCopy:!!hero?.querySelector(".fertini-hero__text"),
+    heroImagePosition:img?getComputedStyle(img).objectPosition:null,
     persianFont:getComputedStyle(document.body).fontFamily,
     clipPathAnimations:[...document.querySelectorAll(".fertini-v5 [data-fertini-photo]")].some(el=>getComputedStyle(el).clipPath!=="none"),
     documentScrollUnlocked: getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden"
@@ -135,6 +136,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    if(state.heroTitleOpacity!==null&&state.heroTitleOpacity<.8)throw Error(name+" text not fully visible: "+JSON.stringify(state));
    if(state.imageCount<7)throw Error(name+" missing fragrance images: "+JSON.stringify(state));
    if(state.heroHasCopy)throw Error(name+" should have a pure full-image hero");
+   if(state.width<600&&!state.heroImagePosition?.startsWith("16%"))throw Error(name+" bottle is cropped off on portrait hero: "+JSON.stringify(state));
    if(!state.persianFont.includes("Vazirmatn"))throw Error(name+" Persian font not applied");
    if(state.clipPathAnimations)throw Error(name+" deprecated clipped reveal is still active");
    if(!state.documentScrollUnlocked)throw Error(name+" document remains scroll locked after intro: "+JSON.stringify(state));
