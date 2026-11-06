@@ -18,7 +18,7 @@ export async function putObject(key:string,buffer:Uint8Array,mime:string){
  const keyBytes=mac(mac(mac(mac("AWS4"+process.env.S3_SECRET_ACCESS_KEY!,short),region),"s3"),"aws4_request");
  const signature=createHmac("sha256",keyBytes).update(toSign).digest("hex");
  const auth=`AWS4-HMAC-SHA256 Credential=${process.env.S3_ACCESS_KEY_ID}/${scope}, SignedHeaders=${signed}, Signature=${signature}`;
- const response=await fetch(url,{method:"PUT",body:buffer,headers:{"content-type":mime,"x-amz-date":date,"x-amz-content-sha256":hash,"authorization":auth}});
+ const response=await fetch(url,{method:"PUT",body:Uint8Array.from(buffer).buffer as ArrayBuffer,headers:{"content-type":mime,"x-amz-date":date,"x-amz-content-sha256":hash,"authorization":auth}});
  if(!response.ok)throw Error("Storage returned "+response.status);
  const publicUrl=new URL(process.env.S3_PUBLIC_BASE_URL!.replace(/\/$/,"")+"/"+key.split("/").map(encodeURIComponent).join("/"));
  if(publicUrl.protocol!=="https:")throw Error("Public storage must use HTTPS");
