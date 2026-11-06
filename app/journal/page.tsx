@@ -6,7 +6,7 @@ import { CinematicFooter } from "@/components/home-sections/CinematicStorefront"
 
 export const metadata:Metadata={
  title:"ژورنال رایحه | FERTINI",
- description:"روایت‌های فرتینی دربارهٔ شناخت عطر، خانواده‌های بویایی و انتخاب رایحهٔ شخصی.",
+ description:"روایت‌های فرتینی درباره شناخت عطر، خانواده‌های بویایی و انتخاب رایحه شخصی.",
  alternates:{canonical:"/journal"},
 };
 export default function JournalPage(){
@@ -18,13 +18,13 @@ export default function JournalPage(){
        <div className="fertini-journal-v5__hero-content">
          <span className="maison-kicker" lang="en" dir="ltr">FERTINI / JOURNAL — VOL. 01</span>
          <h1 id="fertini-journal-title">ژورنال<br/>رایحه.</h1>
-         <p>روایت‌هایی دربارهٔ عطر، خاطره و هنر انتخاب.</p>
+         <p>روایت‌هایی درباره عطر، خاطره و هنر انتخاب.</p>
        </div>
      </header>
      <div className="maison-wide fertini-journal-v5__body">
        <div className="fertini-journal-v5__lead">
          <span lang="en" dir="ltr">FIELD NOTES / 001</span>
-         <h2>چطور رایحهٔ<br/>خودمان را پیدا کنیم؟</h2>
+         <h2>چطور رایحه<br/>خودمان را پیدا کنیم؟</h2>
          <p>از اولین برخورد با یک عطر تا شناخت نت‌های پایانی؛ راهی آرام برای رسیدن به انتخابی شخصی.</p>
        </div>
        <Link href="/journal/how-to-choose-a-fragrance" className="fertini-journal-v5__article">

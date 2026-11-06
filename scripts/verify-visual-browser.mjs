@@ -121,6 +121,9 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroTitleOpacity:title?Number(getComputedStyle(title).opacity):null,
     headerFound:!!document.querySelector("header"),
     imageCount:document.querySelectorAll(".fertini-v5 img").length,
+    heroHasCopy:!!hero?.querySelector(".fertini-hero__text"),
+    persianFont:getComputedStyle(document.body).fontFamily,
+    clipPathAnimations:[...document.querySelectorAll(".fertini-v5 [data-fertini-photo]")].some(el=>getComputedStyle(el).clipPath!=="none"),
     documentScrollUnlocked: getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden"
    };
   })()`);
@@ -131,6 +134,9 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    if(!state.heroFound||!state.heroImageLoaded)throw Error(name+" cinematic hero did not load: "+JSON.stringify(state));
    if(state.heroTitleOpacity!==null&&state.heroTitleOpacity<.8)throw Error(name+" text not fully visible: "+JSON.stringify(state));
    if(state.imageCount<7)throw Error(name+" missing fragrance images: "+JSON.stringify(state));
+   if(state.heroHasCopy)throw Error(name+" should have a pure full-image hero");
+   if(!state.persianFont.includes("Vazirmatn"))throw Error(name+" Persian font not applied");
+   if(state.clipPathAnimations)throw Error(name+" deprecated clipped reveal is still active");
    if(!state.documentScrollUnlocked)throw Error(name+" document remains scroll locked after intro: "+JSON.stringify(state));
   }
   const result=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true,fromSurface:true});
@@ -141,14 +147,15 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
        await new Promise(r=>setTimeout(r,160));
        const opened=!!document.querySelector("#maison-menu[role=dialog] .maison-menu-entry");
        document.querySelector("#maison-menu button[aria-label='بستن منو']")?.click();
-       await new Promise(r=>setTimeout(r,50));
+       await new Promise(r=>setTimeout(r,65));
+       const closing=!!document.querySelector("#maison-menu.is-closing");
        document.querySelector(".maison-header button[aria-label='جستجوی عطرها']")?.click();
        await new Promise(r=>setTimeout(r,120));
        const search=!!document.querySelector(".maison-search input[type=search]");
        document.querySelector(".maison-search button[aria-label='بستن جستجو']")?.click();
-       return {opened,search};
+       return {opened,closing,search};
      })()`);
-     if(!menuState.opened || !menuState.search)throw Error(name+" navigation interactions failed "+JSON.stringify(menuState));
+     if(!menuState.opened || !menuState.closing || !menuState.search)throw Error(name+" navigation interactions failed "+JSON.stringify(menuState));
      const unlocked=await evaluate(send,'getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden"');
      if(!unlocked)throw Error(name+" document scroll lock was not released after menus");
    }
@@ -180,11 +187,24 @@ async function validateStorefrontInteractions(){
    if(retained!==2)throw Error("Cart not persisted after refresh: "+retained);
    const emptied=await evaluate(send,'(()=>{document.querySelector(".fertini-guest-cart__clear")?.click();return JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]").length;})()');
    if(emptied!==0)throw Error("Cart clear failed: "+emptied);
+   await navigate("/fragrance/nocturne");
+   const multi=await evaluate(send,`(()=>{
+      const buttons=[...document.querySelectorAll(".fertini-fragrance__quantity button[aria-label^='افزایش تعداد']")];
+      if(buttons.length!==3)return null;
+      buttons[0].click(); buttons[2].click();
+      document.querySelector(".fertini-fragrance__buy")?.click();
+      return JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]");
+    })()`);
+   if(!multi||multi.length!==3||multi.some(x=>x.quantity!==1)||!new Set(multi.map(x=>x.volume)).has(100))throw Error("Multi-volume atomic add failed: "+JSON.stringify(multi));
+   await navigate("/cart");
+   const persistedMulti=await evaluate(send,'JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]").length');
+   if(persistedMulti!==3)throw Error("Multi-volume cart not persisted: "+persistedMulti);
+   await evaluate(send,'document.querySelector(".fertini-guest-cart__clear")?.click()');
    await navigate("/account");
    const tabs=await evaluate(send,'(()=>{const b=[...document.querySelectorAll("button")].find(x=>x.textContent?.trim()==="ایجاد حساب"); const login=[...document.querySelectorAll("button")].find(x=>x.textContent?.trim()==="ورود");b?.click();return{register:!!b,login:!!login};})()');
    if(!tabs?.register || !tabs?.login)throw Error("Account gateway tabs unavailable: "+JSON.stringify(tabs));
    await until(()=>evaluate(send,'!!document.querySelector("input[name=confirm_password]")'),5500);
-   process.stdout.write("Guest cart addition, quantity, persistence, clear, and account gateway validated.\n");
+   process.stdout.write("Guest cart, 3 independently selected volumes, persistence, clear, menu exit, and account gateway validated.\n");
  }finally{ws.close()}
 }
 

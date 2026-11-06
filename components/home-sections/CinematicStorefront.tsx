@@ -28,10 +28,10 @@ export function CinematicFooter() {
       <div className="maison-footer__identity">
         <span lang="en" className="maison-kicker fertini-footer-reveal" dir="ltr">THE ART OF AN INVISIBLE SIGNATURE</span>
         <Link href="/" className="maison-footer__wordmark" dir="ltr" lang="en">FERTINI<span>®</span></Link>
-        <p className="fertini-footer-reveal">هر رایحه، ردِ یک خاطره.</p>
+        <p className="fertini-footer-reveal">هر رایحه، رد یک خاطره.</p>
       </div>
       <nav className="maison-footer__links" aria-label="پیوندهای پایانی">
-        <div><h3 className="fertini-footer-reveal">کشف</h3><Link className="fertini-footer-reveal" href="/products">مجموعهٔ عطرها</Link><Link className="fertini-footer-reveal" href="/journal">ژورنال</Link><Link className="fertini-footer-reveal" href="/about">دربارهٔ فرتینی</Link></div>
+        <div><h3 className="fertini-footer-reveal">کشف</h3><Link className="fertini-footer-reveal" href="/products">مجموعه عطرها</Link><Link className="fertini-footer-reveal" href="/journal">ژورنال</Link><Link className="fertini-footer-reveal" href="/about">درباره فرتینی</Link></div>
         <div><h3 className="fertini-footer-reveal">راهنما</h3><Link className="fertini-footer-reveal" href="/contact">ارتباط با ما</Link><Link className="fertini-footer-reveal" href="/shipping">ارسال و سفارش</Link><Link className="fertini-footer-reveal" href="/privacy">حفظ حریم خصوصی</Link><Link className="fertini-footer-reveal" href="/terms">قوانین و مقررات</Link></div>
         <div><h3 className="fertini-footer-reveal">حساب</h3><Link className="fertini-footer-reveal" href="/account">حساب کاربری</Link><Link className="fertini-footer-reveal" href="/cart">سبد خرید</Link></div>
       </nav>
