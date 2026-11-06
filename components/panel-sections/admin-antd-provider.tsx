@@ -15,34 +15,34 @@ export default function AdminAntdProvider({
       locale={faIR}
       theme={{
         token: {
-          colorPrimary: "#7c3aed",
-          borderRadius: 14,
+          colorPrimary: "#423b32",
+          borderRadius: 8,
           fontFamily: "inherit",
         },
         components: {
           Table: {
-            headerBg: "#faf5ff",
-            headerColor: "#3f3f46",
-            borderColor: "#f1f5f9",
+            headerBg: "#f7f5f1",
+            headerColor: "#473f38",
+            borderColor: "#e7e2da",
           },
           Modal: {
-            borderRadiusLG: 20,
+            borderRadiusLG: 10,
           },
           Drawer: {
             footerPaddingBlock: 12,
             footerPaddingInline: 16,
           },
           Button: {
-            borderRadius: 12,
+            borderRadius: 8,
           },
           Input: {
-            borderRadius: 12,
+            borderRadius: 8,
           },
           Select: {
-            borderRadius: 12,
+            borderRadius: 8,
           },
           Card: {
-            borderRadiusLG: 20,
+            borderRadiusLG: 10,
           },
         },
       }}
