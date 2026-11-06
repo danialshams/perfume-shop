@@ -270,18 +270,13 @@ export default function ProductsManagement() {
                     openEditDrawer(product);
                 },
 
-                onImages: (product) => {
-                    message.info(`مدیریت تصاویر: ${product.name}`);
-                },
-
-                onVariants: (product) => {
-                    message.info(`مدیریت واریانت‌ها: ${product.name}`);
-                },
+                onImages: openEditDrawer,
+                onVariants: openEditDrawer,
 
                 onDelete: handleDelete,
                 onRestore: handleRestore,
             }),
-        [message, openDetailsModal, openEditDrawer, handleDelete, handleRestore],
+        [openDetailsModal, openEditDrawer, handleDelete, handleRestore],
     );
 
     return (
