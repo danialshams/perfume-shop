@@ -1,4 +1,7 @@
 name: Quiet Luxury full production and browser QA
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 on:
   pull_request:
     branches:
@@ -60,7 +63,8 @@ jobs:
           fi
           "$CHROME" --version
           node scripts/test-admin-http.mjs
-          node scripts/verify-visual-browser.mjs
+          FERTINI_ADMIN_ONLY=1 timeout 240s node scripts/verify-visual-browser.mjs
+          timeout 600s node scripts/verify-visual-browser.mjs
       - name: Upload visual verification screenshots
         if: always()
         uses: actions/upload-artifact@v4

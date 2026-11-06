@@ -4,7 +4,7 @@ import {useEffect,useState} from "react";
 import {Package,ShoppingBag,Shapes,Users,ArrowUpLeft,PanelsTopLeft,
   FileAudio,Images,Database,ArrowLeft,RefreshCw,TicketPercent,MessageSquare} from "lucide-react";
 type Recent={id:number;order_number:string|null;customer_name:string|null;total_amount:number;status:string;created_at:string};
-type Overview={products:number;orders:number;categories:number;customers:number;notifications:number;recent:Recent[]};
+type Overview={products:number|null;orders:number|null;categories:number|null;customers:number|null;notifications:number|null;partial:boolean;recent:Recent[]};
 const cards=[
  {key:"products",label:"محصولات",icon:Package},
  {key:"orders",label:"سفارش‌ها",icon:ShoppingBag},
@@ -36,9 +36,10 @@ export default function AdminDashboardPage(){
    <p>آمار واقعی و دسترسی سریع به مدیریت محتوا، محصولات و سفارش‌ها.</p></div>
    <button type="button" className="fst-btn" onClick={reload} disabled={loading}>بازخوانی آمار <RefreshCw size={16}/></button></div>
   {error&&<div className="fst-error" role="alert">{error} <Link href="/admin/database" className="underline">بررسی اتصال</Link></div>}
+  {data?.partial&&<p role="status" className="fst-notice mb-4">بخشی از آمار دیتابیس در دسترس نیست و با خط تیره مشخص شده است.</p>}
   <section className="fst-grid" aria-label="شاخص‌های فروشگاه">
    {cards.map(x=><div className="fst-card fst-metric" key={x.key}>
-    <small>{x.label}</small><strong>{loading?"…":data?Number(data[x.key]).toLocaleString("fa-IR"):"—"}</strong>
+    <small>{x.label}</small><strong>{loading?"…":data&&data[x.key]!=null?Number(data[x.key]).toLocaleString("fa-IR"):"—"}</strong>
     <x.icon size={20} strokeWidth={1.5}/></div>)}</section>
   <section className="fst-actions" aria-label="بخش‌های مدیریت">
    {actions.map(a=><Link key={a.href} href={a.href} className="fst-card fst-action">

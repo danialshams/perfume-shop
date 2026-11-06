@@ -48,16 +48,17 @@ export function useAdminNotifications(){
    if(!active||document.visibilityState==="hidden")return;
    source?.close();
    source=new EventSource("/api/v1/notifications/stream");
-   source.onopen=()=>{if(active){setConnection("live");wait=2000}};
+   source.onopen=()=>{if(active){setConnection("connecting");wait=2000}};
    source.onmessage=e=>{
     try{const data=JSON.parse(e.data);
-     if(data.type==="notification"&&data.payload)merge([data.payload as AdminNotification]);
-     if(data.type==="snapshot"&&Array.isArray(data.payload))merge(data.payload as AdminNotification[]);
+     if(data.type==="notification"&&data.payload){merge([data.payload as AdminNotification]);setConnection("live")}
+     if(data.type==="snapshot"&&Array.isArray(data.payload)){merge(data.payload as AdminNotification[]);setConnection("live")}
+     if(data.type==="connection_error")setConnection("offline");
     }catch{}
    };
    source.onerror=()=>{
     source?.close();source=null;
-    if(active){setConnection("polling");reconnect=setTimeout(connect,wait);wait=Math.min(wait*2,30000)}
+    if(active){setConnection("polling");reconnect=setTimeout(()=>{reconnect=null;connect()},wait);wait=Math.min(wait*2,30000)}
    };
   };
   void loadInitial();connect();

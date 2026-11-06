@@ -377,6 +377,10 @@ try{
  await mkdir("artifacts",{recursive:true});
  await bootChrome();
  await until(async()=>{const r=await fetch("http://127.0.0.1:3100/");return r.ok},15000);
+ if(process.env.FERTINI_ADMIN_ONLY==="1"){
+  await validateAdminScreens();
+  process.stdout.write("Focused admin visual QA passed.\n");
+ }else{
  await validateStorefrontInteractions();
  await validateCinematicPhotoReveal();
  await pageScreenshot({name:"home-desktop-full",url:"http://127.0.0.1:3100/",width:1440,height:900,mobile:false,assertHome:true});
@@ -399,9 +403,8 @@ try{
  await pageScreenshot({name:"privacy-mobile-full",url:"http://127.0.0.1:3100/privacy",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"terms-mobile-full",url:"http://127.0.0.1:3100/terms",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"payment-result-mobile-full",url:"http://127.0.0.1:3100/payment/result?status=failed",width:390,height:844,mobile:true,assertHome:false});
- await validateAdminScreens();
-
  process.stdout.write("Visual QA browser checks passed.\n");
+ }
 }finally{
  chrome?.kill("SIGTERM");
  await sleep(250);
