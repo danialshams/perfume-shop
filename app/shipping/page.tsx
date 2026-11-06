@@ -18,7 +18,7 @@ export default function ShippingPage() {
     </MaisonSection>
     <MaisonSection number="03" title="پیگیری سفارش">
       <p>برای مشاهدهٔ وضعیت سفارش‌های پیشین به حساب کاربری مراجعه کنید.</p>
-      <Link href="/account" className="maison-link">مشاهدهٔ حساب کاربری ←</Link>
+      <Link href="/account" className="maison-link">مشاهدهٔ حساب کاربری</Link>
     </MaisonSection>
   </MaisonPage>;
 }

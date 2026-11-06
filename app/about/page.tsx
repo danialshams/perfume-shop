@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return <MaisonPage kicker="THE FERTINI — OUR POINT OF VIEW" title="سکوتِ تصویر، حضورِ رایحه."
     lead="FERTINI تلاشی است برای دیدن عطر فراتر از یک کالا؛ تجربه‌ای میان خاطره، انتخاب و زیبایی.">
-    <div className="maison-page__feature-photo"><Image fill sizes="(min-width: 900px) 80vw, 100vw" src="/maison/dark.jpg" alt="عکاسی تیره و سینمایی شیشه عطر" /></div>
+    <div className="maison-page__feature-photo"><Image fill sizes="(min-width: 900px) 80vw, 100vw" src="/fertini/hero-02.svg" alt="عکاسی تیره و سینمایی شیشه عطر" /></div>
     <MaisonSection number="01" title="نگاه ما">
       <p>در یک گالری خوب، فاصله و سکوت به اندازهٔ خود اثر اهمیت دارند. ما همین نگاه را به معرفی عطر نزدیک کرده‌ایم: عکس‌هایی برای دیدن جزئیات، توضیحاتی روشن و فضایی آرام برای انتخاب.</p>
     </MaisonSection>
