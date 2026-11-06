@@ -27,7 +27,7 @@ export default function AdminDashboardPage(){
  function reload(){
   setLoading(true);setError("");
   fetch("/api/v1/admin/overview",{cache:"no-store",credentials:"same-origin"})
-   .then(async r=>{const payload=await r.json();if(!r.ok)throw Error(payload.error||"خطا در دریافت آمار");return payload as Overview})
+   .then(async r=>{const payload=await r.json().catch(()=>null);if(!r.ok)throw Error(payload?.error||"ارتباط با سرور آمار برقرار نیست.");if(!payload)throw Error("پاسخ آمار فروشگاه معتبر نیست.");return payload as Overview})
    .then(setData).catch(e=>{setData(null);setError(e instanceof Error?e.message:"خطای اتصال")}).finally(()=>setLoading(false));
  }
  useEffect(()=>{reload()},[]);
