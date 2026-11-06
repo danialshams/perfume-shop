@@ -86,7 +86,11 @@ async function open(url){
   const id=++state.seq;state.pending.set(id,{resolve,reject});
   ws.send(JSON.stringify({id,method,params}));
  });
- return{ws,send};
+ const close=async()=>{
+  try{ws.close()}catch{}
+  try{await fetch(endpoint+"/json/close/"+encodeURIComponent(data.id))}catch{}
+ };
+ return{ws,send,close};
 }
 async function evaluate(send,expression){
  const result=await send("Runtime.evaluate",{expression,awaitPromise:true,returnByValue:true});
@@ -94,7 +98,7 @@ async function evaluate(send,expression){
  return result.result?.value;
 }
 async function pageScreenshot({name,url,width,height,mobile,assertHome}){
- const {ws,send}=await open("about:blank");
+ const {ws,send,close}=await open("about:blank");
  try{
   await send("Page.enable");
   await send("Runtime.enable");
@@ -170,12 +174,12 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
      if(!unlocked)throw Error(name+" document scroll lock was not released after menus");
    }
   process.stdout.write(name+" "+JSON.stringify(state)+"\n");
- }finally{ws.close()}
+ }finally{await close()}
 }
 
 
 async function validateCinematicPhotoReveal(){
- const {ws,send}=await open("about:blank");
+ const {ws,send,close}=await open("about:blank");
  const photoSelector=".fertini-v5-best__grid [data-fertini-photo]";
  try{
   await send("Page.enable");
@@ -239,11 +243,11 @@ async function validateCinematicPhotoReveal(){
   const advanced=await evaluate(send,'Number(document.querySelector(".fertini-hero__progress > span")?.style.transform.match(/scaleX\\(([\\d.]+)\\)/)?.[1]||0)');
   if(!(advanced>progress && advanced<1))throw Error("Hero progress not synchronized with active slideshow "+JSON.stringify({progress,advanced}));
   process.stdout.write("Essential 2 reveal progression, settled image, return-scroll, five-bar center and hero timer verified.\\n");
- }finally{ws.close()}
+ }finally{await close()}
 }
 
 async function validateStorefrontInteractions(){
- const {ws,send}=await open("about:blank");
+ const {ws,send,close}=await open("about:blank");
  const navigate=async(path)=>{
    await send("Page.navigate",{url:"http://127.0.0.1:3100"+path});
    await until(()=>evaluate(send,'location.pathname==='+JSON.stringify(path)+' && document.readyState==="complete" && !!document.querySelector("main")'),38000);
@@ -324,7 +328,7 @@ async function validateStorefrontInteractions(){
      .catch(()=>{throw Error("Search result not shown "+JSON.stringify(searchDiagnostic));});
    if(await evaluate(send,'!!document.querySelector(".maison-search__results [role=alert]")'))throw Error("Fallback search displayed error for sample scent");
    process.stdout.write("Guest cart, variant constraints, account field alignment (mobile/desktop) and navigation validated.\\n");
- }finally{ws.close()}
+ }finally{await close()}
 }
 
 async function validateAdminScreens(){
@@ -333,12 +337,12 @@ async function validateAdminScreens(){
   if(![302,303,307,308].includes(unauthorized.status))throw Error("Unauthorized admin must redirect: "+unauthorized.status);
   if(!process.env.JWT_ACCESS_SECRET)throw Error("CI JWT_ACCESS_SECRET missing");
   const token=jwt.sign({userId:1,role:"ADMIN",email:"ci-test@local.invalid"},process.env.JWT_ACCESS_SECRET,{expiresIn:"20m"});
-  const {ws,send}=await open("about:blank");
+  const {ws,send,close}=await open("about:blank");
   try{
     await send("Network.enable");
     const result=await send("Network.setCookie",{name:"admin_access_token",value:token,url:base,secure:false,httpOnly:true,sameSite:"Lax"});
     if(!result.success)throw Error("Admin cookie test setup failed");
-  }finally{ws.close()}
+  }finally{await close()}
   await pageScreenshot({name:"admin-dashboard-mobile",url:base+"/admin/dashboard",width:390,height:844,mobile:true,assertHome:false});
   await pageScreenshot({name:"admin-dashboard-desktop",url:base+"/admin/dashboard",width:1440,height:900,mobile:false,assertHome:false});
   await pageScreenshot({name:"admin-products-mobile",url:base+"/admin/products",width:390,height:844,mobile:true,assertHome:false});
@@ -347,7 +351,7 @@ async function validateAdminScreens(){
   await pageScreenshot({name:"admin-media-mobile",url:base+"/admin/media",width:390,height:844,mobile:true,assertHome:false});
   await pageScreenshot({name:"admin-coupons-mobile",url:base+"/admin/coupons",width:390,height:844,mobile:true,assertHome:false});
   await pageScreenshot({name:"admin-database-desktop",url:base+"/admin/database",width:1440,height:900,mobile:false,assertHome:false});
-  const {ws:checkWs,send:check}=await open("about:blank");
+  const {send:check,close:closeCheck}=await open("about:blank");
   try{
     await check("Page.enable");
     await check("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true});
@@ -365,7 +369,7 @@ async function validateAdminScreens(){
       return {bottom:!!bottom,open,visible,closed:!document.querySelector(".fst-sidebar")?.classList.contains("is-open")};
     })()`);
     if(!state.bottom||!state.open||!state.visible||!state.closed)throw Error("Admin mobile nav interaction failed "+JSON.stringify(state));
-  }finally{checkWs.close()}
+  }finally{await closeCheck()}
   process.stdout.write("Authenticated Essential-style admin mobile/desktop visual routes and navigation passed.\n");
 }
 
