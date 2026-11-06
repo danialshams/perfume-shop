@@ -168,9 +168,9 @@ async function validateStorefrontInteractions(){
    await send("Page.enable");
    await send("Runtime.enable");
    await send("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true,screenWidth:390,screenHeight:844});
-   await navigate("/fragrance/demo-001");
+   await navigate("/fragrance/nocturne");
    const add=await evaluate(send,'(()=>{const b=document.querySelector(".fertini-fragrance__buy"); if(!b)return null;b.click();return JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]");})()');
-   if(!add || add.length!==1 || add[0].productId!=="demo-001" || add[0].quantity!==1)throw Error("Add-to-cart interaction failed: "+JSON.stringify(add));
+   if(!add || add.length!==1 || add[0].productId!=="nocturne" || add[0].quantity!==1)throw Error("Add-to-cart interaction failed: "+JSON.stringify(add));
    await navigate("/cart");
    const updated=await evaluate(send,'(()=>{const plus=document.querySelector(".fertini-guest-cart__quantity button[aria-label=\\u0022افزایش تعداد\\u0022]");if(!plus)return null;plus.click();return JSON.parse(localStorage.getItem("fertini:guest-cart:v1")||"[]");})()');
    if(!updated || updated[0]?.quantity!==2)throw Error("Cart quantity change failed: "+JSON.stringify(updated));
@@ -197,8 +197,8 @@ try{
  await pageScreenshot({name:"products-desktop-full",url:"http://127.0.0.1:3100/products",width:1440,height:900,mobile:false,assertHome:false});
  await pageScreenshot({name:"products-mobile-full",url:"http://127.0.0.1:3100/products",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"account-mobile-full",url:"http://127.0.0.1:3100/account",width:390,height:844,mobile:true,assertHome:false});
- await pageScreenshot({name:"fragrance-mobile-full",url:"http://127.0.0.1:3100/fragrance/demo-001",width:390,height:844,mobile:true,assertHome:false});
- await pageScreenshot({name:"fragrance-desktop-full",url:"http://127.0.0.1:3100/fragrance/demo-001",width:1440,height:900,mobile:false,assertHome:false});
+ await pageScreenshot({name:"fragrance-mobile-full",url:"http://127.0.0.1:3100/fragrance/nocturne",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"fragrance-desktop-full",url:"http://127.0.0.1:3100/fragrance/nocturne",width:1440,height:900,mobile:false,assertHome:false});
  await pageScreenshot({name:"cart-mobile-full",url:"http://127.0.0.1:3100/cart",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"login-mobile-full",url:"http://127.0.0.1:3100/login",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"checkout-mobile-full",url:"http://127.0.0.1:3100/checkout",width:390,height:844,mobile:true,assertHome:false});
