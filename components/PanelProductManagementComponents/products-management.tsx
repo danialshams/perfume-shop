@@ -64,6 +64,7 @@ export default function ProductsManagement() {
     });
 
     const [loading, setLoading] = useState(true);
+    const [loadError,setLoadError]=useState("");
 
     const [categories, setCategories] = useState<CategoryOption[]>([]);
 
@@ -109,14 +110,14 @@ export default function ProductsManagement() {
     const fetchData = useCallback(
         async (params: ProductQueryParams) => {
             try {
-                setLoading(true);
+                setLoading(true);setLoadError("");
 
                 const result = await getProducts(params);
 
                 setData(result);
             } catch (error) {
                 console.error(error);
-                message.error("دریافت محصولات با خطا مواجه شد");
+                setLoadError("اتصال دیتابیس محصولات برقرار نیست. لطفاً اتصال را از بخش سلامت دیتابیس بررسی کنید.");
             } finally {
                 setLoading(false);
             }
@@ -331,9 +332,10 @@ export default function ProductsManagement() {
                 onReset={handleReset}
             />
 
+            {loadError&&<div role="alert" className="fst-error">{loadError}</div>}
             {loading ? (
                 <AdminLoading text="در حال دریافت محصولات..." />
-            ) : !data.items.length ? (
+            ) : loadError ? null : !data.items.length ? (
                 <AdminEmptyState
                     title="محصولی پیدا نشد"
                     description="فیلترها را تغییر بده یا محصول جدید ثبت کن."
