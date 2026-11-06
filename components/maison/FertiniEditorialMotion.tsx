@@ -39,7 +39,7 @@ export default function FertiniEditorialMotion(){
           else if(choice===2)tl.fromTo(frame,{autoAlpha:.55,x:24},{autoAlpha:1,x:0,duration:1.6,ease:"power3.out",clearProps:"transform,opacity,visibility"},0);
           else tl.fromTo(frame,{autoAlpha:.2,y:-18},{autoAlpha:1,y:0,duration:1.7,ease:"power3.out",clearProps:"transform,opacity,visibility"},0);
         }
-        tl.fromTo(photo,{scale:1.085},{scale:1,duration:3.5,ease:"power2.out",clearProps:"transform"},0);
+        tl.fromTo(photo,{scale:1.035},{scale:1,duration:2.4,ease:"power2.out"},0);
         const play=()=>{
           if(photo.complete)tl.play();
           else{

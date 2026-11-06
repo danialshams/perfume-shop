@@ -44,6 +44,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return <html lang="fa" dir="rtl" className="h-full antialiased">
+    <head><script dangerouslySetInnerHTML={{__html:"try{if(sessionStorage.getItem('fertini:intro:seen:v3')==='1')document.documentElement.classList.add('fertini-intro-seen')}catch(e){}"}} /></head>
     <body id="top" className="flex min-h-full flex-col font-sans">
       <MaisonAmbientSound><CartCountProvider>{children}<FertiniEditorialMotion/></CartCountProvider></MaisonAmbientSound>
     </body>

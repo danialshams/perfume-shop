@@ -59,35 +59,45 @@ export default function FertiniHomeV5(){
         const frame=card.querySelector<HTMLElement>("[data-fertini-photo]");
         const photo=frame?.querySelector("img");
         const text=[...card.querySelectorAll<HTMLElement>("[data-fertini-caption] > *")];
-        const tl=gsap.timeline({paused:true});
         const curtain=frame?.querySelector<HTMLElement>(".fertini-v7-curtain");
         const shutters=curtain?.querySelectorAll<HTMLElement>("i");
         const variant=i%4;
-        const isAhead=card.getBoundingClientRect().top>window.innerHeight*.86;
-        // The image remains full-size; smooth shutters uncover it instead of clipping half the photo.
-        if(curtain)gsap.set(curtain,{autoAlpha:isAhead?1:0});
-        if(curtain && isAhead){
-          if(variant===0 && shutters?.length===2){
-            tl.to(shutters[0],{xPercent:-101,duration:1.55,ease:"power3.inOut"},0)
-              .to(shutters[1],{xPercent:101,duration:1.55,ease:"power3.inOut"},0);
+        const ahead=card.getBoundingClientRect().top>window.innerHeight*.91;
+        let started=false;
+        const tl=gsap.timeline({paused:true,onComplete:()=>{
+          // The reveal is permanent; never restore the cover or image transform.
+          if(curtain)gsap.set(curtain,{display:"none"});
+          card.dataset.fertiniMotionDone="true";
+        }});
+        if(curtain)gsap.set(curtain,{autoAlpha:ahead?1:0});
+        if(ahead&&curtain){
+          if(variant===0&&shutters?.length===2){
+            tl.to(shutters[0],{xPercent:-101,duration:1.25,ease:"power2.inOut"},0)
+              .to(shutters[1],{xPercent:101,duration:1.25,ease:"power2.inOut"},0);
           }else if(variant===1){
-            tl.to(curtain,{autoAlpha:0,duration:1.5,ease:"power2.inOut"},0);
+            tl.to(curtain,{autoAlpha:0,duration:1.15,ease:"power2.inOut"},0);
           }else if(variant===2){
-            tl.to(curtain,{xPercent:101,duration:1.65,ease:"power3.inOut"},0);
+            tl.to(curtain,{xPercent:102,duration:1.35,ease:"power2.inOut"},0);
           }else{
-            tl.to(curtain,{yPercent:-101,duration:1.55,ease:"power3.inOut"},0);
+            tl.to(curtain,{yPercent:-102,duration:1.35,ease:"power2.inOut"},0);
           }
-          tl.set(curtain,{autoAlpha:0},1.7);
+          tl.set(curtain,{display:"none"},1.4);
         }
-        if(frame)tl.fromTo(frame,{y:isAhead?(variant%2===0?18:-12):0},{y:0,duration:1.6,ease:"power3.out",clearProps:"transform"},0);
-        if(photo)tl.fromTo(photo,{scale:1.1},{scale:1,duration:3.6,ease:"power2.out",clearProps:"transform"},0);
-        if(text.length)tl.fromTo(text,{autoAlpha:0,y:15},{autoAlpha:1,y:0,duration:.9,stagger:.13,ease:"power3.out",clearProps:"opacity,visibility,transform"},.33);
+        // Full image on first paint; a restrained one-time 3.5% zoom-out.
+        if(photo)tl.fromTo(photo,{scale:1.035},{scale:1,duration:2.4,ease:"power2.out"},0);
+        if(frame)tl.fromTo(frame,{y:ahead?12:0,autoAlpha:ahead?.96:1},{y:0,autoAlpha:1,duration:1.05,ease:"power2.out"},0);
+        if(text.length)tl.fromTo(text,{autoAlpha:0,y:12},{autoAlpha:1,y:0,duration:.8,stagger:.11,ease:"power2.out"},.25);
         const playWhenLoaded=()=>{
+          if(started)return;
+          started=true;
           if(!photo||photo.complete)tl.play();
-          else{photo.addEventListener("load",()=>tl.play(),{once:true});photo.addEventListener("error",()=>tl.play(),{once:true});}
+          else{
+            photo.addEventListener("load",()=>tl.play(),{once:true});
+            photo.addEventListener("error",()=>tl.play(),{once:true});
+          }
         };
-        const scene=ScrollTrigger.create({trigger:card,start:"top bottom+=170",once:true,onEnter:playWhenLoaded});
-        if(scene.isActive)playWhenLoaded();
+        const scene=ScrollTrigger.create({trigger:card,start:"top bottom+=160",once:true,onEnter:playWhenLoaded});
+        if(scene.isActive||!ahead)playWhenLoaded();
       });
     },root);
     return()=>ctx.revert();

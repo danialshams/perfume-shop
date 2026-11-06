@@ -194,3 +194,8 @@ html,body{max-width:100%;overflow-x:clip}
 .ql-quantity button{display:grid;place-items:center;box-sizing:border-box;padding:0!important;width:28px;height:30px;min-width:28px;line-height:1}
 .ql-quantity svg{width:15px;height:15px;display:block}
 @media(max-width:420px){.ql-purchase-main{flex-wrap:wrap}.ql-purchase-main strong{white-space:normal;overflow-wrap:anywhere}}
+
+/* One intro per browser session; an already seen intro is hidden before hydration. */
+html.fertini-intro-seen .maison-intro{display:none!important}
+/* GSAP alone owns visual zoom. Hover may change saturation, never scale. */
+.fertini-v5 [data-fertini-photo] img{transition-property:filter!important}
