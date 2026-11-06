@@ -5,7 +5,7 @@ import gsap from "gsap";
 
 // Ported from Essential 2: decode ahead, drive CSS clip numerically, then zoom out.
 // One unique observer and a permanently settled final frame per photograph.
-type Mode="up"|"left"|"right"|"fade";
+type Mode="up"|"left"|"right"|"fade"|"stretch";
 const selector=[
  "[data-fertini-photo]",".fertini-catalog-v5__image",".fertini-demo-shelf__photo",
  ".fertini-journal-v5__hero",".fertini-journal-v5__article > div",
@@ -15,7 +15,8 @@ const selector=[
 const order:Mode[]=["up","fade","right","left"];
 function clipAt(mode:Exclude<Mode,"fade">,p:number){
  const cut=(Math.max(0,1-p)*100).toFixed(3)+"%";
- return mode==="left"?"inset(0% 0% 0% "+cut+")":
+ return mode==="stretch"?"inset(0% "+((1-p)*50).toFixed(3)+"% 0% "+((1-p)*50).toFixed(3)+"%)":
+  mode==="left"?"inset(0% 0% 0% "+cut+")":
   mode==="right"?"inset(0% "+cut+" 0% 0%)":"inset(0% 0% "+cut+" 0%)";
 }
 type Item={element:HTMLElement;prepare:()=>void;play:()=>void;settle:()=>void;tl:gsap.core.Timeline};
@@ -55,10 +56,10 @@ export default function FertiniEditorialMotion(){
    }else{
     const draw=()=>{el.style.clipPath=clipAt(mode,mask.value);el.dataset.photoRevealProgress=mask.value.toFixed(3);};
     draw();
-    tl.to(mask,{value:1,duration:1.12,ease:"power2.out",onUpdate:draw},0);
+    tl.to(mask,{value:1,duration:mode==="stretch"?1.55:mode==="up"?1.03:1.22,ease:mode==="stretch"?"power3.inOut":"power2.out",onUpdate:draw},0);
    }
    gsap.set(img,{scale:1.045,transformOrigin:"center center"});
-   tl.to(img,{scale:1,duration:2.15,ease:"sine.out"},mode==="fade"?.85:1.05);
+   tl.to(img,{scale:1,duration:mode==="stretch"?2.45:2.1,ease:"sine.out"},mode==="fade"?.85:mode==="stretch"?1.43:1.05);
    if(captions.length){
     gsap.set(captions,{autoAlpha:0,y:12});
     tl.to(captions,{autoAlpha:1,y:0,duration:.73,stagger:.1,ease:"power2.out"},.32);

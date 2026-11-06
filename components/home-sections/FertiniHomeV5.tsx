@@ -12,10 +12,10 @@ const slides = [
   {photo:"/fertini/hero-02.svg",alt:"عطر فرتینی در نور ملایم و سایه‌های عمیق"},
 ] as const;
 
-function ProductCard({product,large=false,mode="up"}:{product:FertiniDemo;large?:boolean;mode?:"up"|"fade"|"right"|"left"}){
+function ProductCard({product,large=false,mode="up"}:{product:FertiniDemo;large?:boolean;mode?:"up"|"fade"|"right"|"left"|"stretch"}){
   return <Link href={"/fragrance/"+product.id} className={"fertini-v5-card"+(large?" fertini-v5-card--large":"")} data-fertini-card>
     <div className="fertini-v5-card__media" data-fertini-photo data-photo-entrance={mode}>
-      <Image src={product.image} alt={product.name} fill sizes={large?"(min-width:960px) 32vw, 68vw":"(min-width:960px) 27vw, (min-width:600px) 46vw, 45vw"} />
+      <Image src={product.image} alt={product.name} fill loading={large?"eager":"lazy"} sizes={large?"(min-width:960px) 32vw, 68vw":"(min-width:960px) 27vw, (min-width:600px) 46vw, 45vw"} />
     </div>
     <div className="fertini-v5-card__info" data-fertini-caption>
       <span lang="en" dir="ltr">{product.subtitle.split(" — ")[0]}</span>
@@ -116,10 +116,10 @@ export default function FertiniHomeV5(){
         <h2 id="fertini-new-title">جدیدترین عطرها</h2>
         <p>رایحه‌هایی تازه برای سلیقه‌هایی که در جست‌وجوی تجربه‌ای متفاوت‌اند.</p>
       </header>
-      <div className="fertini-v5-new__scroll" aria-label="جدیدترین عطرها — برای دیدن محصولات بیشتر اسکرول افقی کنید">
-        {latest.map((product,index)=><ProductCard key={product.id} product={product} large mode={(["fade","left","up","right"] as const)[index%4]}/>)}
+      <div className="fertini-v5-new__scroll" aria-label="شش عطر جدید از مجموعه فرتینی">
+        {latest.map((product,index)=><ProductCard key={product.id} product={product} large mode={(["stretch","fade","left","stretch","right","fade"] as const)[index%6]}/>)}
       </div>
-      <div className="fertini-v5-new__bottom"><span lang="en" dir="ltr">DRAG / DISCOVER</span><Link href="/products" className="fertini-v5-cta">مشاهده همه عطرها</Link></div>
+      <div className="fertini-v5-new__bottom"><span lang="en" dir="ltr">SIX NEW SCENTS / 06</span><Link href="/products" className="fertini-v5-cta">مشاهده همه عطرها</Link></div>
     </section>
 
     <section className="fertini-v5-families maison-wide" aria-labelledby="fertini-families-title">
