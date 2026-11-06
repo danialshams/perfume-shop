@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type InputHTMLAttributes } from "react";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 
@@ -48,7 +48,7 @@ export default function AccountGuest({serviceUnavailable=false}:{serviceUnavaila
    }catch(err){setError(err instanceof Error?err.message:"درخواست انجام نشد.");}
    finally{setBusy(false);}
  }
- const input=(key:keyof RegisterForm,label:string,props:React.InputHTMLAttributes<HTMLInputElement>={})=><label className="fertini-account-gateway__field" key={key}>
+ const input=(key:keyof RegisterForm,label:string,props:InputHTMLAttributes<HTMLInputElement>={})=><label className="fertini-account-gateway__field" key={key}>
    <span>{label}</span><input value={form[key]} onChange={event=>update(key,event.target.value)} id={"register-"+key} name={key} {...props}/></label>;
  return <div className="fertini-account-gateway">
   <LuxuryNavbar/>

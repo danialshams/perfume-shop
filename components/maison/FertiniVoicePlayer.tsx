@@ -16,7 +16,6 @@ export default function FertiniVoicePlayer({productName,voiceUrl,script,classNam
  const [duration,setDuration]=useState(0);
  const [rate,setRate]=useState(1);
  const [error,setError]=useState("");
- const speechRef=useRef<SpeechSynthesisUtterance|null>(null);
  const isSpeech=!voiceUrl&&Boolean(script);
  const progress=duration>0?Math.min(1,current/duration):0;
  const pauseBackground=useCallback(()=>window.dispatchEvent(new Event("background-music:pause-for-voice")),[]);
@@ -38,7 +37,6 @@ export default function FertiniVoicePlayer({productName,voiceUrl,script,classNam
      if(persian)item.voice=persian;
      item.onend=()=>{setPlaying(false);resumeBackground();};
      item.onerror=event=>{setPlaying(false);resumeBackground();if(event.error!=="canceled")setError("امکان پخش گفتار فارسی در این مرورگر وجود ندارد.");};
-     speechRef.current=item;
      pauseBackground();setPlaying(true);
      window.speechSynthesis.speak(item);
      return;

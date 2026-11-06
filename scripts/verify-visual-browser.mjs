@@ -120,7 +120,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroImageLoaded:!!img?.complete&&Number(img?.naturalWidth)>50,
     heroTitleOpacity:title?Number(getComputedStyle(title).opacity):null,
     headerFound:!!document.querySelector("header"),
-    imageCount:document.querySelectorAll(".fertini-home img").length
+    imageCount:document.querySelectorAll(".fertini-v5 img").length
    };
   })()`);
   if(!state.headerFound)throw Error(name+" has no header");
