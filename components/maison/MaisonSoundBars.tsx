@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import { useAmbientSound } from "./MaisonAmbientSound";
 
-const idle=[.63,.86,.99,.79,.57] as const;
+const idle=[.58,.83,1,.83,.58] as const;
 /** Five visible bars at rest; when playing, the bars sample real audio frequencies. */
 export default function MaisonSoundBars(){
   const ref=useRef<HTMLSpanElement>(null);

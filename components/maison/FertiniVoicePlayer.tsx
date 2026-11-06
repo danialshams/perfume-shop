@@ -11,6 +11,8 @@ function time(value:number){
 }
 export default function FertiniVoicePlayer({productName,voiceUrl,script,className=""}:Props){
  const audioRef=useRef<HTMLAudioElement>(null);
+ const progressRingRef=useRef<SVGCircleElement>(null);
+ const renderedProgressRef=useRef(0);
  const lockRef=useRef(false);
  const [playing,setPlaying]=useState(false);
  const [current,setCurrent]=useState(0);
@@ -37,7 +39,25 @@ export default function FertiniVoicePlayer({productName,voiceUrl,script,classNam
      if("speechSynthesis" in window)window.speechSynthesis.removeEventListener("voiceschanged",refresh);
    };
  },[isSpeech]);
- const progress=voiceUrl?(duration>0?Math.min(current/duration,1):0):speechProgress;
+ // The stroke is drawn with requestAnimationFrame from the actual media clock.
+ // React timeupdate events only update the time label, not the circular indicator.
+ useEffect(()=>{
+   let frame=0;
+   const draw=()=>{
+     const audio=audioRef.current;
+     const total=audio?.duration||duration;
+     const target=voiceUrl
+       ? (audio&&Number.isFinite(total)&&total>0?Math.min(1,Math.max(0,audio.currentTime/total)):0)
+       : speechProgress;
+     const next=voiceUrl?target:renderedProgressRef.current+(target-renderedProgressRef.current)*.16;
+     renderedProgressRef.current=Math.min(1,Math.max(0,next));
+     progressRingRef.current?.setAttribute("stroke-dashoffset",
+       String(circumference*(1-renderedProgressRef.current)));
+     if(playing)frame=window.requestAnimationFrame(draw);
+   };
+   frame=window.requestAnimationFrame(draw);
+   return()=>window.cancelAnimationFrame(frame);
+ },[voiceUrl,duration,speechProgress,playing,current]);
  const lock=useCallback(()=>{
   if(lockRef.current)return;
   lockRef.current=true;
@@ -110,8 +130,8 @@ export default function FertiniVoicePlayer({productName,voiceUrl,script,classNam
      aria-label={playing?(isSpeech?"توقف گفتار":"مکث پخش"):"پخش معرفی صوتی"} aria-pressed={playing} onClick={()=>void toggle()}>
      <svg aria-hidden="true" viewBox="0 0 100 100">
        <circle cx="50" cy="50" r={radius} className="fertini-voice-v6__track"/>
-       <circle cx="50" cy="50" r={radius} className="fertini-voice-v6__progress"
-         strokeDasharray={circumference} strokeDashoffset={circumference*(1-progress)} transform="rotate(-90 50 50)"/>
+       <circle ref={progressRingRef} cx="50" cy="50" r={radius} className="fertini-voice-v6__progress"
+         strokeDasharray={circumference} strokeDashoffset={circumference} transform="rotate(-90 50 50)"/>
      </svg>
      <span>{playing?<Pause size={18} fill="currentColor" strokeWidth={1.4}/>:<Play size={19} fill="currentColor" strokeWidth={1.4}/>}</span>
    </button>

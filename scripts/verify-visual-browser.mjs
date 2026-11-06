@@ -128,7 +128,8 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     documentScrollUnlocked: getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden",
     firstCardFinished:document.querySelector(".fertini-v5-best__grid [data-fertini-card]")?.getAttribute("data-fertini-motion-done")==="true",
     firstCardCoverGone:!document.querySelector(".fertini-v5-best__grid [data-fertini-card] .fertini-v7-curtain:not([style*='display: none'])"),
-    waveformCount:document.querySelector(".fertini-header-sound--mobile .fertini-sound-equalizer")?.childElementCount ?? 0
+    waveformCount:document.querySelector(".fertini-header-sound--mobile .fertini-sound-equalizer")?.childElementCount ?? 0,
+    heroProgressFound:!!document.querySelector(".fertini-hero__progress > span")
    };
   })()`);
   if(state.url!==new URL(url).pathname)throw Error(name+" unexpected route: "+JSON.stringify(state));
@@ -145,6 +146,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    if(!state.documentScrollUnlocked)throw Error(name+" document remains scroll locked after intro: "+JSON.stringify(state));
    if(!state.firstCardFinished||!state.firstCardCoverGone)throw Error(name+" photo reveal restarted or failed to finish: "+JSON.stringify(state));
    if(state.waveformCount!==5)throw Error(name+" music indicator must have five bars: "+JSON.stringify(state));
+   if(!state.heroProgressFound)throw Error(name+" hero progress line missing: "+JSON.stringify(state));
   }
   const result=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true,fromSurface:true});
   await writeFile("artifacts/"+name+".png",Buffer.from(result.data,"base64"));

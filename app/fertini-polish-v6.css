@@ -227,3 +227,35 @@ html.fertini-intro-seen .maison-intro{display:none!important}
 .fertini-voice-v6--text details{font-size:12px;line-height:2.1;margin-top:14px;color:#657366}
 .fertini-voice-v6--text summary{cursor:pointer;text-decoration:underline;text-underline-offset:6px}
 .fertini-voice-v6--text details p{padding-top:12px;line-height:2.4}
+
+/* Essential 2-inspired motion has sole ownership of image clip and camera zoom. */
+.fertini-v5 .fertini-v7-curtain{display:none!important}
+.fertini-v5 [data-fertini-photo] img{transition:filter .45s ease!important}
+.fertini-hero__progress{position:absolute;right:0;left:0;bottom:-13px;width:100%;height:2px;overflow:hidden;background:rgba(255,255,255,.27);pointer-events:none;direction:ltr}
+.fertini-hero__progress>span{display:block;width:100%;height:100%;background:#f7f9f4;transform:scaleX(0);transform-origin:left center;will-change:transform}
+/* Fixed integer grid keeps all five music bars equal width and centered. */
+.fertini-header-sound .fertini-sound-equalizer{
+ box-sizing:border-box!important;display:grid!important;
+ grid-template-columns:repeat(5,2px)!important;column-gap:3px!important;
+ align-items:center!important;justify-content:center!important;
+ justify-items:center!important;width:28px!important;height:28px!important;
+ padding:0!important;margin:0 auto!important;direction:ltr!important
+}
+.fertini-header-sound .fertini-sound-equalizer i{
+ box-sizing:border-box!important;display:block!important;
+ width:2px!important;min-width:2px!important;max-width:2px!important;
+ flex:none!important;margin:0!important;padding:0!important;
+ border:0!important;border-radius:1px!important;opacity:1!important;
+ background:currentColor!important;transform-origin:50% 50%!important;
+ animation:none!important;transition:none!important
+}
+.fertini-header-sound .fertini-sound-equalizer i:nth-child(1),
+.fertini-header-sound .fertini-sound-equalizer i:nth-child(5){height:12px!important}
+.fertini-header-sound .fertini-sound-equalizer i:nth-child(2),
+.fertini-header-sound .fertini-sound-equalizer i:nth-child(4){height:18px!important}
+.fertini-header-sound .fertini-sound-equalizer i:nth-child(3){height:24px!important}
+.fertini-voice-v6__progress{transition:none!important}
+@media(max-width:700px){
+ .fertini-filter-overlay{align-items:flex-end!important;padding:0 14px max(16px,env(safe-area-inset-bottom))!important}
+ .fertini-filter-panel{width:100%!important;max-height:min(84dvh,calc(100dvh - 42px))!important;border-radius:18px!important}
+}
