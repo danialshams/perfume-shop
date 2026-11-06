@@ -17,8 +17,8 @@ function parseId(id: string) {
 }
 
 export async function GET(request: NextRequest, { params }: Context) {
+  try{await requireAdmin(request)}catch{return errorResponse("دسترسی مدیر لازم است.",403)}
   try {
-    await requireAdmin(request);
 
     // در Next.js 15 پارامترها Promise هستند
     const resolvedParams = await params;
@@ -40,8 +40,8 @@ export async function GET(request: NextRequest, { params }: Context) {
 }
 
 export async function PATCH(request: NextRequest, { params }: Context) {
+  try{await requireAdmin(request)}catch{return errorResponse("دسترسی مدیر لازم است.",403)}
   try {
-    await requireAdmin(request);
 
     const resolvedParams = await params;
     const orderId = parseId(resolvedParams.id);
