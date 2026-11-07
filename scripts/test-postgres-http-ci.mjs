@@ -80,8 +80,9 @@ try{
   variants:[{volume_ml:75,price:190000,stock_qty:4,is_active:true}]};
  const creation=await read("/api/v1/products",{method:"POST",
   headers:{...auth,"Content-Type":"application/json"},body:JSON.stringify(body)});
- assert.equal(creation.status,201,"product create failed "+await creation.text());
- const record=await creation.json();
+ const creationPayload=await creation.text();
+ assert.equal(creation.status,201,"product create failed "+creationPayload);
+ const record=JSON.parse(creationPayload);
  const id=Number(record.data?.id);
  assert.ok(id>0);
  assert.equal((await read("/api/v1/products/"+id)).status,404);
