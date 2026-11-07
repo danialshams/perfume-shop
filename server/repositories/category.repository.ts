@@ -100,8 +100,8 @@ export const categoryRepository = {
       c.created_at,
       c.updated_at,
       c.deleted_at,
-      GROUP_CONCAT(DISTINCT p.id ORDER BY p.id SEPARATOR ',') AS parent_ids,
-      GROUP_CONCAT(DISTINCT p.name ORDER BY p.name SEPARATOR '|||') AS parent_names,
+      STRING_AGG(DISTINCT CAST(p.id AS TEXT), ',' ORDER BY CAST(p.id AS TEXT)) AS parent_ids,
+      STRING_AGG(DISTINCT p.name, '|||' ORDER BY p.name) AS parent_names,
       COUNT(DISTINCT child.id) AS children_count,
       CASE WHEN COUNT(DISTINCT child.id) > 0 THEN 1 ELSE 0 END AS has_children
     FROM categories c
@@ -190,8 +190,8 @@ export const categoryRepository = {
       c.created_at,
       c.updated_at,
       c.deleted_at,
-      GROUP_CONCAT(DISTINCT p.id ORDER BY p.id SEPARATOR ',') AS parent_ids,
-      GROUP_CONCAT(DISTINCT p.name ORDER BY p.name SEPARATOR '|||') AS parent_names,
+      STRING_AGG(DISTINCT CAST(p.id AS TEXT), ',' ORDER BY CAST(p.id AS TEXT)) AS parent_ids,
+      STRING_AGG(DISTINCT p.name, '|||' ORDER BY p.name) AS parent_names,
       COUNT(DISTINCT child.id) AS children_count,
       CASE WHEN COUNT(DISTINCT child.id) > 0 THEN 1 ELSE 0 END AS has_children
     FROM category_parents cp_target
@@ -240,8 +240,8 @@ export const categoryRepository = {
       c.created_at,
       c.updated_at,
       c.deleted_at,
-      GROUP_CONCAT(DISTINCT p.id ORDER BY p.id SEPARATOR ',') AS parent_ids,
-      GROUP_CONCAT(DISTINCT p.name ORDER BY p.name SEPARATOR '|||') AS parent_names,
+      STRING_AGG(DISTINCT CAST(p.id AS TEXT), ',' ORDER BY CAST(p.id AS TEXT)) AS parent_ids,
+      STRING_AGG(DISTINCT p.name, '|||' ORDER BY p.name) AS parent_names,
       COUNT(DISTINCT child.id) AS children_count,
       CASE WHEN COUNT(DISTINCT child.id) > 0 THEN 1 ELSE 0 END AS has_children
     FROM categories c
@@ -457,8 +457,9 @@ export const categoryRepository = {
 
     await db.query(
       `
-    INSERT IGNORE INTO category_parents (category_id, parent_id)
+    INSERT INTO category_parents (category_id, parent_id)
     VALUES ${values}
+    ON CONFLICT (category_id, parent_id) DO NOTHING
     `,
       params,
     );

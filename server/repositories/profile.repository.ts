@@ -70,16 +70,16 @@ export async function upsertUserProfile(
         extra_description
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-        national_code = VALUES(national_code),
-        postal_code = VALUES(postal_code),
-        province = VALUES(province),
-        city = VALUES(city),
-        address = VALUES(address),
-        building_number = VALUES(building_number),
-        unit = VALUES(unit),
-        landline_phone = VALUES(landline_phone),
-        extra_description = VALUES(extra_description)
+      ON CONFLICT (user_id) DO UPDATE SET
+        national_code = EXCLUDED.national_code,
+        postal_code = EXCLUDED.postal_code,
+        province = EXCLUDED.province,
+        city = EXCLUDED.city,
+        address = EXCLUDED.address,
+        building_number = EXCLUDED.building_number,
+        unit = EXCLUDED.unit,
+        landline_phone = EXCLUDED.landline_phone,
+        extra_description = EXCLUDED.extra_description
     `,
     [
       userId,

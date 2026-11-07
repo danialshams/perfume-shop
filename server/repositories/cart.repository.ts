@@ -189,9 +189,9 @@ export async function upsertCartItem(
       :quantity,
       :unitPrice
     )
-    ON DUPLICATE KEY UPDATE
-      quantity = quantity + VALUES(quantity),
-      unit_price = VALUES(unit_price),
+    ON CONFLICT (cart_id, variant_id) DO UPDATE SET
+      quantity = cart_items.quantity + EXCLUDED.quantity,
+      unit_price = EXCLUDED.unit_price,
       updated_at = CURRENT_TIMESTAMP
     `,
     {

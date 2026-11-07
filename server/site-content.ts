@@ -11,7 +11,7 @@ export async function readSiteContent():Promise<FertiniSiteContent>{
 }
 export async function writeSiteContent(content:FertiniSiteContent){
  await db.execute(
-  "INSERT INTO storefront_content (id,content_json,updated_at) VALUES (1,?,NOW()) ON DUPLICATE KEY UPDATE content_json=VALUES(content_json),updated_at=NOW()",
+  "INSERT INTO storefront_content (id,content_json,updated_at) VALUES (1,?,NOW()) ON CONFLICT (id) DO UPDATE SET content_json=EXCLUDED.content_json,updated_at=NOW()",
   [JSON.stringify(content)]
  );
 }
