@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { getConnection } from "@/lib/db";
 import { checkoutRepository } from "@/server/repositories/checkout.repository";
+import { adminNotificationRepository } from "@/server/repositories/admin-notification.repository";
 
 const DUPLICATE_MOBILE_MESSAGE = "این شماره همراه قبلاً ثبت شده است";
 
@@ -339,6 +340,16 @@ class CheckoutService {
           throw new Error(`کسر موجودی محصول "${item.product_name}" ناموفق بود`);
         }
       }
+
+      // Every checkout-created order gets a durable notification in the SAME transaction.
+      // The SSE endpoint reads the table across independent serverless instances.
+      await adminNotificationRepository.create({
+        type: "order_created",
+        title: "سفارش جدید ثبت شد",
+        message: `سفارش ${orderNumber} برای ${normalizedFirstName} ${normalizedLastName} ثبت شد`,
+        entity_type: "order",
+        entity_id: orderId,
+      }, connection);
 
       await connection.commit();
 

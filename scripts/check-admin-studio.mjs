@@ -18,6 +18,7 @@ assert.match(read("app/admin/(panel)/media/page.tsx"),/redirect\("\/admin\/produ
 assert.match(read("components/admin/admin-header.tsx"),/NotificationBell previewGuest/);
 assert.match(read("components/panel-sections/notification-bell.tsx"),/PreviewNotificationBell/);
 assert.match(read("server/services/order.service.ts"),/adminNotificationRepository\.create/);
+assert.match(read("server/services/checkout.service.ts"),/adminNotificationRepository\.create/);
 assert.match(read("components/PanelProductManagementComponents/create-product-drawer.tsx"),/onUploadingChange=\{markMediaUpload\}/);
 assert.match(read("components/PanelProductManagementComponents/create-product-drawer.tsx"),/VoiceUploader/);
 assert.match(shell,/fst-mobile-bottom/);
