@@ -158,3 +158,20 @@ jobs:
         run: node scripts/test-postgres-ci.mjs
       - name: Verify PostgreSQL release gate
         run: npm run db:verify
+      - name: Build Next.js with the disposable PostgreSQL database
+        env:
+          JWT_ACCESS_SECRET: "CI-only-Fertini-access-secret-with-40-characters-2026"
+          JWT_REFRESH_SECRET: "CI-only-Fertini-refresh-secret-with-40-characters-2026"
+        run: npm run build
+      - name: Test real HTTP catalog, admin login, content writes and notifications
+        env:
+          JWT_ACCESS_SECRET: "CI-only-Fertini-access-secret-with-40-characters-2026"
+          JWT_REFRESH_SECRET: "CI-only-Fertini-refresh-secret-with-40-characters-2026"
+        run: |
+          npm run start -- -p 3211 > /tmp/fertini-postgres-ci.log 2>&1 &
+          for attempt in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:3211/ >/dev/null; then break; fi
+            sleep 1
+          done
+          node scripts/test-postgres-http-ci.mjs || (cat /tmp/fertini-postgres-ci.log; exit 1)
+
