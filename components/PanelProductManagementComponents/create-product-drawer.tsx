@@ -4,7 +4,7 @@ import { createProduct, uploadProductImage } from "@/lib/api";
 import { getScentFamilies } from "@/lib/product";
 import type { ScentFamily } from "@/lib/product";
 import { toSlug } from "@/lib/utils";
-import { Button, Card, Drawer, Form, Radio } from "antd";
+import { App, Button, Card, Drawer, Form, Radio } from "antd";
 import { useEffect, useState } from "react";
 import ProductBasicInfoFields from "./ProductBasicInfoFields";
 import ProductImagesList from "./ProductImagesList";
@@ -28,6 +28,9 @@ export default function CreateProductDrawer({
     categories,
 }: Props) {
     const [form] = Form.useForm();
+    const {message}=App.useApp();
+    const [mediaUploads,setMediaUploads]=useState(0);
+    const markMediaUpload=(busy:boolean)=>setMediaUploads(value=>Math.max(0,value+(busy?1:-1)));
 
     const [selectedType, setSelectedType] = useState<ProductType | null>(null);
     const [uploadingMap, setUploadingMap] = useState<Record<string, boolean>>(
@@ -44,6 +47,7 @@ export default function CreateProductDrawer({
             setSelectedType(null);
             setUploadingMap({});
             setSubmitting(false);
+            setMediaUploads(0);
             setScentFamilies([]);
             setLoadingScentFamilies(false);
         }
@@ -228,7 +232,9 @@ export default function CreateProductDrawer({
     const handleSubmit = async () => {
         if (!selectedType) return;
 
-        const values = await form.validateFields();
+        if(mediaUploads>0){message.warning("ابتدا منتظر پایان آپلود تصاویر و وویس بمانید.");return;}
+        const values=await form.validateFields().catch(()=>null);
+        if(!values)return;
 
         setSubmitting(true);
 
@@ -296,6 +302,8 @@ export default function CreateProductDrawer({
 
             onSuccess?.();
             onClose();
+        } catch(error) {
+            message.error(error instanceof Error?error.message:"ثبت محصول انجام نشد. اتصال دیتابیس و فایل‌ها را بررسی کنید.");
         } finally {
             setSubmitting(false);
         }
@@ -308,6 +316,7 @@ export default function CreateProductDrawer({
             title="ایجاد محصول"
             width="min(100vw, 1000px)"
             destroyOnClose
+            maskClosable={mediaUploads===0}
             placement="left"
         >
             {!selectedType ? (
@@ -366,15 +375,14 @@ export default function CreateProductDrawer({
                         </div>
                     ) : null}
 
-                    <VoiceUploader
-                        form={form}
-                        validateBeforeUpload={validateVoiceBeforeUpload}
-                    />
-
-                    <ProductImagesList
-                        form={form}
-                        validateBeforeUpload={validateBeforeUpload}
-                    />
+                    <section className="my-6 rounded-2xl border border-[#e5dfd5] bg-[#fdfbf8] p-4 md:p-6" aria-label="رسانه‌های این محصول">
+                        <h3 className="mb-2 text-base font-semibold text-[#39332e]">تصاویر و وویس همین محصول</h3>
+                        <p className="mb-5 text-xs leading-7 text-[#756d65]">تصویر اصلی، گالری عکس و معرفی صوتی اختصاصی این عطر را همین‌جا ثبت کنید. فایل‌های هر محصول به همان محصول متصل می‌شوند.</p>
+                        <ProductImagesList form={form} validateBeforeUpload={validateBeforeUpload} onUploadingChange={markMediaUpload}/>
+                        <div className="my-5 border-t border-[#e8e1d9]"/>
+                        <VoiceUploader form={form} validateBeforeUpload={validateVoiceBeforeUpload} onUploadingChange={markMediaUpload}/>
+                        {mediaUploads>0?<p role="status" className="mt-4 text-xs text-amber-800">آپلود فایل در جریان است؛ تا پایان آن محصول را ثبت نکنید.</p>:null}
+                    </section>
 
                     <ProductVariantsList
                         form={form}
@@ -390,11 +398,12 @@ export default function CreateProductDrawer({
                             بازگشت
                         </Button>
 
-                        <Button onClick={onClose}>انصراف</Button>
+                        <Button onClick={onClose} disabled={mediaUploads>0}>انصراف</Button>
 
                         <Button
                             type="primary"
                             loading={submitting}
+                            disabled={mediaUploads>0}
                             onClick={handleSubmit}
                         >
                             ثبت محصول

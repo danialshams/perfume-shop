@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Form, message, Upload } from "antd";
+import { Button, Form, Input, message, Upload } from "antd";
 import type { FormInstance, UploadProps } from "antd";
 import { FileAudio, Trash2, UploadCloud } from "lucide-react";
 import { uploadProductVoice } from "@/lib/api";
@@ -11,11 +11,13 @@ import {validateMediaMeta} from "@/lib/admin-media-validation";
 type VoiceUploaderProps = {
     form: FormInstance;
     validateBeforeUpload: (file: File) => boolean | Promise<boolean>;
+    onUploadingChange?: (busy:boolean)=>void;
 };
 
 export default function VoiceUploader({
     form,
     validateBeforeUpload,
+    onUploadingChange,
 }: VoiceUploaderProps) {
     const [isUploading, setIsUploading] = useState(false);
 
@@ -26,6 +28,7 @@ export default function VoiceUploader({
 
         try {
             setIsUploading(true);
+            onUploadingChange?.(true);
 
             // گرفتن فایل واقعی از Antd
             const actualFile = file as File;
@@ -55,6 +58,7 @@ export default function VoiceUploader({
             );
         } finally {
             setIsUploading(false);
+            onUploadingChange?.(false);
         }
     };
 
@@ -66,8 +70,9 @@ export default function VoiceUploader({
             : "";
 
     return (
-        <Form.Item label="فایل صوتی معرفی محصول" name="voice_file">
+        <Form.Item label="فایل صوتی معرفی محصول">
             <div className="space-y-3">
+                <Form.Item name="voice_file" noStyle><Input type="hidden"/></Form.Item>
                 {voiceFile ? (
                     <div className="rounded-2xl border border-neutral-200 bg-white p-4">
                         <div className="mb-3 flex items-center gap-2 text-neutral-700">

@@ -11,11 +11,13 @@ import ImageUploadField from "./ImageUploadField";
 type ProductImagesListProps = {
   form: FormInstance;
   validateBeforeUpload: (file: File) => boolean | Promise<boolean>;
+  onUploadingChange?: (busy:boolean)=>void;
 };
 
 export default function ProductImagesList({
   form,
   validateBeforeUpload,
+  onUploadingChange,
 }: ProductImagesListProps) {
   const [uploadingMap, setUploadingMap] = useState<Record<string, boolean>>({});
 
@@ -152,6 +154,7 @@ export default function ProductImagesList({
                       onUpload={async (file) => {
                         try {
                           setImageUploading(uploadKey, true);
+                          onUploadingChange?.(true);
 
                           const uploaded = await uploadProductImage(file);
 
@@ -168,6 +171,7 @@ export default function ProductImagesList({
                           ]);
                         } finally {
                           setImageUploading(uploadKey, false);
+                          onUploadingChange?.(false);
                         }
                       }}
                       onRemove={() => {
