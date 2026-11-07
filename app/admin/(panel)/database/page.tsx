@@ -2,7 +2,7 @@
 import {useEffect,useState} from "react";
 import Link from "next/link";
 import {RefreshCw,Database,AlertTriangle,CheckCircle2} from "lucide-react";
-type Health={connected:boolean;configured:boolean;missingEnv?:string[];tableCount?:number;mediaStorageConfigured?:boolean;unauthorized?:boolean;missingTables?:string[];legacyTables?:string[];
+type Health={connected:boolean;configured:boolean;missingEnv?:string[];tableCount?:number;mediaStorageConfigured?:boolean;unauthorized?:boolean;missingTables?:string[];missingCheckoutOrderColumns?:string[];legacyTables?:string[];
  productStatusPresent?:boolean;stockColumns?:string[];duplicatedForeignKeys?:Array<{table:string;column:string;target:string;count:number}>;message:string};
 export default function DatabaseHealthPage(){
  const [health,setHealth]=useState<Health|null>(null),[loading,setLoading]=useState(true);
@@ -13,6 +13,7 @@ export default function DatabaseHealthPage(){
  useEffect(()=>{load()},[]);
  const warnings=health?.connected?[
   ...(health.missingTables||[]).map(x=>"جدول ضروری موجود نیست: "+x),
+  ...(health.missingCheckoutOrderColumns||[]).map(x=>"ستون موردنیاز ثبت سفارش در orders موجود نیست: "+x),
   ...(health.legacyTables||[]).map(x=>"جدول قدیمی نیازمند بررسی و بکاپ: "+x),
   ...(!health.productStatusPresent?["ستون products.status در دیتابیس وجود ندارد؛ migration شماره ۰۰۱ لازم است."]:[]),
   ...(health.duplicatedForeignKeys||[]).map(x=>"کلید خارجی تکراری: "+x.table+"."+x.column)

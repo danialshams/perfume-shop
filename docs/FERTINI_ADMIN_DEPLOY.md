@@ -6,7 +6,7 @@ The protected admin uses Essential 2's editorial navigation and mobile bottom ba
 ## Staging prerequisites (not applied automatically)
 1. Create an encrypted SQL backup of the actual MySQL/MariaDB database and archive all referenced product, category, slider and voice assets. Do NOT put customer data or password hashes in a public Git repository.
 2. Restore into an isolated staging database. Inspect the legacy dump and compare the live tables. The current audit (`database/MAISON_DB_AUDIT.md`) identifies `categories_old`, `categories_backup`, parallel stock columns and duplicated foreign keys. Do not remove these without reference checks and verified restore.
-3. Apply `database/migrations/001_products_publication_state.sql` only if needed, inspect the result, then apply `database/migrations/002_storefront_content.sql` to enable the homepage editor. Both should be staged/tested before production changes.
+3. Apply `database/migrations/001_products_publication_state.sql` only if needed, inspect the result, then apply `database/migrations/002_storefront_content.sql` to enable the homepage editor. Also apply the additive `database/migrations/003_admin_notifications.sql` on an isolated staging database; verify before any production change.
 4. Configure valid `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` and `DB_NAME` for Vercel Preview and Production. The safe read-only checker at `/admin/database` requires an ADMIN session. Environment variable names being present does not prove connection or credentials work.
 5. Review product, customer, coupon, payment, review and order workflows on sanitized staging data before changing any production records.
 
@@ -47,3 +47,6 @@ The GitHub Action runs static checks, TypeScript, production build, browser scre
 - The bell is displayed in anonymous branch preview but cannot expose customer order details without admin login. An authenticated admin gets SSE/polling with records persisted in MySQL. New-order notifications are inserted transactionally alongside orders from **both** checkoutService and orderService.
 - IMPORTANT: the existing `server/services/payment.service.ts` is a sandbox simulator that intentionally rejects Vercel/production. Even with a connected DB, **live checkout cannot operate until a real payment provider is integrated and verified**. Do not present staging order events as tested live transactions.
 - The Brands and standalone Media admin navigation entries have been removed; the media URL redirects to /admin/products. No existing brand table or API data has been deleted.
+
+## Database schema divergence
+The checked-in `database/schema.sql` lacks `admin_notifications`, so migration 003 adds the table safely. The legacy `orders` table uses `user_id` and does not have `customer_id`, `cart_id`, or `shipping_floor`, which the current checkout repository expects. Simply setting DB credentials will **not** fix schema mismatches. Inspect the actual production schema, prepare a backup, reconcile the checkout schema in staging, and test orders end-to-end. Never run the legacy `database/schema.sql` against live data: it includes destructive DROP TABLE statements.

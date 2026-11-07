@@ -9,6 +9,7 @@ const storage=read("server/storage/save-media.ts");
 const notifications=read("app/api/v1/notifications/stream/route.ts");
 const content=read("app/admin/(panel)/content/page.tsx");
 const migration=read("database/migrations/002_storefront_content.sql");
+const notificationsMigration=read("database/migrations/003_admin_notifications.sql");
 for(const route of ["content","products","categories","orders","sliders","database"]){
  assert.match(sidebar,new RegExp("/admin/"+route));
 }
@@ -33,6 +34,8 @@ assert.match(content,/method:"PUT"/);
 assert.match(read("app/page.tsx"),/readSiteContent/);
 assert.match(migration,/CREATE TABLE IF NOT EXISTS storefront_content/);
 assert.doesNotMatch(migration,/\bDROP\s+TABLE\b/i);
+assert.match(notificationsMigration,/CREATE TABLE IF NOT EXISTS admin_notifications/);
+assert.doesNotMatch(notificationsMigration,/\bDROP\s+TABLE\b/i);
 assert.doesNotMatch(read("app/admin/(panel)/orders/page.tsx"),/deleteOrder\(/);
 assert.match(read("app/admin/(panel)/orders/page.tsx"),/saveAdminNote/);
 assert.match(read("server/services/order.service.ts"),/Payment status is gateway-controlled/);

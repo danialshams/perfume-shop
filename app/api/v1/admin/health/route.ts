@@ -16,7 +16,7 @@ export async function GET(request:NextRequest){
   message:"تنظیمات دیتابیس در این محیط کامل نیست. هیچ تغییری در دیتابیس انجام نشده است."},{status:503});
  try{
   const [tables]=await db.query<TableRow[]>("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()");
-  const [columns]=await db.query<ColRow[]>("SELECT TABLE_NAME,COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME IN ('products','product_variants')");
+  const [columns]=await db.query<ColRow[]>("SELECT TABLE_NAME,COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME IN ('products','product_variants','orders')");
   const [fks]=await db.query<FKRow[]>(`SELECT TABLE_NAME,COLUMN_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME,COUNT(*) AS total
    FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL
    GROUP BY TABLE_NAME,COLUMN_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME HAVING COUNT(*)>1`);
@@ -26,6 +26,7 @@ export async function GET(request:NextRequest){
   return NextResponse.json({connected:true,configured:true,mediaStorageConfigured,tableCount:names.size,
    missingTables:expected.filter(k=>!names.has(k)),legacyTables:legacy,
    productStatusPresent:cols.has("products.status"),
+   missingCheckoutOrderColumns:["customer_id","cart_id","shipping_floor"].filter(k=>!cols.has("orders."+k)),
    stockColumns:["stock","stock_qty"].filter(k=>cols.has("product_variants."+k)),
    duplicatedForeignKeys:fks.map(x=>({table:x.TABLE_NAME,column:x.COLUMN_NAME,target:x.REFERENCED_TABLE_NAME,count:Number(x.total)})),
    message:"این بررسی فقط خواندنی است؛ هیچ داده یا جدولی پاک یا ویرایش نشده است."},
