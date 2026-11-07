@@ -13,8 +13,8 @@ export async function GET(request:NextRequest){
  count("SELECT COUNT(*) AS total FROM products WHERE deleted_at IS NULL"),
  count("SELECT COUNT(*) AS total FROM orders"),
  count("SELECT COUNT(*) AS total FROM categories WHERE deleted_at IS NULL"),
- count("SELECT COUNT(*) AS total FROM users WHERE role='USER' AND deleted_at IS NULL"),
- count("SELECT COUNT(*) AS total FROM admin_notifications WHERE is_read=0"),
+ (async()=>{try{return await count("SELECT COUNT(*) AS total FROM customers WHERE is_active=1")}catch{return count("SELECT COUNT(*) AS total FROM users WHERE role='USER' AND deleted_at IS NULL")}})(),
+ count("SELECT COUNT(*) AS total FROM admin_notifications WHERE is_read=0 AND type='payment_success'"),
  db.query<OrderRow[]>("SELECT id,order_number,customer_name,total_amount,status,created_at FROM orders ORDER BY id DESC LIMIT 5")
  ] as const;
  const result=await Promise.allSettled(queries);

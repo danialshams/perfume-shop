@@ -10,10 +10,10 @@ const notifications=read("app/api/v1/notifications/stream/route.ts");
 const content=read("app/admin/(panel)/content/page.tsx");
 const migration=read("database/migrations/002_storefront_content.sql");
 const notificationsMigration=read("database/migrations/003_admin_notifications.sql");
-for(const route of ["content","products","categories","orders","sliders","database"]){
+for(const route of ["content","products","categories","orders","database"]){
  assert.match(sidebar,new RegExp("/admin/"+route));
 }
-assert.doesNotMatch(sidebar,/\/admin\/(brands|media)/);
+assert.doesNotMatch(sidebar,/\/admin\/(brands|media|sliders)/);
 assert.ok(!existsSync("app/admin/(panel)/brands/page.tsx"),"Brands section must not be a visible admin page");
 assert.match(read("app/admin/(panel)/media/page.tsx"),/redirect\("\/admin\/products"\)/);
 assert.match(read("components/admin/admin-header.tsx"),/NotificationBell previewGuest/);

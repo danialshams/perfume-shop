@@ -343,9 +343,10 @@ export function useProductsPageData() {
 
       if (activeParentId !== null && activeChildId === null) {
         if (links.length > 0) {
-          return links.some(
-            (link) => Number(link.parent_id) === Number(activeParentId),
-          );
+          return links.some((link) =>
+            Number(link.parent_id) === Number(activeParentId) ||
+            Number(link.child_id) === Number(activeParentId),
+          ) || ids.some(id => Number(id) === Number(activeParentId));
         }
 
         return ids.some((id) => Number(id) === Number(activeParentId));
