@@ -9,7 +9,7 @@ export default async function Page() {
   let content = DEFAULT_SITE_CONTENT;
   let products: HomeProduct[] = DEMO_HOME_PRODUCTS;
   let catalogState: "demo" | "database" | "unavailable" = "demo";
-  if (process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER) {
+  if (process.env.DATABASE_URL) {
     catalogState = "unavailable";
     products = [];
     try {

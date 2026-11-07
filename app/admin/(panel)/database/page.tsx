@@ -15,12 +15,12 @@ export default function DatabaseHealthPage(){
   ...(health.missingTables||[]).map(x=>"جدول ضروری موجود نیست: "+x),
   ...(health.missingCheckoutOrderColumns||[]).map(x=>"ستون موردنیاز ثبت سفارش در orders موجود نیست: "+x),
   ...(health.legacyTables||[]).map(x=>"جدول قدیمی نیازمند بررسی و بکاپ: "+x),
-  ...(!health.productStatusPresent?["ستون products.status در دیتابیس وجود ندارد؛ migration شماره ۰۰۱ لازم است."]:[]),
+  ...(!health.productStatusPresent?["ستون products.status در دیتابیس وجود ندارد؛ ساختار PostgreSQL باید همگام شود."]:[]),
   ...(health.duplicatedForeignKeys||[]).map(x=>"کلید خارجی تکراری: "+x.table+"."+x.column)
  ]:[];
  return <div>
   <div className="fst-page-heading"><div><small>INFRASTRUCTURE / READ ONLY</small><h1>سلامت دیتابیس</h1>
-   <p>بررسی امن و فقط‌خواندنی اتصال MySQL و جدول‌ها؛ بدون حذف یا اصلاح خودکار داده‌ها.</p></div>
+   <p>بررسی امن و فقط‌خواندنی اتصال PostgreSQL و جدول‌ها؛ بدون حذف یا اصلاح خودکار داده‌ها.</p></div>
    <button className="fst-btn" type="button" disabled={loading} onClick={load}>بررسی مجدد <RefreshCw size={16}/></button></div>
   <div className="fst-card max-w-3xl">
    <div className="flex items-center gap-3 mb-3">{health?.connected?<CheckCircle2 color="#4d8062"/>:<AlertTriangle color="#b07946"/>}
@@ -33,7 +33,7 @@ export default function DatabaseHealthPage(){
   </div>
   {warnings.length>0?<section className="fst-card mt-4 max-w-3xl"><h2 className="mb-3 font-semibold">موارد نیازمند بررسی</h2>
    {warnings.map((x,i)=><p key={i} className="fst-list-row">{x}</p>)}</section>:null}
-  <p className="fst-notice mt-5 max-w-3xl">ساختار قبلی دارای داده‌های تاریخی و سفارش‌های آزمایشی است. پاک‌سازی امن باید پس از تهیه بکاپ کامل SQL و رسانه‌ها، بررسی وابستگی‌های API و تست migration روی نسخه جداگانه انجام شود. برای اتصال Production نیز متغیرهای DB_HOST، DB_USER، DB_PASSWORD و DB_NAME در محیط Vercel لازم‌اند.</p>
+  <p className="fst-notice mt-5 max-w-3xl">ساختار قبلی دارای داده‌های تاریخی و سفارش‌های آزمایشی است. پاک‌سازی امن باید پس از تهیه بکاپ کامل SQL و رسانه‌ها، بررسی وابستگی‌های API و تست migration روی نسخه جداگانه انجام شود. برای اتصال Production نیز متغیرهای DATABASE_URL در محیط Vercel لازم‌اند.</p>
   <Link href="/admin/dashboard" className="fst-btn mt-5">بازگشت به داشبورد <Database size={15}/></Link>
  </div>;
 }
