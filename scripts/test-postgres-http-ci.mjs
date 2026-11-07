@@ -69,6 +69,37 @@ try{
  const bell=await read("/api/v1/notifications",{headers:auth});
  assert.equal(bell.status,200,"Notifications should read PostgreSQL database");
  const notices=await bell.json();assert.equal(notices.unread_count,0);
+
+ const [family]=await sql.unsafe("SELECT id FROM scent_families WHERE slug='woody'");
+ const cats=await sql.unsafe("SELECT id,slug FROM categories WHERE slug IN ('fertini-woody','fertini-floral')");
+ const parent=Number(cats.find(x=>x.slug==="fertini-woody").id);
+ const child=Number(cats.find(x=>x.slug==="fertini-floral").id);
+ const body={name:"FERTINI QA",slug:"fertini-ci-qa",type:"SINGLE",status:"DRAFT",
+  scent_family_id:Number(family.id),category_id:child,parent_category_id:parent,
+  category_links:[{parent_id:parent,child_id:child}],images:[],
+  variants:[{volume_ml:75,price:190000,stock_qty:4,is_active:true}]};
+ const creation=await read("/api/v1/products",{method:"POST",
+  headers:{...auth,"Content-Type":"application/json"},body:JSON.stringify(body)});
+ assert.equal(creation.status,201,"product create failed "+await creation.text());
+ const record=await creation.json();
+ const id=Number(record.data?.id);
+ assert.ok(id>0);
+ assert.equal((await read("/api/v1/products/"+id)).status,404);
+ const update=await read("/api/v1/products/"+id,{method:"PUT",
+  headers:{...auth,"Content-Type":"application/json"},
+  body:JSON.stringify({status:"ACTIVE",name:"FERTINI QA published"})});
+ assert.equal(update.status,200,"product publish failed "+await update.text());
+ assert.equal((await read("/api/v1/products/"+id)).status,200);
+ const [variant]=await sql.unsafe("SELECT id FROM product_variants WHERE product_id=$1",[id]);
+ const cart=await read("/api/v1/cart/items",{method:"POST",
+  headers:{"Content-Type":"application/json"},body:JSON.stringify({variant_id:Number(variant.id),quantity:1})});
+ assert.equal(cart.status,200,"cart add failed "+await cart.text());
+ const token=(cart.headers.get("set-cookie")||"").match(/cart_token=[^;]+/);
+ assert.ok(token);
+ const cartRead=await read("/api/v1/cart",{headers:{cookie:token[0]}});
+ assert.equal(cartRead.status,200,"cart read failed "+await cartRead.text());
+ const cartJson=await cartRead.json();
+ assert.equal(cartJson.data?.items?.length,1);
  const [dbRow]=await sql.unsafe("SELECT content_json FROM storefront_content WHERE id=1");
  assert.equal(JSON.parse(dbRow.content_json).bestsellerTitle,updated.bestsellerTitle);
  console.log("POSTGRES LIVE HTTP SUCCESS: catalog, admin login, homepage save/read, invalid ID, overview, health, notifications.");
