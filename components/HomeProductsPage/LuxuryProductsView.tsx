@@ -4,7 +4,7 @@ import LuxuryNavbar from "@/components/home-sections/navbar";
 import Image from "next/image";
 import Link from "next/link";
 import { FERTINI_DEMOS, FERTINI_FAMILIES } from "@/lib/fertini-demo";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import type { SortOption } from "@/components/HomeProductsComponnents/MobileSortSheet";
 import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
@@ -17,6 +17,7 @@ export default function LuxuryProductsView() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const familyFromUrl = searchParams.get("family");
+  const categoryFromUrl = searchParams.get("category_id");
   const fallbackCategories = FERTINI_FAMILIES.map((family,index)=>({id:index+9001,name:family.name,slug:family.id,parent_ids:[] as number[],parent_names:[] as string[],has_children:false,is_active:true}));
   const {
     categories,
@@ -33,6 +34,15 @@ export default function LuxuryProductsView() {
     reloadProducts,
     activeScentFamily,
   } = useProductsPageData();
+
+  useEffect(() => {
+    if (!categoryFromUrl || loadingCategories) return;
+    const categoryId = Number(categoryFromUrl);
+    if (Number.isSafeInteger(categoryId) && categoryId > 0 && categories.some(x => x.id === categoryId)) {
+      setActiveParentId(categoryId);
+      setActiveChildId(null);
+    }
+  }, [categoryFromUrl, categories, loadingCategories, setActiveParentId, setActiveChildId]);
 
   const orderedProducts = useMemo(() => {
     if (selectedSort === "newest") return filteredProducts;

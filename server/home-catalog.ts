@@ -40,6 +40,10 @@ export async function listHomeProducts(): Promise<HomeProduct[]> {
     featured: Boolean(row.is_featured), isDemo: false,
   }));
 }
+export async function listHomeCategories(): Promise<Array<{ id: number; name: string }>> {
+  const [rows] = await db.query<FamilyRow[]>("SELECT id,name FROM categories WHERE deleted_at IS NULL AND is_active=1 ORDER BY name ASC LIMIT 200");
+  return rows.map(x => ({ id: Number(x.id), name: x.name }));
+}
 export async function listHomeScentFamilies(): Promise<Array<{ id: number; name: string }>> {
   const [rows] = await db.query<FamilyRow[]>("SELECT id,name FROM scent_families WHERE is_active=1 ORDER BY name ASC LIMIT 100");
   return rows.map(x => ({ id: Number(x.id), name: x.name }));

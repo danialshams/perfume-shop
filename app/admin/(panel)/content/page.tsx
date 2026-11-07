@@ -22,6 +22,7 @@ export default function AdminContentPage() {
   const [content, setContent] = useState<FertiniSiteContent>(DEFAULT_SITE_CONTENT);
   const [products, setProducts] = useState<HomeProduct[]>(DEMO_HOME_PRODUCTS);
   const [scentFamilies, setScentFamilies] = useState<Array<{ id: number; name: string }>>([]);
+  const [categories, setCategories] = useState<Array<{ id: number; name: string }>>([]);
   const [assets, setAssets] = useState<Asset[]>([
     ...DEFAULT_SITE_CONTENT.heroSlides.map((x, i) => ({ url: x.photo, label: "هیرو " + (i + 1) })),
     ...DEMO_HOME_PRODUCTS.map(x => ({ url: x.image, label: x.name })),
@@ -69,6 +70,7 @@ export default function AdminContentPage() {
       setSnapshot(JSON.stringify(result.content));
       setProducts(result.products);
       setScentFamilies(Array.isArray(result.scentFamilies) ? result.scentFamilies : []);
+      setCategories(Array.isArray(result.categories) ? result.categories : []);
       setConnected(true);
       setPreviewSlide(0);
     } catch (e) {
@@ -319,11 +321,19 @@ export default function AdminContentPage() {
                 {assetOptions(family.photo).map(x => <option key={x.url} value={x.url}>{x.label}</option>)}
               </select></label>
             <label className="fst-field">مقصد کارت (فهرست رایحه‌های ثبت‌شده)
-              <select value={family.scentFamilyId ?? ""} onChange={e => setFamily(index, {
-                scentFamilyId: e.target.value ? Number(e.target.value) : null,
-              })}>
+              <select value={family.categoryId ? "category:" + family.categoryId : family.scentFamilyId ? "scent:" + family.scentFamilyId : ""}
+                onChange={e => {
+                  const [kind, id] = e.target.value.split(":");
+                  setFamily(index, { categoryId: kind === "category" ? Number(id) : null,
+                    scentFamilyId: kind === "scent" ? Number(id) : null });
+                }}>
                 <option value="">تمام عطرها</option>
-                {scentFamilies.map(x => <option value={x.id} key={x.id}>{x.name}</option>)}
+                <optgroup label="دسته‌بندی‌های واقعی فروشگاه">
+                  {categories.map(x => <option value={"category:" + x.id} key={x.id}>{x.name}</option>)}
+                </optgroup>
+                {scentFamilies.length > 0 ? <optgroup label="خانواده‌های رایحه">
+                  {scentFamilies.map(x => <option value={"scent:" + x.id} key={x.id}>{x.name}</option>)}
+                </optgroup> : null}
               </select></label>
             <label className="fst-btn cursor-pointer w-fit">آپلود تصویر <UploadCloud size={15}/>
               <input className="sr-only" type="file" accept=".jpg,.jpeg,.png,.webp"

@@ -127,7 +127,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
       <div className="fertini-v5-families__grid">
         {content.families.map((family,index)=><Link key={family.id}
           href={catalogState==="database"
-            ?(family.scentFamilyId?"/products?scent_family_id="+family.scentFamilyId:"/products")
+            ?(family.categoryId?"/products?category_id="+family.categoryId:family.scentFamilyId?"/products?scent_family_id="+family.scentFamilyId:"/products")
             :"/products?family="+family.id}
           className={"fertini-v5-family fertini-v5-family--"+family.id} data-fertini-card>
           <div data-fertini-photo data-photo-entrance={(["right","up","fade"] as const)[index%3]} className="fertini-v5-family__photo">

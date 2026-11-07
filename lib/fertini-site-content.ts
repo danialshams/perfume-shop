@@ -28,6 +28,7 @@ export const contentSchema = z.object({
     id: familyId, name: z.string().trim().min(2).max(60),
     subtitle: z.string().trim().min(2).max(80),
     photo, scentFamilyId: z.number().int().positive().nullable(),
+    categoryId: z.number().int().positive().nullable(),
   }).strict()).length(3).refine(families => new Set(families.map(x => x.id)).size === 3, "خانواده رایحه تکراری است"),
   sectionOrder: z.array(homepageSection).length(3).refine(sections => new Set(sections).size === 3, "ترتیب بخش‌ها معتبر نیست"),
   sectionVisibility: z.object({ bestsellers: z.boolean(), latest: z.boolean(), families: z.boolean() }).strict(),
@@ -51,7 +52,7 @@ export const DEFAULT_SITE_CONTENT: FertiniSiteContent = {
   familyTitle: "دسته‌بندی رایحه‌ها",
   familyDescription: "انتخاب را از حال‌وهوای خودتان آغاز کنید.",
   families: FERTINI_FAMILIES.map(x => ({
-    id: x.id, name: x.name, subtitle: x.subtitle, photo: x.image, scentFamilyId: null,
+    id: x.id, name: x.name, subtitle: x.subtitle, photo: x.image, scentFamilyId: null, categoryId: null,
   })),
   sectionOrder: ["bestsellers", "latest", "families"],
   sectionVisibility: { bestsellers: true, latest: true, families: true },
@@ -65,6 +66,9 @@ export function parseContent(raw: unknown): FertiniSiteContent {
   const obj = raw as Record<string, unknown>;
   const parsed = contentSchema.safeParse({
     ...DEFAULT_SITE_CONTENT, ...obj,
+    families: (Array.isArray(obj.families) ? obj.families : DEFAULT_SITE_CONTENT.families).map((item, index) => ({
+      ...DEFAULT_SITE_CONTENT.families[index], ...(item && typeof item === "object" ? item : {}),
+    })),
     sectionVisibility: { ...DEFAULT_SITE_CONTENT.sectionVisibility,
       ...(obj.sectionVisibility && typeof obj.sectionVisibility === "object" ? obj.sectionVisibility : {}) },
   });
