@@ -145,6 +145,7 @@ jobs:
     env:
       CI: "true"
       FERTINI_PG_TEST: isolated-disposable
+      FERTINI_BOOTSTRAP_TOKEN: "ci-setup-code-at-least-forty-characters-never-use-in-real-life"
       DATABASE_URL: postgresql://postgres:ci-only-postgres-password@127.0.0.1:5432/fertini_ci
     steps:
       - uses: actions/checkout@v4

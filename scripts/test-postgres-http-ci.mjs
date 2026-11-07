@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import postgres from "postgres";
-import bcrypt from "bcryptjs";
 const base="http://127.0.0.1:3211";
 const url=process.env.DATABASE_URL||"";
 if(process.env.CI!=="true"||process.env.FERTINI_PG_TEST!=="isolated-disposable"||!url.includes("127.0.0.1:5432/fertini_ci")) {
@@ -9,8 +8,15 @@ if(process.env.CI!=="true"||process.env.FERTINI_PG_TEST!=="isolated-disposable"|
 const sql=postgres(url,{max:1});
 const mail="ci-fertini-admin@example.invalid",password="ci-not-a-real-password-2026";
 try{
- const hash=await bcrypt.hash(password,10);
- await sql.unsafe("INSERT INTO users (full_name,email,password_hash,role,status,is_active) VALUES ('CI FERTINI', $1,$2,'ADMIN','ACTIVE',1)",[mail,hash]);
+ const setupBody={full_name:"CI FERTINI",email:mail,password,setup_code:process.env.FERTINI_BOOTSTRAP_TOKEN};
+ const setup=await fetch(base+"/api/v1/admin/initialize",{
+  method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(setupBody),
+ });
+ assert.equal(setup.status,201,"One-time first owner setup failed: "+await setup.text());
+ const duplicate=await fetch(base+"/api/v1/admin/initialize",{
+  method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(setupBody),
+ });
+ assert.equal(duplicate.status,409,"First owner setup must not run twice");
  const read=async(path,init)=>fetch(base+path,init);
  const home=await read("/");
  assert.equal(home.status,200,"Home must render with active PostgreSQL catalog");
