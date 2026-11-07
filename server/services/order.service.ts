@@ -14,6 +14,7 @@ import { paymentRepository } from "@/server/repositories/payment.repository";
 import { paymentService } from "@/server/services/payment.service";
 import type { CreateOrderInput } from "@/server/validations/order.validation";
 import { db } from "@/lib/db";
+import { adminNotificationRepository } from "@/server/repositories/admin-notification.repository";
 
 export type CreateOrderPayload = CreateOrderInput & {
   customer_id: number;
@@ -393,6 +394,16 @@ export const orderService = {
         },
         connection,
       );
+
+      // Persist the order notification in the SAME transaction as the order.
+      // SSE reads durable MySQL records across Vercel instances; no in-memory event is required.
+      await adminNotificationRepository.create({
+        type: "order_created",
+        title: "سفارش جدید ثبت شد",
+        message: `سفارش #${orderId} برای ${data.customer_name} ثبت شد`,
+        entity_type: "order",
+        entity_id: orderId,
+      }, connection);
 
       await connection.commit();
 

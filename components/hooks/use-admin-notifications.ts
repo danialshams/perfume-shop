@@ -5,6 +5,7 @@ export type AdminNotification={id:number;type:string;title:string;message:string
 type ResponseData={items:AdminNotification[];unread_count:number};
 export function useAdminNotifications(){
  const [items,setItems]=useState<AdminNotification[]>([]);
+ const [unreadTotal,setUnreadTotal]=useState(0);
  const [connection,setConnection]=useState<"connecting"|"live"|"polling"|"offline">("connecting");
  const [hasNewEffect,setHasNewEffect]=useState(false);
  const seen=useRef(new Set<number>()),initial=useRef(false),effectTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
@@ -14,7 +15,9 @@ export function useAdminNotifications(){
    next.forEach(n=>known.set(n.id,n));
    return [...known.values()].sort((a,b)=>b.id-a.id).slice(0,20);
   });
-  if(initial.current&&next.some(n=>!seen.current.has(n.id)&&n.is_read===0)){
+  const newUnread=initial.current?next.filter(n=>!seen.current.has(n.id)&&n.is_read===0).length:0;
+  if(newUnread>0){
+   setUnreadTotal(count=>count+newUnread);
    setHasNewEffect(true);
    if(effectTimer.current)clearTimeout(effectTimer.current);
    effectTimer.current=setTimeout(()=>setHasNewEffect(false),1300);
@@ -27,6 +30,7 @@ export function useAdminNotifications(){
    if(!r.ok)throw Error("Unavailable");
    const d=await r.json() as ResponseData;
    if(!Array.isArray(d.items))throw Error("Invalid response");
+   setUnreadTotal(Number(d.unread_count||0));
    setItems(prev=>{
     const incoming=new Map(d.items.map(n=>[n.id,n]));
     // The database is the source of truth for reads, deletes and events.
@@ -80,6 +84,6 @@ export function useAdminNotifications(){
  const deleteOne=(id:number)=>request(`/api/v1/notifications/${id}`,"DELETE");
  const deleteAll=()=>request("/api/v1/notifications","DELETE");
  const unreadItems=useMemo(()=>items.filter(n=>n.is_read===0),[items]);
- return{items,unreadItems,unreadCount:unreadItems.length,hasNewEffect,connection,
+ return{items,unreadItems,unreadCount:unreadTotal,hasNewEffect,connection,
   loadInitial,markAllAsRead,markOneAsRead,deleteOne,deleteAll};
 }
