@@ -8,6 +8,8 @@ if(process.env.CI!=="true"||process.env.FERTINI_PG_TEST!=="isolated-disposable"|
 const sql=postgres(url,{max:1});
 const mail="ci-fertini-admin@example.invalid",password="ci-not-a-real-password-2026";
 try{
+ const setupPage=await fetch(base+"/admin/setup",{redirect:"manual"});
+ assert.equal(setupPage.status,200,"First owner setup must not redirect to admin login");
  const setupBody={full_name:"CI FERTINI",email:mail,password,setup_code:process.env.FERTINI_BOOTSTRAP_TOKEN};
  const setup=await fetch(base+"/api/v1/admin/initialize",{
   method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(setupBody),

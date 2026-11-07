@@ -50,6 +50,11 @@ export function proxy(request: NextRequest) {
   const userAuthPage = pathname === "/auth";
 
   if (isAdminRoute) {
+    // First owner must be able to open the one-time setup screen without a session.
+    // The POST API still requires the high-entropy server-only setup code.
+    if (pathname === "/admin/setup" && process.env.FERTINI_BOOTSTRAP_TOKEN) {
+      return NextResponse.next();
+    }
     // Public shell navigation for the isolated preview branch only.
     // Admin data APIs remain separately protected by requireAdmin().
     if(isFertiniPreviewGuestEnabled())return NextResponse.next();
