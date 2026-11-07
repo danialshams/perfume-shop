@@ -9,7 +9,7 @@ const names:Record<string,string>={
  media:"مدیریت رسانه",database:"سلامت دیتابیس",customers:"مشتریان",payments:"تراکنش‌ها",
  reviews:"دیدگاه‌ها",coupons:"کدهای تخفیف",brands:"برندها"
 };
-export default function AdminHeader({onMenuClick}:{onMenuClick?:()=>void}){
+export default function AdminHeader({onMenuClick,previewGuest=false}:{onMenuClick?:()=>void;previewGuest?:boolean}){
  const pathname=usePathname(),router=useRouter(),[busy,setBusy]=useState(false);
  const current=names[pathname.split("/")[2]||"dashboard"]||"مدیریت";
  async function logout(){
@@ -24,9 +24,11 @@ export default function AdminHeader({onMenuClick}:{onMenuClick?:()=>void}){
   </div>
   <div className="fst-top-actions">
    <a href="/" target="_blank" rel="noreferrer" className="fst-visit">مشاهده سایت <ArrowUpLeft size={16}/></a>
-   <NotificationBell/>
-   <button type="button" onClick={()=>void logout()} disabled={busy} className="fst-exit" aria-label="خروج از پنل" title="خروج">
-    <LogOut size={18}/><span>خروج</span></button>
+   {previewGuest?<span className="text-[11px] text-[#887c6e] leading-5" role="status">پیش‌نمایش بدون ورود</span>:<>
+    <NotificationBell/>
+    <button type="button" onClick={()=>void logout()} disabled={busy} className="fst-exit" aria-label="خروج از پنل" title="خروج">
+     <LogOut size={18}/><span>خروج</span></button>
+   </>}
   </div>
  </header>;
 }

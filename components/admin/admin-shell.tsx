@@ -12,7 +12,7 @@ const shortcuts=[
  {href:"/admin/products",title:"محصولات",icon:Package},
  {href:"/admin/orders",title:"سفارش‌ها",icon:ShoppingBag},
 ] as const;
-export default function AdminShell({children}:{children:ReactNode}){
+export default function AdminShell({children,previewGuest=false}:{children:ReactNode;previewGuest?:boolean}){
  const [open,setOpen]=useState(false);
  const pathname=usePathname();
  useEffect(()=>setOpen(false),[pathname]);
@@ -31,7 +31,7 @@ export default function AdminShell({children}:{children:ReactNode}){
   </aside>
   {open&&<button type="button" className="fst-overlay" aria-label="بستن منوی مدیریت" onClick={()=>setOpen(false)}/>}
   <div className="fst-workspace">
-   <AdminHeader onMenuClick={()=>setOpen(true)}/>
+   <AdminHeader onMenuClick={()=>setOpen(true)} previewGuest={previewGuest}/>
    <main id="admin-main" className="fst-main">{children}</main>
   </div>
   <nav className="fst-mobile-bottom" aria-label="دسترسی سریع مدیریت">
