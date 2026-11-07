@@ -2,6 +2,7 @@ import type {ReactNode} from "react";
 import {headers} from "next/headers";
 import {redirect} from "next/navigation";
 import {requireAuth} from "@/server/middlewares/auth";
+import {isFertiniPreviewGuestEnabled} from "@/server/admin-preview-guest";
 import AdminShell from "@/components/admin/admin-shell";
 import AdminAntdProvider from "@/components/panel-sections/admin-antd-provider";
 import "./fertini-studio.css";
@@ -13,6 +14,7 @@ export default async function AdminPanelLayout({children}:{children:ReactNode}){
   const user=await requireAuth(new Request("http://localhost/admin",{headers:current}));
   allowed=user.role==="ADMIN";
  }catch{}
- if(!allowed)redirect("/admin/login");
- return <AdminAntdProvider><AdminShell>{children}</AdminShell></AdminAntdProvider>;
+ const previewGuest=!allowed&&isFertiniPreviewGuestEnabled();
+ if(!allowed&&!previewGuest)redirect("/admin/login");
+ return <AdminAntdProvider><AdminShell previewGuest={previewGuest}>{children}</AdminShell></AdminAntdProvider>;
 }
