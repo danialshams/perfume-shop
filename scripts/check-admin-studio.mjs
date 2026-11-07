@@ -20,6 +20,13 @@ assert.match(read("components/admin/admin-header.tsx"),/NotificationBell preview
 assert.match(read("components/panel-sections/notification-bell.tsx"),/PreviewNotificationBell/);
 assert.match(read("server/services/order.service.ts"),/adminNotificationRepository\.create/);
 assert.match(read("server/services/checkout.service.ts"),/adminNotificationRepository\.create/);
+const legacyPool=read("server/db/mysql.ts");
+const dbPool=read("lib/db.ts");
+assert.match(legacyPool,/export \{ db, getConnection \} from "@\/lib\/db"/);
+assert.doesNotMatch(legacyPool,/createPool/);
+assert.match(dbPool,/DB_SSL_MODE/);
+assert.match(dbPool,/DB_POOL_LIMIT/);
+assert.match(dbPool,/connectTimeout/);
 assert.match(read("components/PanelProductManagementComponents/create-product-drawer.tsx"),/onUploadingChange=\{markMediaUpload\}/);
 assert.match(read("components/PanelProductManagementComponents/create-product-drawer.tsx"),/VoiceUploader/);
 assert.match(shell,/fst-mobile-bottom/);
