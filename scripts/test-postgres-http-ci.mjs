@@ -44,7 +44,11 @@ try{
  assert.equal(data.source,"database");
  assert.equal(data.products.length,12);
  assert.equal(data.content.bestsellerIds.length,6);
- const updated={...data.content,bestsellerTitle:"محصولات منتخب آزمایش PostgreSQL"};
+ const updated={...data.content,bestsellerTitle:"محصولات منتخب آزمایش PostgreSQL",
+   latestTitle:"جدیدترین‌ها از پنل",footerCaption:"فوتر متصل به دیتابیس",
+   heroSlides:data.content.heroSlides.slice(0,2).map((slide,index)=>({
+     ...slide,alt:index===0?"FERTINI FIRST ADMIN EDIT":"FERTINI SECOND ADMIN EDIT"
+   })),sectionOrder:["latest","bestsellers","families"]};
  const save=await read("/api/v1/admin/content",{
   method:"PUT",headers:{...auth,"Content-Type":"application/json"},
   body:JSON.stringify(updated),
@@ -53,6 +57,14 @@ try{
  const after=await read("/api/v1/admin/content",{headers:auth});
  const reloaded=await after.json();
  assert.equal(reloaded.content.bestsellerTitle,updated.bestsellerTitle,"Homepage setting was not persisted");
+ const renderedHome=await read("/");
+ assert.equal(renderedHome.status,200);
+ const renderedHtml=await renderedHome.text();
+ for(const expected of [updated.bestsellerTitle,updated.latestTitle,updated.footerCaption,updated.heroSlides[0].alt]){
+   assert.ok(renderedHtml.includes(expected),"Homepage must reflect saved admin content: "+expected);
+ }
+ assert.ok(renderedHtml.indexOf(updated.latestTitle)<renderedHtml.indexOf(updated.bestsellerTitle),
+   "Homepage must respect saved section order");
  const invalid={...updated,bestsellerIds:["db:999999999"]};
  const denied=await read("/api/v1/admin/content",{
   method:"PUT",headers:{...auth,"Content-Type":"application/json"},
@@ -91,6 +103,17 @@ try{
   body:JSON.stringify({status:"ACTIVE",name:"FERTINI QA published"})});
  assert.equal(update.status,200,"product publish failed "+await update.text());
  assert.equal((await read("/api/v1/products/"+id)).status,200);
+ const visible=await read("/api/v1/admin/content",{headers:auth});
+ assert.equal(visible.status,200);
+ const selected={...(await visible.json()).content,bestsellerIds:["db:"+id]};
+ const chosen=await read("/api/v1/admin/content",{method:"PUT",
+   headers:{...auth,"Content-Type":"application/json"},body:JSON.stringify(selected)});
+ assert.equal(chosen.status,200,"Newly published product must be selectable in admin");
+ const productHome=await read("/");
+ assert.equal(productHome.status,200);
+ const productHtml=await productHome.text();
+ assert.ok(productHtml.includes("FERTINI QA published"),"Published product should render on homepage");
+ assert.ok(productHtml.includes("/products/"+id),"Home links to its real database product");
  const [variant]=await sql.unsafe("SELECT id FROM product_variants WHERE product_id=$1",[id]);
  const cart=await read("/api/v1/cart/items",{method:"POST",
   headers:{"Content-Type":"application/json"},body:JSON.stringify({variant_id:Number(variant.id),quantity:1})});
@@ -101,7 +124,24 @@ try{
  assert.equal(cartRead.status,200,"cart read failed "+await cartRead.text());
  const cartJson=await cartRead.json();
  assert.equal(cartJson.data?.items?.length,1);
+ // Editing the hero and headings must work even before publishing any products.
+ await sql.unsafe("UPDATE products SET status='DRAFT'");
+ const empty=await read("/api/v1/admin/content",{headers:auth});
+ assert.equal(empty.status,200);
+ const state=await empty.json();
+ assert.equal(state.products.length,0);
+ assert.deepEqual(state.content.bestsellerIds,[]);
+ assert.deepEqual(state.content.latestIds,[]);
+ const copy={...state.content,bestsellerTitle:"هیرو و متن‌ها بدون محصول"};
+ const saveEmpty=await read("/api/v1/admin/content",{
+   method:"PUT",headers:{...auth,"Content-Type":"application/json"},body:JSON.stringify(copy)});
+ assert.equal(saveEmpty.status,200,"Empty catalog should still permit homepage editing");
+ const emptyHome=await read("/");
+ assert.equal(emptyHome.status,200);
+ const emptyHtml=await emptyHome.text();
+ assert.ok(emptyHtml.includes(copy.bestsellerTitle));
+ assert.ok(!emptyHtml.includes("FERTINI QA published"),"Draft products must be hidden");
  const [dbRow]=await sql.unsafe("SELECT content_json FROM storefront_content WHERE id=1");
- assert.equal(JSON.parse(dbRow.content_json).bestsellerTitle,updated.bestsellerTitle);
+ assert.equal(JSON.parse(dbRow.content_json).bestsellerTitle,copy.bestsellerTitle);
  console.log("POSTGRES LIVE HTTP SUCCESS: catalog, admin login, homepage save/read, invalid ID, overview, health, notifications.");
 }finally{await sql.end();}
