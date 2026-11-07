@@ -1,6 +1,7 @@
 // proxy.ts
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/server/utils/jwt";
+import {isFertiniPreviewGuestEnabled} from "@/server/admin-preview-guest";
 import {
   ADMIN_ACCESS_COOKIE_NAME,
   USER_ACCESS_COOKIE_NAME,
@@ -49,6 +50,10 @@ export function proxy(request: NextRequest) {
   const userAuthPage = pathname === "/auth";
 
   if (isAdminRoute) {
+    // Public shell navigation for the isolated preview branch only.
+    // Admin data APIs remain separately protected by requireAdmin().
+    if(isFertiniPreviewGuestEnabled())return NextResponse.next();
+
     const token = request.cookies.get(ADMIN_ACCESS_COOKIE_NAME)?.value;
     const validAdminToken = verifyTokenWithRole(token, "ADMIN");
 
