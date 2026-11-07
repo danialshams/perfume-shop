@@ -30,7 +30,7 @@ export async function GET(request:NextRequest){
    send({type:"connected"});
    void sync();
    // Check durable MySQL records: works across independent Vercel instances.
-   ticker=setInterval(()=>{void sync();send({type:"heartbeat"})},8000);
+   ticker=setInterval(()=>{void sync();send({type:"heartbeat"})},2000);
   },cancel(){stopped=true;if(ticker)clearInterval(ticker)}
  });
  return new Response(stream,{headers:{"Content-Type":"text/event-stream; charset=utf-8","Cache-Control":"no-cache, no-store",

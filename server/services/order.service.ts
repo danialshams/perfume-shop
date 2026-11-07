@@ -395,16 +395,6 @@ export const orderService = {
         connection,
       );
 
-      // Persist the order notification in the SAME transaction as the order.
-      // SSE reads durable MySQL records across Vercel instances; no in-memory event is required.
-      await adminNotificationRepository.create({
-        type: "order_created",
-        title: "سفارش جدید ثبت شد",
-        message: `سفارش #${orderId} برای ${data.customer_name} ثبت شد`,
-        entity_type: "order",
-        entity_id: orderId,
-      }, connection);
-
       await connection.commit();
 
       const createdOrder = await this.getByIdForUser(data.customer_id, orderId);
@@ -513,6 +503,14 @@ export const orderService = {
             await clearCartItems(cart.id, connection);
           }
         }
+        // The ONLY sale notification is persisted atomically after a verified payment.
+        await adminNotificationRepository.create({
+          type: "payment_success",
+          title: "پرداخت سفارش تأیید شد",
+          message: "سفارش #" + params.orderId + " با موفقیت پرداخت شد.",
+          entity_type: "order",
+          entity_id: params.orderId,
+        }, connection);
       } else {
         for (const item of orderItems) {
           const released = await productVariantRepository.releaseReservedStock(

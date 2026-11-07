@@ -323,7 +323,7 @@ export const orderRepository = {
   ): Promise<OrderEntity | null> {
     const conn = connection || db;
     const [rows] = await conn.execute<OrderEntity[]>(
-      `SELECT * FROM orders WHERE id = ?`,
+      connection ? "SELECT * FROM orders WHERE id = ? FOR UPDATE" : "SELECT * FROM orders WHERE id = ?",
       [id],
     );
     return rows.length > 0 ? rows[0] : null;

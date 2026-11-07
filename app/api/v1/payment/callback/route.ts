@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { paymentRepository } from "@/server/repositories/payment.repository";
 import { paymentService } from "@/server/services/payment.service";
-import { adminNotificationService } from "@/server/services/admin-notification.service";
+import { adminNotificationRepository } from "@/server/repositories/admin-notification.repository";
 import type { RowDataPacket } from "mysql2/promise";
 
 type OrderCartRow = RowDataPacket & {
@@ -77,6 +77,16 @@ export async function GET(request: NextRequest) {
 
       try {
         await connection.beginTransaction();
+        // Serialize success callbacks per order. A duplicate callback cannot create a second sale alert.
+        const [locked] = await connection.execute<RowDataPacket[]>(
+          "SELECT id, payment_status FROM orders WHERE id = ? FOR UPDATE",
+          [payment.order_id],
+        );
+        if (!locked.length) throw new Error("Order not found");
+        if (locked[0].payment_status === "PAID") {
+          await connection.commit();
+          return NextResponse.redirect(new URL("/payment/result?status=success&order_id=" + payment.order_id, request.url));
+        }
 
         await connection.execute(
           `
@@ -134,28 +144,22 @@ export async function GET(request: NextRequest) {
           );
         }
 
+        // Commit the verified payment and its notification in ONE transaction.
+        await adminNotificationRepository.create({
+          type: "payment_success",
+          title: "پرداخت سفارش تأیید شد",
+          message: "سفارش " + (orderInfo?.order_number || payment.order_id) +
+            (orderInfo?.customer_name ? " برای " + orderInfo.customer_name : "") +
+            " پرداخت شد.",
+          entity_type: "order",
+          entity_id: payment.order_id,
+        }, connection);
         await connection.commit();
       } catch (error) {
         await connection.rollback();
         throw error;
       } finally {
         connection.release();
-      }
-
-      // ساخت و پخش نوتیفیکیشن پرداخت موفق خارج از بلاک ترنزاکشن اصلی
-      if (orderInfo) {
-        try {
-          await adminNotificationService.createPaymentStatusNotification({
-            orderId: payment.order_id,
-            orderNumber: orderInfo.order_number,
-            customerName: orderInfo.customer_name,
-            status: "SUCCESS",
-            transactionId: verification.transactionId,
-            refId: verification.refId,
-          });
-        } catch (notifErr) {
-          console.error("[PAYMENT_CALLBACK][NOTIFY_SUCCESS_ERROR]", notifErr);
-        }
       }
 
       return NextResponse.redirect(
@@ -185,22 +189,6 @@ export async function GET(request: NextRequest) {
       `,
       [failedStatus, payment.order_id],
     );
-
-    // ساخت و پخش نوتیفیکیشن پرداخت ناموفق یا لغو شده
-    if (orderInfo) {
-      try {
-        await adminNotificationService.createPaymentStatusNotification({
-          orderId: payment.order_id,
-          orderNumber: orderInfo.order_number,
-          customerName: orderInfo.customer_name,
-          status: failedStatus,
-          transactionId: null,
-          refId: null,
-        });
-      } catch (notifErr) {
-        console.error("[PAYMENT_CALLBACK][NOTIFY_FAILED_ERROR]", notifErr);
-      }
-    }
 
     return NextResponse.redirect(
       new URL(

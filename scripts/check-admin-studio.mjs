@@ -18,8 +18,11 @@ assert.ok(!existsSync("app/admin/(panel)/brands/page.tsx"),"Brands section must 
 assert.match(read("app/admin/(panel)/media/page.tsx"),/redirect\("\/admin\/products"\)/);
 assert.match(read("components/admin/admin-header.tsx"),/NotificationBell previewGuest/);
 assert.match(read("components/panel-sections/notification-bell.tsx"),/PreviewNotificationBell/);
-assert.match(read("server/services/order.service.ts"),/adminNotificationRepository\.create/);
-assert.match(read("server/services/checkout.service.ts"),/adminNotificationRepository\.create/);
+assert.match(read("server/services/order.service.ts"), /type: "payment_success"/);
+assert.doesNotMatch(read("server/services/checkout.service.ts"), /type: "order_created"/);
+assert.doesNotMatch(read("server/services/order.service.ts"), /type: "order_created"/);
+assert.match(read("app/api/v1/payment/callback/route.ts"), /payment_success/);
+assert.match(read("app/api/v1/payment/callback/route.ts"), /FOR UPDATE/);
 const legacyPool=read("server/db/mysql.ts");
 const dbPool=read("lib/db.ts");
 assert.match(legacyPool,/export \{ db, getConnection \} from "@\/lib\/db"/);
