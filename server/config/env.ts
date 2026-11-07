@@ -3,11 +3,8 @@
   appName: process.env.APP_NAME || "Perfume Shop",
   appUrl: process.env.APP_URL || "http://localhost:3000",
 
-  dbHost: process.env.DB_HOST || "",
-  dbPort: Number(process.env.DB_PORT || 3306),
-  dbName: process.env.DB_NAME || "",
-  dbUser: process.env.DB_USER || "",
-  dbPassword: process.env.DB_PASSWORD || "",
+  // Use a single standard PostgreSQL URL on Vercel and on the future Node.js host.
+  databaseUrl: process.env.DATABASE_URL || "",
 
   jwtAccessSecret: process.env.JWT_ACCESS_SECRET || "",
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || "",
