@@ -1,135 +1,362 @@
 "use client";
-import {useEffect,useState,type FormEvent} from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import {FERTINI_DEMOS} from "@/lib/fertini-demo";
-import {DEFAULT_SITE_CONTENT,type FertiniSiteContent} from "@/lib/fertini-site-content";
-import {Save,RefreshCw,ArrowUp,ArrowDown,Image as ImageIcon,Package,UploadCloud,Smartphone,Monitor} from "lucide-react";
-import {uploadAdminFile} from "@/lib/admin-upload-client";
-type Keys="bestsellerIds"|"latestIds";
-export default function AdminContentPage(){
- const [content,setContent]=useState<FertiniSiteContent>(DEFAULT_SITE_CONTENT);
- const [viewport,setViewport]=useState<"desktop"|"mobile">("desktop");
- const [assets,setAssets]=useState<Array<{url:string;label:string}>>([
-  ...DEFAULT_SITE_CONTENT.heroSlides.map((x,i)=>({url:x.photo,label:"هیرو "+(i+1)})),
-  ...FERTINI_DEMOS.map(x=>({url:x.image,label:x.name}))
- ]);
- const [uploadingSlide,setUploadingSlide]=useState<number|null>(null);
- useEffect(()=>{
-  fetch("/api/v1/admin/media-assets",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(data=>{
-   if(Array.isArray(data?.items))setAssets(prev=>[...new Map([...prev,...data.items].map((a:{url:string;label:string})=>[a.url,a])).values()]);
-  }).catch(()=>{});
- },[]);
- const [error,setError]=useState(""),[success,setSuccess]=useState(""),[busy,setBusy]=useState(false),[connected,setConnected]=useState(false);
- async function load(){
-  setBusy(true);setError("");setSuccess("");
-  try{const r=await fetch("/api/v1/admin/content",{cache:"no-store"});
-   const data=await r.json().catch(()=>null);if(!r.ok)throw Error(data?.error||"اتصال دیتابیس محتوای سایت برقرار نیست.");if(!data)throw Error("داده‌های محتوا دریافت نشد.");
-   setContent(data.content);setConnected(true);
-  }catch(e){setConnected(false);setError(e instanceof Error?e.message:"اتصال برقرار نشد")}
-  finally{setBusy(false)}
- }
- useEffect(()=>{void load()},[]);
- const edit=(key:keyof FertiniSiteContent,value:unknown)=>setContent(prev=>({...prev,[key]:value}));
- const go=(id:string)=>document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});
- async function uploadHero(file:File,index:number){
-  setUploadingSlide(index);setError("");
-  try{const saved=await uploadAdminFile(file,"image");
-   setAssets(prev=>[{url:saved.url,label:"تصویر آپلودشده"},...prev]);
-   setContent(prev=>({...prev,heroSlides:prev.heroSlides.map((s,i)=>i===index?{...s,photo:saved.url}:s)}));
-  }catch(e){setError(e instanceof Error?e.message:"آپلود تصویر ممکن نیست")}
-  finally{setUploadingSlide(null)}
- }
- function swap(key:Keys,index:number,delta:number){
-  const arr=[...content[key]],other=index+delta;if(other<0||other>=arr.length)return;
-  [arr[index],arr[other]]=[arr[other],arr[index]];edit(key,arr);
- }
- async function save(event:FormEvent){
-  event.preventDefault();if(!connected)return;
-  setBusy(true);setError("");setSuccess("");
-  try{const r=await fetch("/api/v1/admin/content",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(content)});
-   const v=await r.json().catch(()=>null);if(!r.ok)throw Error(v?.error||"ذخیره محتوا در دیتابیس ممکن نیست.");if(!v)throw Error("پاسخ ذخیره‌سازی معتبر نیست.");
-   setContent(v.content);setSuccess("محتوای صفحه اصلی در دیتابیس ذخیره شد.");
-  }catch(e){setError(e instanceof Error?e.message:"خطای ذخیره")}
-  finally{setBusy(false)}
- }
- const products=(key:Keys,title:string)=>(
-  <section className="fst-card"><h2 className="mb-2 text-base font-medium">{title}</h2>
-   <p className="text-xs text-neutral-500 leading-7 mb-4">ترتیب همین لیست در صفحه اصلی اعمال می‌شود.</p>
-   {content[key].map((id,i)=><div className="fst-list-row" key={i}>
-    <span className="text-xs w-6 text-neutral-400">{i+1}</span>
-    <select aria-label={"محصول "+(i+1)} value={id} onChange={e=>{
-     if(content[key].includes(e.target.value))return;
-     const next=[...content[key]];next[i]=e.target.value;edit(key,next);
-    }} className="flex-1 border border-[#ddd7cf] bg-white rounded-md px-2 py-2 text-xs">
-     {FERTINI_DEMOS.map(p=><option value={p.id} key={p.id} disabled={content[key].includes(p.id)&&p.id!==id}>{p.name}</option>)}
-    </select>
-    <button type="button" disabled={i===0} aria-label="جابجایی به بالا" onClick={()=>swap(key,i,-1)}><ArrowUp size={17}/></button>
-    <button type="button" disabled={i===5} aria-label="جابجایی به پایین" onClick={()=>swap(key,i,1)}><ArrowDown size={17}/></button>
-   </div>)}
-  </section>
- );
- return <div>
-  <div className="fst-page-heading"><div><small>VISUAL EDITOR / HOME</small><h1>مدیریت صفحه اصلی</h1>
-   <p>تصاویر هیرو، متن‌های بخش‌ها و ترتیب محصولات را با پیش‌نمایش چیدمان صفحه اصلی ویرایش کن.</p></div>
-   <Link href="/" target="_blank" className="fst-btn">مشاهده سایت <ImageIcon size={16}/></Link></div>
-  {error&&<div className="fst-error" role="alert">{error}</div>}
-  {success&&<div className="fst-notice" role="status">{success}</div>}
-  {!connected&&<p className="fst-notice mb-4">ویرایش در حالت مشاهده است. ذخیره تنها پس از اتصال دیتابیس و اجرای migration محتوای سایت فعال می‌شود.</p>}
-  <section className="fst-card mb-4" aria-label="پیش‌نمایش بصری صفحه اصلی">
-   <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-    <div><h2 className="text-base font-semibold">پیش‌نمایش چیدمان صفحه اصلی</h2>
-     <p className="text-xs text-neutral-500 mt-1">بخش موردنظر را انتخاب کن تا به تنظیمات آن بروی.</p></div>
-    <div className="flex gap-2">
-     <button type="button" aria-pressed={viewport==="desktop"} onClick={()=>setViewport("desktop")} className={"fst-btn "+(viewport==="desktop"?"fst-btn-primary":"")}>دسکتاپ <Monitor size={15}/></button>
-     <button type="button" aria-pressed={viewport==="mobile"} onClick={()=>setViewport("mobile")} className={"fst-btn "+(viewport==="mobile"?"fst-btn-primary":"")}>موبایل <Smartphone size={15}/></button>
+import {
+  Save, RefreshCw, ArrowUp, ArrowDown, Image as ImageIcon, Package,
+  UploadCloud, Smartphone, Monitor, Plus, Trash2, ExternalLink,
+} from "lucide-react";
+import type { FertiniSiteContent, HomepageSection } from "@/lib/fertini-site-content";
+import { DEFAULT_SITE_CONTENT } from "@/lib/fertini-site-content";
+import type { HomeProduct } from "@/lib/fertini-home-products";
+import { DEMO_HOME_PRODUCTS } from "@/lib/fertini-home-products";
+import { uploadAdminFile } from "@/lib/admin-upload-client";
+
+type Asset = { url: string; label: string };
+type CatalogKey = "bestsellerIds" | "latestIds";
+const sectionTitles: Record<HomepageSection, string> = {
+  bestsellers: "پرفروش‌ترین‌ها", latest: "جدیدترین عطرها", families: "خانواده‌های رایحه",
+};
+const sections: HomepageSection[] = ["bestsellers", "latest", "families"];
+
+export default function AdminContentPage() {
+  const [content, setContent] = useState<FertiniSiteContent>(DEFAULT_SITE_CONTENT);
+  const [products, setProducts] = useState<HomeProduct[]>(DEMO_HOME_PRODUCTS);
+  const [scentFamilies, setScentFamilies] = useState<Array<{ id: number; name: string }>>([]);
+  const [assets, setAssets] = useState<Asset[]>([
+    ...DEFAULT_SITE_CONTENT.heroSlides.map((x, i) => ({ url: x.photo, label: "هیرو " + (i + 1) })),
+    ...DEMO_HOME_PRODUCTS.map(x => ({ url: x.image, label: x.name })),
+  ]);
+  const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
+  const [previewSlide, setPreviewSlide] = useState(0);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
+  const [connected, setConnected] = useState(false);
+  const [snapshot, setSnapshot] = useState(JSON.stringify(DEFAULT_SITE_CONTENT));
+  const changed = JSON.stringify(content) !== snapshot;
+  const byId = new Map(products.map(p => [p.id, p]));
+  const assetOptions = (current: string) =>
+    [...new Map([...assets, { url: current, label: "تصویر فعلی" }].map(x => [x.url, x])).values()];
+
+  function edit<K extends keyof FertiniSiteContent>(key: K, value: FertiniSiteContent[K]) {
+    setContent(previous => ({ ...previous, [key]: value }));
+    setSuccess("");
+  }
+  function setHero(index: number, patch: Partial<FertiniSiteContent["heroSlides"][number]>) {
+    edit("heroSlides", content.heroSlides.map((s, i) => i === index ? { ...s, ...patch } : s));
+  }
+  function setFamily(index: number, patch: Partial<FertiniSiteContent["families"][number]>) {
+    edit("families", content.families.map((f, i) => i === index ? { ...f, ...patch } : f));
+  }
+  function move<T>(arr: T[], index: number, delta: number): T[] {
+    const next = [...arr], other = index + delta;
+    if (other < 0 || other >= next.length) return arr;
+    [next[index], next[other]] = [next[other], next[index]];
+    return next;
+  }
+  function go(id: string) {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  async function load() {
+    setBusy(true); setError(""); setSuccess("");
+    try {
+      const response = await fetch("/api/v1/admin/content", { cache: "no-store", credentials: "same-origin" });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) throw Error(result?.error || "دسترسی به دیتابیس محتوای سایت وجود ندارد.");
+      if (!result?.content || !Array.isArray(result?.products)) throw Error("ساختار پاسخ دیتابیس نامعتبر است.");
+      setContent(result.content);
+      setSnapshot(JSON.stringify(result.content));
+      setProducts(result.products);
+      setScentFamilies(Array.isArray(result.scentFamilies) ? result.scentFamilies : []);
+      setConnected(true);
+      setPreviewSlide(0);
+    } catch (e) {
+      setConnected(false);
+      setError(e instanceof Error ? e.message : "خطا در ارتباط با دیتابیس");
+    } finally { setBusy(false); }
+  }
+  useEffect(() => {
+    void load();
+    fetch("/api/v1/admin/media-assets", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(data => {
+      if (Array.isArray(data?.items)) setAssets(previous => [
+        ...new Map([...previous, ...data.items].map((x: Asset) => [x.url, x])).values(),
+      ]);
+    }).catch(() => {});
+    // Initial loading only: manual reload is available for subsequent edits.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function upload(file: File, target: "hero" | "family", index: number) {
+    setUploading(target + index); setError(""); setSuccess("");
+    try {
+      const saved = await uploadAdminFile(file, "image");
+      setAssets(previous => [{ url: saved.url, label: file.name }, ...previous]);
+      if (target === "hero") setContent(previous => ({
+        ...previous, heroSlides: previous.heroSlides.map((s, i) => i === index ? { ...s, photo: saved.url } : s),
+      }));
+      else setContent(previous => ({
+        ...previous, families: previous.families.map((f, i) => i === index ? { ...f, photo: saved.url } : f),
+      }));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "آپلود فایل ناموفق بود.");
+    } finally { setUploading(null); }
+  }
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!connected || busy || !changed) return;
+    setBusy(true); setError(""); setSuccess("");
+    try {
+      const response = await fetch("/api/v1/admin/content", {
+        method: "PUT", cache: "no-store", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(content),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.saved) throw Error(result?.error || "ذخیره‌سازی ناموفق بود.");
+      setContent(result.content); setSnapshot(JSON.stringify(result.content));
+      setSuccess("تغییرات صفحه اصلی در MySQL ذخیره شدند. صفحه فروشگاه را بازخوانی کنید.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "خطای ذخیره");
+    } finally { setBusy(false); }
+  }
+  function chooseProduct(key: CatalogKey, index: number, id: string) {
+    if (content[key].some((existing, i) => existing === id && i !== index)) return;
+    const next = [...content[key]]; next[index] = id; edit(key, next);
+  }
+  function addProduct(key: CatalogKey) {
+    const next = products.find(p => !content[key].includes(p.id));
+    if (next) edit(key, [...content[key], next.id]);
+  }
+  function productEditor(key: CatalogKey) {
+    return <div className="fst-selection-list">
+      {content[key].map((id, index) => <div className="fst-product-pick" key={index}>
+        <span className="fst-index">{String(index + 1).padStart(2, "0")}</span>
+        {byId.get(id)?.image ? <img src={byId.get(id)?.image} alt="" /> : <span className="fst-product-placeholder">عطر</span>}
+        <select aria-label={"انتخاب محصول " + (index + 1)} value={id} disabled={!connected}
+          onChange={event => chooseProduct(key, index, event.target.value)}>
+          {!byId.has(id) && <option value={id}>محصول قبلی؛ نیازمند انتخاب مجدد</option>}
+          {products.map(product => <option key={product.id} value={product.id}
+            disabled={content[key].includes(product.id) && product.id !== id}>{product.name}</option>)}
+        </select>
+        <button type="button" title="بالا" aria-label="انتقال محصول به بالا" disabled={index === 0}
+          onClick={() => edit(key, move(content[key], index, -1))}><ArrowUp size={16} /></button>
+        <button type="button" title="پایین" aria-label="انتقال محصول به پایین" disabled={index === content[key].length - 1}
+          onClick={() => edit(key, move(content[key], index, 1))}><ArrowDown size={16} /></button>
+        <button type="button" title="حذف" aria-label="حذف محصول از این بخش" disabled={content[key].length <= 1}
+          onClick={() => edit(key, content[key].filter((_, i) => i !== index))}><Trash2 size={15} /></button>
+      </div>)}
+      <button type="button" className="fst-btn" disabled={!connected || content[key].length >= 6 || !products.some(p => !content[key].includes(p.id))}
+        onClick={() => addProduct(key)}>افزودن محصول <Plus size={15}/></button>
+      <p className="fst-helper">فقط محصولات فعال و منتشرشده دیتابیس قابل انتخاب هستند. قیمت و تصویر هر کارت از همان محصول خوانده می‌شود.</p>
+    </div>;
+  }
+  function previewProducts(key: CatalogKey) {
+    return content[key].slice(0, viewport === "mobile" ? 2 : 6).map(id => {
+      const product = byId.get(id);
+      return product ? <div className="fst-preview-item" key={id}>
+        <img src={product.image} alt="" /><span>{product.name}</span>
+      </div> : null;
+    });
+  }
+  function blueprint(section: HomepageSection) {
+    if (section === "families") return <button type="button" className="fst-preview-collection"
+      key={section} onClick={() => go("fst-editor-families")}>
+      <small>03 / THE OLFACTIVE FAMILIES</small>
+      <h3>{content.familyTitle}</h3>
+      <p>{content.familyDescription}</p>
+      <div className="fst-preview-products fst-preview-families">
+        {content.families.map(family => <div className="fst-preview-item" key={family.id}>
+          <img src={family.photo} alt="" /><span>{family.name}</span>
+        </div>)}
+      </div>
+      <span>ویرایش خانواده‌های رایحه +</span>
+    </button>;
+    const latest = section === "latest";
+    const key: CatalogKey = latest ? "latestIds" : "bestsellerIds";
+    return <button type="button" className="fst-preview-collection" key={section}
+      onClick={() => go(latest ? "fst-editor-latest" : "fst-editor-best")}>
+      <small>{latest ? "02 / JUST ARRIVED" : "01 / THE MOST LOVED"}</small>
+      <h3>{latest ? content.latestTitle : content.bestsellerTitle}</h3>
+      <p>{latest ? content.latestDescription : content.bestsellerDescription}</p>
+      <div className="fst-preview-products">{previewProducts(key)}</div>
+      <span>{latest ? content.latestCtaLabel + " · " : ""}ویرایش بخش +</span>
+    </button>;
+  }
+
+  return <div>
+    <header className="fst-page-heading">
+      <div><small>FERTINI / HOMEPAGE STUDIO</small><h1>مدیریت صفحه اصلی</h1>
+        <p>چیدمان بخش‌ها دقیقاً مطابق هوم‌پیج است. هر بخش را انتخاب کن، محتوایش را تغییر بده و ذخیره کن.</p>
+      </div>
+      <Link href="/" target="_blank" className="fst-btn">مشاهده فروشگاه <ExternalLink size={16}/></Link>
+    </header>
+    {error && <div className="fst-error" role="alert">{error}</div>}
+    {success && <div className="fst-notice" role="status">{success}</div>}
+    {!connected && <div className="fst-notice mb-4">
+      حالت پیش‌نمایش؛ ذخیره تا زمان اتصال MySQL و ایجاد جدول storefront_content غیرفعال است. تصاویر نمایشی با محصولات واقعی اشتباه گرفته نمی‌شوند.
+    </div>}
+    <div className="fst-card mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div><h2 className="text-base font-medium">نقشه بصری هوم‌پیج</h2><p className="fst-helper">با کلیک روی هر قسمت، تنظیمات همان بخش باز می‌شود.</p></div>
+        <div className="flex gap-2">
+          <button className={"fst-btn " + (viewport === "desktop" ? "fst-btn-primary" : "")}
+            aria-pressed={viewport === "desktop"} type="button" onClick={() => setViewport("desktop")}>دسکتاپ <Monitor size={16}/></button>
+          <button className={"fst-btn " + (viewport === "mobile" ? "fst-btn-primary" : "")}
+            aria-pressed={viewport === "mobile"} type="button" onClick={() => setViewport("mobile")}>موبایل <Smartphone size={16}/></button>
+        </div>
+      </div>
+      <div className="fst-preview-stage">
+        <div className={"fst-preview-screen " + (viewport === "mobile" ? "is-mobile" : "")}>
+          <div className="fst-preview-header"><span>☰</span><strong>FERTINI</strong><span>◦</span></div>
+          <button className="fst-preview-hero" type="button" onClick={() => go("fst-editor-hero")}>
+            <img src={content.heroSlides[Math.min(previewSlide, content.heroSlides.length - 1)].photo} alt="" />
+            <span>ویرایش اسلاید هیرو +</span>
+          </button>
+          <div className="fst-preview-slide-pills">
+            {content.heroSlides.map((slide, i) => <button type="button" key={i} aria-label={"اسلاید " + (i + 1)}
+              aria-pressed={previewSlide === i} onClick={() => setPreviewSlide(i)}
+              className={previewSlide === i ? "active" : ""}>{String(i + 1).padStart(2, "0")}</button>)}
+          </div>
+          {content.sectionOrder.filter(s => content.sectionVisibility[s]).map(s => blueprint(s))}
+          <button className="fst-preview-footer" type="button" onClick={() => go("fst-editor-footer")}>
+            <small>{content.footerTagline}</small><strong>FERTINI®</strong>
+            <span>{content.footerCaption}</span><em>ویرایش فوتر +</em>
+          </button>
+        </div>
+      </div>
     </div>
-   </div>
-   <div className="fst-preview-stage"><div className={"fst-preview-screen "+(viewport==="mobile"?"is-mobile":"")}>
-    <div className="fst-preview-header"><span>☰</span><strong>FERTINI</strong><span>◦</span></div>
-    <button className="fst-preview-hero" type="button" onClick={()=>go("fst-editor-hero")}>
-     <img src={content.heroSlides[0].photo} alt="پیش‌نمایش هیرو"/><span>ویرایش هیرو +</span></button>
-    {(["bestsellerIds","latestIds"] as const).map((key,i)=><button type="button" key={key} className="fst-preview-collection" onClick={()=>go(i===0?"fst-editor-best":"fst-editor-new")}>
-     <small>0{i+1} / {i===0?"THE MOST LOVED":"JUST ARRIVED"}</small>
-     <h3>{i===0?content.bestsellerTitle:content.latestTitle}</h3>
-     <div className="fst-preview-products">{content[key].slice(0,viewport==="mobile"?2:4).map(id=>{
-      const p=FERTINI_DEMOS.find(x=>x.id===id);return p?<img key={id} src={p.image} alt={p.name}/>:null;
-     })}</div><span>ویرایش بخش +</span></button>)}
-   </div></div>
-  </section>
-  <form onSubmit={e=>void save(e)} className="grid gap-4">
-   <section id="fst-editor-hero" className="fst-card scroll-mt-24">
-    <h2 className="font-semibold text-base mb-2">تصاویر هیرو</h2><p className="text-xs text-neutral-500 mb-5">اسلایدها به ترتیب انتخاب‌شده نمایش داده می‌شوند.</p>
-    <div className="fst-tools-grid">{content.heroSlides.map((slide,i)=><div key={i} className="grid gap-3">
-     <div className="overflow-hidden bg-[#e5e7e2] rounded-md aspect-[16/9]"><img src={slide.photo} alt={slide.alt} className="w-full h-full object-cover"/></div>
-     <label className="fst-field">انتخاب تصویر اسلاید {i+1}
-      <select value={slide.photo} onChange={e=>edit("heroSlides",content.heroSlides.map((s,j)=>j===i?{...s,photo:e.target.value}:s))}>
-       {[...new Map([...assets,{url:slide.photo,label:"تصویر فعلی"}].map(x=>[x.url,x])).values()].map(x=><option value={x.url} key={x.url}>{x.label}</option>)}
-      </select></label>
-     <label className="fst-btn w-fit cursor-pointer">آپلود تصویر جدید <UploadCloud size={15}/>
-      <input type="file" className="sr-only" accept=".jpg,.jpeg,.png,.webp" disabled={uploadingSlide!==null} onChange={e=>{const file=e.target.files?.[0];if(file)void uploadHero(file,i);e.target.value="";}}/></label>
-     {uploadingSlide===i?<small className="text-xs text-neutral-500">در حال آپلود…</small>:null}
-     <label className="fst-field">متن جایگزین تصویر
-      <input value={slide.alt} onChange={e=>edit("heroSlides",content.heroSlides.map((s,j)=>j===i?{...s,alt:e.target.value}:s))} required/></label>
-    </div>)}</div>
-   </section>
-   <div className="fst-tools-grid">
-    <section className="fst-card grid gap-4">
-     <label className="fst-field">تیتر بخش پرفروش‌ترین‌ها
-      <input maxLength={70} value={content.bestsellerTitle} onChange={e=>edit("bestsellerTitle",e.target.value)}/></label>
-     <label className="fst-field">توضیح بخش
-      <textarea value={content.bestsellerDescription} maxLength={260} onChange={e=>edit("bestsellerDescription",e.target.value)}/></label>
-    </section>
-    <section className="fst-card grid gap-4">
-     <label className="fst-field">تیتر بخش جدیدترین‌ها
-      <input maxLength={70} value={content.latestTitle} onChange={e=>edit("latestTitle",e.target.value)}/></label>
-     <label className="fst-field">توضیح بخش
-      <textarea value={content.latestDescription} maxLength={260} onChange={e=>edit("latestDescription",e.target.value)}/></label>
-    </section>
-   </div>
-   <div className="fst-tools-grid"><div id="fst-editor-best" className="scroll-mt-24">{products("bestsellerIds","چیدمان پرفروش‌ترین‌ها")}</div><div id="fst-editor-new" className="scroll-mt-24">{products("latestIds","چیدمان جدیدترین‌ها")}</div></div>
-   <div className="fst-notice">فهرست این ویرایشگر شامل عطرهای نمایشی FERTINI است. مدیریت محصولات واقعی، قیمت‌ها، موجودی و وویس در <Link href="/admin/products" className="underline">بخش محصولات <Package size={13} className="inline"/></Link> انجام می‌شود؛ برای یکسان‌سازی کامل فروشگاه به اتصال دیتابیس واقعی نیاز است.</div>
-   <div className="flex gap-3 justify-end"><button className="fst-btn" type="button" onClick={()=>void load()} disabled={busy}>بازخوانی <RefreshCw size={15}/></button>
-    <button className="fst-btn fst-btn-primary" disabled={busy||!connected} type="submit">{busy?"در حال ذخیره…":"ذخیره تغییرات"} <Save size={16}/></button></div>
-  </form>
- </div>;
+    <form onSubmit={e => void save(e)} className="grid gap-4">
+      <section className="fst-card scroll-mt-24" id="fst-editor-layout">
+        <div className="fst-editor-heading"><span>00 / PAGE STRUCTURE</span><h2>ترتیب و نمایش بخش‌ها</h2></div>
+        <p className="fst-helper">هیرو همیشه اول است. سه بخش بعد از آن را می‌توان جابه‌جا یا پنهان کرد.</p>
+        {content.sectionOrder.map((section, i) => <div className="fst-list-row" key={section}>
+          <span className="fst-index">{String(i + 1).padStart(2, "0")}</span>
+          <strong className="flex-1 text-sm">{sectionTitles[section]}</strong>
+          <label className="fst-visibility"><input type="checkbox" checked={content.sectionVisibility[section]}
+            onChange={event => edit("sectionVisibility", { ...content.sectionVisibility, [section]: event.target.checked })}/> نمایش</label>
+          <button aria-label={"انتقال " + sectionTitles[section] + " به بالا"} type="button" disabled={i === 0}
+            onClick={() => edit("sectionOrder", move(content.sectionOrder, i, -1))}><ArrowUp size={17}/></button>
+          <button aria-label={"انتقال " + sectionTitles[section] + " به پایین"} type="button" disabled={i === 2}
+            onClick={() => edit("sectionOrder", move(content.sectionOrder, i, 1))}><ArrowDown size={17}/></button>
+        </div>)}
+      </section>
+      <section className="fst-card scroll-mt-24" id="fst-editor-hero">
+        <div className="fst-editor-heading"><span>HERO / SLIDER</span><h2>اسلایدهای هیرو</h2></div>
+        <p className="fst-helper">بین دو تا پنج تصویر؛ ترتیب اسلایدها، متن جایگزین و فایل هر اسلاید مستقل است.</p>
+        <div className="fst-hero-editors">
+          {content.heroSlides.map((slide, index) => <div className="fst-hero-editor" key={index}>
+            <div className="fst-hero-image"><img src={slide.photo} alt={slide.alt}/></div>
+            <div className="fst-hero-fields">
+              <strong>اسلاید {index + 1}</strong>
+              <label className="fst-field">انتخاب تصویر موجود
+                <select value={slide.photo} onChange={e => setHero(index, { photo: e.target.value })}>
+                  {assetOptions(slide.photo).map(x => <option value={x.url} key={x.url}>{x.label}</option>)}
+                </select>
+              </label>
+              <label className="fst-field">متن جایگزین تصویر
+                <input required maxLength={180} value={slide.alt} onChange={e => setHero(index, { alt: e.target.value })}/>
+              </label>
+              <div className="fst-editor-actions">
+                <label className="fst-btn cursor-pointer">آپلود تصویر <UploadCloud size={15}/>
+                  <input className="sr-only" type="file" accept=".jpg,.jpeg,.png,.webp"
+                    disabled={uploading !== null} onChange={e => { const file = e.target.files?.[0]; if (file) void upload(file, "hero", index); e.target.value = ""; }}/>
+                </label>
+                {uploading === "hero" + index && <small>در حال آپلود…</small>}
+                <button className="fst-btn" type="button" disabled={index === 0}
+                  onClick={() => edit("heroSlides", move(content.heroSlides, index, -1))}>بالا <ArrowUp size={14}/></button>
+                <button className="fst-btn" type="button" disabled={index === content.heroSlides.length - 1}
+                  onClick={() => edit("heroSlides", move(content.heroSlides, index, 1))}>پایین <ArrowDown size={14}/></button>
+                <button className="fst-btn" type="button" disabled={content.heroSlides.length <= 2}
+                  onClick={() => { edit("heroSlides", content.heroSlides.filter((_, i) => i !== index)); setPreviewSlide(0); }}>حذف <Trash2 size={14}/></button>
+              </div>
+            </div>
+          </div>)}
+        </div>
+        <button className="fst-btn mt-4" type="button" disabled={content.heroSlides.length >= 5}
+          onClick={() => edit("heroSlides", [...content.heroSlides, { ...content.heroSlides[content.heroSlides.length - 1] }])}>
+          اسلاید جدید <Plus size={16}/></button>
+      </section>
+      <section className="fst-card scroll-mt-24" id="fst-editor-best">
+        <div className="fst-editor-heading"><span>01 / THE MOST LOVED</span><h2>پرفروش‌ترین‌ها</h2></div>
+        <div className="fst-tools-grid mb-5">
+          <label className="fst-field">عنوان<input required maxLength={70} value={content.bestsellerTitle}
+            onChange={e => edit("bestsellerTitle", e.target.value)}/></label>
+          <label className="fst-field">توضیح<textarea maxLength={260} value={content.bestsellerDescription}
+            onChange={e => edit("bestsellerDescription", e.target.value)}/></label>
+        </div>{productEditor("bestsellerIds")}
+      </section>
+      <section className="fst-card scroll-mt-24" id="fst-editor-latest">
+        <div className="fst-editor-heading"><span>02 / JUST ARRIVED</span><h2>جدیدترین عطرها</h2></div>
+        <div className="fst-tools-grid mb-5">
+          <label className="fst-field">عنوان<input required maxLength={70} value={content.latestTitle}
+            onChange={e => edit("latestTitle", e.target.value)}/></label>
+          <label className="fst-field">توضیح<textarea maxLength={260} value={content.latestDescription}
+            onChange={e => edit("latestDescription", e.target.value)}/></label>
+        </div>
+        <label className="fst-field mb-5">متن دکمه مشاهده همه
+          <input maxLength={45} required value={content.latestCtaLabel} onChange={e => edit("latestCtaLabel", e.target.value)}/>
+        </label>
+        {productEditor("latestIds")}
+      </section>
+      <section className="fst-card scroll-mt-24" id="fst-editor-families">
+        <div className="fst-editor-heading"><span>03 / OLFACTIVE FAMILIES</span><h2>دسته‌بندی رایحه‌ها</h2></div>
+        <div className="fst-tools-grid mb-5">
+          <label className="fst-field">عنوان<input maxLength={70} required value={content.familyTitle}
+            onChange={e => edit("familyTitle", e.target.value)}/></label>
+          <label className="fst-field">توضیح<textarea maxLength={260} value={content.familyDescription}
+            onChange={e => edit("familyDescription", e.target.value)}/></label>
+        </div>
+        <div className="fst-family-editor-grid">
+          {content.families.map((family, index) => <div className="fst-family-editor" key={family.id}>
+            <div className="fst-family-photo"><img src={family.photo} alt={family.name}/></div>
+            <label className="fst-field">عنوان کارت<input value={family.name} maxLength={60}
+              onChange={e => setFamily(index, { name: e.target.value })}/></label>
+            <label className="fst-field">زیرعنوان انگلیسی<input value={family.subtitle} maxLength={80} dir="ltr"
+              onChange={e => setFamily(index, { subtitle: e.target.value })}/></label>
+            <label className="fst-field">تصویر کارت
+              <select value={family.photo} onChange={e => setFamily(index, { photo: e.target.value })}>
+                {assetOptions(family.photo).map(x => <option key={x.url} value={x.url}>{x.label}</option>)}
+              </select></label>
+            <label className="fst-field">مقصد کارت (فهرست رایحه‌های ثبت‌شده)
+              <select value={family.scentFamilyId ?? ""} onChange={e => setFamily(index, {
+                scentFamilyId: e.target.value ? Number(e.target.value) : null,
+              })}>
+                <option value="">تمام عطرها</option>
+                {scentFamilies.map(x => <option value={x.id} key={x.id}>{x.name}</option>)}
+              </select></label>
+            <label className="fst-btn cursor-pointer w-fit">آپلود تصویر <UploadCloud size={15}/>
+              <input className="sr-only" type="file" accept=".jpg,.jpeg,.png,.webp"
+                disabled={uploading !== null} onChange={e => { const f = e.target.files?.[0]; if (f) void upload(f, "family", index); e.target.value = ""; }}/>
+            </label>
+            {uploading === "family" + index && <small>در حال آپلود…</small>}
+          </div>)}
+        </div>
+      </section>
+      <section className="fst-card scroll-mt-24" id="fst-editor-footer">
+        <div className="fst-editor-heading"><span>FOOTER / COPY</span><h2>متن‌های فوتر</h2></div>
+        <div className="fst-tools-grid">
+          <label className="fst-field">شعار کوتاه انگلیسی
+            <input value={content.footerTagline} maxLength={130} onChange={e => edit("footerTagline", e.target.value)}/></label>
+          <label className="fst-field">شعار فارسی
+            <input value={content.footerCaption} maxLength={130} onChange={e => edit("footerCaption", e.target.value)}/></label>
+        </div>
+        <p className="fst-helper">لینک‌های فوتر به صفحه‌های داخلی موجود متصل‌اند و آدرس آن‌ها دستی وارد نمی‌شود.</p>
+      </section>
+      <div className="fst-notice">
+        مدیریت قیمت، حجم، موجودی، تصاویر محصول و وویس اختصاصی هر عطر در
+        <Link className="underline mx-1" href="/admin/products">مدیریت محصولات <Package size={13} className="inline"/></Link>
+        انجام می‌شود؛ اینجا فقط نحوه نمایش محصولات روی هوم‌پیج تنظیم می‌شود.
+      </div>
+      <div className="fst-save-bar">
+        <span>{!connected ? "دیتابیس متصل نیست" : changed ? "تغییرات ذخیره‌نشده وجود دارد" : "همه تغییرات ذخیره شده‌اند"}</span>
+        <div className="flex gap-2">
+          <button type="button" disabled={busy} onClick={() => void load()} className="fst-btn">بازخوانی <RefreshCw size={15}/></button>
+          <button type="submit" disabled={!connected || !changed || busy} className="fst-btn fst-btn-primary">
+            {busy ? "در حال ذخیره…" : "ذخیره تغییرات"} <Save size={16}/>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>;
 }
