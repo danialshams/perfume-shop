@@ -82,3 +82,37 @@ jobs:
         if: always()
         continue-on-error: true
         run: npm run lint
+
+  mysql-checkout-staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci-only-checkout-test
+          MYSQL_DATABASE: fertini_ci_checkout
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pci-only-checkout-test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Test additive checkout schema in an isolated MySQL database
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: "3306"
+          DB_NAME: fertini_ci_checkout
+          DB_USER: root
+          DB_PASSWORD: ci-only-checkout-test
+          DB_TEST_ALLOW: ci-disposable
+        run: node scripts/test-checkout-mysql-ci.mjs

@@ -137,7 +137,11 @@ try {
     }
   }
   // Index new customer relationship without changing historical user_id or address_id.
-  if (!foundColumns.has("orders.customer_id")) {
+  // Check indexes separately so an interrupted partial migration can safely resume.
+  const [customerIndexes] = await conn.query(
+    "SELECT INDEX_NAME FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='orders' AND COLUMN_NAME='customer_id'"
+  );
+  if (customerIndexes.length === 0) {
     plan.push(["Index orders.customer_id", "ALTER TABLE orders ADD INDEX idx_orders_customer_id (customer_id)"]);
   }
   console.log("Connected to MySQL/MariaDB; " + plan.length + " additive schema change(s) required.");
