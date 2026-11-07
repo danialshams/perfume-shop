@@ -12,7 +12,7 @@ import ProductsFilterBar from "@/components/HomeProductsComponnents/ProductsFilt
 import ProductsSection from "@/components/HomeProductsComponnents/ProductsSection";
 import { useProductsPageData } from "@/components/hooks/useProductsPageData";
 
-export default function LuxuryProductsView() {
+export default function LuxuryProductsView({demoMode=false}:{demoMode?:boolean}) {
   const [selectedSort, setSelectedSort] = useState<SortOption>("newest");
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -66,7 +66,8 @@ export default function LuxuryProductsView() {
     });
   }, [filteredProducts, selectedSort]);
 
-  const sampleMode=categories.length===0;
+  // The demo shelf is exclusively for an unconfigured showcase, never a failed live catalog.
+  const sampleMode=demoMode&&categories.length===0;
   const sampleFamilyFromFilter=fallbackCategories.find(category=>category.id===activeParentId)?.slug;
   const selectedSampleFamily=sampleFamilyFromFilter||familyFromUrl;
   const currentFamily=FERTINI_FAMILIES.find(item=>item.id===selectedSampleFamily);
@@ -105,7 +106,7 @@ export default function LuxuryProductsView() {
           />
         </div>
         <div className="ql-products-grid-section">
-          {!loadingProducts && orderedProducts.length===0 ? (
+          {!loadingProducts && orderedProducts.length===0 && sampleMode ? (
             <section className="fertini-demo-shelf" aria-label="مجموعه عطرها">
               <div className="fertini-demo-shelf__heading">
                 <div><span className="maison-kicker" lang="en" dir="ltr">FERTINI / THE COLLECTION</span><h2>مجموعه فرتینی</h2></div>
@@ -120,6 +121,11 @@ export default function LuxuryProductsView() {
                   </Link>)}
               </div>
             </section>
+          ) : !loadingProducts && orderedProducts.length===0 ? (
+            <div className="fertini-demo-shelf__heading" role="status">
+              <h2>{productsError ? "کاتالوگ موقتاً در دسترس نیست" : "در حال حاضر محصول منتشرشده‌ای وجود ندارد"}</h2>
+              <p>{productsError ?? "محصولات جدید به‌زودی اضافه می‌شوند."}</p>
+            </div>
           ) : <ProductsSection
             loadingProducts={loadingProducts}
             filteredProducts={orderedProducts}

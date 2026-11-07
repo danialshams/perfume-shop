@@ -45,6 +45,8 @@ assert.match(read("components/HomeProductsComponnents/ProductsFilterBar.tsx"), /
 assert.doesNotMatch(home, /میلیون تومان/);
 assert.match(shop, /ProductsFilterBar/);
 assert.match(shop, /ProductsSection/);
+assert.match(shop, /demoMode&&categories\.length===0/);
+assert.match(read("app/products/page.tsx"), /demoMode=\{demoMode\}/);
 assert.match(product, /<CinematicFooter/);
 assert.match(card, /تومان/);
 assert.match(nav, /maison-menu-entry/);

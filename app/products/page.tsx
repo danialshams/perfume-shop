@@ -10,7 +10,8 @@ export const metadata: Metadata = {
 };
 
 export default function ProductsPage() {
+  const demoMode = !(process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER);
   return <Suspense fallback={<main className="ql-shop min-h-screen p-10" role="status">در حال آماده‌سازی کالکشن…</main>}>
-    <LuxuryProductsView />
+    <LuxuryProductsView demoMode={demoMode} />
   </Suspense>;
 }
