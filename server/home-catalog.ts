@@ -5,7 +5,7 @@ import type { HomeProduct } from "@/lib/fertini-home-products";
 
 type ProductRow = RowDataPacket & {
   id: number; name: string; image_url: string | null;
-  perfume_type: string | null; unit_price: string | number | null; is_featured: number | boolean;
+  scent_family: string | null; unit_price: string | number | null; is_featured: number | boolean;
 };
 type FamilyRow = RowDataPacket & { id: number; name: string };
 
@@ -21,7 +21,7 @@ function safePhoto(raw: string | null): string {
 /** Reads the existing MySQL catalog; no new products or tables are created. */
 export async function listHomeProducts(): Promise<HomeProduct[]> {
   const sql = [
-    "SELECT p.id,p.name,p.perfume_type,p.is_featured,",
+    "SELECT p.id,p.name,p.scent_family,p.is_featured,",
     "COALESCE((SELECT i.image_url FROM product_images i WHERE i.product_id=p.id",
     "ORDER BY i.is_main DESC,i.sort_order ASC,i.id ASC LIMIT 1),p.image) AS image_url,",
     "(SELECT MIN(CASE WHEN v.discount_price>0 AND v.discount_price<v.price",
@@ -33,7 +33,7 @@ export async function listHomeProducts(): Promise<HomeProduct[]> {
   const [rows] = await db.query<ProductRow[]>(sql);
   return rows.map(row => ({
     id: "db:" + Number(row.id), numericId: Number(row.id), name: row.name,
-    subtitle: row.perfume_type?.replaceAll("_", " ") || "EAU DE PARFUM",
+    subtitle: row.scent_family?.replaceAll("_", " ") || "EAU DE PARFUM",
     image: safePhoto(row.image_url),
     price: row.unit_price === null ? null : Number(row.unit_price),
     href: "/products/" + Number(row.id),
