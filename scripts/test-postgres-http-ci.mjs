@@ -94,9 +94,9 @@ try{
  const cart=await read("/api/v1/cart/items",{method:"POST",
   headers:{"Content-Type":"application/json"},body:JSON.stringify({variant_id:Number(variant.id),quantity:1})});
  assert.equal(cart.status,200,"cart add failed "+await cart.text());
- const token=(cart.headers.get("set-cookie")||"").match(/cart_token=[^;]+/);
- assert.ok(token);
- const cartRead=await read("/api/v1/cart",{headers:{cookie:token[0]}});
+ const guestCartToken=(cart.headers.get("set-cookie")||"").match(/cart_token=[^;]+/);
+ assert.ok(guestCartToken);
+ const cartRead=await read("/api/v1/cart",{headers:{cookie:guestCartToken[0]}});
  assert.equal(cartRead.status,200,"cart read failed "+await cartRead.text());
  const cartJson=await cartRead.json();
  assert.equal(cartJson.data?.items?.length,1);
