@@ -11,7 +11,7 @@ const productId = z.union([demoId, z.string().regex(/^db:[1-9]\d{0,14}$/, "شن�
 const familyId = z.enum(["woody", "floral", "amber"]);
 export const homepageSection = z.enum(["bestsellers", "latest", "families"]);
 export type HomepageSection = z.infer<typeof homepageSection>;
-const selection = z.array(productId).min(1).max(6).refine(ids => new Set(ids).size === ids.length, "محصول تکراری است");
+const selection = z.array(productId).max(6).refine(ids => new Set(ids).size === ids.length, "محصول تکراری است");
 
 export const contentSchema = z.object({
   heroSlides: z.array(z.object({ photo, alt: z.string().trim().min(5).max(180) }).strict()).min(2).max(5),
@@ -75,11 +75,12 @@ export function parseContent(raw: unknown): FertiniSiteContent {
   return parsed.success ? parsed.data : DEFAULT_SITE_CONTENT;
 }
 export function resolveDatabaseSelections(content: FertiniSiteContent, catalog: HomeProduct[]): FertiniSiteContent {
-  if (!catalog.length) return content;
   const active = new Set(catalog.map(x => x.id));
   const featured = [...catalog].sort((a, b) => Number(b.featured) - Number(a.featured) || b.numericId - a.numericId);
   const newest = [...catalog].sort((a, b) => b.numericId - a.numericId);
   const resolve = (ids: string[], fallback: HomeProduct[]) => {
+    // Never show old demo IDs as live inventory. Explicit empty lists remain empty.
+    if (ids.length === 0) return [];
     const selected = ids.filter(x => active.has(x));
     return selected.length ? selected : fallback.slice(0, 6).map(x => x.id);
   };

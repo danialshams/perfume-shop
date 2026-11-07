@@ -132,6 +132,7 @@ export default function AdminContentPage() {
   }
   function productEditor(key: CatalogKey) {
     return <div className="fst-selection-list">
+      {!content[key].length && <p className="fst-helper" role="status">هنوز محصولی در این بخش انتخاب نشده است. می‌توانی هیرو و متن‌های صفحه را بدون محصول هم ذخیره کنی.</p>}
       {content[key].map((id, index) => <div className="fst-product-pick" key={index}>
         <span className="fst-index">{String(index + 1).padStart(2, "0")}</span>
         {byId.get(id)?.image ? <img src={byId.get(id)?.image} alt="" /> : <span className="fst-product-placeholder">عطر</span>}
@@ -145,7 +146,7 @@ export default function AdminContentPage() {
           onClick={() => edit(key, move(content[key], index, -1))}><ArrowUp size={16} /></button>
         <button type="button" title="پایین" aria-label="انتقال محصول به پایین" disabled={index === content[key].length - 1}
           onClick={() => edit(key, move(content[key], index, 1))}><ArrowDown size={16} /></button>
-        <button type="button" title="حذف" aria-label="حذف محصول از این بخش" disabled={content[key].length <= 1}
+        <button type="button" title="حذف" aria-label="حذف محصول از این بخش" disabled={!connected}
           onClick={() => edit(key, content[key].filter((_, i) => i !== index))}><Trash2 size={15} /></button>
       </div>)}
       <button type="button" className="fst-btn" disabled={!connected || content[key].length >= 6 || !products.some(p => !content[key].includes(p.id))}

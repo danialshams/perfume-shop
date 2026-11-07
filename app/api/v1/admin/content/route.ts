@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       products: catalog, categories, scentFamilies: families, source: "database",
     }, { headers });
   } catch {
-    return NextResponse.json({ error: "اتصال MySQL یا جدول‌های صفحه اصلی آماده نیست. ذخیره غیرفعال است." }, { status: 503, headers });
+    return NextResponse.json({ error: "اتصال PostgreSQL یا جدول‌های صفحه اصلی آماده نیست. ذخیره غیرفعال است." }, { status: 503, headers });
   }
 }
 export async function PUT(request: NextRequest) {
