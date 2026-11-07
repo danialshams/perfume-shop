@@ -60,3 +60,10 @@ The checked-in `database/schema.sql` lacks `admin_notifications`, so migration 0
 
 ## Read-only database readiness command
 After providing real `DB_*` environment variables and connecting to a hosted MySQL endpoint, run `npm run db:verify` (loads `.env.local` if present). It connects, checks required table names and columns, and exits nonzero for missing database objects or connectivity. It reads schema metadata only; it never runs ALTER/INSERT/UPDATE/DELETE. Do not confuse a green build with this check. Dead Prisma scripts were removed from package.json because the backend uses mysql2, not Prisma.
+
+## Additive customer and checkout reconciliation (prepared, not executed)
+The checked-in legacy MariaDB dump has no `customers` or `customer_addresses` tables; the newer checkout and customer account code uses both. Its `orders` table also lacks `customer_id`, `cart_id`, `customer_landline`, `shipping_floor`, `customer_snapshot` and `payment_method`. This is a separate blocker from absent `DB_HOST`.
+
+`npm run db:checkout-plan` is read-only and reports the minimal missing structures on a connected database. On an isolated *restored staging database* with an independently verified backup, `DB_MIGRATION_TARGET=staging DB_MIGRATION_ACK=I_HAVE_A_VERIFIED_BACKUP npm run db:checkout-plan -- --apply` adds only missing tables and columns. It rejects production and unexpected existing customer schemas. MySQL DDL is not transactional; if interrupted, rerun the plan and inspect previous changes. It deliberately does **not** recalculate historical orders, map legacy `users` to new `customers`, remove old columns, migrate passwords, or enable live payment.
+
+After staging reconciliation, apply migrations 001–003 as appropriate, run `npm run db:verify`, test login, product CRUD, orders and notifications, and verify image/voice uploads against durable object storage before considering a `main` release. No migration may be considered complete until these real-database tests pass.

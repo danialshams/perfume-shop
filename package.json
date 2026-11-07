@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:verify": "node scripts/verify-database.mjs"
+    "db:verify": "node scripts/verify-database.mjs",
+    "db:checkout-plan": "node scripts/prepare-mysql-checkout-schema.mjs"
   },
   "dependencies": {
     "@ant-design/icons": "^6.2.2",

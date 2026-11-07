@@ -39,6 +39,8 @@ jobs:
         run: node scripts/check-commerce-safety.mjs
       - name: Lint visual storefront
         run: npx eslint app/layout.tsx app/products/page.tsx app/cart/page.tsx components/home-sections/CinematicStorefront.tsx components/home-sections/CinematicPurchasePanel.tsx components/HomeWrapper/home-page-shell.tsx components/HomeProductsPage/LuxuryProductsView.tsx components/NavbarComponents/BrandLogo.tsx components/home-sections/navbar.tsx components/maison/MaisonIntro.tsx components/maison/MaisonAmbientSound.tsx components/maison/MaisonSoundBars.tsx components/maison/FertiniEditorialMotion.tsx components/maison/FertiniFragranceDetail.tsx components/maison/FertiniVoicePlayer.tsx components/home-sections/FertiniHomeV5.tsx components/HomeProductsComponnents/ProductsFilterBar.tsx components/HomeProductsComponnents/ProductsLoadingState.tsx app/demo/fragrance/page.tsx
+      - name: Syntax-check safe checkout schema plan
+        run: node --check scripts/prepare-mysql-checkout-schema.mjs
       - name: Typecheck the complete project
         run: npx tsc --noEmit
       - name: Strict production build (no TypeScript bypass)
