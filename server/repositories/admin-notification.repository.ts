@@ -358,7 +358,6 @@ export const adminNotificationRepository = {
         `
         DELETE FROM admin_notifications
         WHERE id = ? AND type = 'payment_success'
-        LIMIT 1
         `,
         [id],
       );

@@ -58,8 +58,7 @@ export const userRepository = {
     await db.execute(
       `UPDATE users
        SET last_login_at = NOW()
-       WHERE id = ?
-       LIMIT 1`,
+       WHERE id = ?`,
       [id],
     );
   },

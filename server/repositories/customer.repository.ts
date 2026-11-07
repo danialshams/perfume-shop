@@ -226,8 +226,7 @@ export const customerRepository = {
     await db.execute(
       `UPDATE customers
        SET last_login_at = NOW()
-       WHERE id = ?
-       LIMIT 1`,
+       WHERE id = ?`,
       [id],
     );
   },
@@ -249,8 +248,7 @@ export const customerRepository = {
     await db.execute(
       `UPDATE customers
        SET first_name = ?, last_name = ?, mobile = ?
-       WHERE id = ?
-       LIMIT 1`,
+       WHERE id = ?`,
       [
         data.first_name.trim(),
         data.last_name.trim(),
@@ -311,8 +309,7 @@ export const customerRepository = {
     await db.execute(
       `UPDATE customers
        SET password_hash = ?
-       WHERE id = ?
-       LIMIT 1`,
+       WHERE id = ?`,
       [passwordHash, id],
     );
   },
