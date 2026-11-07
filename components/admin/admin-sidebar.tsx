@@ -2,19 +2,17 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {LayoutDashboard,Package,Shapes,ShoppingBag,PanelsTopLeft,Images,
-  FileAudio,Database,ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,CreditCard,Tag} from "lucide-react";
+  Database,ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,CreditCard} from "lucide-react";
 
 const groups=[
  {title:"محتوا و ظاهر فروشگاه",links:[
   {href:"/admin/content",title:"صفحه اصلی و محتوا",icon:PanelsTopLeft},
-  {href:"/admin/sliders",title:"اسلایدر و کمپین",icon:Images},
-  {href:"/admin/media",title:"تصاویر و وویس عطرها",icon:FileAudio}]},
+  {href:"/admin/sliders",title:"اسلایدر و کمپین",icon:Images}]},
  {title:"مدیریت فروشگاه",links:[
   {href:"/admin/products",title:"محصولات و موجودی",icon:Package},
   {href:"/admin/categories",title:"دسته‌بندی‌ها",icon:Shapes},
   {href:"/admin/orders",title:"سفارش‌ها",icon:ShoppingBag},
-  {href:"/admin/coupons",title:"کدهای تخفیف",icon:TicketPercent},
-  {href:"/admin/brands",title:"برندها",icon:Tag}]},
+  {href:"/admin/coupons",title:"کدهای تخفیف",icon:TicketPercent}]},
  {title:"سفارش‌ها و مشتریان",links:[
   {href:"/admin/customers",title:"مشتریان",icon:Users},
   {href:"/admin/payments",title:"تراکنش‌ها",icon:CreditCard},

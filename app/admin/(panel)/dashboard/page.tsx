@@ -2,7 +2,7 @@
 import Link from "next/link";
 import {useEffect,useState} from "react";
 import {Package,ShoppingBag,Shapes,Users,ArrowUpLeft,PanelsTopLeft,
-  FileAudio,Images,Database,ArrowLeft,RefreshCw,TicketPercent,MessageSquare} from "lucide-react";
+  Images,Database,ArrowLeft,RefreshCw,TicketPercent,MessageSquare} from "lucide-react";
 type Recent={id:number;order_number:string|null;customer_name:string|null;total_amount:number;status:string;created_at:string};
 type Overview={products:number|null;orders:number|null;categories:number|null;customers:number|null;notifications:number|null;partial:boolean;recent:Recent[]};
 const cards=[
@@ -15,7 +15,6 @@ const actions=[
  {href:"/admin/content",title:"ویرایش صفحه اصلی",detail:"هیرو، عنوان‌ها و چیدمان بخش‌های فروشگاه",icon:PanelsTopLeft},
  {href:"/admin/products",title:"محصولات و موجودی",detail:"افزودن، ویرایش، قیمت، تنوع و وویس",icon:Package},
  {href:"/admin/orders",title:"مدیریت سفارش‌ها",detail:"مشتری، اقلام، پرداخت و وضعیت ارسال",icon:ShoppingBag},
- {href:"/admin/media",title:"کتابخانه رسانه",detail:"تصویر و معرفی صوتی هر عطر",icon:FileAudio},
  {href:"/admin/sliders",title:"اسلایدر و کمپین",detail:"انتخاب محصول و مقصد اسلاید",icon:Images},
  {href:"/admin/database",title:"سلامت زیرساخت",detail:"اتصال دیتابیس و کنترل ساختار",icon:Database},
  {href:"/admin/customers",title:"مشتریان",detail:"نمایش جزئیات و مدیریت وضعیت حساب",icon:Users},
@@ -53,7 +52,7 @@ export default function AdminDashboardPage(){
      <span>{Number(o.total_amount||0).toLocaleString("fa-IR")} تومان</span></Link>):<p className="fst-empty">{loading?"در حال دریافت سفارش‌ها…":error?"دیتابیس متصل نیست.":"سفارشی ثبت نشده است."}</p>}
    </div>
    <div className="fst-card"><h2>راهنمای مدیریت</h2>
-    <p className="text-xs leading-8 text-neutral-500">برای تغییر عکس و وویس عطر، محصول را باز و گزینه «ویرایش» را انتخاب کنید. مدیریت وضعیت پرداخت و اقلام سفارش در صفحه سفارش‌ها انجام می‌شود.</p>
+    <p className="text-xs leading-8 text-neutral-500">برای ثبت عکس‌ها و وویس هر عطر، از «افزودن محصول» استفاده کنید؛ بعداً هم می‌توانید همان فایل‌ها را در «ویرایش محصول» تغییر دهید. مدیریت وضعیت پرداخت و اقلام سفارش در صفحه سفارش‌ها انجام می‌شود.</p>
     <Link href="/admin/content" className="fst-btn mt-5">تنظیمات صفحه اصلی <ArrowLeft size={15}/></Link>
    </div>
   </section>
