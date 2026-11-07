@@ -354,8 +354,13 @@ async function validateAdminScreens(){
   await pageScreenshot({name:"admin-content-mobile",url:base+"/admin/content",width:390,height:844,mobile:true,assertHome:false});
   // Product image and voice files are managed inside products; legacy media URL redirects.
   const mediaRedirect=await fetch(base+"/admin/media",{redirect:"manual"});
-  if(![301,302,303,307,308].includes(mediaRedirect.status)||!mediaRedirect.headers.get("location")?.includes("/admin/products"))
-    throw Error("Legacy admin media must redirect to products: "+mediaRedirect.status);
+  // Next.js App Router may return HTTP 200 with a streamed RSC redirect instead of a 3xx.
+  const serverRedirect=[301,302,303,307,308].includes(mediaRedirect.status)
+    && mediaRedirect.headers.get("location")?.includes("/admin/products");
+  const streamedRedirect=mediaRedirect.status===200
+    && /NEXT_REDIRECT|\\\"redirect\\\"|\\\"\/admin\/products\\\"/.test(await mediaRedirect.text());
+  if(!serverRedirect&&!streamedRedirect)
+    throw Error("Legacy admin media redirect to products was not found: "+mediaRedirect.status);
   await pageScreenshot({name:"admin-coupons-mobile",url:base+"/admin/coupons",width:390,height:844,mobile:true,assertHome:false});
   await pageScreenshot({name:"admin-database-desktop",url:base+"/admin/database",width:1440,height:900,mobile:false,assertHome:false});
   const {send:check,close:closeCheck}=await open("about:blank");
