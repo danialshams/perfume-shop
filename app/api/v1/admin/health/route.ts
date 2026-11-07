@@ -1,5 +1,6 @@
 import {NextRequest,NextResponse} from "next/server";
 import {db} from "@/lib/db";
+import {storageReady} from "@/server/storage/s3-object";
 import {requireAdmin} from "@/server/middlewares/admin";
 import type {RowDataPacket} from "mysql2";
 export const runtime="nodejs";export const dynamic="force-dynamic";
@@ -9,8 +10,9 @@ type FKRow=RowDataPacket&{TABLE_NAME:string;COLUMN_NAME:string;REFERENCED_TABLE_
 const expected=["products","product_variants","categories","orders","order_items","payments","users","admin_notifications"];
 export async function GET(request:NextRequest){
  try{await requireAdmin(request)}catch{return NextResponse.json({error:"Forbidden"},{status:403})}
+ const mediaStorageConfigured=storageReady();
  const missingEnv=["DB_HOST","DB_USER","DB_NAME"].filter(k=>!process.env[k]);
- if(missingEnv.length)return NextResponse.json({connected:false,configured:false,missingEnv,
+ if(missingEnv.length)return NextResponse.json({connected:false,configured:false,missingEnv,mediaStorageConfigured,
   message:"تنظیمات دیتابیس در این محیط کامل نیست. هیچ تغییری در دیتابیس انجام نشده است."},{status:503});
  try{
   const [tables]=await db.query<TableRow[]>("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()");
@@ -21,7 +23,7 @@ export async function GET(request:NextRequest){
   const names=new Set(tables.map(x=>x.TABLE_NAME));
   const cols=new Set(columns.map(x=>x.TABLE_NAME+"."+x.COLUMN_NAME));
   const legacy=["categories_old","categories_backup"].filter(k=>names.has(k));
-  return NextResponse.json({connected:true,configured:true,tableCount:names.size,
+  return NextResponse.json({connected:true,configured:true,mediaStorageConfigured,tableCount:names.size,
    missingTables:expected.filter(k=>!names.has(k)),legacyTables:legacy,
    productStatusPresent:cols.has("products.status"),
    stockColumns:["stock","stock_qty"].filter(k=>cols.has("product_variants."+k)),
@@ -29,7 +31,7 @@ export async function GET(request:NextRequest){
    message:"این بررسی فقط خواندنی است؛ هیچ داده یا جدولی پاک یا ویرایش نشده است."},
    {headers:{"Cache-Control":"private, no-store"}});
  }catch{
-  return NextResponse.json({connected:false,configured:true,message:"ارتباط MySQL برقرار نشد. نام سرور و رمز عبور در پاسخ افشا نمی‌شود."},
+  return NextResponse.json({connected:false,configured:true,mediaStorageConfigured,message:"ارتباط MySQL برقرار نشد. نام سرور و رمز عبور در پاسخ افشا نمی‌شود."},
    {status:503,headers:{"Cache-Control":"no-store"}});
  }
 }

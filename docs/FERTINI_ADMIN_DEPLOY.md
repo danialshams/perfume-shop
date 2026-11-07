@@ -1,7 +1,7 @@
 # FERTINI admin — readiness and safe deployment (2026-11-06)
 
 ## What changed
-The protected admin uses Essential 2's editorial navigation and mobile bottom bar, retaining FERTINI's legacy MySQL APIs for orders, products, images, variants, and per-product voice. Added read-only database diagnostics, homepage content editing, and customer, coupon, brand, payment and review panels. Payment success records stay read-only: only a verified payment callback may settle orders.
+The protected admin uses Essential 2's editorial navigation and mobile bottom bar, retaining FERTINI's legacy MySQL APIs for orders, products, images, variants, and per-product voice. Added read-only database diagnostics, homepage content editing, and customer, coupon, payment and review panels. Payment success records stay read-only: only a verified payment callback may settle orders.
 
 ## Staging prerequisites (not applied automatically)
 1. Create an encrypted SQL backup of the actual MySQL/MariaDB database and archive all referenced product, category, slider and voice assets. Do NOT put customer data or password hashes in a public Git repository.
@@ -39,3 +39,11 @@ The GitHub Action runs static checks, TypeScript, production build, browser scre
 - MySQL mutations and cleanups cannot be validated live until the database is reachable with a staging dataset.
 - The homepage curated lists currently operate on FERTINI's demo fragrance catalog; actual database products are managed in the product panel. Unifying both catalogs requires database-backed storefront migration.
 - The visual content editor uses `storefront_content` and requires migration 002.
+
+## Deployment blockers verified 2026-11-07
+- Vercel Preview runtime reports `Missing environment variable: DB_HOST` on /api/v1/products and /api/v1/cart. Environment-variable **names** appear in Vercel settings; this does **not** mean their **values** are populated in the deployment. Configure real MySQL/MariaDB host, port, database, username and password in the correct Vercel project environments, then **redeploy**. Never commit credentials to GitHub or enter private secrets in client-side NEXT_PUBLIC variables.
+- This codebase uses MySQL, **not** Postgres. No real database migration or connection test has been performed, so do not claim products/orders are live until /admin/database and CRUD E2E tests pass with authenticated administrator and staging data.
+- No S3_* variables are configured on this Vercel project. Product photos and per-product audio are already attached through the create/edit product forms, but uploading to a serverless Vercel deployment requires durable S3-compatible storage. Set all S3 variables, bucket CORS and a public HTTPS media URL, then repeat upload and read-back tests.
+- The bell is displayed in anonymous branch preview but cannot expose customer order details without admin login. An authenticated admin gets SSE/polling with records persisted in MySQL. New-order notifications are inserted transactionally alongside orders.
+- IMPORTANT: the existing `server/services/payment.service.ts` is a sandbox simulator that intentionally rejects Vercel/production. Even with a connected DB, **live checkout cannot operate until a real payment provider is integrated and verified**. Do not present staging order events as tested live transactions.
+- The Brands and standalone Media admin navigation entries have been removed; the media URL redirects to /admin/products. No existing brand table or API data has been deleted.

@@ -2,12 +2,13 @@
 import {useEffect,useState} from "react";
 import Link from "next/link";
 import {RefreshCw,Database,AlertTriangle,CheckCircle2} from "lucide-react";
-type Health={connected:boolean;configured:boolean;missingEnv?:string[];tableCount?:number;missingTables?:string[];legacyTables?:string[];
+type Health={connected:boolean;configured:boolean;missingEnv?:string[];tableCount?:number;mediaStorageConfigured?:boolean;unauthorized?:boolean;missingTables?:string[];legacyTables?:string[];
  productStatusPresent?:boolean;stockColumns?:string[];duplicatedForeignKeys?:Array<{table:string;column:string;target:string;count:number}>;message:string};
 export default function DatabaseHealthPage(){
  const [health,setHealth]=useState<Health|null>(null),[loading,setLoading]=useState(true);
  function load(){setLoading(true);fetch("/api/v1/admin/health",{cache:"no-store"})
-  .then(r=>r.json()).then(setHealth).catch(()=>setHealth({connected:false,configured:false,message:"بررسی اتصال ممکن نشد."}))
+  .then(async r=>{const data=await r.json().catch(()=>null);if(r.status===403)return {connected:false,configured:false,unauthorized:true,message:"در پیش‌نمایش بدون ورود، بررسی دیتابیس و اطلاعات سفارش‌ها قابل انجام نیست. برای بررسی واقعی باید با حساب مدیر وارد شوید."} as Health;if(!data)throw Error("Invalid health response");return data as Health;})
+  .then(setHealth).catch(()=>setHealth({connected:false,configured:false,message:"بررسی اتصال ممکن نشد."}))
   .finally(()=>setLoading(false))}
  useEffect(()=>{load()},[]);
  const warnings=health?.connected?[
@@ -25,6 +26,7 @@ export default function DatabaseHealthPage(){
     <h2 className="text-lg font-semibold">{loading?"در حال بررسی…":health?.connected?"اتصال برقرار است":"اتصال برقرار نیست"}</h2></div>
    <p className="text-sm leading-8 text-neutral-600">{health?.message||"…"}</p>
    {health?.missingEnv?.length?<p className="fst-error" dir="ltr">Missing: {health.missingEnv.join(", ")}</p>:null}
+   {health?.mediaStorageConfigured!==undefined?<div className="fst-list-row"><span>فضای ذخیره‌سازی دائمی عکس و وویس</span><strong>{health.mediaStorageConfigured?"تنظیم شده":"تنظیم نشده (S3)"}</strong></div>:null}
    {health?.connected?<div className="fst-list-row"><span>تعداد جدول‌ها</span><strong>{health.tableCount?.toLocaleString("fa-IR")}</strong></div>:null}
    {health?.connected?<div className="fst-list-row"><span>ستون‌های موجودی واریانت</span><span>{health.stockColumns?.join(" / ")||"—"}</span></div>:null}
   </div>

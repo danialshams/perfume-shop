@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {readFileSync} from "node:fs";
+import {readFileSync,existsSync} from "node:fs";
 const read=p=>readFileSync(p,"utf8");
 const shell=read("components/admin/admin-shell.tsx");
 const sidebar=read("components/admin/admin-sidebar.tsx");
@@ -9,9 +9,17 @@ const storage=read("server/storage/save-media.ts");
 const notifications=read("app/api/v1/notifications/stream/route.ts");
 const content=read("app/admin/(panel)/content/page.tsx");
 const migration=read("database/migrations/002_storefront_content.sql");
-for(const route of ["content","products","categories","orders","sliders","media","database"]){
+for(const route of ["content","products","categories","orders","sliders","database"]){
  assert.match(sidebar,new RegExp("/admin/"+route));
 }
+assert.doesNotMatch(sidebar,/\/admin\/(brands|media)/);
+assert.ok(!existsSync("app/admin/(panel)/brands/page.tsx"),"Brands section must not be a visible admin page");
+assert.match(read("app/admin/(panel)/media/page.tsx"),/redirect\("\/admin\/products"\)/);
+assert.match(read("components/admin/admin-header.tsx"),/NotificationBell previewGuest/);
+assert.match(read("components/panel-sections/notification-bell.tsx"),/PreviewNotificationBell/);
+assert.match(read("server/services/order.service.ts"),/adminNotificationRepository\.create/);
+assert.match(read("components/PanelProductManagementComponents/create-product-drawer.tsx"),/onUploadingChange=\{markMediaUpload\}/);
+assert.match(read("components/PanelProductManagementComponents/create-product-drawer.tsx"),/VoiceUploader/);
 assert.match(shell,/fst-mobile-bottom/);
 assert.match(stylesheet,/@media\(max-width:820px\)/);
 assert.match(auth,/requireAuth/);
