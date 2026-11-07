@@ -18,6 +18,7 @@ console.log("Commerce safety checks passed: no committed .env, sandbox disabled 
 
 const database = read("lib/db.ts");
 assert.match(database, /function getPool\(\)/);
+assert.match(database, /DATABASE_URL/);
 assert.match(database, /new Proxy\(/);
 const upload = read("app/api/v1/uploads/products/route.ts");
 const mediaStorage = read("server/storage/save-media.ts");
