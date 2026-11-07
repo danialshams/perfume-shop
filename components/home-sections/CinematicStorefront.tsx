@@ -4,9 +4,10 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import type { FertiniSiteContent } from "@/lib/fertini-site-content";
 export { default } from "./FertiniHomeV5";
 
-export function CinematicFooter() {
+export function CinematicFooter({ content }:{ content?: FertiniSiteContent } = {}) {
   const pathname=usePathname();
   const ref=useRef<HTMLElement>(null);
   useEffect(()=>{
@@ -26,9 +27,9 @@ export function CinematicFooter() {
   return <footer className="maison-footer fertini-footer" id="site-footer" dir="rtl" ref={ref}>
     <div className="maison-wide maison-footer__main">
       <div className="maison-footer__identity">
-        <span lang="en" className="maison-kicker fertini-footer-reveal" dir="ltr">THE ART OF AN INVISIBLE SIGNATURE</span>
+        <span lang="en" className="maison-kicker fertini-footer-reveal" dir="ltr">{content?.footerTagline ?? "THE ART OF AN INVISIBLE SIGNATURE"}</span>
         <Link href="/" className="maison-footer__wordmark" dir="ltr" lang="en">FERTINI<span>®</span></Link>
-        <p className="fertini-footer-reveal">هر رایحه، رد یک خاطره.</p>
+        <p className="fertini-footer-reveal">{content?.footerCaption ?? "هر رایحه، رد یک خاطره."}</p>
       </div>
       <nav className="maison-footer__links" aria-label="پیوندهای پایانی">
         <div><h3 className="fertini-footer-reveal">کشف</h3><Link className="fertini-footer-reveal" href="/products">مجموعه عطرها</Link><Link className="fertini-footer-reveal" href="/journal">ژورنال</Link><Link className="fertini-footer-reveal" href="/about">درباره فرتینی</Link></div>
