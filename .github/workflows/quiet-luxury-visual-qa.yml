@@ -116,3 +116,11 @@ jobs:
           DB_PASSWORD: ci-only-checkout-test
           DB_TEST_ALLOW: ci-disposable
         run: node scripts/test-checkout-mysql-ci.mjs
+      - name: Test fresh hosted MySQL schema without copying private data
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: "3306"
+          DB_USER: root
+          DB_PASSWORD: ci-only-checkout-test
+          DB_TEST_ALLOW: ci-disposable
+        run: node scripts/test-fresh-mysql-ci.mjs
