@@ -121,8 +121,9 @@ try{
  const guestCartToken=(cart.headers.get("set-cookie")||"").match(/cart_token=[^;]+/);
  assert.ok(guestCartToken);
  const cartRead=await read("/api/v1/cart",{headers:{cookie:guestCartToken[0]}});
- assert.equal(cartRead.status,200,"cart read failed "+await cartRead.text());
- const cartJson=await cartRead.json();
+ const cartPayload=await cartRead.text();
+ assert.equal(cartRead.status,200,"cart read failed "+cartPayload);
+ const cartJson=JSON.parse(cartPayload);
  assert.equal(cartJson.data?.items?.length,1);
  // Editing the hero and headings must work even before publishing any products.
  await sql.unsafe("UPDATE products SET status='DRAFT'");
