@@ -334,7 +334,11 @@ async function validateStorefrontInteractions(){
 async function validateAdminScreens(){
   const base="http://127.0.0.1:3100";
   const unauthorized=await fetch(base+"/admin/dashboard",{redirect:"manual"});
-  if(![302,303,307,308].includes(unauthorized.status))throw Error("Unauthorized admin must redirect: "+unauthorized.status);
+  if(process.env.FERTINI_ADMIN_PREVIEW==="1"){
+    if(!unauthorized.ok)throw Error("Guest preview dashboard must render without redirect: "+unauthorized.status);
+    const login=await fetch(base+"/admin/login",{redirect:"manual"});
+    if(![302,303,307,308].includes(login.status))throw Error("Preview login should redirect to dashboard: "+login.status);
+  }else if(![302,303,307,308].includes(unauthorized.status))throw Error("Unauthorized admin must redirect: "+unauthorized.status);
   if(!process.env.JWT_ACCESS_SECRET)throw Error("CI JWT_ACCESS_SECRET missing");
   const token=jwt.sign({userId:1,role:"ADMIN",email:"ci-test@local.invalid"},process.env.JWT_ACCESS_SECRET,{expiresIn:"20m"});
   const {ws,send,close}=await open("about:blank");

@@ -47,7 +47,7 @@ jobs:
         env:
           JWT_ACCESS_SECRET: "fertini-ci-only-session-secret-2026-no-production-use"
         run: |
-          npm run start -- -p 3100 > /tmp/maison-next.log 2>&1 &
+          VERCEL_ENV=preview VERCEL_GIT_COMMIT_REF=feature/fertini-essential-admin-studio-20261106 npm run start -- -p 3100 > /tmp/maison-next.log 2>&1 &
           for attempt in $(seq 1 40); do
             if curl -fsS http://127.0.0.1:3100/ >/dev/null; then break; fi
             sleep 1
@@ -63,7 +63,7 @@ jobs:
           fi
           "$CHROME" --version
           node scripts/test-admin-http.mjs
-          FERTINI_ADMIN_ONLY=1 timeout 240s node scripts/verify-visual-browser.mjs
+          FERTINI_ADMIN_PREVIEW=1 FERTINI_ADMIN_ONLY=1 timeout 240s node scripts/verify-visual-browser.mjs
           timeout 600s node scripts/verify-visual-browser.mjs
       - name: Upload visual verification screenshots
         if: always()
