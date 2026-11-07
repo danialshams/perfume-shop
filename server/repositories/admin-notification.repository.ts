@@ -111,7 +111,7 @@ export const adminNotificationRepository = {
           is_read,
           created_at
         FROM admin_notifications
-        WHERE id = ?
+        WHERE id = ? AND type = 'payment_success'
         LIMIT 1
         `,
         [id],
@@ -203,6 +203,7 @@ export const adminNotificationRepository = {
           is_read,
           created_at
         FROM admin_notifications
+        WHERE type = 'payment_success'
         ORDER BY id DESC
         LIMIT ?
         `,
@@ -241,7 +242,7 @@ export const adminNotificationRepository = {
         `
         SELECT COUNT(*) AS unread_count
         FROM admin_notifications
-        WHERE is_read = 0
+        WHERE is_read = 0 AND type = 'payment_success'
         `,
       );
 
@@ -279,7 +280,7 @@ export const adminNotificationRepository = {
         SET
           is_read = 1,
           updated_at = NOW()
-        WHERE is_read = 0
+        WHERE is_read = 0 AND type = 'payment_success'
         `,
       );
 
@@ -317,7 +318,7 @@ export const adminNotificationRepository = {
         SET
           is_read = 1,
           updated_at = NOW()
-        WHERE id = ?
+        WHERE id = ? AND type = 'payment_success'
         LIMIT 1
         `,
         [id],
@@ -356,7 +357,7 @@ export const adminNotificationRepository = {
       const [result] = await executor.execute<ResultSetHeader>(
         `
         DELETE FROM admin_notifications
-        WHERE id = ?
+        WHERE id = ? AND type = 'payment_success'
         LIMIT 1
         `,
         [id],
@@ -392,7 +393,7 @@ export const adminNotificationRepository = {
     try {
       const [result] = await executor.execute<ResultSetHeader>(
         `
-        DELETE FROM admin_notifications
+        DELETE FROM admin_notifications WHERE type = 'payment_success'
         `,
       );
 
