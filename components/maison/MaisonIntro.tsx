@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 const SESSION_KEY = "fertini:intro:seen:v3";
+const START_KEY = "fertini:intro:started:v4";
 
 /*
  * The homepage has ONE intro. Its animation clock survives a React effect
@@ -10,6 +11,7 @@ const SESSION_KEY = "fertini:intro:seen:v3";
  * restart the logo animation from frame zero during the same page visit.
  */
 let introStartedAt: number | null = null;
+let introStartedInDocument = false;
 let introFinishedInDocument = false;
 
 export default function MaisonIntro() {
@@ -39,9 +41,15 @@ export default function MaisonIntro() {
     const root = rootRef.current;
     if (!root) return;
 
-    let seen = introFinishedInDocument ||
+    // A hydration/remount before completion must not replay the intro.
+    // The started marker also prevents a second show after a full navigation
+    // during the first intro, while the separate seen marker gates the hero.
+    let seen = introFinishedInDocument || introStartedInDocument ||
       document.documentElement.classList.contains("fertini-intro-seen");
-    try { seen ||= window.sessionStorage.getItem(SESSION_KEY) === "1"; } catch {}
+    try {
+      seen ||= window.sessionStorage.getItem(SESSION_KEY) === "1" ||
+        window.sessionStorage.getItem(START_KEY) === "1";
+    } catch {}
 
     if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       // Happens before the next paint: no brief second splash on back navigation.
@@ -66,6 +74,10 @@ export default function MaisonIntro() {
     };
     unlockScrollRef.current = releaseScroll;
 
+    // Set before the first tween so a React remount or browser reload cannot
+    // show a second copy while the first intro is already in progress.
+    introStartedInDocument = true;
+    try { window.sessionStorage.setItem(START_KEY, "1"); } catch {}
     if (introStartedAt === null) introStartedAt = performance.now();
 
     let finishFrame = 0;

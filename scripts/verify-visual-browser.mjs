@@ -392,10 +392,54 @@ async function validateHomepageIntroOnce(){
  try{
   await send("Page.enable");
   await send("Runtime.enable");
+  // Observe from the very first document script, BEFORE React hydration.
+  // The previous regression only checked the end state and missed a
+  // first-paint logo flash followed by GSAP restarting it.
+  await send("Page.addScriptToEvaluateOnNewDocument",{source:`(()=>{
+    let previouslyVisible=false;
+    const trace=window.__fertiniIntroTrace={
+      starts:0,completions:0,samples:0,mounts:0,timestamps:[],
+    };
+    let previouslyMounted=false;
+    const inspect=()=>{
+      const el=document.querySelector(".maison-intro__brand");
+      const mounted=!!el;
+      if(mounted&&!previouslyMounted)trace.mounts++;
+      previouslyMounted=mounted;
+      let visible=false;
+      if(el){
+        const style=getComputedStyle(el);
+        visible=style.visibility!=="hidden"&&Number(style.opacity)>.12&&el.getClientRects().length>0;
+      }
+      if(visible&&!previouslyVisible){
+        trace.starts++;
+        trace.timestamps.push(Math.round(performance.now()));
+      }
+      previouslyVisible=visible;
+      trace.samples++;
+    };
+    const observer=new MutationObserver(inspect);
+    observer.observe(document,{subtree:true,childList:true});
+    setInterval(inspect,25);
+    window.addEventListener("fertini:intro:complete",()=>{trace.completions++;});
+  })()`});
   await send("Page.navigate",{url:"http://127.0.0.1:3100/"});
   await until(()=>evaluate(send,'document.readyState==="complete" && !!document.querySelector(".fertini-hero")'),38000);
   await until(()=>evaluate(send,
    'sessionStorage.getItem("fertini:intro:seen:v3")==="1" && !document.querySelector(".maison-intro")'),9000);
+  await sleep(900); // detect a late second animation after the first one ends
+  const introTrace=await evaluate(send,`window.__fertiniIntroTrace && ({
+    starts:window.__fertiniIntroTrace.starts,
+    mounts:window.__fertiniIntroTrace.mounts,
+    completions:window.__fertiniIntroTrace.completions,
+    samples:window.__fertiniIntroTrace.samples,
+    timestamps:window.__fertiniIntroTrace.timestamps,
+    started:sessionStorage.getItem("fertini:intro:started:v4")
+  })`);
+  if(!introTrace || introTrace.starts!==1 || introTrace.completions!==1 ||
+      introTrace.started!=="1")
+   throw Error("Cold-load intro flashed or restarted more than once: "+JSON.stringify(introTrace));
+  process.stdout.write("COLD START INTRO TRACE "+JSON.stringify(introTrace)+"\\n");
   const first=await evaluate(send,`(()=>({
     seen:sessionStorage.getItem("fertini:intro:seen:v3"),
     done:document.documentElement.classList.contains("fertini-intro-seen"),
