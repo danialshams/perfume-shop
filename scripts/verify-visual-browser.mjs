@@ -426,6 +426,7 @@ try{
   await validateAdminScreens();
   process.stdout.write("Focused admin visual QA passed.\n");
  }else{
+ await validateHomepageIntroOnce();
  await validateStorefrontInteractions();
  await validateCinematicPhotoReveal();
  await pageScreenshot({name:"home-desktop-full",url:"http://127.0.0.1:3100/",width:1440,height:900,mobile:false,assertHome:true});
