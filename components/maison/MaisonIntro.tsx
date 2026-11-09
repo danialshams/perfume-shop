@@ -41,8 +41,8 @@ export default function MaisonIntro() {
     if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       // Happens before the next paint: no brief second splash on back navigation.
       root.style.display = "none";
-      finish();
-      return;
+      const frame = window.requestAnimationFrame(finish);
+      return () => window.cancelAnimationFrame(frame);
     }
 
     const html = document.documentElement;
@@ -54,6 +54,7 @@ export default function MaisonIntro() {
 
     if (introStartedAt === null) introStartedAt = performance.now();
 
+    let finishFrame = 0;
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ paused: true, onComplete: finish });
       tl.fromTo(".maison-intro__brand",
@@ -66,10 +67,11 @@ export default function MaisonIntro() {
       const elapsed = Math.max(0, (performance.now() - introStartedAt!) / 1000);
       tl.time(Math.min(elapsed, tl.duration()));
       if (elapsed < tl.duration()) tl.play();
-      else finish();
+      else finishFrame = window.requestAnimationFrame(finish);
     }, root);
 
     return () => {
+      window.cancelAnimationFrame(finishFrame);
       ctx.revert();
       html.style.overflow = previousHtmlOverflow;
       body.style.overflow = previousBodyOverflow;
