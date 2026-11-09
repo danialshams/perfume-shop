@@ -385,6 +385,39 @@ async function validateAdminScreens(){
   process.stdout.write("Authenticated Essential-style admin mobile/desktop visual routes and navigation passed.\n");
 }
 
+// Regression: homepage intro is a single animation, remains hidden after reload,
+// and cannot leave scroll locked after completion.
+async function validateHomepageIntroOnce(){
+ const {send,close}=await open("about:blank");
+ try{
+  await send("Page.enable");
+  await send("Runtime.enable");
+  await send("Page.navigate",{url:"http://127.0.0.1:3100/"});
+  await until(()=>evaluate(send,'document.readyState==="complete" && !!document.querySelector(".fertini-hero")'),38000);
+  await until(()=>evaluate(send,
+   'sessionStorage.getItem("fertini:intro:seen:v3")==="1" && !document.querySelector(".maison-intro")'),9000);
+  const first=await evaluate(send,`(()=>({
+    seen:sessionStorage.getItem("fertini:intro:seen:v3"),
+    done:document.documentElement.classList.contains("fertini-intro-seen"),
+    unlocked:getComputedStyle(document.documentElement).overflow!=="hidden" &&
+      getComputedStyle(document.body).overflow!=="hidden"
+   }))()`);
+  if(first.seen!=="1"||!first.done||!first.unlocked)
+   throw Error("Initial prelude did not complete and release scroll: "+JSON.stringify(first));
+  await send("Page.reload",{ignoreCache:false});
+  await until(()=>evaluate(send,'document.readyState==="complete" && !!document.querySelector(".fertini-hero")'),38000);
+  const reload=await evaluate(send,`(()=>({
+    seen:sessionStorage.getItem("fertini:intro:seen:v3"),
+    introVisible:!![...document.querySelectorAll(".maison-intro")].find(
+      el=>getComputedStyle(el).display!=="none"&&getComputedStyle(el).visibility!=="hidden"),
+    done:document.documentElement.classList.contains("fertini-intro-seen")
+   }))()`);
+  if(reload.seen!=="1"||reload.introVisible||!reload.done)
+   throw Error("Intro replayed on page reload: "+JSON.stringify(reload));
+  process.stdout.write("One-time cinematic intro and reload skip verified.\\n");
+ }finally{await close()}
+}
+
 try{
  await mkdir("artifacts",{recursive:true});
  await bootChrome();
