@@ -41,10 +41,11 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
     let complete=false;
     try{complete=window.sessionStorage.getItem("fertini:intro:seen:v3")==="1";}catch{complete=true;}
     const start=()=>setReady(true);
+    // Only the intro-complete signal starts the storefront. An independent
+    // timeout previously let a second reveal begin while the prelude was open.
     const id=complete?window.requestAnimationFrame(start):0;
-    const failsafe=window.setTimeout(start,4500);
     window.addEventListener("fertini:intro:complete",start);
-    return()=>{if(id)window.cancelAnimationFrame(id);window.clearTimeout(failsafe);window.removeEventListener("fertini:intro:complete",start);};
+    return()=>{if(id)window.cancelAnimationFrame(id);window.removeEventListener("fertini:intro:complete",start);};
   },[]);
   // Shared clock for slideshow and progress. Pause preserves elapsed time.
   useEffect(()=>{
