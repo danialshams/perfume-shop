@@ -20,6 +20,7 @@ export default function MaisonIntro() {
   const finish = useCallback(() => {
     if (finishedRef.current) return;
     finishedRef.current = true;
+    const firstCompletion = !introFinishedInDocument;
     introStartedAt = null;
     introFinishedInDocument = true;
     try { window.sessionStorage.setItem(SESSION_KEY, "1"); } catch {}
@@ -27,7 +28,7 @@ export default function MaisonIntro() {
     setVisible(false);
     // The storefront slideshow and image reveals start after the single
     // intro curtain has completely disappeared, never during its animation.
-    window.dispatchEvent(new Event("fertini:intro:complete"));
+    if (firstCompletion) window.dispatchEvent(new Event("fertini:intro:complete"));
   }, []);
 
   useLayoutEffect(() => {
