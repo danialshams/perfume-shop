@@ -6,6 +6,10 @@
   overflow: hidden; will-change: opacity, transform;
 }
 .maison-intro__content { display: flex; flex-direction: column; align-items: center; gap: 19px; margin-top: -28px; }
+/* Server-rendered FERTINI must be invisible until GSAP begins. Without this,
+   it flashes once before hydration, then GSAP resets it and plays it again. */
+.maison-intro__brand,.maison-intro__sub { opacity: 0; visibility: hidden; }
+
 .maison-intro__overline { font: 10px/1.5 Georgia, serif; color: #9b8263; letter-spacing: .32em; }
 .maison-intro__brand { font: 400 clamp(60px, 11vw, 152px)/1 Georgia, "Times New Roman", serif; letter-spacing: .19em; padding-left: .19em; }
 .maison-intro__period { color: #b09b7e; }
