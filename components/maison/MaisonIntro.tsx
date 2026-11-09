@@ -15,6 +15,7 @@ let introFinishedInDocument = false;
 export default function MaisonIntro() {
   const rootRef = useRef<HTMLDivElement>(null);
   const finishedRef = useRef(false);
+  const unlockScrollRef = useRef<(() => void) | null>(null);
   const [visible, setVisible] = useState(true);
 
   const finish = useCallback(() => {
@@ -25,6 +26,9 @@ export default function MaisonIntro() {
     introFinishedInDocument = true;
     try { window.sessionStorage.setItem(SESSION_KEY, "1"); } catch {}
     document.documentElement.classList.add("fertini-intro-seen");
+    // The component remains mounted after returning null, so effect cleanup
+    // alone would not restore overflow. Release the scroll lock at finish.
+    unlockScrollRef.current?.();
     setVisible(false);
     // The storefront slideshow and image reveals start after the single
     // intro curtain has completely disappeared, never during its animation.
@@ -52,6 +56,15 @@ export default function MaisonIntro() {
     const previousBodyOverflow = body.style.overflow;
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
+    let unlocked = false;
+    const releaseScroll = () => {
+      if (unlocked) return;
+      unlocked = true;
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+      unlockScrollRef.current = null;
+    };
+    unlockScrollRef.current = releaseScroll;
 
     if (introStartedAt === null) introStartedAt = performance.now();
 
@@ -74,8 +87,7 @@ export default function MaisonIntro() {
     return () => {
       window.cancelAnimationFrame(finishFrame);
       ctx.revert();
-      html.style.overflow = previousHtmlOverflow;
-      body.style.overflow = previousBodyOverflow;
+      releaseScroll();
     };
   }, [finish]);
 
