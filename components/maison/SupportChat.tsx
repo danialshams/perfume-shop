@@ -2,12 +2,14 @@
 import {useCallback,useEffect,useState,type FormEvent} from "react";
 import Link from "next/link";
 import {MessageCircle,Send,X,ChevronLeft,LoaderCircle} from "lucide-react";
+import {usePathname} from "next/navigation";
 type Credentials={threadId:string;token:string};
 type ChatMessage={id:string;role:string;body:string;createdAt:string};
 type Config={enabled:boolean;welcome:string;expectedResponse:string;workingHours:string};
 const storageKey="fertini:support:session:v1";
 const subjects=[["مشاوره محصول","مشاوره محصول"],["پیگیری سفارش","پیگیری سفارش"],["سؤال دیگر","سؤال دیگر"]] as const;
 export function SupportChat(){
+ const pathname=usePathname();
  const [open,setOpen]=useState(false),[name,setName]=useState(""),[subject,setSubject]=useState("مشاوره محصول");
  const [session,setSession]=useState<Credentials|null>(null),[messages,setMessages]=useState<ChatMessage[]>([]);
  const [message,setMessage]=useState(""),[error,setError]=useState(""),[busy,setBusy]=useState(false);
@@ -42,6 +44,7 @@ export function SupportChat(){
    setMessage("");await load(session);
   }catch(e){setError(e instanceof Error?e.message:"ارسال پیام ممکن نیست.")}finally{setBusy(false)}
  }
+ if(pathname?.startsWith("/admin")||pathname?.startsWith("/login"))return null;
  return <div className="support-root" dir="rtl">
   {open&&<section className="support-window" role="dialog" aria-modal="false" aria-label="گفتگوی آنلاین با پشتیبان">
    <header className="support-header">
