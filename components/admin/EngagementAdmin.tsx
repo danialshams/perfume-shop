@@ -49,7 +49,7 @@ export function EngagementAdmin({start="threads"}:{start?:Tab}){
   {tab==="threads"&&<div className="eng-chat-desk">
    <div className="eng-chat-list"><h2>گفتگوها</h2>{items.length?items.map(t=><button type="button" key={t.id} className={active===t.id?"selected":""} onClick={()=>void openThread(t.id)}>
     <b>{String(t.visitorName||"مهمان")}</b><small>{String(t.subject||"")}</small><em>{t.status==="CLOSED"?"بسته":"باز"}</em>
-   </button>):<p>گفتگویی وجود ندارد یا برای مشاهده پیام‌های واقعی باید با حساب مدیر وارد شوید.</p>}</div>
+   </button>):<p>هنوز گفتگویی ثبت نشده است.</p>}</div>
    <div className="eng-chat-conversation"><h2>متن گفتگو</h2>{!active?<p>یک گفتگو را از فهرست انتخاب کنید.</p>:<>
     <div className="eng-chat-stream">{messages.map(m=><div key={m.id} className={m.role==="ADMIN"?"admin":""}><small>{m.role==="ADMIN"?"پشتیبان":"مشتری"}</small><p>{m.body}</p></div>)}</div>
     <form onSubmit={replyChat}><textarea required maxLength={1800} rows={3} value={response} onChange={e=>setResponse(e.target.value)} placeholder="پاسخ پشتیبان..."/><button disabled={loading||!response.trim()}>ارسال پاسخ</button>
