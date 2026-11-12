@@ -33,7 +33,7 @@ export function CinematicFooter({ content }:{ content?: FertiniSiteContent } = {
       </div>
       <nav className="maison-footer__links" aria-label="پیوندهای پایانی">
         <div><h3 className="fertini-footer-reveal">کشف</h3><Link className="fertini-footer-reveal" href="/products">مجموعه عطرها</Link><Link className="fertini-footer-reveal" href="/journal">ژورنال</Link><Link className="fertini-footer-reveal" href="/about">درباره فرتینی</Link></div>
-        <div><h3 className="fertini-footer-reveal">راهنما</h3><Link className="fertini-footer-reveal" href="/contact">ارتباط با ما</Link><Link className="fertini-footer-reveal" href="/shipping">ارسال و سفارش</Link><Link className="fertini-footer-reveal" href="/privacy">حفظ حریم خصوصی</Link><Link className="fertini-footer-reveal" href="/terms">قوانین و مقررات</Link></div>
+        <div><h3 className="fertini-footer-reveal">راهنما</h3><Link className="fertini-footer-reveal" href="/contact">ارتباط با ما</Link><Link className="fertini-footer-reveal" href="/shipping">ارسال و سفارش</Link><Link className="fertini-footer-reveal" href="/faq">سؤال‌های متداول</Link><Link className="fertini-footer-reveal" href="/privacy">حفظ حریم خصوصی</Link><Link className="fertini-footer-reveal" href="/terms">قوانین و مقررات</Link></div>
         <div><h3 className="fertini-footer-reveal">حساب</h3><Link className="fertini-footer-reveal" href="/account">حساب کاربری</Link><Link className="fertini-footer-reveal" href="/cart">سبد خرید</Link></div>
       </nav>
     </div>

@@ -10,7 +10,8 @@
     "db:verify": "node scripts/verify-postgres.mjs",
     "db:checkout-plan": "node scripts/prepare-mysql-checkout-schema.mjs",
     "db:fresh-bootstrap": "node scripts/bootstrap-fresh-mysql.mjs",
-    "db:create-admin": "node scripts/create-initial-admin.mjs"
+    "db:create-admin": "node scripts/create-initial-admin.mjs",
+    "test:engagement": "node --test tests/engagement.test.mjs"
   },
   "dependencies": {
     "@ant-design/icons": "^6.2.2",

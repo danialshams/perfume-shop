@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { CartCountProvider } from "@/context/CartCountContext";
 import MaisonAmbientSound from "@/components/maison/MaisonAmbientSound";
 import FertiniEditorialMotion from "@/components/maison/FertiniEditorialMotion";
+import {SupportChat} from "@/components/maison/SupportChat";
 import "./globals.css";
 import "./quiet-luxury.css";
 import "./maison-experience.css";
@@ -21,6 +22,7 @@ import "./fertini-product-v5.css";
 import "./fertini-account-v5.css";
 import "./fertini-inner-heroes-v5.css";
 import "./fertini-polish-v6.css";
+import "./fertini-engagement.css";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL ||
   "https://perfume-shop-danialshams-projects.vercel.app";
@@ -46,7 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return <html lang="fa" dir="rtl" className="h-full antialiased">
     <head><script dangerouslySetInnerHTML={{__html:"try{if(sessionStorage.getItem('fertini:intro:seen:v3')==='1')document.documentElement.classList.add('fertini-intro-seen')}catch(e){}"}} /></head>
     <body id="top" className="flex min-h-full flex-col font-sans">
-      <MaisonAmbientSound><CartCountProvider>{children}<FertiniEditorialMotion/></CartCountProvider></MaisonAmbientSound>
+      <MaisonAmbientSound><CartCountProvider>{children}<FertiniEditorialMotion/><SupportChat/></CartCountProvider></MaisonAmbientSound>
     </body>
   </html>;
 }
