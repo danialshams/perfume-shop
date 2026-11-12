@@ -1,16 +1,19 @@
 import {NextRequest,NextResponse} from "next/server";
 import {createHash,randomBytes} from "node:crypto";
 import {db} from "@/lib/db";
+import {isFertiniPublicDemoAdminEnabled} from "@/server/admin-preview-guest";
 import type {RowDataPacket,ResultSetHeader} from "mysql2/promise";
 export const runtime="nodejs";export const dynamic="force-dynamic";
 const send=(body:unknown,status=200)=>NextResponse.json(body,{status,headers:{"Cache-Control":"private, no-store"}});
 const text=(x:unknown,limit:number)=>typeof x==="string"?x.trim().slice(0,limit):"";
 const hash=(value:string)=>createHash("sha256").update(value).digest("hex");
+// A non-hex leading t identifies a temporary demo conversation without a schema change.
+const demoHash=(value:string)=>"t"+hash(value).slice(1);
 const idOf=(x:unknown)=>{const v=Number(x);return Number.isSafeInteger(v)&&v>0?v:null};
 async function threadOf(req:NextRequest,id:number|null){
  if(!id)return false;const token=req.headers.get("x-support-token")||"";
  if(!/^[A-Za-z0-9_-]{30,100}$/.test(token))return false;
- const [rows]=await db.execute<RowDataPacket[]>("SELECT id,status FROM support_threads WHERE id=? AND token_hash=? LIMIT 1",[id,hash(token)]);
+ const [rows]=await db.execute<RowDataPacket[]>("SELECT id,status FROM support_threads WHERE id=? AND token_hash IN (?,?) LIMIT 1",[id,hash(token),demoHash(token)]);
  return rows[0]||false;
 }
 export async function GET(req:NextRequest){
@@ -71,7 +74,7 @@ export async function POST(req:NextRequest){
    const [cfg]=await db.execute<RowDataPacket[]>("SELECT enabled FROM support_settings WHERE id=1");
    if(cfg[0]?.enabled===false)return send({error:"شروع چت موقتاً غیرفعال است."},403);
    const token=randomBytes(32).toString("base64url");
-   const [record]=await db.execute<ResultSetHeader>("INSERT INTO support_threads(visitor_name,subject,token_hash) VALUES(?,?,?)",[name,subject,hash(token)]);
+   const [record]=await db.execute<ResultSetHeader>("INSERT INTO support_threads(visitor_name,subject,token_hash) VALUES(?,?,?)",[name,subject,isFertiniPublicDemoAdminEnabled()?demoHash(token):hash(token)]);
    return send({threadId:String(record.insertId),token},201);
   }
   if(action==="message"){

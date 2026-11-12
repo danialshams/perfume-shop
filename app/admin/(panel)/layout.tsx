@@ -2,12 +2,13 @@ import type {ReactNode} from "react";
 import {headers} from "next/headers";
 import {redirect} from "next/navigation";
 import {requireAuth} from "@/server/middlewares/auth";
-import {isFertiniPreviewGuestEnabled} from "@/server/admin-preview-guest";
+import {isFertiniPreviewGuestEnabled,isFertiniPublicDemoAdminEnabled} from "@/server/admin-preview-guest";
 import AdminShell from "@/components/admin/admin-shell";
 import AdminAntdProvider from "@/components/panel-sections/admin-antd-provider";
 import "./fertini-studio.css";
 export const dynamic="force-dynamic";
 export default async function AdminPanelLayout({children}:{children:ReactNode}){
+ if(isFertiniPublicDemoAdminEnabled())return <AdminAntdProvider><AdminShell previewGuest>{children}</AdminShell></AdminAntdProvider>;
  let allowed=false;
  try{
   const current=await headers();

@@ -1,5 +1,5 @@
 import {redirect} from "next/navigation";
-import {isFertiniPreviewGuestEnabled} from "@/server/admin-preview-guest";
+import {isFertiniPreviewGuestEnabled,isFertiniPublicDemoAdminEnabled} from "@/server/admin-preview-guest";
 export default function AdminPage(){
- redirect(isFertiniPreviewGuestEnabled()?"/admin/dashboard":"/admin/login");
+ redirect(isFertiniPublicDemoAdminEnabled()||isFertiniPreviewGuestEnabled()?"/admin/dashboard":"/admin/login");
 }

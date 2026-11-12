@@ -35,3 +35,15 @@ test("Fertini design presents floating bubble and responsive mobile layout",()=>
  assert.match(css,/@media\(max-width:520px\)/);
  assert.match(read("app/layout.tsx"),/<SupportChat\/>/);
 });
+
+test("Temporary no-login admin can only read and reply to demo-tagged chat threads",()=>{
+ const admin=read("app/api/v1/admin/engagement/route.ts");
+ const visitor=read("app/api/v1/engagement/route.ts");
+ const auth=read("server/middlewares/admin.ts");
+ const layout=read("app/admin/(panel)/layout.tsx");
+ assert.match(visitor,/demoHash\(token\)/);
+ assert.match(admin,/token_hash LIKE/);
+ assert.match(admin,/demoThread\.length/);
+ assert.match(auth,/isFertiniPublicDemoAdminEnabled\(\)/);
+ assert.match(layout,/if\(isFertiniPublicDemoAdminEnabled\(\)\)/);
+});
