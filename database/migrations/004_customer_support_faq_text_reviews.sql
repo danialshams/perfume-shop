@@ -44,3 +44,9 @@ CREATE TABLE IF NOT EXISTS "support_settings" (
 );
 
 CREATE INDEX IF NOT EXISTS "products_scent_family_idx" ON "products"("scent_family_id");
+
+-- Editable sample FAQ content tailored to perfume discovery.
+INSERT INTO "support_faq" ("question","answer","published") SELECT 'چطور عطرهای هم‌خانواده را پیدا کنم؟','در بخش «رایحه‌های هم‌خانواده» پایین صفحه محصول، عطرهایی با گروه بویایی مشترک نمایش داده می‌شوند.',TRUE WHERE NOT EXISTS (SELECT 1 FROM "support_faq" WHERE "question"='چطور عطرهای هم‌خانواده را پیدا کنم؟');
+INSERT INTO "support_faq" ("question","answer","published") SELECT 'برای انتخاب رایحه از کجا شروع کنم؟','از خانواده‌های بویایی شروع کنید و اگر بین چند عطر مردد هستید، از مشاور رایحه فرتینی کمک بگیرید.',TRUE WHERE NOT EXISTS (SELECT 1 FROM "support_faq" WHERE "question"='برای انتخاب رایحه از کجا شروع کنم؟');
+INSERT INTO "support_faq" ("question","answer","published") SELECT 'چگونه از مشاور رایحه سؤال بپرسم؟','دکمه دایره‌ای پایین صفحه را باز کنید. برای شروع گفتگو فقط نام و موضوع لازم است.',TRUE WHERE NOT EXISTS (SELECT 1 FROM "support_faq" WHERE "question"='چگونه از مشاور رایحه سؤال بپرسم؟');
+INSERT INTO "support_faq" ("question","answer","published") SELECT 'زمان ارسال سفارش چطور مشخص می‌شود؟','اطلاعات روش ارسال را در مرحله سفارش بررسی کنید؛ زمان تحویل به مقصد و روش انتخابی بستگی دارد.',TRUE WHERE NOT EXISTS (SELECT 1 FROM "support_faq" WHERE "question"='زمان ارسال سفارش چطور مشخص می‌شود؟');
