@@ -1,2 +1,2 @@
-import RecordsManager from "@/components/admin/RecordsManager";
-export default function Page(){return <RecordsManager resource="reviews"/>}
+import {EngagementAdmin} from "@/components/admin/EngagementAdmin";
+export default function Page(){return <EngagementAdmin start="reviews"/>}
