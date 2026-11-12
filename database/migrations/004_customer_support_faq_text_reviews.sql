@@ -42,3 +42,5 @@ CREATE TABLE IF NOT EXISTS "support_settings" (
  "enabled" BOOLEAN NOT NULL DEFAULT TRUE,
  "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS "products_scent_family_idx" ON "products"("scent_family_id");
