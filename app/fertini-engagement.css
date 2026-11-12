@@ -84,3 +84,5 @@
 .eng-admin{font-family:inherit}.eng-admin-heading h1{font-weight:450}
 @media(max-width:900px){.fertini-related-live-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.fertini-product-engagement{padding:55px 22px;gap:65px}}
 @media(max-width:520px){.fertini-related-live-info h3{font-size:13px}.fertini-product-engagement{padding:42px 15px;gap:55px}.support-root{bottom:calc(20px + env(safe-area-inset-bottom))}.support-window{height:min(74dvh,600px);max-height:calc(100dvh - 116px)}}
+
+.support-closed{padding:16px;font-size:12px;line-height:2;background:var(--support-surface);margin:0}.support-closed button{margin-inline-start:5px;font:inherit;color:var(--support-accent);background:transparent;border:0;text-decoration:underline;cursor:pointer}
