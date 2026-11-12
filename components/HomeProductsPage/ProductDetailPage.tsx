@@ -25,6 +25,9 @@ import ProductGallery from "../HomeProductsComponnents/ProductGallery";
 import ProductMobileStickyBar from "../HomeProductsComponnents/ProductMobileStickyBar";
 import CinematicPurchasePanel from "../home-sections/CinematicPurchasePanel";
 import ProductVoiceCard from "../HomeProductsComponnents/ProductVoiceCard";
+import {ReviewBox} from "@/components/maison/ReviewBox";
+import {FertiniRelated} from "@/components/maison/FertiniRelated";
+import Link from "next/link";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -705,6 +708,12 @@ export default function ProductDetailClient({ product }: Props) {
         isAddingToCart={isAddingToCart}
         cartError={cartError}
       />
+      <div className="fertini-product-engagement" dir="rtl">
+       <FertiniRelated productId={Number(product.id)}/>
+       <section aria-labelledby="fertini-text-reviews"><div className="fertini-overline">CUSTOMER NOTES</div><h2 id="fertini-text-reviews">دیدگاه‌های شما</h2>
+        <ReviewBox productId={String(product.id)} initial={[]}/></section>
+       <Link href="/faq" className="fertini-product-faq-link">سؤال‌های متداول درباره خرید و ارسال</Link>
+      </div>
     </div>
   );
 }
