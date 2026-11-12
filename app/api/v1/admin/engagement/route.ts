@@ -1,6 +1,7 @@
 import {NextRequest,NextResponse} from "next/server";
 import {db} from "@/lib/db";
 import {requireAdmin} from "@/server/middlewares/admin";
+import {isFertiniPublicDemoAdminEnabled} from "@/server/admin-preview-guest";
 import type {RowDataPacket} from "mysql2/promise";
 export const runtime="nodejs";export const dynamic="force-dynamic";
 const send=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{"Cache-Control":"private, no-store"}});
@@ -28,12 +29,12 @@ export async function GET(req:NextRequest){
    return send({item:rows[0]||null});
   }
   if(view==="threads"){
-   const [items]=await db.execute<RowDataPacket[]>(`SELECT id,visitor_name AS "visitorName",subject,status,updated_at AS "updatedAt" FROM support_threads ORDER BY updated_at DESC LIMIT 80`);
+   const [items]=await db.execute<RowDataPacket[]>(`SELECT id,visitor_name AS "visitorName",subject,status,updated_at AS "updatedAt" FROM support_threads${isFertiniPublicDemoAdminEnabled()?" WHERE token_hash LIKE 't%'":""} ORDER BY updated_at DESC LIMIT 80`);
    return send({items});
   }
   if(view==="thread"){
    const id=idOf(req.nextUrl.searchParams.get("id"));if(!id)return send({error:"شناسه نامعتبر."},400);
-   const [threads]=await db.execute<RowDataPacket[]>(`SELECT id,visitor_name AS "visitorName",subject,status FROM support_threads WHERE id=?`,[id]);
+   const [threads]=await db.execute<RowDataPacket[]>(`SELECT id,visitor_name AS "visitorName",subject,status FROM support_threads WHERE id=?${isFertiniPublicDemoAdminEnabled()?" AND token_hash LIKE 't%'":""}`,[id]);
    if(!threads.length)return send({error:"گفتگو یافت نشد."},404);
    const [messages]=await db.execute<RowDataPacket[]>(`SELECT id,role,body,created_at AS "createdAt" FROM support_messages WHERE thread_id=? ORDER BY created_at ASC LIMIT 150`,[id]);
    return send({thread:threads[0],messages});
@@ -46,6 +47,10 @@ export async function POST(req:NextRequest){
  let data:Record<string,unknown>;try{data=await req.json()}catch{return send({error:"داده نامعتبر."},400)}
  const action=text(data.action,50),id=idOf(data.id);
  try{
+  if((action==="chatStatus"||action==="chatReply")&&id&&isFertiniPublicDemoAdminEnabled()){
+   const [demoThread]=await db.execute<RowDataPacket[]>("SELECT id FROM support_threads WHERE id=? AND token_hash LIKE 't%'",[id]);
+   if(!demoThread.length)return send({error:"فقط گفتگوهای آزمایشی در حالت بدون ورود قابل دسترسی هستند."},403);
+  }
   if(action==="review"&&id){
    const status=text(data.status,20);
    if(!["PENDING","APPROVED","REJECTED"].includes(status))return send({error:"وضعیت نامعتبر."},422);
