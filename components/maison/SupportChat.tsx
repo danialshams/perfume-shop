@@ -12,7 +12,7 @@ export function SupportChat(){
  const pathname=usePathname();
  const [open,setOpen]=useState(false),[name,setName]=useState(""),[subject,setSubject]=useState("مشاوره محصول");
  const [session,setSession]=useState<Credentials|null>(null),[messages,setMessages]=useState<ChatMessage[]>([]);
- const [message,setMessage]=useState(""),[error,setError]=useState(""),[busy,setBusy]=useState(false);
+ const [message,setMessage]=useState(""),[error,setError]=useState(""),[busy,setBusy]=useState(false),[closed,setClosed]=useState(false);
  const [settings,setSettings]=useState<Config>({enabled:true,welcome:"به فرتینی خوش آمدید؛ برای انتخاب رایحه همراهتان هستیم.",expectedResponse:"مشاور رایحه در اولین فرصت پاسخ می‌دهد.",workingHours:""});
  useEffect(()=>{
   try{const stored=localStorage.getItem(storageKey);if(stored){const data=JSON.parse(stored) as Credentials;if(data.threadId&&data.token)setSession(data)}}catch{}
@@ -24,7 +24,7 @@ export function SupportChat(){
   });
   if(res.status===403){localStorage.removeItem(storageKey);setSession(null);return}
   if(!res.ok)return;
-  const data=await res.json();setMessages(data.messages||[]);
+  const data=await res.json();setMessages(data.messages||[]);setClosed(data.status==="CLOSED");
  },[]);
  useEffect(()=>{if(!open||!session)return;void load(session);const timer=setInterval(()=>void load(session),4500);return()=>clearInterval(timer)},[open,session,load]);
  async function start(e:FormEvent){
@@ -67,10 +67,10 @@ export function SupportChat(){
      {messages.map(m=><article className={"support-message "+(m.role==="ADMIN"?"is-admin":"is-visitor")} key={m.id}>
       <span>{m.role==="ADMIN"?"پشتیبان":"شما"}</span><p>{m.body}</p></article>)}
     </div>
-    <form className="support-composer" onSubmit={send}>
+    {closed?<p className="support-closed">این گفتگو پایان یافته است. برای گفتگوی جدید، دکمه شروع دوباره را بزنید. <button onClick={()=>{localStorage.removeItem(storageKey);setSession(null);setMessages([]);setClosed(false)}}>شروع دوباره</button></p>:<form className="support-composer" onSubmit={send}>
      <input maxLength={1800} aria-label="متن پیام" placeholder="پیام شما..." value={message} onChange={e=>setMessage(e.target.value)}/>
      <button type="submit" disabled={busy||!message.trim()} aria-label="ارسال پیام"><Send size={20}/></button>
-    </form>
+    </form>}
    </>}
    {error&&<p role="alert" className="support-error">{error}</p>}
    <footer className="support-footer">برای شروع گفتگو به شماره موبایل یا ایمیل نیازی نیست.</footer>
