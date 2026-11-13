@@ -4,7 +4,7 @@ import { createProduct, uploadProductImage } from "@/lib/api";
 import { getScentFamilies } from "@/lib/product";
 import type { ScentFamily } from "@/lib/product";
 import { toSlug } from "@/lib/utils";
-import { App, Button, Card, Drawer, Form, Radio } from "antd";
+import { App, Button, Drawer, Form, Radio } from "antd";
 import { useEffect, useState } from "react";
 import ProductBasicInfoFields from "./ProductBasicInfoFields";
 import ProductImagesList from "./ProductImagesList";
@@ -32,7 +32,7 @@ export default function CreateProductDrawer({
     const [mediaUploads,setMediaUploads]=useState(0);
     const markMediaUpload=(busy:boolean)=>setMediaUploads(value=>Math.max(0,value+(busy?1:-1)));
 
-    const [selectedType, setSelectedType] = useState<ProductType | null>(null);
+    const [selectedType, setSelectedType] = useState<ProductType>("SINGLE");
     const [uploadingMap, setUploadingMap] = useState<Record<string, boolean>>(
         {},
     );
@@ -44,7 +44,7 @@ export default function CreateProductDrawer({
     useEffect(() => {
         if (!open) {
             form.resetFields();
-            setSelectedType(null);
+            setSelectedType("SINGLE");
             setUploadingMap({});
             setSubmitting(false);
             setMediaUploads(0);
@@ -204,7 +204,7 @@ export default function CreateProductDrawer({
 
         form.setFieldsValue({
             type,
-            status: "ACTIVE",
+            status: "DRAFT",
             is_active: true,
             is_featured: false,
             is_best_seller: false,
@@ -224,15 +224,8 @@ export default function CreateProductDrawer({
         });
     };
 
-    const handleBackToTypeSelection = () => {
-        setSelectedType(null);
-        form.resetFields();
-    };
-
     const handleSubmit = async () => {
-        if (!selectedType) return;
-
-        if(mediaUploads>0){message.warning("ابتدا منتظر پایان آپلود تصاویر و وویس بمانید.");return;}
+                if(mediaUploads>0){message.warning("ابتدا منتظر پایان آپلود تصاویر و وویس بمانید.");return;}
         const values=await form.validateFields().catch(()=>null);
         if(!values)return;
 
@@ -298,7 +291,7 @@ export default function CreateProductDrawer({
             await createProduct(payload);
 
             form.resetFields();
-            setSelectedType(null);
+            setSelectedType("SINGLE");
 
             onSuccess?.();
             onClose();
@@ -319,54 +312,25 @@ export default function CreateProductDrawer({
             maskClosable={mediaUploads===0}
             placement="left"
         >
-            {!selectedType ? (
-                <div className="mx-auto max-w-2xl py-10">
-                    <div className="mb-6 text-center">
-                        <h3 className="text-xl font-bold">
-                            نوع محصول را انتخاب کنید
-                        </h3>
-                    </div>
-
-                    <Radio.Group
-                        className="w-full"
-                        onChange={(e) => handleSelectType(e.target.value)}
-                    >
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <Card
-                                hoverable
-                                className="cursor-pointer rounded-2xl"
-                                onClick={() => handleSelectType("SINGLE")}
-                            >
-                                <Radio value="SINGLE" className="mb-3" />
-
-                                <div className="text-lg font-semibold">
-                                    محصول تکی
-                                </div>
-                            </Card>
-
-                            <Card
-                                hoverable
-                                className="cursor-pointer rounded-2xl"
-                                onClick={() => handleSelectType("GROUPED")}
-                            >
-                                <Radio value="GROUPED" className="mb-3" />
-
-                                <div className="text-lg font-semibold">
-                                    محصول گروهی
-                                </div>
-                            </Card>
-                        </div>
-                    </Radio.Group>
+            <Form form={form} layout="vertical" className="fst-product-form"
+              initialValues={{
+                type:"SINGLE",status:"DRAFT",is_active:true,
+                is_featured:false,is_best_seller:false,scent_family_mode:"EXISTING",
+                images:[{image_url:"",is_main:true}],
+                variants:[{volume_ml:100,price:0,discount_price:null,stock_qty:0,is_active:true,images:[]}],
+              }}>
+                <div className="fst-product-type-choice">
+                  <span>نوع محصول</span>
+                  <Radio.Group optionType="button" buttonStyle="solid"
+                    value={selectedType} onChange={e=>handleSelectType(e.target.value)}>
+                    <Radio.Button value="SINGLE">عطر تکی</Radio.Button>
+                    <Radio.Button value="GROUPED">چند حجم / مدل</Radio.Button>
+                  </Radio.Group>
+                  <small>{selectedType==="SINGLE"?"برای یک حجم یا مدل":"برای عطرهای دارای چند حجم یا قیمت متفاوت"}</small>
                 </div>
-            ) : (
-                <Form form={form} layout="vertical">
                     <ProductBasicInfoFields
                         categories={categories}
                         scentFamilies={scentFamilies}
-                        isUploading={isUploading}
-                        setImageUploading={setImageUploading}
-                        uploadProductImage={uploadProductImage}
-                        validateBeforeUpload={validateBeforeUpload}
                     />
 
                     {loadingScentFamilies ? (
@@ -375,15 +339,15 @@ export default function CreateProductDrawer({
                         </div>
                     ) : null}
 
-                    <section className="my-6 rounded-2xl border border-[#e5dfd5] bg-[#fdfbf8] p-4 md:p-6" aria-label="رسانه‌های این محصول">
-                        <h3 className="mb-2 text-base font-semibold text-[#39332e]">تصاویر و وویس همین محصول</h3>
-                        <p className="mb-5 text-xs leading-7 text-[#756d65]">تصویر اصلی، گالری عکس و معرفی صوتی اختصاصی این عطر را همین‌جا ثبت کنید. فایل‌های هر محصول به همان محصول متصل می‌شوند.</p>
+                    <section className="fst-product-section" aria-label="عکس و صدای محصول">
+                        <div className="fst-product-section-title"><span className="fst-product-step">۲</span><div><h3>عکس و معرفی صوتی</h3><p>عکس اصلی و در صورت نیاز فایل صوتی را اضافه کنید.</p></div></div>
                         <ProductImagesList form={form} validateBeforeUpload={validateBeforeUpload} onUploadingChange={markMediaUpload}/>
                         <div className="my-5 border-t border-[#e8e1d9]"/>
                         <VoiceUploader form={form} validateBeforeUpload={validateVoiceBeforeUpload} onUploadingChange={markMediaUpload}/>
                         {mediaUploads>0?<p role="status" className="mt-4 text-xs text-amber-800">آپلود فایل در جریان است؛ تا پایان آن محصول را ثبت نکنید.</p>:null}
                     </section>
 
+                    <section className="fst-product-section" aria-label="قیمت و موجودی"><div className="fst-product-section-title"><span className="fst-product-step">۳</span><div><h3>قیمت و موجودی</h3><p>{selectedType==="SINGLE"?"قیمت، حجم و تعداد موجود را وارد کنید.":"برای هر حجم قیمت و موجودی جداگانه تعیین کنید."}</p></div></div>
                     <ProductVariantsList
                         form={form}
                         productType={selectedType}
@@ -391,13 +355,9 @@ export default function CreateProductDrawer({
                         setImageUploading={setImageUploading}
                         uploadProductImage={uploadProductImage}
                         validateBeforeUpload={validateBeforeUpload}
-                    />
+                    /></section>
 
-                    <div className="mt-6 flex justify-end gap-2">
-                        <Button onClick={handleBackToTypeSelection}>
-                            بازگشت
-                        </Button>
-
+                    <div className="fst-product-actions">
                         <Button onClick={onClose} disabled={mediaUploads>0}>انصراف</Button>
 
                         <Button
@@ -410,7 +370,6 @@ export default function CreateProductDrawer({
                         </Button>
                     </div>
                 </Form>
-            )}
         </Drawer>
     );
 }
