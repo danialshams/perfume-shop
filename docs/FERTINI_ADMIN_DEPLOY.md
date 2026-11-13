@@ -13,7 +13,7 @@ are obsolete for this independent host.
 - Uploaded assets: images (5 MiB) and product voice (20 MiB), validated by
   MIME and magic bytes. Stored and served by the host itself.
 - Automated delivery: GitHub Actions builds standalone and optionally
-  sends it to cPanel over verified SSH, after one-time SSH configuration.
+  publishes a checksummed GitHub Release; cPanel Cron can pull and install it after one-time quota and restart verification.
 - Always verify the deployment revision, media uploads, admin login, product
   CRUD and homepage content after a release.
 - Never rerun Next.js production builds on the 2 GiB host.
@@ -21,4 +21,4 @@ are obsolete for this independent host.
   independent end-to-end verification.
 
 Read `docs/FERTINI_CPANEL_LOCAL_MEDIA.md` and
-`docs/FERTINI_CPANEL_AUTODEPLOY.md` for exact steps.
+`docs/FERTINI_CPANEL_CRON_AUTODEPLOY.md` for exact steps.
