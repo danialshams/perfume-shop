@@ -962,6 +962,7 @@ export default function EditProductDrawer({
 
     return (
         <Drawer
+            rootClassName="fst-product-drawer"
             title={title}
             open={open}
             onClose={handleClose}
