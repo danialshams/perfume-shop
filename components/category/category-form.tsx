@@ -182,7 +182,7 @@ export default function CategoryForm({
     };
 
     const uploadProps: UploadProps = {
-        accept: "image/jpeg,image/png,image/webp,image/gif",
+        accept: "image/jpeg,image/png,image/webp",
         maxCount: 1,
         multiple: false,
         fileList,
@@ -191,14 +191,13 @@ export default function CategoryForm({
                 "image/jpeg",
                 "image/png",
                 "image/webp",
-                "image/gif",
             ].includes(file.type);
 
             if (!isAllowedType) {
                 form.setFields([
                     {
                         name: "image_file",
-                        errors: ["فرمت تصویر معتبر نیست. فرمت‌های مجاز: jpg, png, webp, gif"],
+                        errors: ["فرمت تصویر معتبر نیست. فرمت‌های مجاز: jpg, png, webp"],
                     },
                 ]);
 
@@ -326,9 +325,9 @@ export default function CategoryForm({
                 </Form.Item>
 
                 <Form.Item
-                    label="تصویر دسته‌بندی"
+                    label="تصویر دسته‌بندی (اختیاری)"
                     name="image_file"
-                    extra="فرمت‌های مجاز: jpg, png, webp, gif — حداکثر حجم: ۵ مگابایت"
+                    extra="فرمت‌های مجاز: jpg, png, webp — حداکثر حجم: ۵ مگابایت"
                 >
                     <div className="space-y-3">
                         {currentImageUrl && !removeImage && fileList.length === 0 ? (
