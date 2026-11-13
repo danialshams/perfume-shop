@@ -870,6 +870,7 @@ export default function MobileMenuOverlay({
       ref={panelRef}
       dir="rtl"
       className={`${vazirClassName} fixed inset-0 z-[9999] min-[920px]:hidden`}
+      data-fertini-menu-open={isOpen ? "true" : undefined}
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           setIsOpen(false);
