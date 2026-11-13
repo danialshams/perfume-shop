@@ -26,7 +26,7 @@ export async function GET(
   if (!mime[ext]) return new NextResponse(null, { status: 404 });
   try {
     const bytes = await readLocalMedia(key);
-    return new NextResponse(bytes, {
+    return new NextResponse(Uint8Array.from(bytes).buffer, {
       status: 200,
       headers: {
         "Content-Type": mime[ext],
