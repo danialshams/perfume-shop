@@ -366,7 +366,7 @@ async function validateAdminScreens(){
   const healthRedirect=[301,302,303,307,308].includes(retiredHealth.status) &&
     retiredHealth.headers.get("location")?.includes("/admin/dashboard");
   const healthStreamed=retiredHealth.status===200 &&
-    /NEXT_REDIRECT|admin\\/dashboard/.test(await retiredHealth.text());
+    /NEXT_REDIRECT/.test(await retiredHealth.text());
   if(!healthRedirect&&!healthStreamed)
     throw Error("Retired database diagnostics must redirect to the dashboard");
   const {send:check,close:closeCheck}=await open("about:blank");
