@@ -362,7 +362,13 @@ async function validateAdminScreens(){
   if(!serverRedirect&&!streamedRedirect)
     throw Error("Legacy admin media redirect to products was not found: "+mediaRedirect.status);
   await pageScreenshot({name:"admin-coupons-mobile",url:base+"/admin/coupons",width:390,height:844,mobile:true,assertHome:false});
-  await pageScreenshot({name:"admin-database-desktop",url:base+"/admin/database",width:1440,height:900,mobile:false,assertHome:false});
+  const retiredHealth=await fetch(base+"/admin/database",{redirect:"manual"});
+  const healthRedirect=[301,302,303,307,308].includes(retiredHealth.status) &&
+    retiredHealth.headers.get("location")?.includes("/admin/dashboard");
+  const healthStreamed=retiredHealth.status===200 &&
+    /NEXT_REDIRECT/.test(await retiredHealth.text());
+  if(!healthRedirect&&!healthStreamed)
+    throw Error("Retired database diagnostics must redirect to the dashboard");
   const {send:check,close:closeCheck}=await open("about:blank");
   try{
     await check("Page.enable");

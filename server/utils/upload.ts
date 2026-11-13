@@ -1,77 +1,40 @@
-import { randomUUID } from "crypto";
-import { mkdir, unlink, writeFile } from "fs/promises";
-import path from "path";
+import {randomUUID} from "node:crypto";
+import {mkdir, unlink, writeFile} from "node:fs/promises";
+import path from "node:path";
+import {validateMediaBytes} from "@/lib/admin-media-validation";
+import {deleteLocalMedia, localMediaReady, saveLocalMedia} from "@/server/storage/local-media";
 
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+/** Categories, like products and hero images, must survive standalone runtime upgrades. */
+export async function saveCategoryImage(file: File): Promise<string | null> {
+  if (!file || file.size === 0) return null;
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const verdict = validateMediaBytes(file,"image",bytes);
+  if (!verdict.ok) throw new Error(verdict.error);
 
-const ALLOWED_IMAGE_TYPES: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/gif": "gif",
-};
-
-const CATEGORY_UPLOAD_DIR = path.join(
-  process.cwd(),
-  "public",
-  "uploads",
-  "categories",
-);
-
-export async function saveCategoryImage(file: File) {
-  if (!file || file.size <= 0) {
-    return null;
+  const key = "categories/" + randomUUID() + "." + verdict.ext;
+  if (localMediaReady()) return await saveLocalMedia(key,bytes);
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("مسیر ذخیره‌سازی تصاویر در هاست در دسترس نیست.");
   }
-
-  if (file.size > MAX_IMAGE_SIZE) {
-    throw new Error("حجم تصویر نباید بیشتر از ۵ مگابایت باشد");
-  }
-
-  const extension = ALLOWED_IMAGE_TYPES[file.type];
-
-  if (!extension) {
-    throw new Error(
-      "فرمت تصویر معتبر نیست. فرمت‌های مجاز: jpg, png, webp, gif",
-    );
-  }
-
-  await mkdir(CATEGORY_UPLOAD_DIR, { recursive: true });
-
-  const fileName = `${randomUUID()}.${extension}`;
-  const fullPath = path.join(CATEGORY_UPLOAD_DIR, fileName);
-
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  await writeFile(fullPath, buffer);
-
-  return `/uploads/categories/${fileName}`;
+  const developmentDir = path.join(process.cwd(),"public","uploads","categories");
+  await mkdir(developmentDir,{recursive:true});
+  await writeFile(path.join(developmentDir,path.basename(key)),bytes,{flag:"wx"});
+  return "/uploads/" + key;
 }
 
-export async function deletePublicUpload(publicUrl?: string | null) {
+/** Delete only UUID-named category uploads; never delete checked-in static assets. */
+export async function deletePublicUpload(publicUrl?:string|null):Promise<void> {
   if (!publicUrl) return;
-
-  /**
-   * فقط اجازه حذف فایل‌های همین مسیر را می‌دهیم
-   * تا اشتباهی فایل‌های دیگر پروژه حذف نشوند.
-   */
-  if (!publicUrl.startsWith("/uploads/categories/")) {
+  const match = publicUrl.match(/^\/api\/v1\/media\/(categories\/[0-9a-f-]{36}\.(?:jpg|png|webp))$/i);
+  if (match && localMediaReady()) {
+    await deleteLocalMedia(match[1]);
     return;
   }
-
-  const fileName = path.basename(publicUrl);
-
-  const fullPath = path.join(CATEGORY_UPLOAD_DIR, fileName);
-
-  if (!fullPath.startsWith(CATEGORY_UPLOAD_DIR)) {
-    return;
-  }
-
-  try {
-    await unlink(fullPath);
-  } catch {
-    /**
-     * اگر فایل وجود نداشت، خطا نده.
-     */
+  // Legacy public uploads can only be removed in development.
+  const old = publicUrl.match(/^\/uploads\/categories\/([0-9a-f-]{36}\.(?:jpg|png|webp))$/i);
+  if (!old || process.env.NODE_ENV === "production") return;
+  try { await unlink(path.join(process.cwd(),"public","uploads","categories",old[1])); }
+  catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
 }

@@ -117,7 +117,7 @@ export default function AdminContentPage() {
       const result = await response.json().catch(() => null);
       if (!response.ok || !result?.saved) throw Error(result?.error || "ذخیره‌سازی ناموفق بود.");
       setContent(result.content); setSnapshot(JSON.stringify(result.content));
-      setSuccess("تغییرات صفحه اصلی در MySQL ذخیره شدند. صفحه فروشگاه را بازخوانی کنید.");
+      setSuccess("تغییرات صفحه اصلی ذخیره شدند و در فروشگاه قابل مشاهده‌اند.");
     } catch (e) {
       setError(e instanceof Error ? e.message : "خطای ذخیره");
     } finally { setBusy(false); }
@@ -197,7 +197,7 @@ export default function AdminContentPage() {
     {error && <div className="fst-error" role="alert">{error}</div>}
     {success && <div className="fst-notice" role="status">{success}</div>}
     {!connected && <div className="fst-notice mb-4">
-      حالت پیش‌نمایش؛ ذخیره تا زمان اتصال MySQL و ایجاد جدول storefront_content غیرفعال است. تصاویر نمایشی با محصولات واقعی اشتباه گرفته نمی‌شوند.
+      امکان ذخیره تغییرات در حال حاضر در دسترس نیست. دوباره تلاش کنید.
     </div>}
     <div className="fst-card mb-4">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -360,7 +360,7 @@ export default function AdminContentPage() {
         انجام می‌شود؛ اینجا فقط نحوه نمایش محصولات روی هوم‌پیج تنظیم می‌شود.
       </div>
       <div className="fst-save-bar">
-        <span>{!connected ? "دیتابیس متصل نیست" : changed ? "تغییرات ذخیره‌نشده وجود دارد" : "همه تغییرات ذخیره شده‌اند"}</span>
+        <span>{!connected ? "امکان ذخیره فعلاً در دسترس نیست" : changed ? "تغییرات ذخیره‌نشده وجود دارد" : "همه تغییرات ذخیره شده‌اند"}</span>
         <div className="flex gap-2">
           <button type="button" disabled={busy} onClick={() => void load()} className="fst-btn">بازخوانی <RefreshCw size={15}/></button>
           <button type="submit" disabled={!connected || !changed || busy} className="fst-btn fst-btn-primary">

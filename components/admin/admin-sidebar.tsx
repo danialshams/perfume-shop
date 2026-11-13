@@ -2,23 +2,21 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {LayoutDashboard,Package,Shapes,ShoppingBag,PanelsTopLeft,
-  Database,ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,CreditCard,MessageCircle,HelpCircle} from "lucide-react";
+  ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,MessageCircle,HelpCircle} from "lucide-react";
 
 const groups=[
  {title:"محتوا و ظاهر فروشگاه",links:[
-  {href:"/admin/content",title:"مدیریت بصری صفحه اصلی",icon:PanelsTopLeft}]},
+  {href:"/admin/content",title:"صفحه اصلی",icon:PanelsTopLeft}]},
  {title:"مدیریت فروشگاه",links:[
-  {href:"/admin/products",title:"محصولات و موجودی",icon:Package},
+  {href:"/admin/products",title:"محصولات",icon:Package},
   {href:"/admin/categories",title:"دسته‌بندی‌ها",icon:Shapes},
   {href:"/admin/orders",title:"سفارش‌ها",icon:ShoppingBag},
   {href:"/admin/coupons",title:"کدهای تخفیف",icon:TicketPercent}]},
- {title:"سفارش‌ها و مشتریان",links:[
+ {title:"ارتباط با مشتریان",links:[
   {href:"/admin/customers",title:"مشتریان",icon:Users},
-  {href:"/admin/payments",title:"تراکنش‌ها",icon:CreditCard},
   {href:"/admin/reviews",title:"دیدگاه‌ها",icon:MessageSquare},
   {href:"/admin/support",title:"چت آنلاین",icon:MessageCircle},
-  {href:"/admin/faq",title:"سؤال‌های متداول",icon:HelpCircle}]},
- {title:"سیستم",links:[{href:"/admin/database",title:"سلامت اتصال و دیتابیس",icon:Database}]}
+  {href:"/admin/faq",title:"سؤال‌های متداول",icon:HelpCircle} ]}
 ];
 export const adminSections=groups;
 export default function AdminSidebar({onNavigate}:{onNavigate?:()=>void}){
@@ -27,8 +25,6 @@ export default function AdminSidebar({onNavigate}:{onNavigate?:()=>void}){
   <Link href="/admin/dashboard" onClick={onNavigate} className="fst-sidebar-brand">
    <strong>F<span>.</span></strong><span><b>FERTINI STUDIO</b><small>مدیریت خانه عطر</small></span>
   </Link>
-  <div className="fst-store-selector"><span className="fst-store-monogram">F</span>
-   <span><strong>FERTINI</strong><small>فروشگاه عطر · پنل اصلی</small></span></div>
   <nav className="fst-sidebar-nav" aria-label="بخش‌های پنل">
    <Link onClick={onNavigate} href="/admin/dashboard" aria-current={pathname==="/admin/dashboard"?"page":undefined}
      className={"fst-side-link "+(pathname==="/admin/dashboard"?"active":"")}>

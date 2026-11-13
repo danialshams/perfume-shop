@@ -18,7 +18,8 @@ export async function GET(
 ) {
   const { segments } = await params;
   if (!Array.isArray(segments) || (segments.length !== 2 && segments.length !== 3) ||
-      segments[0] !== "products" || (segments.length === 3 && segments[1] !== "voices")) {
+      !(segments[0] === "products" || (segments[0] === "categories" && segments.length === 2)) ||
+      (segments.length === 3 && segments[1] !== "voices")) {
     return new NextResponse(null, { status: 404 });
   }
   const key = segments.join("/");

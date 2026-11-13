@@ -2,7 +2,7 @@
 import Link from "next/link";
 import {useEffect,useState} from "react";
 import {Package,ShoppingBag,Shapes,Users,ArrowUpLeft,PanelsTopLeft,
-  Images,Database,ArrowLeft,RefreshCw,TicketPercent,MessageSquare} from "lucide-react";
+  ArrowLeft,RefreshCw,TicketPercent,MessageSquare} from "lucide-react";
 type Recent={id:number;order_number:string|null;customer_name:string|null;total_amount:number;status:string;created_at:string};
 type Overview={products:number|null;orders:number|null;categories:number|null;customers:number|null;notifications:number|null;partial:boolean;recent:Recent[]};
 const cards=[
@@ -12,11 +12,9 @@ const cards=[
  {key:"customers",label:"حساب‌های کاربری",icon:Users}
 ] as const;
 const actions=[
- {href:"/admin/content",title:"ویرایش صفحه اصلی",detail:"هیرو، عنوان‌ها و چیدمان بخش‌های فروشگاه",icon:PanelsTopLeft},
- {href:"/admin/products",title:"محصولات و موجودی",detail:"افزودن، ویرایش، قیمت، تنوع و وویس",icon:Package},
+ {href:"/admin/content",title:"ویرایش صفحه اصلی",detail:"اسلایدها، پرفروش‌ها، تازه‌ها و سه کارت رایحه",icon:PanelsTopLeft},
+ {href:"/admin/products",title:"افزودن و مدیریت عطر",detail:"عکس، قیمت، موجودی و معرفی صوتی",icon:Package},
  {href:"/admin/orders",title:"مدیریت سفارش‌ها",detail:"مشتری، اقلام، پرداخت و وضعیت ارسال",icon:ShoppingBag},
- {href:"/admin/sliders",title:"اسلایدر و کمپین",detail:"انتخاب محصول و مقصد اسلاید",icon:Images},
- {href:"/admin/database",title:"سلامت زیرساخت",detail:"اتصال دیتابیس و کنترل ساختار",icon:Database},
  {href:"/admin/customers",title:"مشتریان",detail:"نمایش جزئیات و مدیریت وضعیت حساب",icon:Users},
  {href:"/admin/coupons",title:"کدهای تخفیف",detail:"ساخت، مشاهده و فعال‌سازی تخفیف‌ها",icon:TicketPercent},
  {href:"/admin/reviews",title:"مدیریت دیدگاه‌ها",detail:"بررسی و تأیید یا رد نظرات",icon:MessageSquare}
@@ -34,7 +32,7 @@ export default function AdminDashboardPage(){
   <div className="fst-page-heading"><div><small>FERTINI / STUDIO OVERVIEW</small><h1>نمای کلی فروشگاه</h1>
    <p>آمار واقعی و دسترسی سریع به مدیریت محتوا، محصولات و سفارش‌ها.</p></div>
    <button type="button" className="fst-btn" onClick={reload} disabled={loading}>بازخوانی آمار <RefreshCw size={16}/></button></div>
-  {error&&<div className="fst-error" role="alert">{error} <Link href="/admin/database" className="underline">بررسی اتصال</Link></div>}
+  {error&&<div className="fst-error" role="alert">{error}</div>}
   {data?.partial&&<p role="status" className="fst-notice mb-4">بخشی از آمار دیتابیس در دسترس نیست و با خط تیره مشخص شده است.</p>}
   <section className="fst-grid" aria-label="شاخص‌های فروشگاه">
    {cards.map(x=><div className="fst-card fst-metric" key={x.key}>

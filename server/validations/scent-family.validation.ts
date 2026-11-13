@@ -34,7 +34,7 @@ export const createScentFamilySchema = z.object({
     .min(2, "Name must be at least 2 characters")
     .max(120, "Name must not exceed 120 characters"),
 
-  image_url: imageUrlSchema,
+  image_url: z.union([imageUrlSchema, z.literal("")]).default(""),
 
   is_active: z.boolean().optional(),
   sort_order: z.number().int().min(0).optional(),
