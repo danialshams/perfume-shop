@@ -35,5 +35,4 @@ are not used.
 
 ## Automatic deployment
 
-See `docs/FERTINI_CPANEL_AUTODEPLOY.md`. The optional pipeline is disabled
-until the user has configured and tested SSH access and the app restart hook.
+See `docs/FERTINI_CPANEL_CRON_AUTODEPLOY.md`. The optional HTTPS Cron deployment is disabled until account quota, on-host media storage, and the cPanel application restart method are verified.
