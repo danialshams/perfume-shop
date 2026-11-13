@@ -1,51 +1,39 @@
-# FERTINI — media on a low-disk cPanel Node.js host
+# FERTINI — local media storage on cPanel
 
-The production app normally uses S3-compatible object storage. For an
-independently hosted, single-node cPanel deployment, an alternative is supported
-without an S3 purchase: **opt-in persistent local disk**.
+On the independent Iranian Node.js host, all *newly uploaded* photos and
+product audio are stored on the same host. External object-storage services
+are not used.
 
-## Setup
+## One-time host configuration
 
-1. Stop Fertini in cPanel's Node.js Applications.
-2. Create a directory **outside** the replaceable standalone runtime and outside
-   public_html. Example:
-   mkdir -p /home/fertinip/fertini-media
-   chmod 750 /home/fertinip/fertini-media
-3. Add cPanel Node application environment variable:
-   LOCAL_MEDIA_STORAGE_DIR=/home/fertinip/fertini-media
-   Keep NODE_ENV=production and TEMP_PUBLIC_ADMIN_EDIT=0.
-4. Deploy a fresh standalone build made from this commit. The previous runtime
-   cannot use local media. Restart the Node application after deployment.
-5. Sign in as administrator, upload one small JPEG and one voice file, confirm
-   the API response and public media URL, then save the product/homepage content.
-6. Verify a media URL survives a Node process restart.
+1. Use cPanel Terminal:
+   `mkdir -p /home/fertinip/fertini-media`
+   `chmod 700 /home/fertinip/fertini-media`
+2. Set Node.js app environment variable:
+   `LOCAL_MEDIA_STORAGE_DIR=/home/fertinip/fertini-media`
+3. Keep `NODE_ENV=production`, `TEMP_PUBLIC_ADMIN_EDIT=0`,
+   `HOSTNAME=0.0.0.0` (typed without hidden whitespace) and cPanel-managed `PORT`.
+4. Restart the cPanel Node.js application once so it reads the new variable.
+5. Deploy the updated standalone bundle. Upload a small JPG from the
+   authenticated admin form and verify its URL and homepage visibility.
 
-Accepted formats: JPEG/PNG/WebP (5 MiB max); MP3/WAV/OGG/M4A/AAC/FLAC/WEBM
-voice (20 MiB max). The same image/audio signatures are checked in both
-production and development. All writes are authenticated and randomized by UUID.
-Public media reads accept only the exact controlled key structure.
+## Storage policy and limits
 
-URL format: /api/v1/media/products/<uuid>.jpg and
-/api/v1/media/products/voices/<uuid>.mp3.
+- Do **not** place media inside `fertini-runtime` or `public_html`.
+- The folder survives replacement of the application release.
+- Media URLs are `/api/v1/media/products/<uuid>.jpg` or
+  `/api/v1/media/products/voices/<uuid>.mp3`.
+- Maximum image 5 MiB; voice 20 MiB; actual file signatures and
+  extensions are verified before writing.
+- Upload endpoints require a signed-in administrator; public reads are
+  restricted to controlled UUID names.
+- PostgreSQL stores references/metadata; the actual media bytes stay on disk.
+- Back up **both** PostgreSQL and `/home/fertinip/fertini-media` regularly.
+- The 2 GiB hosting disk quota includes media, runtime and backups.
+- Original checked-in `public/` editorial/static images remain in the
+  installed GitHub-built runtime; they are also served by this host.
 
-The media directory **must not** live in /home/fertinip/fertini-runtime,
-because deployment replaces the runtime bundle. Back up both PostgreSQL and
-the local media folder. Deleting only one destroys references or the bytes.
+## Automatic deployment
 
-## Deployment guidance
-
-- Keep the live runtime untouched while staging a replacement build in a
-  separate versioned directory; stop, switch Root directory, start and test,
-  then remove the old runtime when validated.
-- Never re-run npm ci or next build on the 2 GiB shared host.
-- The host's disk limit includes user uploads; watch disk space and inode limits.
-- For scaling to multiple servers, CDN, or large media libraries, migrate assets
-  to S3-compatible storage and remove LOCAL_MEDIA_STORAGE_DIR. The runtime
-  continues to prefer S3 if it is fully configured.
-- Browser uploads use /api/v1/admin/media-upload/start; if local mode is enabled
-  the authenticated /api/v1/uploads/products[voice] handler writes to durable disk.
-  Without S3 or LOCAL_MEDIA_STORAGE_DIR production uploads respond with 503.
-- Use cPanel-provided PORT and HOSTNAME=0.0.0.0 (without tabs/spaces) as needed
-  for the proxy; keep the Node instance behind the HTTPS domain proxy.
-- Uploads are public only after storing under the controlled media URL. Always
-  remove or rotate exposed credentials before going live.
+See `docs/FERTINI_CPANEL_AUTODEPLOY.md`. The optional pipeline is disabled
+until the user has configured and tested SSH access and the app restart hook.
