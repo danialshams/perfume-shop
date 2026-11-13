@@ -87,7 +87,8 @@ const newScentFamilySchema = z.object({
     .min(2, "Scent family name must be at least 2 characters")
     .max(120, "Scent family name must not exceed 120 characters"),
 
-  image_url: imageUrlSchema,
+  // The homepage manages its own three family-card photos; product taxonomy is text-only.
+  image_url: z.union([imageUrlSchema, z.literal("")]).default(""),
 });
 
 export const productListQuerySchema = z.object({
