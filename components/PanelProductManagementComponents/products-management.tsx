@@ -117,7 +117,7 @@ export default function ProductsManagement() {
                 setData(result);
             } catch (error) {
                 console.error(error);
-                setLoadError("اتصال دیتابیس محصولات برقرار نیست. لطفاً اتصال را از بخش سلامت دیتابیس بررسی کنید.");
+                setLoadError("دریافت محصولات ممکن نشد. صفحه را بازخوانی کنید؛ اگر مشکل ادامه داشت با پشتیبانی تماس بگیرید.");
             } finally {
                 setLoading(false);
             }
