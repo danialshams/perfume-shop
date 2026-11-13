@@ -38,6 +38,35 @@ try{
  const token=cookies.match(/admin_access_token=[^;]+/);
  assert.ok(token,"Admin session cookie was not issued");
  const auth={cookie:token[0]};
+
+ const preflight=await read("/api/v1/admin/media-upload/start",{
+   method:"POST",headers:{...auth,"Content-Type":"application/json"},
+   body:JSON.stringify({kind:"image",name:"qa.jpg",type:"image/jpeg",size:16}),
+ });
+ assert.equal(preflight.status,200,"authenticated local media preflight failed: "+await preflight.text());
+ const formImage=new FormData();
+ formImage.append("file",new Blob([Uint8Array.of(255,216,255,224,0,0,0,0,0,0,0,0,0,0,0,0)],{type:"image/jpeg"}),"qa.jpg");
+ const imageUpload=await read("/api/v1/uploads/products",{
+   method:"POST",headers:auth,body:formImage,
+ });
+ assert.equal(imageUpload.status,201,"authenticated product image upload failed: "+await imageUpload.text());
+ const imageData=await imageUpload.json();
+ const imagePath=imageData.data?.url;
+ assert.match(imagePath,/^\/api\/v1\/media\/products\/[0-9a-f-]{36}\.jpg$/);
+ const imageRead=await read(imagePath);
+ assert.equal(imageRead.status,200,"uploaded product image not publicly readable");
+ assert.equal(imageRead.headers.get("content-type"),"image/jpeg");
+
+ const formVoice=new FormData();
+ formVoice.append("file",new Blob([Uint8Array.of(73,68,51,4,0,0,0,0,0,0,0,0,0,0,0,0)],{type:"audio/mpeg"}),"qa.mp3");
+ const voiceUpload=await read("/api/v1/uploads/products/voice",{
+   method:"POST",headers:auth,body:formVoice,
+ });
+ assert.equal(voiceUpload.status,201,"authenticated product voice upload failed: "+await voiceUpload.text());
+ const voiceData=await voiceUpload.json();
+ assert.match(voiceData.data?.url,/^\/api\/v1\/media\/products\/voices\/[0-9a-f-]{36}\.mp3$/);
+ assert.equal((await read(voiceData.data.url)).status,200,"uploaded voice not publicly readable");
+
  const result=await read("/api/v1/admin/content",{headers:auth});
  assert.equal(result.status,200,"Admin studio API denied or database error");
  const data=await result.json();
