@@ -17,10 +17,9 @@ replaceable standalone bundle (recommended:
 
 The 2 GiB cPanel host cannot reliably compile the Next.js app.
 GitHub Actions compiles the standalone artifact using Node.js 24.
-Deployment can then transfer that artifact over SSH into
-`/home/fertinip/fertini-runtime` without installing the entire dependency tree.
-For the optional safe auto-deploy setup see
-`docs/FERTINI_CPANEL_AUTODEPLOY.md`.
+The host can fetch the published release over HTTPS using cPanel Cron Jobs without inbound SSH.
+For safe opt-in automatic deployment, see
+`docs/FERTINI_CPANEL_CRON_AUTODEPLOY.md`.
 
 Before live sales, verify authenticated product editing, image/audio uploads,
 homepage updates, inventory, orders, backups and the payment gateway.
