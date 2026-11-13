@@ -28,8 +28,18 @@ function reply(message: string, status: number) {
 export async function POST(request: NextRequest) {
   const token = process.env.FERTINI_BOOTSTRAP_TOKEN;
   if (!token || token.length < 32) return reply("راه‌اندازی حساب مدیر در این محیط فعال نیست.", 503);
+  // Reverse proxies can rewrite request.nextUrl.origin to an internal host/port.
+  // APP_URL is an operator-configured, trusted public origin for production.
   const origin = request.headers.get("origin");
-  if (origin && origin !== request.nextUrl.origin) return reply("درخواست نامعتبر است.", 403);
+  let expectedOrigin = request.nextUrl.origin;
+  if (process.env.APP_URL) {
+    try {
+      expectedOrigin = new URL(process.env.APP_URL).origin;
+    } catch {
+      return reply("آدرس اصلی سایت درست تنظیم نشده است.", 503);
+    }
+  }
+  if (origin && origin !== expectedOrigin) return reply("درخواست نامعتبر است.", 403);
   let raw: unknown;
   try { raw = await request.json(); }
   catch { return reply("اطلاعات ورودی نامعتبر است.", 400); }
