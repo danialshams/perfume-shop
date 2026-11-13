@@ -304,6 +304,7 @@ export default function CreateProductDrawer({
 
     return (
         <Drawer
+            rootClassName="fst-product-drawer"
             open={open}
             onClose={onClose}
             title="ایجاد محصول"
