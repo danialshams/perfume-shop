@@ -6,6 +6,13 @@ export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
 umask 077
 
 readonly home="$HOME"
+# Cron runs with a minimal PATH, while PM2 is installed under the user’s nvm Node.
+for bin in "$home"/.nvm/versions/node/v*/bin; do
+  if [[ -x "$bin/pm2" && -x "$bin/node" ]]; then
+    export PATH="$bin:$PATH"
+    break
+  fi
+done
 readonly live="$home/fertini-runtime"
 readonly media="$home/fertini-media"
 readonly state="$home/.fertini-pull-state"
@@ -18,7 +25,7 @@ readonly lock="$home/.fertini-pull.lock"
 
 # Never mutate anything until an operator explicitly opts in.
 [[ -f "$enabled" ]] || exit 0
-for bin in curl php tar sha256sum flock mktemp; do
+for bin in curl php tar sha256sum flock mktemp node pm2; do
   command -v "$bin" >/dev/null || { echo "Missing required command: $bin" >&2; exit 1; }
 done
 [[ -f "$live/server.js" ]] || { echo "Cannot locate current live runtime" >&2; exit 1; }
@@ -26,6 +33,36 @@ done
 [[ ! -L "$live" && ! -L "$media" ]] || { echo "Unexpected runtime/media symlink" >&2; exit 1; }
 exec 9>"$lock"
 flock -n 9 || exit 0
+
+# Only operate on the single ONLINE PM2 process rooted at the expected app path.
+# Never print pm2 jlist (contains the application's private environment values).
+pm_id="$(pm2 jlist | node -e '
+let input = "";
+process.stdin.setEncoding("utf8");
+process.stdin.on("data", (part) => { input += part; });
+process.stdin.on("end", () => {
+  let apps;
+  try { apps = JSON.parse(input); }
+  catch { console.error("Unable to parse PM2 process list"); process.exit(1); }
+  if (!Array.isArray(apps)) process.exit(1);
+  const live = process.argv[1];
+  const matches = apps.filter((app) => {
+    const env = app.pm2_env || {};
+    return env.pm_cwd === live || env.pm_exec_path === live + "/server.js";
+  });
+  if (matches.length !== 1 ||
+      !Number.isInteger(matches[0].pm_id) ||
+      matches[0].pm2_env.status !== "online") {
+    console.error("Expected exactly one ONLINE PM2 app rooted at " + live);
+    process.exit(2);
+  }
+  process.stdout.write(String(matches[0].pm_id));
+});
+' "$live")" || {
+  echo "PM2 app not uniquely identified. Nothing changed." >&2
+  exit 1
+}
+echo "Verified PM2 app id: $pm_id"
 
 release_json="$(curl -fsSL --retry 2 --connect-timeout 10 --max-time 30 \
   -H 'Accept: application/vnd.github+json' -H 'User-Agent: fertini-cpanel-cron' "$api")"
@@ -85,19 +122,24 @@ if ! mv -- "$stage" "$live"; then
   exit 1
 fi
 promoted=1
-mkdir -p "$live/tmp"
-touch "$live/tmp/restart.txt"
-
+# PM2 manages the real Next.js process behind localhost:56757.
+# Restart by the verified numeric ID, retaining its existing private environment.
 healthy=0
-for attempt in $(seq 1 20); do
-  response="$(curl -fsS --connect-timeout 5 --max-time 8 \
-    "$origin/api/v1/deployment" || true)"
-  if [[ "$response" == *'"sha":"'"$sha"'"'* ]]; then
-    healthy=1
-    break
-  fi
-  sleep 5
-done
+if ! pm2 restart "$pm_id"; then
+  echo "PM2 restart failed; attempting rollback" >&2
+else
+  for attempt in $(seq 1 20); do
+    response="$(curl -fsS --connect-timeout 5 --max-time 8 \
+      "$origin/api/v1/deployment" || true)"
+    if [[ "$response" == *'"sha":"'"$sha"'"'* ]]; then
+      healthy=1
+      break
+    fi
+    sleep 5
+  done
+fi
+
+
 if (( healthy == 1 )); then
   printf '%s\n' "$sha" > "$state"
   rm -f -- "$blocked"
@@ -114,9 +156,11 @@ if ! mv -- "$previous" "$live"; then
   echo "CRITICAL: rollback could not restore original runtime" >&2
   exit 1
 fi
-mkdir -p "$live/tmp"
-touch "$live/tmp/restart.txt"
+if ! pm2 restart "$pm_id"; then
+  echo "CRITICAL: old runtime files restored but PM2 restart failed; manual intervention required" >&2
+  exit 1
+fi
 rm -rf -- "$failed"
 printf '%s\n' "$sha" > "$blocked"
-echo "Rolled back. Update blocked until a new release or manual reset." >&2
+echo "Rolled back via PM2. Update blocked until a new release or manual reset." >&2
 exit 1
