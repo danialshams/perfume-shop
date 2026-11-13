@@ -16,6 +16,7 @@ export function localMediaDirectory(): string | null {
   if (root === cwd || root.startsWith(cwd + path.sep)) return null;
   return root;
 }
+export class StorageNotConfiguredError extends Error {}
 export const localMediaReady = (): boolean => localMediaDirectory() !== null;
 
 function fileLocation(key: string): string {
