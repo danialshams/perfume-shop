@@ -6,7 +6,7 @@ import NotificationBell from "@/components/panel-sections/notification-bell";
 const names:Record<string,string>={
  dashboard:"نمای کلی",products:"محصولات و موجودی",categories:"دسته‌بندی‌ها",
  sliders:"اسلایدرها",orders:"سفارش‌ها",content:"محتوای صفحه اصلی",
- database:"سلامت دیتابیس",customers:"مشتریان",payments:"تراکنش‌ها",
+ customers:"مشتریان",payments:"تراکنش‌ها",
  reviews:"دیدگاه‌ها",coupons:"کدهای تخفیف"
 };
 export default function AdminHeader({onMenuClick,previewGuest=false}:{onMenuClick?:()=>void;previewGuest?:boolean}){
