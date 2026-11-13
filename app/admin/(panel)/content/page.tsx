@@ -360,7 +360,7 @@ export default function AdminContentPage() {
         انجام می‌شود؛ اینجا فقط نحوه نمایش محصولات روی هوم‌پیج تنظیم می‌شود.
       </div>
       <div className="fst-save-bar">
-        <span>{!connected ? "دیتابیس متصل نیست" : changed ? "تغییرات ذخیره‌نشده وجود دارد" : "همه تغییرات ذخیره شده‌اند"}</span>
+        <span>{!connected ? "امکان ذخیره فعلاً در دسترس نیست" : changed ? "تغییرات ذخیره‌نشده وجود دارد" : "همه تغییرات ذخیره شده‌اند"}</span>
         <div className="flex gap-2">
           <button type="button" disabled={busy} onClick={() => void load()} className="fst-btn">بازخوانی <RefreshCw size={15}/></button>
           <button type="submit" disabled={!connected || !changed || busy} className="fst-btn fst-btn-primary">
