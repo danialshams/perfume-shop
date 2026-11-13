@@ -13,6 +13,7 @@ on:
       - 'scripts/test-local-media.mjs'
       - 'app/api/v1/deployment/**'
       - 'scripts/deploy-cpanel-remote.sh'
+      - 'scripts/cpanel-pull-deploy.sh'
   push:
     branches: [main]
   workflow_dispatch:
@@ -33,6 +34,8 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+      - name: Syntax-check cPanel pull deployment script
+        run: bash -n scripts/cpanel-pull-deploy.sh
       - name: Verify durable local media storage and path safety
         run: node --experimental-strip-types scripts/test-local-media.mjs
       - name: Build on GitHub, not on the 2 GB shared host
@@ -75,3 +78,41 @@ jobs:
           if-no-files-found: error
           retention-days: 14
           compression-level: 6
+
+  publish-cpanel-release:
+    name: Publish immutable runtime release for Cron
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: bundle
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: fertini-cpanel-node24-runtime
+          path: runtime
+      - name: Package and checksum host-ready runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s runtime/server.js
+          test -s runtime/.next/BUILD_ID
+          test -d runtime/.next/static
+          tar -czf fertini-runtime.tar.gz -C runtime .
+          sha256sum fertini-runtime.tar.gz > fertini-runtime.sha256
+          echo "Runtime release size:"
+          du -sh fertini-runtime.tar.gz
+      - name: Publish only after uploading both assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          tag="fertini-cpanel-${GITHUB_SHA}"
+          gh release create "$tag" fertini-runtime.tar.gz fertini-runtime.sha256 \
+            --title "Fertini cPanel runtime ${GITHUB_SHA:0:12}" \
+            --notes "Portable Next.js standalone runtime built and tested on GitHub Actions. No production credentials or database data. Intended for opt-in cPanel Cron deployment." \
+            --draft
+          gh release edit "$tag" --draft=false --latest
