@@ -5,7 +5,7 @@ import path from "node:path";
  * Opt-in durable on-host media storage for standalone Node/cPanel deployments.
  * Keep the folder OUTSIDE the app directory: runtime bundles are replaced on deploy.
  */
-const fileKey = /^products\/(?:voices\/)?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:jpg|png|webp|mp3|wav|ogg|m4a|aac|flac|webm)$/i;
+const fileKey = /^(?:products\/(?:voices\/)?|categories\/)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:jpg|png|webp|mp3|wav|ogg|m4a|aac|flac|webm)$/i;
 
 export function resolveMediaRoot(cwd: string, configured: string | undefined, production: boolean): string | null {
   const normalizedCwd = path.resolve(cwd);
@@ -46,4 +46,13 @@ export async function saveLocalMedia(key: string, bytes: Uint8Array): Promise<st
 
 export async function readLocalMedia(key: string): Promise<Uint8Array> {
   return new Uint8Array(await fs.readFile(fileLocation(key)));
+}
+
+/** Delete only a previously generated UUID media key inside the durable store. */
+export async function deleteLocalMedia(key: string): Promise<void> {
+  const destination = fileLocation(key);
+  try { await fs.unlink(destination); }
+  catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
 }
