@@ -116,6 +116,7 @@ jobs:
           set -euo pipefail
           tag="fertini-cpanel-${GITHUB_SHA}"
           gh release create "$tag" fertini-runtime.tar.gz fertini-runtime.sha256 \
+            --target "$GITHUB_SHA" \
             --title "Fertini cPanel runtime ${GITHUB_SHA:0:12}" \
             --notes "Portable Next.js standalone runtime built and tested on GitHub Actions. No production credentials or database data. Intended for opt-in cPanel Cron deployment." \
             --draft
