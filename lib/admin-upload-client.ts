@@ -31,7 +31,11 @@ export async function uploadAdminFile(file:File,kind:Kind,progress?:(n:number)=>
  if(r.status===503&&typeof location!=="undefined"&&["localhost","127.0.0.1"].includes(location.hostname)){
   const uploaded=await localUpload(file,kind);progress?.(100);return uploaded;
  }
- const start=await json(r) as {uploadUrl:string;session:string};
+ const start=await json(r) as {mode?:string;uploadUrl?:string;session?:string};
+ if(start.mode==="local"){
+  const uploaded=await localUpload(file,kind);progress?.(100);return uploaded;
+ }
+ if(!start.uploadUrl||!start.session)throw Error("پاسخ سرور آپلود ناقص است.");
  await sendToStorage(start.uploadUrl,file,meta.mime,progress);
  progress?.(94);
  const complete=await fetch("/api/v1/admin/media-upload/complete",{method:"POST",credentials:"same-origin",

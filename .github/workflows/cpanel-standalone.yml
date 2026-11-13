@@ -5,6 +5,12 @@ on:
     paths:
       - 'next.config.ts'
       - '.github/workflows/cpanel-standalone.yml'
+      - 'server/storage/**'
+      - 'app/api/v1/media/**'
+      - 'app/api/v1/admin/media-upload/**'
+      - 'app/api/v1/uploads/products/**'
+      - 'lib/admin-upload-client.ts'
+      - 'scripts/test-local-media.mjs'
   push:
     branches: [main]
   workflow_dispatch:
@@ -25,6 +31,8 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+      - name: Verify durable local media storage and path safety
+        run: node --experimental-strip-types scripts/test-local-media.mjs
       - name: Build on GitHub, not on the 2 GB shared host
         env:
           NODE_ENV: production
