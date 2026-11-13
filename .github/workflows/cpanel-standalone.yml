@@ -11,6 +11,8 @@ on:
       - 'app/api/v1/uploads/products/**'
       - 'lib/admin-upload-client.ts'
       - 'scripts/test-local-media.mjs'
+      - 'app/api/v1/deployment/**'
+      - 'scripts/deploy-cpanel-remote.sh'
   push:
     branches: [main]
   workflow_dispatch:
@@ -40,6 +42,7 @@ jobs:
           APP_URL: https://fertiniperfume.com
           NEXT_PUBLIC_SITE_URL: https://fertiniperfume.com
           TEMP_PUBLIC_ADMIN_EDIT: '0'
+          NEXT_PUBLIC_DEPLOY_SHA: ${{ github.sha }}
         run: npm run build
       - name: Assemble host-ready runtime
         shell: bash

@@ -40,7 +40,7 @@ assert.equal(malformedMedia.status,422,"Voice preflight must reject files over 2
 const missingStorage=await fetch(base+"/api/v1/admin/media-upload/start",{method:"POST",
  headers:{...authenticated,"content-type":"application/json"},
  body:JSON.stringify({kind:"voice",name:"voice.mp3",type:"audio/mpeg",size:1024})});
-assert.equal(missingStorage.status,503,"Unconfigured S3 must fail closed");
+assert.equal(missingStorage.status,503,"Unconfigured durable media directory must fail closed");
 const invalidCoupon=await fetch(base+"/api/v1/admin/records/coupons",{method:"POST",headers:{...authenticated,"content-type":"application/json"},body:JSON.stringify({code:"TEST",discount_type:"PERCENT",discount_value:120})});
 assert.equal(invalidCoupon.status,422,"Coupon percentages >100 must be rejected");
 async function upload(route,name,type,bytes,expected){

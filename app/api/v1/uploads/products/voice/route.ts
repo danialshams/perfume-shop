@@ -2,7 +2,7 @@ import {NextRequest} from "next/server";
 import {requireAdmin} from "@/server/middlewares/admin";
 import {successResponse,errorResponse} from "@/lib/response";
 import {saveMedia} from "@/server/storage/save-media";
-import {StorageNotConfiguredError} from "@/server/storage/s3-object";
+import {StorageNotConfiguredError} from "@/server/storage/local-media";
 export const runtime="nodejs";
 export async function POST(request:NextRequest){
  try{await requireAdmin(request)}catch{return errorResponse("دسترسی مدیر لازم است.",403)}

@@ -10,6 +10,6 @@ Notifications: unpaid order creation creates no admin sale alert. A confirmed pa
 
 Payments: no real payment gateway has been installed. The old sandbox provider is forbidden on Vercel and production. A future provider must be validated server-side, including amount, order, signature/reference and idempotency, before a paid order and sale notification are committed.
 
-Hosting: Node.js/Next.js, postgres.js and S3-compatible storage use environment variables. Move a verified SQL backup and all media objects to the final Node-capable host; configure DATABASE_URL, S3_*, TLS and runtime settings; test protected admin CRUD and paid-order notifications before switching domains. A generic PHP-only shared hosting plan cannot run this Next.js server.
+Hosting: Node.js/Next.js and postgres.js use the local cPanel PostgreSQL instance. Images and voice use LOCAL_MEDIA_STORAGE_DIR outside the deployment directory. Configure DATABASE_URL, TLS and runtime settings; test protected admin CRUD and notifications before accepting real sales. A PHP-only plan cannot run this server.
 
-Release gate: the branch must pass GitHub Actions AND real authenticated staging database and media upload tests. The Vercel project does not yet have usable DB or S3 configuration, so DO NOT merge it to main or claim full live functionality until those external dependencies are fixed.
+Release gate: GitHub Actions must pass, and local cPanel administrator CRUD, PostgreSQL connectivity, image/voice uploads and storefront display must be verified before live sales. A green build alone does not prove all functions work.
