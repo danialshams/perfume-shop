@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { storageReady } from "@/server/storage/s3-object";
 import { localMediaReady } from "@/server/storage/local-media";
 import { requireAdmin } from "@/server/middlewares/admin";
 import type { RowDataPacket } from "mysql2";
@@ -14,7 +13,7 @@ const expected = ["products","product_variants","product_images","categories","s
 export async function GET(request: NextRequest) {
   try { await requireAdmin(request); }
   catch { return NextResponse.json({ error: "Forbidden" }, { status: 403 }); }
-  const mediaStorageConfigured = storageReady() || (process.env.VERCEL !== "1" && localMediaReady());
+  const mediaStorageConfigured = localMediaReady();
   if (!process.env.DATABASE_URL) {
     return NextResponse.json({
       connected: false, configured: false, missingEnv: ["DATABASE_URL"],
