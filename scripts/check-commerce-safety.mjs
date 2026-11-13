@@ -26,7 +26,7 @@ assert.match(upload, /saveMedia/);
 assert.match(upload, /StorageNotConfiguredError/);
 assert.match(upload, /503/);
 assert.match(mediaStorage, /process\.env\.NODE_ENV==="production"/);
-assert.match(mediaStorage, /process\.env\.VERCEL==="1"/);
+assert.match(mediaStorage, /localMediaReady/);
 assert.match(mediaStorage, /validateMediaBytes/);
 assert.match(mediaStorage, /saveLocalMedia/);
 assert.doesNotMatch(mediaStorage, /putObject|S3_/);
