@@ -49,8 +49,9 @@ try{
  const imageUpload=await read("/api/v1/uploads/products",{
    method:"POST",headers:auth,body:formImage,
  });
- assert.equal(imageUpload.status,201,"authenticated product image upload failed: "+await imageUpload.text());
- const imageData=await imageUpload.json();
+ const imageUploadBody=await imageUpload.text();
+ assert.equal(imageUpload.status,201,"authenticated product image upload failed: "+imageUploadBody);
+ const imageData=JSON.parse(imageUploadBody);
  const imagePath=imageData.data?.url;
  assert.match(imagePath,/^\/api\/v1\/media\/products\/[0-9a-f-]{36}\.jpg$/);
  const imageRead=await read(imagePath);
@@ -62,8 +63,9 @@ try{
  const voiceUpload=await read("/api/v1/uploads/products/voice",{
    method:"POST",headers:auth,body:formVoice,
  });
- assert.equal(voiceUpload.status,201,"authenticated product voice upload failed: "+await voiceUpload.text());
- const voiceData=await voiceUpload.json();
+ const voiceUploadBody=await voiceUpload.text();
+ assert.equal(voiceUpload.status,201,"authenticated product voice upload failed: "+voiceUploadBody);
+ const voiceData=JSON.parse(voiceUploadBody);
  assert.match(voiceData.data?.url,/^\/api\/v1\/media\/products\/voices\/[0-9a-f-]{36}\.mp3$/);
  assert.equal((await read(voiceData.data.url)).status,200,"uploaded voice not publicly readable");
 
