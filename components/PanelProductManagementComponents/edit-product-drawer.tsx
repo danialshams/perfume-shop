@@ -166,7 +166,6 @@ export default function EditProductDrawer({
         {}
     );
 
-    const [scentFamilyUploading, setScentFamilyUploading] = useState(false);
     const [scentFamilies, setScentFamilies] = useState<ScentFamily[]>([]);
 
     const [product, setProduct] = useState<ProductItem | null>(null);
@@ -182,13 +181,6 @@ export default function EditProductDrawer({
 
     const scentFamilyMode =
         Form.useWatch("scent_family_mode", form) ?? "EXISTING";
-
-    const selectedScentFamilyId = Form.useWatch("scent_family_id", form);
-
-    const newScentFamilyImage = Form.useWatch(
-        ["new_scent_family", "image_url"],
-        form
-    );
 
     const title = useMemo(() => {
         if (!product) return "ویرایش محصول";
@@ -628,36 +620,6 @@ export default function EditProductDrawer({
 
         return false;
     };
-    const handleNewScentFamilyImageUpload = async (file: File) => {
-        try {
-            setScentFamilyUploading(true);
-
-            const uploadedUrl = await uploadFile(file);
-
-            form.setFieldValue(["new_scent_family", "image_url"], uploadedUrl);
-            form.setFields([
-                {
-                    name: ["new_scent_family", "image_url"],
-                    errors: [],
-                },
-            ]);
-
-            message.success("تصویر گروه بویایی با موفقیت آپلود شد");
-        } catch (error) {
-            console.error(error);
-            message.error(
-                error instanceof Error
-                    ? error.message
-                    : "آپلود تصویر گروه بویایی با خطا مواجه شد"
-            );
-        } finally {
-            setScentFamilyUploading(false);
-        }
-
-        return false;
-    };
-
-
     const handleVariantUpload = async (file: File, variantIndex: number) => {
         const uploadKey = `variant-${variantIndex}`;
 
@@ -881,7 +843,6 @@ export default function EditProductDrawer({
         setSelectedParentCategory(null);
         setSelectedType("SINGLE");
         setVariantUploading({});
-        setScentFamilyUploading(false);
         setVoiceUploading(false);
         setVoiceUploadPercent(0);
         onClose();
@@ -998,16 +959,13 @@ export default function EditProductDrawer({
         form.setFieldValue("scent_family_id", undefined);
     };
 
-    const handleSelectScentFamily = (familyId: number) => {
-        form.setFieldValue("scent_family_id", familyId);
-    };
 
     return (
         <Drawer
             title={title}
             open={open}
             onClose={handleClose}
-            width="min(100vw, 920px)"
+            width="min(100vw, 820px)"
             destroyOnClose
             extra={
                 <Space>
@@ -1023,6 +981,7 @@ export default function EditProductDrawer({
             }
         >
             <Form
+                className="fst-product-form"
                 form={form}
                 layout="vertical"
                 disabled={loading || metaLoading}
@@ -1160,204 +1119,23 @@ export default function EditProductDrawer({
                     </Form.Item>
 
                     {scentFamilyMode === "EXISTING" ? (
-                        <Form.Item
-                            label="گروه بویایی"
-                            name="scent_family_id"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "انتخاب گروه بویایی الزامی است",
-                                },
-                            ]}
-                        >
-                            {activeScentFamilies.length > 0 ? (
-                                <Radio.Group className="w-full">
-                                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                                        {activeScentFamilies.map((family) => {
-                                            const isSelected =
-                                                Number(selectedScentFamilyId) ===
-                                                Number(family.id);
-
-                                            return (
-                                                <div
-                                                    key={family.id}
-                                                    role="button"
-                                                    tabIndex={0}
-                                                    onClick={() =>
-                                                        handleSelectScentFamily(
-                                                            Number(family.id)
-                                                        )
-                                                    }
-                                                    onKeyDown={(event) => {
-                                                        if (
-                                                            event.key === "Enter" ||
-                                                            event.key === " "
-                                                        ) {
-                                                            event.preventDefault();
-                                                            handleSelectScentFamily(
-                                                                Number(family.id)
-                                                            );
-                                                        }
-                                                    }}
-                                                    className={[
-                                                        "group relative cursor-pointer overflow-hidden rounded-2xl border bg-white p-2 transition",
-                                                        "hover:border-blue-400 hover:shadow-md",
-                                                        isSelected
-                                                            ? "border-blue-600 ring-2 ring-blue-100"
-                                                            : "border-neutral-200",
-                                                    ].join(" ")}
-                                                >
-                                                    <div className="absolute right-2 top-2 z-10">
-                                                        <Radio value={family.id} />
-                                                    </div>
-
-                                                    <div className="aspect-square overflow-hidden rounded-xl bg-neutral-100">
-                                                        {family.image_url ? (
-                                                            <img
-                                                                src={family.image_url}
-                                                                alt={family.name}
-                                                                className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                                                            />
-                                                        ) : (
-                                                            <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
-                                                                بدون تصویر
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    <div className="mt-2 min-h-10 text-center">
-                                                        <div
-                                                            className={[
-                                                                "line-clamp-2 text-sm font-medium",
-                                                                isSelected
-                                                                    ? "text-blue-700"
-                                                                    : "text-neutral-800",
-                                                            ].join(" ")}
-                                                        >
-                                                            {family.name}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </Radio.Group>
-                            ) : (
-                                <div className="rounded-2xl border border-dashed border-neutral-300 bg-white py-8">
-                                    <Empty description="هنوز گروه بویایی ثبت نشده است" />
-                                </div>
-                            )}
-                        </Form.Item>
+                      <Form.Item name="scent_family_id" label="رایحه این محصول"
+                        rules={[{required:true,message:"گروه بویایی را انتخاب کنید"}]}>
+                        <Select size="large" showSearch optionFilterProp="label"
+                          placeholder="انتخاب گروه بویایی"
+                          options={activeScentFamilies.map(f => ({value:Number(f.id),label:f.name}))}/>
+                      </Form.Item>
                     ) : (
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div>
-                                <Form.Item
-                                    label="نام گروه بویایی جدید"
-                                    name={["new_scent_family", "name"]}
-                                    rules={[
-                                        {
-                                            required: scentFamilyMode === "NEW",
-                                            message: "نام گروه بویایی جدید الزامی است",
-                                        },
-                                        {
-                                            min: 2,
-                                            message:
-                                                "نام گروه بویایی باید حداقل 2 کاراکتر باشد",
-                                        },
-                                    ]}
-                                >
-                                    <Input
-                                        size="large"
-                                        placeholder="مثلاً چوبی، گلی، شرقی یا مرکباتی"
-                                    />
-                                </Form.Item>
-
-                                <p className="text-xs leading-6 text-neutral-500">
-                                    این گروه پس از ذخیره محصول ساخته می‌شود و در محصولات بعدی
-                                    از لیست گروه‌های موجود قابل انتخاب خواهد بود.
-                                </p>
-                            </div>
-
-                            <div>
-                                <Form.Item label="تصویر گروه بویایی جدید" required>
-                                    <Upload
-                                        multiple={false}
-                                        showUploadList={false}
-                                        beforeUpload={(file) =>
-                                            handleNewScentFamilyImageUpload(file as File)
-                                        }
-                                    >
-                                        <Button
-                                            block
-                                            loading={scentFamilyUploading}
-                                            icon={<PlusOutlined />}
-                                        >
-                                            آپلود تصویر گروه بویایی
-                                        </Button>
-                                    </Upload>
-
-                                    <div className="mt-3">
-                                        {newScentFamilyImage ? (
-                                            <Card
-                                                size="small"
-                                                cover={
-                                                    <div className="p-2">
-                                                        <Image
-                                                            src={newScentFamilyImage}
-                                                            alt="تصویر گروه بویایی جدید"
-                                                            height={180}
-                                                            className="w-full rounded-xl object-cover"
-                                                        />
-                                                    </div>
-                                                }
-                                                actions={[
-                                                    <Button
-                                                        key="remove"
-                                                        danger
-                                                        size="small"
-                                                        onClick={() => {
-                                                            form.setFieldValue(
-                                                                ["new_scent_family", "image_url"],
-                                                                ""
-                                                            );
-                                                            form.setFields([
-                                                                {
-                                                                    name: [
-                                                                        "new_scent_family",
-                                                                        "image_url",
-                                                                    ],
-                                                                    errors: [],
-                                                                },
-                                                            ]);
-                                                        }}
-                                                    >
-                                                        حذف تصویر
-                                                    </Button>,
-                                                ]}
-                                            />
-                                        ) : (
-                                            <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-6 text-center text-sm text-neutral-500">
-                                                هنوز تصویری ثبت نشده است
-                                            </div>
-                                        )}
-                                    </div>
-                                </Form.Item>
-
-                                <Form.Item
-                                    name={["new_scent_family", "image_url"]}
-                                    hidden
-                                    rules={[
-                                        {
-                                            required: scentFamilyMode === "NEW",
-                                            message: "تصویر گروه بویایی جدید الزامی است",
-                                        },
-                                    ]}
-                                >
-                                    <Input />
-                                </Form.Item>
-                            </div>
-                        </div>
+                      <Form.Item name={["new_scent_family","name"]}
+                        label="نام گروه بویایی جدید"
+                        rules={[{required:true,message:"نام گروه را وارد کنید"},{min:2,message:"نام گروه کوتاه است"}]}>
+                        <Input size="large" placeholder="مثلاً چوبی یا مرکباتی"/>
+                      </Form.Item>
                     )}
+                    <p className="fst-product-hint">
+                      تصویر سه کارت رایحه در «مدیریت صفحه اصلی» تنظیم می‌شود؛
+                      اینجا فقط گروه بویایی محصول را تعیین کنید.
+                    </p>
                 </Card>
 
 
