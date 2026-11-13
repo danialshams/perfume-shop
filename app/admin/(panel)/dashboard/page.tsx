@@ -2,7 +2,7 @@
 import Link from "next/link";
 import {useEffect,useState} from "react";
 import {Package,ShoppingBag,Shapes,Users,ArrowUpLeft,PanelsTopLeft,
-  Images,Database,ArrowLeft,RefreshCw,TicketPercent,MessageSquare} from "lucide-react";
+  Images,ArrowLeft,RefreshCw,TicketPercent,MessageSquare} from "lucide-react";
 type Recent={id:number;order_number:string|null;customer_name:string|null;total_amount:number;status:string;created_at:string};
 type Overview={products:number|null;orders:number|null;categories:number|null;customers:number|null;notifications:number|null;partial:boolean;recent:Recent[]};
 const cards=[
