@@ -2,7 +2,7 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {LayoutDashboard,Package,Shapes,ShoppingBag,PanelsTopLeft,
-  Database,ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,CreditCard,MessageCircle,HelpCircle} from "lucide-react";
+  ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,CreditCard,MessageCircle,HelpCircle} from "lucide-react";
 
 const groups=[
  {title:"محتوا و ظاهر فروشگاه",links:[
@@ -17,8 +17,7 @@ const groups=[
   {href:"/admin/payments",title:"تراکنش‌ها",icon:CreditCard},
   {href:"/admin/reviews",title:"دیدگاه‌ها",icon:MessageSquare},
   {href:"/admin/support",title:"چت آنلاین",icon:MessageCircle},
-  {href:"/admin/faq",title:"سؤال‌های متداول",icon:HelpCircle}]},
- {title:"سیستم",links:[{href:"/admin/database",title:"سلامت اتصال و دیتابیس",icon:Database}]}
+  {href:"/admin/faq",title:"سؤال‌های متداول",icon:HelpCircle} ]}
 ];
 export const adminSections=groups;
 export default function AdminSidebar({onNavigate}:{onNavigate?:()=>void}){
