@@ -1,0 +1,66 @@
+name: Fertini - cPanel standalone runtime
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'next.config.ts'
+      - '.github/workflows/cpanel-standalone.yml'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bundle:
+    name: Build portable cPanel runtime (Node 24)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build on GitHub, not on the 2 GB shared host
+        env:
+          NODE_ENV: production
+          NEXT_TELEMETRY_DISABLED: '1'
+          APP_URL: https://fertiniperfume.com
+          NEXT_PUBLIC_SITE_URL: https://fertiniperfume.com
+          TEMP_PUBLIC_ADMIN_EDIT: '0'
+        run: npm run build
+      - name: Assemble host-ready runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .next/standalone/server.js
+          test -d .next/static
+          mkdir -p .next/standalone/.next
+          cp -a public .next/standalone/public
+          cp -a .next/static .next/standalone/.next/static
+          # cPanel's app runner uses "npm start"; do not run "next start"
+          # because the standalone runtime has only traced dependencies.
+          cat > .next/standalone/package.json <<'JSON'
+          {
+            "name": "fertini-cpanel-runtime",
+            "version": "0.1.0",
+            "private": true,
+            "scripts": { "start": "node server.js" }
+          }
+          JSON
+          test -f .next/standalone/.next/BUILD_ID
+          echo "Standalone size (uncompressed):"
+          du -sh .next/standalone
+      - name: Publish downloadable runtime files (private GitHub artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: fertini-cpanel-node24-runtime
+          path: .next/standalone/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
