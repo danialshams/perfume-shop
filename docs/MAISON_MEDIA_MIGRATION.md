@@ -14,4 +14,7 @@ For each real product, establish a verified replacement image (and image-use rig
 
 The visual experiment is isolated on `feature/quiet-luxury-cinematic-v2-20261105`; the original source remains on `main` and on `backup/before-quiet-luxury-20261105`. Do not merge or deploy to production solely on the basis of screenshot and build checks: they cannot simulate live database content, checkout, shipping or payments. Verify final photography on real mobile/desktop devices and confirm production deployment health before closing the review.
 
-****Current deployment:** Product photos and voice files are stored on the user’s cPanel host via LOCAL_MEDIA_STORAGE_DIR, outside the replaceable runtime. Back up the folder with PostgreSQL; verify existing media URLs and test new uploads before deleting anything.nistration upload routes are explicitly blocked on Vercel until object storage is provisioned. A real migration therefore needs a persistent bucket (e.g., Blob/S3), correct public URL management, and a test snapshot before media cleanup. Never rewrite historical product photos to unrelated perfume brands.
+**Current deployment:** Product photos and audio now live on cPanel under
+`LOCAL_MEDIA_STORAGE_DIR`, not in the replaceable application bundle. Back up
+that directory alongside PostgreSQL and verify product URLs before deleting
+historical media.
