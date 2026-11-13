@@ -12,7 +12,6 @@ on:
       - 'lib/admin-upload-client.ts'
       - 'scripts/test-local-media.mjs'
       - 'app/api/v1/deployment/**'
-      - 'scripts/deploy-cpanel-remote.sh'
       - 'scripts/cpanel-pull-deploy.sh'
   push:
     branches: [main]
@@ -34,6 +33,11 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+      - name: Static security and media checks
+        run: |
+          node scripts/check-commerce-safety.mjs
+          node scripts/check-admin-studio.mjs
+          node --experimental-strip-types scripts/test-admin-media.mjs
       - name: Syntax-check cPanel pull deployment script
         run: bash -n scripts/cpanel-pull-deploy.sh
       - name: Verify durable local media storage and path safety
