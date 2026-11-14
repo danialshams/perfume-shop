@@ -28,7 +28,7 @@ export default function LiveHomePreview({unsaved}:{unsaved:boolean}){
    {unsaved&&<p className="fst-notice">تغییرات هنوز ذخیره نشده‌اند؛ پیش‌نمایش نسخه فعلی سایت را نمایش می‌دهد.</p>}
    <div className="fst-live-preview__stage" ref={root} dir="ltr">
     <div className="fst-live-preview__frame" style={{width:width*scale,height:height*scale}}>
-     {scale>0&&<iframe key={viewport+"-"+revision} title={"صفحه اصلی واقعی در حالت "+viewport} src="/"
+     {scale>0&&<iframe key={viewport+"-"+revision} title={"صفحه اصلی واقعی در حالت "+viewport} src="/?studioPreview=1"
        loading="lazy" style={{width,height,transform:"scale("+scale+")",transformOrigin:"top left",border:0,background:"#fff"}}/>}
     </div>
    </div>
