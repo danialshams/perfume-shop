@@ -200,14 +200,10 @@ async function resolveScentFamilyId(
       throw new Error("Scent family name is required");
     }
 
-    if (!data.new_scent_family.image_url?.trim()) {
-      throw new Error("Scent family image is required");
-    }
-
     return findOrCreateScentFamilyInTransaction(connection, {
       name,
       slug: createScentFamilySlug(name),
-      image_url: data.new_scent_family.image_url.trim(),
+      image_url: data.new_scent_family.image_url?.trim() || "",
     });
   }
 
