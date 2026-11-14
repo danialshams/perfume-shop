@@ -250,7 +250,10 @@ try{
  assert.equal((await health.json()).connected,true);
  const bell=await read("/api/v1/notifications",{headers:auth});
  assert.equal(bell.status,200,"Notifications should read PostgreSQL database");
- const notices=await bell.json();assert.equal(notices.unread_count,0);
+ const notices=await bell.json();
+ assert.ok(notices.unread_count>=2,"New chat and visitor message should increment the admin bell");
+ assert.ok(notices.items.some(n=>n.type==="chat_started"),"New chat start must appear in notification history");
+ assert.ok(notices.items.some(n=>n.type==="chat_message"),"Visitor message must appear in notification history");
 
  const [family]=await sql.unsafe("SELECT id FROM scent_families WHERE slug='woody'");
  const cats=await sql.unsafe("SELECT id,slug FROM categories WHERE slug IN ('fertini-woody','fertini-floral')");
