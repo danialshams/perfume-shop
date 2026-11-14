@@ -14,7 +14,7 @@ import { uploadAdminFile } from "@/lib/admin-upload-client";
 type Asset = { url: string; label: string };
 type CatalogKey = "bestsellerIds" | "latestIds";
 const sectionTitles: Record<HomepageSection, string> = {
-  bestsellers: "پرفروش‌ترین‌ها", latest: "جدیدترین عطرها", families: "خانواده‌های رایحه",
+  bestsellers: "پرفروش‌ترین‌ها", latest: "جدیدترین عطرها", families: "گروه‌های بویایی",
 };
 const sections: HomepageSection[] = ["bestsellers", "latest", "families"];
 
@@ -306,7 +306,7 @@ export default function AdminContentPage() {
         {productEditor("latestIds")}
       </section>
       <section className="fst-card scroll-mt-24" id="fst-editor-families">
-        <div className="fst-editor-heading"><span>03 / OLFACTIVE FAMILIES</span><h2>دسته‌بندی رایحه‌ها</h2></div>
+        <div className="fst-editor-heading"><span>03 / OLFACTIVE FAMILIES</span><h2>گروه‌های بویایی</h2></div>
         <div className="fst-tools-grid mb-5">
           <label className="fst-field">عنوان<input maxLength={70} required value={content.familyTitle}
             onChange={e => edit("familyTitle", e.target.value)}/></label>
