@@ -24,6 +24,8 @@ try{
  assert.equal(home.status,200,"Home must render with active PostgreSQL catalog");
  const html=await home.text();
  assert.ok(html.includes("FERTINI"),"Homepage should display showroom branding");
+ assert.match(html,/<meta name="enamad" content="487910412"\s*\/?\s*>/,
+   "eNamad verification tag must be present in the server-rendered homepage");
  const products=await read("/api/v1/products?limit=20&page=1");
  assert.equal(products.status,200,"Public product API failed: "+products.status);
  const catalog=await products.json();
