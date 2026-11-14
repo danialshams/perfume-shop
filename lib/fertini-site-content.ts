@@ -34,7 +34,7 @@ export type FertiniShippingMethod=z.infer<typeof shippingMethodSchema>;
 export const campaignsSchema=z.array(campaignSchema).max(12).refine(items=>new Set(items.map(x=>x.id)).size===items.length,"شناسه کمپین تکراری است");
 export const shippingSchema=z.array(shippingMethodSchema).max(12).refine(items=>new Set(items.map(x=>x.id)).size===items.length,"شناسه روش ارسال تکراری است");
 export {musicSchema};
-export const homepageSection = z.enum(["campaign", "bestsellers", "latest", "families"]);
+export const homepageSection = z.enum(["campaign", "bestsellers", "latest", "families","shipping"]);
 export type HomepageSection = z.infer<typeof homepageSection>;
 const selection = z.array(productId).max(6).refine(ids => new Set(ids).size === ids.length, "محصول تکراری است");
 
@@ -55,8 +55,8 @@ export const contentSchema = z.object({
     photo, scentFamilyId: z.number().int().positive().nullable(),
     categoryId: z.number().int().positive().nullable(),
   }).strict()).length(3).refine(families => new Set(families.map(x => x.id)).size === 3, "خانواده رایحه تکراری است"),
-  sectionOrder: z.array(homepageSection).length(4).refine(sections => new Set(sections).size === 4, "ترتیب بخش‌ها معتبر نیست"),
-  sectionVisibility: z.object({ campaign:z.boolean(), bestsellers: z.boolean(), latest: z.boolean(), families: z.boolean() }).strict(),
+  sectionOrder: z.array(homepageSection).length(5).refine(sections => new Set(sections).size === 5, "ترتیب بخش‌ها معتبر نیست"),
+  sectionVisibility: z.object({ campaign:z.boolean(), bestsellers: z.boolean(), latest: z.boolean(), families: z.boolean(),shipping:z.boolean() }).strict(),
   campaigns:campaignsSchema,
   shipping:shippingSchema,
   music:musicSchema,
@@ -83,8 +83,8 @@ export const DEFAULT_SITE_CONTENT: FertiniSiteContent = {
   families: FERTINI_FAMILIES.map(x => ({
     id: x.id, name: x.name, subtitle: x.subtitle, photo: x.image, scentFamilyId: null, categoryId: null,
   })),
-  sectionOrder: ["campaign","bestsellers", "latest", "families"],
-  sectionVisibility: { campaign:true,bestsellers: true, latest: true, families: true },
+  sectionOrder: ["campaign","bestsellers", "latest", "families","shipping"],
+  sectionVisibility: { campaign:true,bestsellers: true, latest: true, families: true,shipping:true },
   campaigns:[],
   shipping:[{id:"standard",name:"ارسال استاندارد",description:"روش ارسال پس از ثبت سفارش با هماهنگی فروشگاه مشخص می‌شود.",estimatedDays:"زمان ارسال پس از هماهنگی اعلام می‌شود",cost:0,enabled:true}],
   music:{enabled:true,audioUrl:"/audio/luxury-piano.mp3"},
@@ -106,8 +106,12 @@ export function parseContent(raw: unknown): FertiniSiteContent {
     campaigns:Array.isArray(obj.campaigns)?obj.campaigns:[],
     shipping:Array.isArray(obj.shipping)?obj.shipping:DEFAULT_SITE_CONTENT.shipping,
     music:obj.music&&typeof obj.music==="object"?{...DEFAULT_SITE_CONTENT.music,...obj.music}:DEFAULT_SITE_CONTENT.music,
-    sectionOrder:Array.isArray(obj.sectionOrder) && obj.sectionOrder.includes("campaign")
-      ? obj.sectionOrder : ["campaign",...(Array.isArray(obj.sectionOrder)?obj.sectionOrder:DEFAULT_SITE_CONTENT.sectionOrder)],
+    sectionOrder:(()=>{
+      const order=Array.isArray(obj.sectionOrder)?[...obj.sectionOrder]:[...DEFAULT_SITE_CONTENT.sectionOrder];
+      if(!order.includes("campaign"))order.unshift("campaign");
+      if(!order.includes("shipping"))order.push("shipping");
+      return order;
+    })(),
     familyTitle:obj.familyTitle==="دسته‌بندی رایحه‌ها" ? "گروه‌های بویایی" : obj.familyTitle??DEFAULT_SITE_CONTENT.familyTitle,
     sectionVisibility: { ...DEFAULT_SITE_CONTENT.sectionVisibility,
       ...(obj.sectionVisibility && typeof obj.sectionVisibility === "object" ? obj.sectionVisibility : {}) },
