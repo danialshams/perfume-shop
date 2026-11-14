@@ -26,8 +26,8 @@ function ProductCard({product,large=false,mode="up"}:{
     </div>
   </Link>;
 }
-export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEMO_HOME_PRODUCTS,catalogState="demo"}:{
-  content?:FertiniSiteContent;products?:HomeProduct[];catalogState?:"demo"|"database"|"unavailable"
+export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEMO_HOME_PRODUCTS,catalogState="demo",scentFamilies=[]}:{
+  content?:FertiniSiteContent;products?:HomeProduct[];catalogState?:"demo"|"database"|"unavailable";scentFamilies?:Array<{id:number;name:string;image_url:string|null}>
 }){
   const slides=content.heroSlides;
   const root=useRef<HTMLElement>(null);
@@ -92,6 +92,9 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
   const bestselling=content.bestsellerIds.map(id=>byId.get(id)).filter((x):x is HomeProduct=>Boolean(x));
   const latest=content.latestIds.map(id=>byId.get(id)).filter((x):x is HomeProduct=>Boolean(x));
   const catalogUnavailable=catalogState==="unavailable";
+  const displayedFamilies=catalogState==="database"
+    ?scentFamilies.map(f=>({id:String(f.id),name:f.name,subtitle:"",photo:f.image_url||"/placeholder-category.jpg",url:"/products?scent_family_id="+f.id}))
+    :content.families.map(f=>({id:f.id,name:f.name,subtitle:f.subtitle,photo:f.photo,url:"/products?family="+f.id}));
   const sections={
     bestsellers: <section className="fertini-v5-best maison-wide" aria-labelledby="fertini-best-title">
       <header className="fertini-v5-heading" data-fertini-heading>
@@ -126,14 +129,12 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
         <p>{content.familyDescription}</p>
       </header>
       <div className="fertini-v5-families__grid">
-        {content.families.map((family,index)=><Link key={family.id}
-          href={catalogState==="database"
-            ?(family.categoryId?"/products?category_id="+family.categoryId:family.scentFamilyId?"/products?scent_family_id="+family.scentFamilyId:"/products")
-            :"/products?family="+family.id}
+        {displayedFamilies.map((family,index)=><Link key={family.id}
+          href={family.url}
           className={"fertini-v5-family fertini-v5-family--"+family.id} data-fertini-card>
           <div data-fertini-photo data-photo-entrance={(["right","up","fade"] as const)[index%3]} className="fertini-v5-family__photo">
-            <Image fill unoptimized={family.photo.startsWith("https://")} sizes="(min-width:950px) 30vw,100vw"
-              src={family.photo} alt={"دسته عطرهای "+family.name}/>
+            <Image fill unoptimized={family.photo.startsWith("https://")||family.photo.startsWith("/api/")} sizes="(min-width:950px) 30vw,100vw"
+              src={family.photo} alt={"گروه بویایی "+family.name}/>
           </div>
           <div data-fertini-caption className="fertini-v5-family__info">
             <span dir="ltr" lang="en">{String(index+1).padStart(2,"0")} / {family.subtitle}</span>
