@@ -2,8 +2,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
-  Save, RefreshCw, ArrowUp, ArrowDown, Image as ImageIcon, Package,
-  UploadCloud, Smartphone, Monitor, Plus, Trash2, ExternalLink,
+  Save, RefreshCw, ArrowUp, ArrowDown, Package,
+  UploadCloud, Plus, Trash2, ExternalLink,
 } from "lucide-react";
 import type { FertiniSiteContent, HomepageSection } from "@/lib/fertini-site-content";
 import { DEFAULT_SITE_CONTENT } from "@/lib/fertini-site-content";
@@ -49,9 +49,6 @@ export default function AdminContentPage() {
     if (other < 0 || other >= next.length) return arr;
     [next[index], next[other]] = [next[other], next[index]];
     return next;
-  }
-  function go(id: string) {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
   async function load() {
     setBusy(true); setError(""); setSuccess("");
@@ -204,7 +201,7 @@ export default function AdminContentPage() {
                 <button className="fst-btn" type="button" disabled={index === content.heroSlides.length - 1}
                   onClick={() => edit("heroSlides", move(content.heroSlides, index, 1))}>پایین <ArrowDown size={14}/></button>
                 <button className="fst-btn" type="button" disabled={content.heroSlides.length <= 2}
-                  onClick={() => { edit("heroSlides", content.heroSlides.filter((_, i) => i !== index)); setPreviewSlide(0); }}>حذف <Trash2 size={14}/></button>
+                  onClick={() => { edit("heroSlides", content.heroSlides.filter((_, i) => i !== index));  }}>حذف <Trash2 size={14}/></button>
               </div>
             </div>
           </div>)}
