@@ -95,7 +95,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
   const catalogUnavailable=catalogState==="unavailable";
   const activeCampaigns=getActiveCampaigns(content);
   const displayedFamilies=catalogState==="database"
-    ?scentFamilies.map(f=>({id:String(f.id),name:f.name,subtitle:"",photo:f.image_url||"/placeholder-category.jpg",url:"/products?scent_family_id="+f.id}))
+    ?scentFamilies.map(f=>({id:String(f.id),name:f.name,subtitle:"",photo:f.image_url||"/fertini/hero-01.svg",url:"/products?scent_family_id="+f.id}))
     :content.families.map(f=>({id:f.id,name:f.name,subtitle:f.subtitle,photo:f.photo,url:"/products?family="+f.id}));
   const sections={
     campaign:activeCampaigns.length>0?<section className="fertini-v5-campaigns maison-wide" aria-label="کمپین‌های فعال">
