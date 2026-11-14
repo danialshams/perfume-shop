@@ -11,7 +11,7 @@ import { requireAdmin } from "@/server/middlewares/admin";
 
 export async function POST(request: NextRequest) {
   try {
-    const admin = requireAdmin(request);
+    const admin = await requireAdmin(request);
     if (!admin) {
       return unauthorizedResponse("Unauthorized");
     }
