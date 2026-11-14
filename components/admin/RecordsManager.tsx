@@ -55,7 +55,7 @@ export default function RecordsManager({resource}:{resource:Resource}){
    const data=resource==="coupons"?{code:form.code,title:form.title,discount_type:form.discount_type,discount_value:Number(form.discount_value)}:{name:form.name,slug:form.slug};
    const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
    const result=await r.json().catch(()=>null);if(!r.ok)throw Error(result?.error||"ثبت اطلاعات ممکن نشد");
-   setCreating(false);setSuccess("رکورد در دیتابیس ثبت شد.");await load(1);
+   setCreating(false);setSuccess(resource==="coupons"?"کد تخفیف ثبت و فعال شد.":"اطلاعات ثبت شد.");await load(1);
   }catch(e){setError(e instanceof Error?e.message:"خطای ثبت")}finally{setSaving(false)}
  }
  return <div>
@@ -112,7 +112,7 @@ export default function RecordsManager({resource}:{resource:Resource}){
      <label className="fst-field">نام برند<input required minLength={2} maxLength={120} value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label>
      <label className="fst-field">شناسه انگلیسی برند<input required dir="ltr" pattern="[a-z0-9]+(-[a-z0-9]+)*" value={form.slug} onChange={e=>setForm({...form,slug:e.target.value})}/></label>
     </>}
-    <p className="text-xs text-neutral-500 leading-7">مورد جدید برای جلوگیری از انتشار ناخواسته، ابتدا غیرفعال ثبت می‌شود.</p>
+    {resource==="coupons"&&<p className="text-xs text-neutral-500 leading-7">کد تخفیف پس از ثبت فعال است و از فهرست قابل غیرفعال‌سازی است.</p>}
     <button className="fst-btn fst-btn-primary" disabled={saving} type="submit">{saving?"در حال ثبت…":"ثبت"} <Check size={16}/></button>
    </form>
   </div>}

@@ -236,6 +236,7 @@ export default function CreateProductDrawer({
                 ...restValues,
 
                 type: selectedType,
+                status: "ACTIVE",
                 slug: toSlug(values.name || ""),
 
                 category_id: values.category_id ?? null,
@@ -298,7 +299,7 @@ export default function CreateProductDrawer({
         >
             <Form form={form} layout="vertical" className="fst-product-form"
               initialValues={{
-                type:"SINGLE",status:"DRAFT",is_active:true,
+                type:"SINGLE",status:"ACTIVE",is_active:true,
                 is_featured:false,is_best_seller:false,scent_family_mode:"EXISTING",
                 images:[{image_url:"",is_main:true}],
                 variants:[{volume_ml:100,price:0,discount_price:null,stock_qty:0,is_active:true,images:[]}],

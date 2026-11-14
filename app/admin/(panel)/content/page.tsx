@@ -20,7 +20,7 @@ const sections: HomepageSection[] = ["bestsellers", "latest", "families"];
 
 export default function AdminContentPage() {
   const [content, setContent] = useState<FertiniSiteContent>(DEFAULT_SITE_CONTENT);
-  const [products, setProducts] = useState<HomeProduct[]>(DEMO_HOME_PRODUCTS);
+  const [products, setProducts] = useState<HomeProduct[]>([]);
   const [scentFamilies, setScentFamilies] = useState<Array<{ id: number; name: string }>>([]);
   const [categories, setCategories] = useState<Array<{ id: number; name: string }>>([]);
   const [assets, setAssets] = useState<Asset[]>([
@@ -75,6 +75,9 @@ export default function AdminContentPage() {
       setPreviewSlide(0);
     } catch (e) {
       setConnected(false);
+      setProducts([]);
+      setScentFamilies([]);
+      setCategories([]);
       setError(e instanceof Error ? e.message : "خطا در ارتباط با دیتابیس");
     } finally { setBusy(false); }
   }

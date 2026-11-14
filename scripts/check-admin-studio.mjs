@@ -70,4 +70,22 @@ assert.match(read("app/admin/(panel)/layout.tsx"),/previewGuest/);
 assert.match(read("app/admin/login/layout.tsx"),/redirect\("\/admin\/dashboard"\)/);
 assert.match(read("server/middlewares/admin.ts"),/requireAuth/);
 assert.match(read("server/middlewares/admin.ts"),/user.role !== "ADMIN"/);
-console.log("Authenticated editor, protected API, preview-only navigation, media and migration contracts passed.");
+// Direct publication: products cannot accidentally remain drafts after create or edit.
+const productCreate=read("components/PanelProductManagementComponents/create-product-drawer.tsx");
+const productEdit=read("components/PanelProductManagementComponents/edit-product-drawer.tsx");
+const productBasics=read("components/PanelProductManagementComponents/ProductBasicInfoFields.tsx");
+const productFilters=read("components/PanelProductManagementComponents/products-filters.tsx");
+const faqUI=read("components/admin/EngagementAdmin.tsx");
+const faqAPI=read("app/api/v1/admin/engagement/route.ts");
+assert.doesNotMatch(productBasics,/name="status"|پیش‌نویس/);
+assert.doesNotMatch(productFilters,/پیش‌نویس|filters\.status/);
+assert.match(productCreate,/status:"ACTIVE"/);
+assert.match(productEdit,/status: "ACTIVE"/);
+assert.match(read("app/api/v1/products/route.ts"),/status: "ACTIVE" as const/);
+assert.match(read("app/api/v1/products/[id]/route.ts"),/status: "ACTIVE" as const/);
+assert.match(read("server/repositories/product.repository.ts"),/data.status \?\? "ACTIVE"/);
+assert.doesNotMatch(faqUI,/ذخیره بدون انتشار/);
+assert.match(faqAPI,/published=TRUE/);
+assert.match(read("app/api/v1/admin/records/[resource]/route.ts"),/VALUES \(\?,\?,\?,\?,'ACTIVE'\)/);
+console.log("Authenticated editor, protected API, direct publication and media/migration contracts passed.");
+
