@@ -125,3 +125,13 @@ export function resolveDatabaseSelections(content: FertiniSiteContent, catalog: 
   return { ...content, bestsellerIds: resolve(content.bestsellerIds, featured),
     latestIds: resolve(content.latestIds, newest) };
 }
+
+/** A campaign affects checkout only for published products during its active UTC window. */
+export function getActiveCampaigns(content:FertiniSiteContent,now=Date.now()):FertiniCampaign[]{
+ return content.campaigns.filter(c=>c.enabled&&Date.parse(c.startsAt)<=now&&Date.parse(c.endsAt)>now);
+}
+export function campaignDiscountPercent(content:FertiniSiteContent,productId:number|string,now=Date.now()):number{
+ const id=typeof productId==="number"?"db:"+productId:productId;
+ return Math.max(0,...getActiveCampaigns(content,now)
+  .filter(c=>c.productIds.includes(id)).map(c=>c.discountPercent));
+}
