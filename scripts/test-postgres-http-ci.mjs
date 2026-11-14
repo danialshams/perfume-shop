@@ -166,6 +166,28 @@ try{
  assert.equal(noCatResponse.status,201,"Product form must accept optional category and text-only scent family: "+noCatBody);
  const noCatItem=JSON.parse(noCatBody);
  assert.ok(Number(noCatItem.data?.id)>0);
+
+ // New products publish immediately without a draft/status field in the form.
+ const instantProduct={...noCategory,name:"FERTINI QA Published Immediately",
+   new_scent_family:undefined,scent_family_id:Number(family.id)};
+ delete instantProduct.status;
+ delete instantProduct.is_active;
+ const instantCreate=await read("/api/v1/products",{method:"POST",
+   headers:{...auth,"Content-Type":"application/json"},body:JSON.stringify(instantProduct)});
+ const instantBody=await instantCreate.text();
+ assert.equal(instantCreate.status,201,"Direct-publish creation must succeed: "+instantBody);
+ const direct=JSON.parse(instantBody).data;
+ assert.equal(direct.status,"ACTIVE","New perfume must be published without draft state");
+ assert.equal(Boolean(direct.is_active),true,"New perfume must be visible");
+ assert.equal((await read("/api/v1/products/"+direct.id)).status,200,
+   "Immediately published perfume must be visible on the public catalog");
+ const changedProduct=await read("/api/v1/products/"+direct.id,{method:"PUT",
+   headers:{...auth,"Content-Type":"application/json"},
+   body:JSON.stringify({name:"FERTINI QA Edited Immediately",status:"ACTIVE",is_active:true})});
+ assert.equal(changedProduct.status,200,
+   "Product edits must preserve immediate publication: "+await changedProduct.text());
+ assert.equal((await read("/api/v1/products/"+direct.id)).status,200);
+
  const [scentRow]=await sql.unsafe("SELECT name,image_url FROM scent_families WHERE name=$1",["CI Crisp New Scent"]);
  assert.equal(scentRow.image_url,"","A new scent family must not require an image");
  const uploadedProduct=await read("/api/v1/products/"+noCatItem.data.id,{headers:auth});
