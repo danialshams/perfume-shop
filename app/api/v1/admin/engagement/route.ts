@@ -1,19 +1,22 @@
 import {NextRequest,NextResponse} from "next/server";
 import {db} from "@/lib/db";
 import {requireAdmin} from "@/server/middlewares/admin";
+import {isSameOriginAdminMutation} from "@/server/middlewares/admin-mutation-origin";
 import {isFertiniPublicDemoAdminEnabled} from "@/server/admin-preview-guest";
 import type {RowDataPacket} from "mysql2/promise";
 export const runtime="nodejs";export const dynamic="force-dynamic";
 const send=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{"Cache-Control":"private, no-store"}});
 const text=(v:unknown,n:number)=>typeof v==="string"?v.trim().slice(0,n):"";
 const idOf=(v:unknown)=>{const n=Number(v);return Number.isSafeInteger(n)&&n>0?n:null};
-async function access(req:NextRequest){try{
- await requireAdmin(req);
- if(req.method!=="GET"&&req.method!=="HEAD"){const origin=req.headers.get("origin");if(!origin||new URL(origin).host!==req.nextUrl.host)return false}
- return true;
-}catch{return false}}
+async function access(req:NextRequest):Promise<"unauthorized"|"invalid-origin"|null>{
+ try{await requireAdmin(req)}catch{return "unauthorized"}
+ return isSameOriginAdminMutation(req)?null:"invalid-origin";
+}
+const reject=(reason:"unauthorized"|"invalid-origin")=>send({
+ error:reason==="unauthorized"?"ورود مدیر الزامی است.":"مبدأ درخواست معتبر نیست؛ عملیات را از همین صفحه مدیریت انجام دهید."
+},403);
 export async function GET(req:NextRequest){
- if(!await access(req))return send({error:"ورود مدیر الزامی است."},403);
+ const denied=await access(req);if(denied)return reject(denied);
  const view=req.nextUrl.searchParams.get("view");
  try{
   if(view==="reviews"){
@@ -43,7 +46,7 @@ export async function GET(req:NextRequest){
  }catch{return send({error:"دیتابیس در دسترس نیست."},503)}
 }
 export async function POST(req:NextRequest){
- if(!await access(req))return send({error:"ورود مدیر الزامی است."},403);
+ const denied=await access(req);if(denied)return reject(denied);
  let data:Record<string,unknown>;try{data=await req.json()}catch{return send({error:"داده نامعتبر."},400)}
  const action=text(data.action,50),id=idOf(data.id);
  try{
