@@ -22,7 +22,7 @@ function getIdFromRequest(request: NextRequest): number | null {
 
 export async function GET(request: NextRequest) {
   try {
-    const admin = requireAdmin(request);
+    const admin = await requireAdmin(request);
     if (!admin) {
       return unauthorizedResponse("Unauthorized");
     }
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const admin = requireAdmin(request);
+    const admin = await requireAdmin(request);
     if (!admin) {
       return unauthorizedResponse("Unauthorized");
     }
@@ -62,7 +62,7 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const admin = requireAdmin(request);
+    const admin = await requireAdmin(request);
     if (!admin) {
       return unauthorizedResponse("Unauthorized");
     }
