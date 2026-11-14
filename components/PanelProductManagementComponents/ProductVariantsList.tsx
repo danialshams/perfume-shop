@@ -34,7 +34,7 @@ export default function ProductVariantsList({
                         {renderFields.map((field, index) => (
                             <Card
                                 key={field.key}
-                                title={isSingle ? "واریانت پیش‌فرض" : `واریانت ${index + 1}`}
+                                title={isSingle ? "حجم و قیمت" : `حجم شماره ${index + 1}`}
                                 extra={
                                     !isSingle && fields.length > 1 ? (
                                         <Button
