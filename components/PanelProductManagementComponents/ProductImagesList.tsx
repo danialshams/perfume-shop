@@ -196,18 +196,7 @@ export default function ProductImagesList({
             );
           })}
 
-          <Button
-            block
-            icon={<Plus size={16} />}
-            onClick={() =>
-              add({
-                image_url: "",
-                is_main: fields.length === 0,
-              })
-            }
-          >
-            افزودن تصویر محصول
-          </Button>
+
         </div>
       )}
     </Form.List>
