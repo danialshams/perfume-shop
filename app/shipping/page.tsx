@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import {currentSeo,seoMetadata} from "@/server/seo-metadata";
 import Link from "next/link";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
-export const metadata: Metadata = {
-  title: "راهنمای ارسال و سفارش | FERTINI",
-  description: "راهنمای وضعیت سفارش‌گیری، آدرس و ارسال سفارش در فروشگاه FERTINI.",
-  alternates: { canonical: "/shipping" },
-};
+export async function generateMetadata():Promise<Metadata>{
+ const seo=await currentSeo();
+ return seoMetadata(seo,"/shipping",{title:"راهنمای ارسال و سفارش | FERTINI",description:"راهنمای وضعیت سفارش‌گیری، آدرس و ارسال سفارش در فروشگاه FERTINI."});
+}
 export default function ShippingPage() {
   return <MaisonPage kicker="FERTINI / ORDERS & DELIVERY" title="از انتخاب تا دریافت."
     lead="شفافیت سفارش و اطلاعات ارسال، بخش مهمی از تجربه خرید آرام است.">
