@@ -24,9 +24,6 @@ const DEFAULT_FILTERS: ProductQueryParams = {
     page: 1,
     limit: 10,
     search: "",
-    status: undefined,
-    is_active: undefined,
-    is_featured: undefined,
 };
 
 type CategoryOption = {
@@ -160,11 +157,6 @@ export default function ProductsManagement() {
         setEditingProductId(null);
     }, []);
 
-    const handleRefresh = () => {
-        fetchData(appliedFilters);
-        fetchCategories();
-    };
-
     const handleSearch = () => {
         setAppliedFilters({
             ...filters,
@@ -213,45 +205,7 @@ export default function ProductsManagement() {
                 message.error(error?.message || "حذف محصول انجام نشد");
             }
         },
-        [message],
-    );
-
-    const handleRestore = useCallback(
-        async (product: ProductItem) => {
-            try {
-                const res = await fetch(`/api/v1/products/${product.id}`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ action: "restore" }),
-                });
-
-                const result = await res.json().catch(() => null);
-
-                if (!res.ok) {
-                    throw new Error(result?.message || "بازیابی محصول انجام نشد");
-                }
-
-                message.success("محصول با موفقیت بازیابی شد");
-
-                setData((prev) => ({
-                    ...prev,
-                    items: prev.items.map((item) =>
-                        item.id === product.id
-                            ? {
-                                  ...item,
-                                  deleted_at: null,
-                              }
-                            : item,
-                    ),
-                }));
-            } catch (error: any) {
-                console.error(error);
-                message.error(error?.message || "بازیابی محصول انجام نشد");
-            }
-        },
-        [message],
+        [message,fetchData,appliedFilters],
     );
 
     const columns = useMemo(
@@ -263,13 +217,9 @@ export default function ProductsManagement() {
                     openEditDrawer(product);
                 },
 
-                onImages: openEditDrawer,
-                onVariants: openEditDrawer,
-
                 onDelete: handleDelete,
-                onRestore: handleRestore,
             }),
-        [openDetailsModal, openEditDrawer, handleDelete, handleRestore],
+        [openDetailsModal, openEditDrawer, handleDelete],
     );
 
     return (
