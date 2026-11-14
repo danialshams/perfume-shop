@@ -34,11 +34,11 @@ export default function ProductImagesList({
       rules={[
         {
           validator: async (_, images) => {
-            if (!images || images.length === 0) {
+            if (!images || images.length === 0 || !images.some((item: {image_url?:string}) => Boolean(item?.image_url?.trim()))) {
               throw new Error("حداقل یک تصویر برای محصول وارد کنید");
             }
 
-            const hasMain = images.some((item: { is_main?: boolean }) => Boolean(item?.is_main));
+            const hasMain = images.some((item: { is_main?: boolean; image_url?:string }) => Boolean(item?.is_main && item?.image_url?.trim()));
 
             if (!hasMain) {
               throw new Error("حداقل یک تصویر باید به عنوان تصویر اصلی انتخاب شود");
@@ -82,7 +82,7 @@ export default function ProductImagesList({
             return (
               <div
                 key={field.key}
-                className="rounded-3xl border border-neutral-200 bg-neutral-50 p-4"
+                className="fst-image-item"
               >
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div className="font-medium text-neutral-700">
