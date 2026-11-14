@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import {currentSeo,seoMetadata} from "@/server/seo-metadata";
 import Image from "next/image";
 import Link from "next/link";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 
-export const metadata:Metadata={
- title:"ژورنال رایحه | FERTINI",
- description:"روایت‌های فرتینی درباره شناخت عطر، خانواده‌های بویایی و انتخاب رایحه شخصی.",
- alternates:{canonical:"/journal"},
-};
+export async function generateMetadata():Promise<Metadata>{
+ const seo=await currentSeo();
+ return seoMetadata(seo,"/journal",{title:"ژورنال رایحه | FERTINI",description:"روایت‌های فرتینی درباره شناخت عطر، خانواده‌های بویایی و انتخاب رایحه شخصی."});
+}
 export default function JournalPage(){
  return <div className="fertini-journal-v5 maison-page">
    <LuxuryNavbar/>
