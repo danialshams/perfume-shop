@@ -1,4 +1,5 @@
 import { z } from "zod";
+import {seoConfigSchema, DEFAULT_SEO_CONFIG, parseSeoConfig} from "@/lib/fertini-seo";
 import { FERTINI_DEMOS, FERTINI_FAMILIES } from "@/lib/fertini-demo";
 import type { HomeProduct } from "@/lib/fertini-home-products";
 
@@ -34,6 +35,7 @@ export const contentSchema = z.object({
   sectionVisibility: z.object({ bestsellers: z.boolean(), latest: z.boolean(), families: z.boolean() }).strict(),
   footerTagline: z.string().trim().min(2).max(130),
   footerCaption: z.string().trim().min(2).max(130),
+  seo: seoConfigSchema.default(DEFAULT_SEO_CONFIG),
 }).strict();
 export type FertiniSiteContent = z.infer<typeof contentSchema>;
 
@@ -58,6 +60,7 @@ export const DEFAULT_SITE_CONTENT: FertiniSiteContent = {
   sectionVisibility: { bestsellers: true, latest: true, families: true },
   footerTagline: "THE ART OF AN INVISIBLE SIGNATURE",
   footerCaption: "هر رایحه، رد یک خاطره.",
+  seo: DEFAULT_SEO_CONFIG,
 };
 
 /** Merge legacy content with new defaults without losing saved hero/product selections. */
@@ -69,6 +72,7 @@ export function parseContent(raw: unknown): FertiniSiteContent {
     families: (Array.isArray(obj.families) ? obj.families : DEFAULT_SITE_CONTENT.families).map((item, index) => ({
       ...DEFAULT_SITE_CONTENT.families[index], ...(item && typeof item === "object" ? item : {}),
     })),
+    seo: parseSeoConfig(obj.seo),
     sectionVisibility: { ...DEFAULT_SITE_CONTENT.sectionVisibility,
       ...(obj.sectionVisibility && typeof obj.sectionVisibility === "object" ? obj.sectionVisibility : {}) },
   });
