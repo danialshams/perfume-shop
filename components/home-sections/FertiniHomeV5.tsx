@@ -6,13 +6,14 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { DEMO_HOME_PRODUCTS, type HomeProduct } from "@/lib/fertini-home-products";
-import {DEFAULT_SITE_CONTENT,type FertiniSiteContent} from "@/lib/fertini-site-content";
+import {DEFAULT_SITE_CONTENT,type FertiniSiteContent,getActiveCampaigns,campaignDiscountPercent} from "@/lib/fertini-site-content";
 
 
 
-function ProductCard({product,large=false,mode="up"}:{
-  product:HomeProduct;large?:boolean;mode?:"up"|"fade"|"right"|"left"|"stretch"
+function ProductCard({product,large=false,mode="up",discountPercent=0}:{
+  product:HomeProduct;large?:boolean;mode?:"up"|"fade"|"right"|"left"|"stretch";discountPercent?:number
 }){
+  const displayPrice=product.price===null?null:Math.round(product.price*(100-discountPercent)/100);
   return <Link href={product.href} className={"fertini-v5-card"+(large?" fertini-v5-card--large":"")} data-fertini-card>
     <div className="fertini-v5-card__media" data-fertini-photo data-photo-entrance={mode}>
       <Image src={product.image} alt={product.name} fill unoptimized={!product.isDemo}
@@ -22,7 +23,7 @@ function ProductCard({product,large=false,mode="up"}:{
     <div className="fertini-v5-card__info" data-fertini-caption>
       <span lang="en" dir="ltr">{product.subtitle}</span>
       <h3>{product.name}</h3>
-      <p>{product.price===null?"برای اطلاع از قیمت، جزئیات را ببینید":product.price.toLocaleString("fa-IR")+" تومان"}</p>
+      <p>{displayPrice===null?"برای اطلاع از قیمت، جزئیات را ببینید":displayPrice.toLocaleString("fa-IR")+" تومان"} {discountPercent>0&&<span className="fertini-v5-sale-badge">{discountPercent}٪ تخفیف کمپین</span>}</p>
     </div>
   </Link>;
 }
@@ -92,10 +93,23 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
   const bestselling=content.bestsellerIds.map(id=>byId.get(id)).filter((x):x is HomeProduct=>Boolean(x));
   const latest=content.latestIds.map(id=>byId.get(id)).filter((x):x is HomeProduct=>Boolean(x));
   const catalogUnavailable=catalogState==="unavailable";
+  const activeCampaigns=getActiveCampaigns(content);
   const displayedFamilies=catalogState==="database"
     ?scentFamilies.map(f=>({id:String(f.id),name:f.name,subtitle:"",photo:f.image_url||"/placeholder-category.jpg",url:"/products?scent_family_id="+f.id}))
     :content.families.map(f=>({id:f.id,name:f.name,subtitle:f.subtitle,photo:f.photo,url:"/products?family="+f.id}));
   const sections={
+    campaign:activeCampaigns.length>0?<section className="fertini-v5-campaigns maison-wide" aria-label="کمپین‌های فعال">
+      {activeCampaigns.map(c=><div className="fertini-v5-campaign" key={c.id}>
+        <div className="fertini-v5-campaign__banner">
+         <Image src={c.banner} alt={c.title} fill unoptimized={c.banner.startsWith("/api/")||c.banner.startsWith("https://")} sizes="(min-width:900px) 90vw,100vw"/>
+         <div className="fertini-v5-campaign__overlay"><span>FERTINI / LIMITED CAMPAIGN</span><h2>{c.title}</h2>
+          {c.description&&<p>{c.description}</p>}
+          <strong>تا {c.discountPercent}٪ تخفیف · پایان {new Intl.DateTimeFormat("fa-IR",{dateStyle:"medium"}).format(new Date(c.endsAt))}</strong></div>
+        </div>
+        <div className="fertini-v5-campaign__products">{c.productIds.map(id=>byId.get(id)).filter((p):p is HomeProduct=>Boolean(p))
+         .map(product=><ProductCard key={product.id} product={product} discountPercent={campaignDiscountPercent(content,product.id)}/>)}</div>
+      </div>)}
+    </section>:null,
     bestsellers: <section className="fertini-v5-best maison-wide" aria-labelledby="fertini-best-title">
       <header className="fertini-v5-heading" data-fertini-heading>
         <span className="maison-kicker" lang="en" dir="ltr">01 / THE MOST LOVED</span>
@@ -104,7 +118,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
       </header>
       {catalogUnavailable?<p role="status" className="fertini-v5-catalog-notice">کاتالوگ محصولات موقتاً در دسترس نیست.</p>:null}
       <div className="fertini-v5-best__grid">{bestselling.map((product,index)=>
-        <ProductCard key={product.id} product={product} mode={(["up","right"] as const)[index%2]}/>)}</div>
+        <ProductCard key={product.id} product={product} discountPercent={campaignDiscountPercent(content,product.id)} mode={(["up","right"] as const)[index%2]}/>)}</div>
     </section>,
     latest: <section className="fertini-v5-new maison-wide" aria-labelledby="fertini-new-title">
       <header className="fertini-v5-heading" data-fertini-heading>
@@ -114,7 +128,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
       </header>
       {catalogUnavailable?<p role="status" className="fertini-v5-catalog-notice">کاتالوگ محصولات موقتاً در دسترس نیست.</p>:null}
       <div className="fertini-v5-new__scroll" aria-label="عطرهای جدید مجموعه فرتینی">
-        {latest.map((product,index)=><ProductCard key={product.id} product={product} large
+        {latest.map((product,index)=><ProductCard key={product.id} product={product} discountPercent={campaignDiscountPercent(content,product.id)} large
           mode={(["stretch","fade"] as const)[index%2]}/>)}
       </div>
       <div className="fertini-v5-new__bottom"><span lang="en" dir="ltr">
