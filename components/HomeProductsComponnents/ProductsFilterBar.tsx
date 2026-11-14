@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { lockDocumentScroll } from "@/lib/document-scroll-lock";
 import type { SortOption } from "./MobileSortSheet";
 
@@ -36,25 +36,19 @@ export default function ProductsFilterBar({
   const [panel, setPanel] = useState<"categories" | "sort" | null>(null);
   const [closing, setClosing] = useState(false);
   const closeTimerRef = useRef<number | null>(null);
-  const [search, setSearch] = useState("");
-  const firstFocusRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const activeCategory = categories.find(category => category.id === (activeChildId ?? activeParentId));
-  const categoryText = activeFilterLabel || activeCategory?.name || "همهٔ رایحه‌ها";
+  const categoryText = activeFilterLabel || activeCategory?.name || "همه رایحه‌ها";
   const sortText = sorts.find(sort => sort.value === selectedSort)?.label || "جدیدترین";
-  const visibleCategories = useMemo(() => {
-    const normalized=search.trim();
-    return categories.filter(category =>
-      (category.is_active === undefined || category.is_active === true || Number(category.is_active)===1) &&
-      (!normalized || category.name.includes(normalized) || category.parent_names?.some(name => name.includes(normalized)))
-    ).sort((a,b)=>(a.parent_ids?.length||0)-(b.parent_ids?.length||0));
-  },[categories,search]);
+  const visibleCategories = categories.filter(category=>category.is_active===undefined||
+    category.is_active===true||Number(category.is_active)===1)
+    .sort((a,b)=>(a.parent_ids?.length||0)-(b.parent_ids?.length||0));
 
   const close=()=>{
     if(closing || !panel)return;
     setClosing(true);
     if(closeTimerRef.current)window.clearTimeout(closeTimerRef.current);
-    closeTimerRef.current=window.setTimeout(()=>{setPanel(null);setClosing(false);setSearch("");closeTimerRef.current=null;},440);
+    closeTimerRef.current=window.setTimeout(()=>{setPanel(null);setClosing(false);closeTimerRef.current=null;},440);
   };
   useEffect(()=>()=>{if(closeTimerRef.current)window.clearTimeout(closeTimerRef.current);},[]);
   useEffect(()=>{
@@ -71,7 +65,7 @@ export default function ProductsFilterBar({
       }
     };
     document.addEventListener("keydown",onKey);
-    const id=window.requestAnimationFrame(()=>firstFocusRef.current?.focus());
+    const id=window.requestAnimationFrame(()=>document.querySelector<HTMLElement>(".fertini-filter-panel__options button")?.focus());
     return ()=>{releaseScroll();document.removeEventListener("keydown",onKey);window.cancelAnimationFrame(id);};
   },[panel]);
   function open(event:React.MouseEvent<HTMLButtonElement>,next:"categories"|"sort") {
@@ -119,12 +113,9 @@ export default function ProductsFilterBar({
           <button className="fertini-filter-panel__close" type="button" onClick={close} aria-label="بستن"><X size={21} strokeWidth={1.2}/></button>
         </header>
         {panel==="categories" && <>
-          <label className="fertini-filter-panel__search"><Search size={19} strokeWidth={1.2}/>
-            <input ref={firstFocusRef} type="search" placeholder="جستجو در دسته‌بندی‌ها" value={search}
-              onChange={event=>setSearch(event.target.value)} aria-label="جستجوی دسته‌بندی" /></label>
           <div className="fertini-filter-panel__options">
             <button type="button" className={!activeParentId?"is-active":""} onClick={()=>selectCategory(null)}>
-              <span>همهٔ عطرها</span>{!activeParentId&&<Check size={17} strokeWidth={1.4}/>}
+              <span>همه عطرها</span>{!activeParentId&&<Check size={17} strokeWidth={1.4}/>}
             </button>
             {visibleCategories.length ? visibleCategories.map(category=>
               <button type="button" key={category.id}
@@ -135,7 +126,7 @@ export default function ProductsFilterBar({
                   {category.name}
                 </span>
                 {(activeChildId??activeParentId)===category.id&&<Check size={17} strokeWidth={1.4}/>}
-              </button>) : <p>دسته‌ای با این نام پیدا نشد.</p>}
+              </button>) : <p>دسته‌بندی فعالی وجود ندارد.</p>}
           </div>
         </>}
         {panel==="sort" && <div className="fertini-filter-panel__options">
@@ -146,7 +137,7 @@ export default function ProductsFilterBar({
             {selectedSort===sort.value&&<Check size={17} strokeWidth={1.4}/>}
           </button>)}
         </div>}
-        <p className="fertini-filter-panel__foot">انتخاب شما مستقیماً در مجموعهٔ محصولات اعمال می‌شود.</p>
+        <p className="fertini-filter-panel__foot">انتخاب شما مستقیماً در مجموعه محصولات اعمال می‌شود.</p>
       </section>
     </div>}
   </>;
