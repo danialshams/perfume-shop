@@ -53,14 +53,14 @@ export function homepageSeoJsonLd(config:FertiniSeoConfig){
 }
 export function productSeoJsonLd(config:FertiniSeoConfig,product:{
   id:number;name:string;description?:string|null;
-  images?:Array<{image_url:string}>;variants?:Array<{price?:number;discount_price?:number|null;stock_qty?:number;is_active?:boolean}>;
+  images?:Array<{image_url:string}>;variants?:Array<{price?:number|string;discount_price?:number|string|null;stock_qty?:number|string;is_active?:boolean|number}>;
 }){
   const path="/products/"+product.id,origin=seoOrigin(config);
   const variants=product.variants||[];
-  const active=variants.filter(v=>v.is_active!==false);
-  const prices=active.map(v=>v.discount_price??v.price??0).filter(p=>p>0);
+  const active=variants.filter(v=>v.is_active!==false&&v.is_active!==0);
+  const prices=active.map(v=>Number(v.discount_price??v.price??0)).filter(p=>Number.isFinite(p)&&p>0);
   const price=prices.length?Math.min(...prices):null;
-  const stock=active.some(v=>(v.stock_qty??0)>0);
+  const stock=active.some(v=>Number(v.stock_qty??0)>0);
   return safeJsonLd({
     "@context":"https://schema.org","@type":"Product",
     name:product.name,description:cleanSeoText(product.description||"").slice(0,500),
