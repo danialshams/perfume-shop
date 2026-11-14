@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { getConnection } from "@/lib/db";
 import { checkoutRepository } from "@/server/repositories/checkout.repository";
+import {adminNotificationRepository} from "@/server/repositories/admin-notification.repository";
 import {readSiteContent} from "@/server/site-content";
 import {campaignDiscountPercent} from "@/lib/fertini-site-content";
 
@@ -347,6 +348,14 @@ class CheckoutService {
           throw new Error(`کسر موجودی محصول "${item.product_name}" ناموفق بود`);
         }
       }
+
+      // Persist order-created alert in the SAME transaction as the order.
+      // The admin SSE endpoint detects committed records in at most its next polling cycle.
+      await adminNotificationRepository.create({
+        type:"order_created",title:"سفارش جدید ثبت شد",
+        message:"سفارش "+orderNumber+" برای "+normalizedFirstName+" "+normalizedLastName+" ثبت شد",
+        entity_type:"order",entity_id:orderId,
+      },connection);
 
       await connection.commit();
 
