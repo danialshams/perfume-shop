@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {readFileSync} from "node:fs";
+import {readFileSync,readdirSync} from "node:fs";
 const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
 test("Fertini recommendations use the real catalog's exact scent_family_id",()=>{
  const api=read("app/api/v1/engagement/route.ts");
@@ -85,4 +85,22 @@ test("Open chat blocks page scroll and click-away dismisses with a smooth exit o
  assert.match(css,/\.support-backdrop\.is-open/);
  assert.match(css,/\.support-window\.is-open/);
  assert.match(css,/transition:opacity \.3s ease,transform \.38s/);
+});
+
+test("All administrative API handlers await authorization before reading or mutating data",()=>{
+ function visit(dir){
+  for(const entry of readdirSync(dir,{withFileTypes:true})){
+   const next=new URL(entry.name+(entry.isDirectory()?"/":""),dir);
+   if(entry.isDirectory())visit(next);
+   else if(entry.name==="route.ts"){
+    const source=readFileSync(next,"utf8");
+    for(const [index,line] of source.split("\n").entries()){
+     if(!/(?:requireAdmin|requireAuth)\(/.test(line)||line.trimStart().startsWith("//"))continue;
+     assert.match(line,/\bawait\s+(?:requireAdmin|requireAuth)\(/,
+      "Authorization must be awaited in "+next.pathname+":"+(index+1));
+    }
+   }
+  }
+ }
+ visit(new URL("../app/api/",import.meta.url));
 });
