@@ -7,7 +7,7 @@ type ProductRow = RowDataPacket & {
   id: number; name: string; image_url: string | null;
   scent_family: string | null; unit_price: string | number | null; is_best_seller: number | boolean;
 };
-type FamilyRow = RowDataPacket & { id: number; name: string };
+type FamilyRow = RowDataPacket & { id: number; name: string; image_url?: string|null };
 
 function safePhoto(raw: string | null): string {
   if (!raw) return "/fertini/hero-01.svg";
@@ -45,7 +45,7 @@ export async function listHomeCategories(): Promise<Array<{ id: number; name: st
   const [rows] = await db.query<FamilyRow[]>("SELECT id,name FROM categories WHERE deleted_at IS NULL AND is_active=1 ORDER BY name ASC LIMIT 200");
   return rows.map(x => ({ id: Number(x.id), name: x.name }));
 }
-export async function listHomeScentFamilies(): Promise<Array<{ id: number; name: string }>> {
-  const [rows] = await db.query<FamilyRow[]>("SELECT id,name FROM scent_families WHERE is_active=1 ORDER BY name ASC LIMIT 100");
-  return rows.map(x => ({ id: Number(x.id), name: x.name }));
+export async function listHomeScentFamilies(): Promise<Array<{ id: number; name: string; image_url: string|null }>> {
+  const [rows] = await db.query<FamilyRow[]>("SELECT id,name,image_url FROM scent_families WHERE is_active=1 ORDER BY sort_order ASC,name ASC LIMIT 100");
+  return rows.map(x => ({ id: Number(x.id), name: x.name, image_url: x.image_url || null }));
 }

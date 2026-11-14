@@ -2,11 +2,16 @@ import {NextRequest,NextResponse} from "next/server";
 import {createHash,randomBytes} from "node:crypto";
 import {db} from "@/lib/db";
 import {isFertiniPublicDemoAdminEnabled} from "@/server/admin-preview-guest";
+import {adminNotificationRepository} from "@/server/repositories/admin-notification.repository";
 import type {RowDataPacket,ResultSetHeader} from "mysql2/promise";
 export const runtime="nodejs";export const dynamic="force-dynamic";
 const send=(body:unknown,status=200)=>NextResponse.json(body,{status,headers:{"Cache-Control":"private, no-store"}});
 const text=(x:unknown,limit:number)=>typeof x==="string"?x.trim().slice(0,limit):"";
 const hash=(value:string)=>createHash("sha256").update(value).digest("hex");
+async function notifyAdmin(type:string,title:string,message:string,entity_type:string,entity_id:number){
+ try{await adminNotificationRepository.create({type,title,message,entity_type,entity_id})}
+ catch(error){console.error("Could not persist admin engagement notification",error)}
+}
 // A non-hex leading t identifies a temporary demo conversation without a schema change.
 const demoHash=(value:string)=>"t"+hash(value).slice(1);
 const idOf=(x:unknown)=>{const v=Number(x);return Number.isSafeInteger(v)&&v>0?v:null};
@@ -61,7 +66,8 @@ export async function POST(req:NextRequest){
    if(!p.length)return send({error:"محصول پیدا نشد."},404);
    const [duplicate]=await db.execute<RowDataPacket[]>("SELECT COUNT(*) AS amount FROM reviews WHERE product_id=? AND comment=? AND created_at>NOW()-INTERVAL '1 day'",[productId,body]);
    if(Number(duplicate[0]?.amount)>0)return send({error:"این دیدگاه قبلاً ثبت شده است."},409);
-   await db.execute("INSERT INTO reviews (user_id,product_id,rating,comment,status,is_approved) VALUES(NULL,?,0,?,'PENDING',0)",[productId,body]);
+   const [review]=await db.execute<ResultSetHeader>("INSERT INTO reviews (user_id,product_id,rating,comment,status,is_approved) VALUES(NULL,?,0,?,'PENDING',0)",[productId,body]);
+   await notifyAdmin("review_submitted","دیدگاه جدید",body.slice(0,110),"review",Number(review.insertId));
    return send({success:true,message:"دیدگاه شما برای بررسی ثبت شد."},201);
   }
   if(action==="faq"){
@@ -75,6 +81,7 @@ export async function POST(req:NextRequest){
    if(cfg[0]?.enabled===false)return send({error:"شروع چت موقتاً غیرفعال است."},403);
    const token=randomBytes(32).toString("base64url");
    const [record]=await db.execute<ResultSetHeader>("INSERT INTO support_threads(visitor_name,subject,token_hash) VALUES(?,?,?)",[name,subject,isFertiniPublicDemoAdminEnabled()?demoHash(token):hash(token)]);
+   await notifyAdmin("chat_started","گفتگوی آنلاین جدید",name+" · "+subject,"chat",Number(record.insertId));
    return send({threadId:String(record.insertId),token},201);
   }
   if(action==="message"){
@@ -86,6 +93,7 @@ export async function POST(req:NextRequest){
    if(Number(count[0]?.n)>=25)return send({error:"لطفاً چند دقیقه بعد دوباره پیام بفرستید."},429);
    await db.execute("INSERT INTO support_messages(thread_id,role,body) VALUES(?,'VISITOR',?)",[id,body]);
    await db.execute("UPDATE support_threads SET updated_at=NOW() WHERE id=?",[id]);
+   await notifyAdmin("chat_message","پیام جدید در چت",body.slice(0,110),"chat",id!);
    return send({success:true},201);
   }
   return send({error:"عملیات نامعتبر است."},400);

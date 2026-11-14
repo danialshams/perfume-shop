@@ -5,6 +5,8 @@ import { CartCountProvider } from "@/context/CartCountContext";
 import MaisonAmbientSound from "@/components/maison/MaisonAmbientSound";
 import FertiniEditorialMotion from "@/components/maison/FertiniEditorialMotion";
 import {SupportChat} from "@/components/maison/SupportChat";
+import {readSiteContent} from "@/server/site-content";
+import {DEFAULT_SITE_CONTENT} from "@/lib/fertini-site-content";
 import "./globals.css";
 import "./quiet-luxury.css";
 import "./maison-experience.css";
@@ -24,6 +26,7 @@ import "./fertini-account-v5.css";
 import "./fertini-inner-heroes-v5.css";
 import "./fertini-polish-v6.css";
 import "./fertini-engagement.css";
+import "./fertini-management.css";
 
 export async function generateMetadata():Promise<Metadata>{
   const settings=await currentSeo();
@@ -33,11 +36,12 @@ export async function generateMetadata():Promise<Metadata>{
   return {...result,alternates:undefined};
 }
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const music=(await readSiteContent().catch(()=>DEFAULT_SITE_CONTENT)).music;
   return <html lang="fa" dir="rtl" className="h-full antialiased">
     <head><meta name="enamad" content="487910412" /><script dangerouslySetInnerHTML={{__html:"try{if(sessionStorage.getItem('fertini:intro:seen:v3')==='1')document.documentElement.classList.add('fertini-intro-seen')}catch(e){}"}} /></head>
     <body id="top" className="flex min-h-full flex-col font-sans">
-      <MaisonAmbientSound><CartCountProvider>{children}<FertiniEditorialMotion/><SupportChat/></CartCountProvider></MaisonAmbientSound>
+      <MaisonAmbientSound audioUrl={music.audioUrl} musicEnabled={music.enabled}><CartCountProvider>{children}<FertiniEditorialMotion/><SupportChat/></CartCountProvider></MaisonAmbientSound>
     </body>
   </html>;
 }

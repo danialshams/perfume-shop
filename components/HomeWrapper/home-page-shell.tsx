@@ -4,15 +4,16 @@ import CinematicStorefront, { CinematicFooter } from "@/components/home-sections
 import type { FertiniSiteContent } from "@/lib/fertini-site-content";
 import type { HomeProduct } from "@/lib/fertini-home-products";
 
-export default function HomePageShell({ content, products, catalogState }: {
+export default function HomePageShell({ content, products, catalogState, scentFamilies=[] }: {
   content: FertiniSiteContent;
   products: HomeProduct[];
   catalogState: "demo" | "database" | "unavailable";
+  scentFamilies?: Array<{ id:number; name:string; image_url:string|null }>;
 }) {
   return <div className="ql-home min-h-screen">
     <MaisonIntro />
     <LuxuryNavbar />
-    <CinematicStorefront content={content} products={products} catalogState={catalogState} />
+    <CinematicStorefront content={content} products={products} catalogState={catalogState} scentFamilies={scentFamilies}/>
     <CinematicFooter content={content} />
   </div>;
 }

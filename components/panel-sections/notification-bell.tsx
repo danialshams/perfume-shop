@@ -8,6 +8,8 @@ import {
   CheckCheck,
   CircleX,
   ShoppingBag,
+  MessageCircle,
+  MessageSquare,
   Trash2,
   X,
 } from "lucide-react";
@@ -106,6 +108,8 @@ function getNotificationIcon(type: string) {
     return <Ban className="h-4 w-4 text-amber-600" />;
   }
 
+  if(type==="chat_started"||type==="chat_message")return <MessageCircle className="h-4 w-4" />;
+  if(type==="review_submitted")return <MessageSquare className="h-4 w-4" />;
   return <ShoppingBag className="h-4 w-4" />;
 }
 
@@ -201,6 +205,8 @@ function ConnectedNotificationBell() {
         return;
       }
 
+      if(item.entity_type==="chat"){router.push("/admin/support");return}
+      if(item.entity_type==="review"){router.push("/admin/reviews");return}
       router.push("/admin/orders");
     } finally {
       setNavigatingId(null);
@@ -247,7 +253,7 @@ function ConnectedNotificationBell() {
       </button>
 
       <div
-        className={`absolute left-1/2 top-[calc(100%+10px)] z-50 w-[min(22rem,calc(100vw-1rem))] -translate-x-8 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl transition-all duration-200 ease-out sm:w-[22rem] ${
+        className={`fst-notification-panel absolute left-1/2 top-[calc(100%+10px)] z-50 w-[min(22rem,calc(100vw-1rem))] -translate-x-8 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl transition-all duration-200 ease-out sm:w-[22rem] ${
           open
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none -translate-y-2 opacity-0"
@@ -356,7 +362,7 @@ function PreviewNotificationBell(){
   const [open,setOpen]=useState(false);
   return <div className="relative shrink-0">
     <button type="button" onClick={()=>setOpen(value=>!value)} aria-label="اعلان‌های سفارش" aria-expanded={open} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-black/10 bg-white text-neutral-700 shadow-sm" title="اعلان‌های سفارش"><Bell size={20}/></button>
-    {open&&<div role="status" className="absolute left-0 top-[calc(100%+10px)] z-50 w-[min(19rem,calc(100vw-1rem))] rounded-2xl border border-black/10 bg-white p-4 text-xs leading-7 text-neutral-700 shadow-xl">
+    {open&&<div role="status" className="fst-notification-panel absolute left-0 top-[calc(100%+10px)] z-50 w-[min(19rem,calc(100vw-1rem))] rounded-2xl border border-black/10 bg-white p-4 text-xs leading-7 text-neutral-700 shadow-xl">
       <strong className="mb-2 block text-sm">اعلان سفارش‌ها</strong>
       در حالت پیش‌نمایش بدون ورود، اطلاعات سفارش مشتریان نمایش داده نمی‌شود. پس از اتصال دیتابیس و ورود مدیر، اعلان‌های واقعی به‌صورت زنده در این بخش ظاهر می‌شوند.
     </div>}

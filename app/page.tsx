@@ -3,7 +3,7 @@ import {seoMetadata,homepageSeoJsonLd} from "@/server/seo-metadata";
 import {currentSeo} from "@/server/seo-metadata";
 import HomePageShell from "@/components/HomeWrapper/home-page-shell";
 import { readSiteContent } from "@/server/site-content";
-import { listHomeProducts } from "@/server/home-catalog";
+import { listHomeProducts, listHomeScentFamilies } from "@/server/home-catalog";
 import { DEFAULT_SITE_CONTENT, resolveDatabaseSelections } from "@/lib/fertini-site-content";
 import { DEMO_HOME_PRODUCTS, type HomeProduct } from "@/lib/fertini-home-products";
 export const dynamic = "force-dynamic";
@@ -15,13 +15,15 @@ export async function generateMetadata():Promise<Metadata>{
 
 export default async function Page() {
   let content = DEFAULT_SITE_CONTENT;
+  let scentFamilies: Awaited<ReturnType<typeof listHomeScentFamilies>> = [];
   let products: HomeProduct[] = DEMO_HOME_PRODUCTS;
   let catalogState: "demo" | "database" | "unavailable" = "demo";
   if (process.env.DATABASE_URL) {
     catalogState = "unavailable";
     products = [];
     try {
-      const [saved, published] = await Promise.all([readSiteContent(), listHomeProducts()]);
+      const [saved, published, savedFamilies] = await Promise.all([readSiteContent(), listHomeProducts(), listHomeScentFamilies()]);
+      scentFamilies = savedFamilies;
       content = resolveDatabaseSelections(saved, published);
       products = published;
       catalogState = "database";
@@ -30,7 +32,7 @@ export default async function Page() {
       try { content = await readSiteContent(); } catch {}
     }
   }
-  return <><HomePageShell content={content} products={products} catalogState={catalogState} />
+  return <><HomePageShell content={content} products={products} catalogState={catalogState} scentFamilies={scentFamilies} />
     {content.seo.structuredDataEnabled&&<script type="application/ld+json" dangerouslySetInnerHTML={{__html:homepageSeoJsonLd(content.seo)}}/>}
   </>;
 }

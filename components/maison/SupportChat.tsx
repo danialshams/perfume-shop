@@ -93,7 +93,7 @@ export function SupportChat(){
      <label>نام<input maxLength={60} required minLength={2} placeholder="نام شما" value={name} onChange={e=>setName(e.target.value)}/></label>
      <label>موضوع گفتگو<select value={subject} onChange={e=>setSubject(e.target.value)}>{subjects.map(s=><option key={s[0]} value={s[0]}>{s[1]}</option>)}</select></label>
      <button type="submit" disabled={busy}>{busy?<LoaderCircle size={18} className="support-spin"/>:"شروع گفتگو"} <ChevronLeft size={18}/></button>
-    </form>:<p>پشتیبانی آنلاین موقتاً غیرفعال است.</p>}
+    </form>:<p>پشتیبانی آنلاین موقتا غیرفعال است.</p>}
     <Link href="/faq" onClick={()=>setOpen(false)}>سؤال‌های متداول <ChevronLeft size={16}/></Link>
    </div>:<>
     <div className="support-history" role="log" aria-live="polite">

@@ -27,7 +27,14 @@ export async function PUT(request: NextRequest) {
   if (!await authorized(request)) return NextResponse.json({ error: "دسترسی مدیر لازم است" }, { status: 403 });
   let data: unknown;
   try { data = await request.json(); } catch { return NextResponse.json({ error: "فرمت داده معتبر نیست" }, { status: 400 }); }
-  const parsed = contentSchema.safeParse(data);
+  // Accept the previous three-section editor payload without losing saved sections.
+  // Keep all other validation strict; only the legacy section order is upgraded.
+  const raw=data&&typeof data==="object"&&!Array.isArray(data)?data as Record<string,unknown>:null;
+  const suppliedOrder=raw?.sectionOrder;
+  const migrated=raw&&Array.isArray(suppliedOrder)&&[3,4].includes(suppliedOrder.length)
+    &&["bestsellers","latest","families"].every(section=>suppliedOrder.includes(section))
+    ?{...raw,sectionOrder:[...(suppliedOrder.includes("campaign")?[]:["campaign"]),...suppliedOrder,...(suppliedOrder.includes("shipping")?[]:["shipping"])]}:data;
+  const parsed = contentSchema.safeParse(migrated);
   if (!parsed.success) return NextResponse.json({
     error: "اطلاعات صفحه اصلی نامعتبر است.", details: parsed.error.flatten(),
   }, { status: 422 });

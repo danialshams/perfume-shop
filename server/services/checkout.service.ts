@@ -2,6 +2,9 @@ import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { getConnection } from "@/lib/db";
 import { checkoutRepository } from "@/server/repositories/checkout.repository";
+import {adminNotificationRepository} from "@/server/repositories/admin-notification.repository";
+import {readSiteContent} from "@/server/site-content";
+import {campaignDiscountPercent} from "@/lib/fertini-site-content";
 
 const DUPLICATE_MOBILE_MESSAGE = "این شماره همراه قبلاً ثبت شده است";
 
@@ -117,6 +120,9 @@ function createOrderNumber(): string {
 
 class CheckoutService {
   async checkout(input: CheckoutInput, options?: CheckoutOptions) {
+    // Fix the active campaign snapshot before the checkout transaction.
+    const storefront=await readSiteContent();
+    const checkoutTime=Date.now();
     const connection = await getConnection();
 
     try {
@@ -215,6 +221,7 @@ class CheckoutService {
       }
 
       let subtotalAmount = 0;
+      let discountAmount = 0;
       const resolvedItems: ResolvedCheckoutItem[] = [];
 
       for (const item of input.items) {
@@ -248,14 +255,17 @@ class CheckoutService {
           );
         }
 
-        const unitPrice = Number(product.price);
+        const regularUnitPrice = Number(product.price);
+        const campaignPercent=campaignDiscountPercent(storefront,Number(product.id),checkoutTime);
+        const unitPrice=Math.round(regularUnitPrice*(100-campaignPercent)/100);
 
         if (!Number.isFinite(unitPrice) || unitPrice < 0) {
           throw new Error(`قیمت محصول "${product.name}" معتبر نیست`);
         }
 
         const totalPrice = unitPrice * item.quantity;
-        subtotalAmount += totalPrice;
+        subtotalAmount += regularUnitPrice*item.quantity;
+        discountAmount += (regularUnitPrice-unitPrice)*item.quantity;
 
         const variantTitle = product.volume_ml
           ? `${product.volume_ml} میلی‌لیتر`
@@ -274,7 +284,6 @@ class CheckoutService {
         });
       }
 
-      const discountAmount = 0;
       const shippingAmount = 0;
       const totalAmount = subtotalAmount - discountAmount + shippingAmount;
 
@@ -339,6 +348,14 @@ class CheckoutService {
           throw new Error(`کسر موجودی محصول "${item.product_name}" ناموفق بود`);
         }
       }
+
+      // Persist order-created alert in the SAME transaction as the order.
+      // The admin SSE endpoint detects committed records in at most its next polling cycle.
+      await adminNotificationRepository.create({
+        type:"order_created",title:"سفارش جدید ثبت شد",
+        message:"سفارش "+orderNumber+" برای "+normalizedFirstName+" "+normalizedLastName+" ثبت شد",
+        entity_type:"order",entity_id:orderId,
+      },connection);
 
       await connection.commit();
 

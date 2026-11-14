@@ -51,7 +51,7 @@ export default function MaisonIntro() {
         window.sessionStorage.getItem(START_KEY) === "1";
     } catch {}
 
-    if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (seen || new URLSearchParams(window.location.search).has("studioPreview") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       // Happens before the next paint: no brief second splash on back navigation.
       root.style.display = "none";
       const frame = window.requestAnimationFrame(finish);

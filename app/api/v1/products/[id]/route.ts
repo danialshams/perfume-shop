@@ -3,7 +3,9 @@ import { requireAdmin } from "@/server/middlewares/admin";
 import { productService } from "@/server/services/product.service";
 import { updateProductSchema } from "@/server/validations/product.validation";
 import { NextRequest } from "next/server";
-import { isPublicProduct, visiblePublicVariants } from "@/server/utils/product-visibility";
+import { isPublicProduct } from "@/server/utils/product-visibility";
+import {campaignPublicVariants} from "@/server/campaign-pricing";
+import {readSiteContent} from "@/server/site-content";
 
 type Context = {
   params: Promise<{ id: string }>;
@@ -203,8 +205,9 @@ export async function GET(request: NextRequest, context: Context) {
     if (!isAdmin && !isPublicProduct(result)) {
       return errorResponse("Product not found", 404);
     }
+    const content=isAdmin?null:await readSiteContent();
     return successResponse(
-      isAdmin ? result : { ...result, variants: visiblePublicVariants(result.variants) },
+      isAdmin ? result : { ...result, variants: campaignPublicVariants(result.variants,content!,productId) },
       "Product fetched"
     );
   } catch (error: unknown) {

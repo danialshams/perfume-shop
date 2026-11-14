@@ -166,6 +166,42 @@ try{
  const reloaded=await after.json();
  assert.equal(reloaded.content.bestsellerTitle,updated.bestsellerTitle,"Homepage setting was not persisted");
 
+// Store management features use the existing persisted storefront JSON without a schema migration.
+ const settingsRead=await read("/api/v1/admin/store-settings",{headers:auth});
+ assert.equal(settingsRead.status,200,"Admin store settings must be readable");
+ const settings=await settingsRead.json();
+ assert.ok(Array.isArray(settings.products)&&settings.products.length>0);
+ const campaign={
+  id:"ci-active-campaign",title:"CI Campaign",description:"QA discount banner",
+  banner:"/fertini/hero-01.svg",
+  startsAt:new Date(Date.now()-86400000).toISOString(),
+  endsAt:new Date(Date.now()+86400000).toISOString(),
+  discountPercent:15,enabled:true,productIds:[settings.products[0].id],
+ };
+ const campaignWrite=await read("/api/v1/admin/store-settings",{
+  method:"PUT",headers:{...auth,"Content-Type":"application/json"},
+  body:JSON.stringify({kind:"campaigns",value:[campaign]})
+ });
+ assert.equal(campaignWrite.status,200,"Campaign save API failed: "+await campaignWrite.text());
+ const promoHome=await (await read("/")).text();
+ assert.ok(promoHome.includes("CI Campaign"),"Scheduled campaign banner must appear on the homepage");
+ const shippingWrite=await read("/api/v1/admin/store-settings",{
+  method:"PUT",headers:{...auth,"Content-Type":"application/json"},
+  body:JSON.stringify({kind:"shipping",value:[{id:"ci-standard",name:"ارسال آزمایشی",description:"ارسال مخصوص CI",
+   estimatedDays:"۲ روز کاری",cost:12000,enabled:true}]})
+ });
+ assert.equal(shippingWrite.status,200,"Shipping settings must save");
+ assert.ok((await (await read("/shipping")).text()).includes("ارسال آزمایشی"),"Public delivery page must read admin settings");
+ const musicWrite=await read("/api/v1/admin/store-settings",{
+  method:"PUT",headers:{...auth,"Content-Type":"application/json"},
+  body:JSON.stringify({kind:"music",value:{enabled:false,audioUrl:"/audio/luxury-piano.mp3"}})
+ });
+ assert.equal(musicWrite.status,200,"Music settings must save");
+ const settingsAfter=await (await read("/api/v1/admin/store-settings",{headers:auth})).json();
+ assert.equal(settingsAfter.music.enabled,false,"Music setting must persist");
+ assert.equal(settingsAfter.campaigns[0].title,"CI Campaign","Campaign must persist");
+
+
  const seoGet=await read("/api/v1/admin/seo",{headers:auth});
  assert.equal(seoGet.status,200,"authenticated SEO dashboard should be available");
  const seoBefore=await seoGet.json();
@@ -214,7 +250,10 @@ try{
  assert.equal((await health.json()).connected,true);
  const bell=await read("/api/v1/notifications",{headers:auth});
  assert.equal(bell.status,200,"Notifications should read PostgreSQL database");
- const notices=await bell.json();assert.equal(notices.unread_count,0);
+ const notices=await bell.json();
+ assert.ok(notices.unread_count>=2,"New chat and visitor message should increment the admin bell");
+ assert.ok(notices.items.some(n=>n.type==="chat_started"),"New chat start must appear in notification history");
+ assert.ok(notices.items.some(n=>n.type==="chat_message"),"Visitor message must appear in notification history");
 
  const [family]=await sql.unsafe("SELECT id FROM scent_families WHERE slug='woody'");
  const cats=await sql.unsafe("SELECT id,slug FROM categories WHERE slug IN ('fertini-woody','fertini-floral')");
