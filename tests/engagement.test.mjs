@@ -116,3 +116,14 @@ test("Sliders expose inactive entries only to explicitly authorized management r
   assert.match(route,/await requireAuth\(request\)/);
  }
 });
+
+test("Visitor messages appear on the right, support messages on the left, without redundant contact footer",()=>{
+ const css=read("app/fertini-engagement.css");
+ const chat=read("components/maison/SupportChat.tsx");
+ // In a column flex container with dir=rtl, flex-start means right.
+ assert.match(chat,/<div className="support-root" dir="rtl">/);
+ assert.match(css,/\.support-message\{[^}]*align-self:flex-start/);
+ assert.match(css,/\.support-message\.is-admin\{align-self:flex-end/);
+ assert.doesNotMatch(chat,/برای شروع گفتگو به شماره موبایل یا ایمیل نیازی نیست/);
+ assert.doesNotMatch(chat,/className="support-footer"/);
+});
