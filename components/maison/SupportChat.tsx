@@ -108,7 +108,6 @@ export function SupportChat(){
     </form>}
    </>}
    {error&&<p role="alert" className="support-error">{error}</p>}
-   <footer className="support-footer">برای شروع گفتگو به شماره موبایل یا ایمیل نیازی نیست.</footer>
   </section>
   <button type="button" className="support-launcher" aria-label={open?"بستن چت آنلاین":"باز کردن چت آنلاین"} aria-expanded={open} onClick={()=>setOpen(s=>!s)}>{open?<X size={25}/>:<MessageCircle size={27}/>}</button>
  </div>;
