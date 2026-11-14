@@ -29,7 +29,7 @@ export default function ProductDetailsModal({open,product,onClose}:Props){
  const p=details||product;
  const variants=p?.variants||[];
  const photos=p?.images||[];
- const primary=photos.find(img=>Boolean(img.is_main))?.image_url||getMainImage(p as ProductItem)||"";
+ const primary=photos.find(img=>Boolean(img.is_main))?.image_url||(p?getMainImage(p):"")||"";
  const scent=typeof p?.scent_family==="string"?p.scent_family:
   p?.scent_family&&typeof p.scent_family==="object"?p.scent_family.name||"":
   p?.scent_family_name||"";
