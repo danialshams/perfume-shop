@@ -78,21 +78,9 @@ export default function ProductBasicInfoFields({categories = [], scentFamilies =
         <Input.TextArea rows={4} placeholder="رایحه، حس و ویژگی‌های عطر را به زبان ساده توصیف کنید." showCount maxLength={5000}/>
       </Form.Item>
 
-      <Form.Item name="status" label="وضعیت انتشار" className="md:col-span-2">
-        <Select size="large" options={[
-          {label:"پیش‌نویس (فعلاً نمایش داده نشود)",value:"DRAFT"},
-          {label:"منتشرشده در فروشگاه",value:"ACTIVE"},
-          {label:"غیرفعال",value:"INACTIVE"},
-        ]}/>
-      </Form.Item>
-
-      <div className="md:col-span-2 fst-product-options">
-        <Form.Item name="is_featured" valuePropName="checked" label="محصول ویژه">
-          <Switch/>
-        </Form.Item>
-        <Form.Item name="is_best_seller" valuePropName="checked" label="پرفروش">
-          <Switch/>
-        </Form.Item>
+      <div className="fst-product-hint md:col-span-2">
+        محصول پس از ثبت مستقیماً در فروشگاه نمایش داده می‌شود.
+        برای انتخاب محصولات پرفروش و جدیدِ صفحه اصلی، از «صفحه اصلی» استفاده کنید.
       </div>
     </div>
   </section>;
