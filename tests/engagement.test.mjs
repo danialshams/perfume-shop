@@ -63,3 +63,26 @@ test("Fertini open mobile menu exposes a stable state for hiding the chat layer"
  const source=read("components/NavbarComponents/MobileMenuOverlay.tsx");
  assert.match(source,/data-fertini-menu-open=\{isOpen/);
 });
+
+test("Admin mutations accept genuine browser same-origin fetches behind reverse proxies without bypassing login",()=>{
+ const route=read("app/api/v1/admin/engagement/route.ts");
+ assert.match(route,/await requireAdmin\(req\)/);
+ assert.match(route,/sec-fetch-site/);
+ assert.match(route,/site==="same-origin"/);
+ assert.match(route,/x-forwarded-host/);
+ assert.match(route,/if\(!sameOriginWrite\(req\)\)/);
+ assert.match(route,/مبدأ درخواست معتبر نیست/);
+});
+test("Open chat blocks page scroll and click-away dismisses with a smooth exit on all devices",()=>{
+ const chat=read("components/maison/SupportChat.tsx");
+ const css=read("app/fertini-engagement.css");
+ assert.match(chat,/body\.style\.position="fixed"/);
+ assert.match(chat,/window\.scrollTo\(0,y\)/);
+ assert.match(chat,/support-backdrop/);
+ assert.match(chat,/onClick=\{\(\)=>setOpen\(false\)\}/);
+ assert.match(chat,/inert=\{!open\}/);
+ assert.match(chat,/event\.key==="Escape"/);
+ assert.match(css,/\.support-backdrop\.is-open/);
+ assert.match(css,/\.support-window\.is-open/);
+ assert.match(css,/transition:opacity \.3s ease,transform \.38s/);
+});
