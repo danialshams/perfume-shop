@@ -6,7 +6,8 @@ import {
   productListQuerySchema,
 } from "@/server/validations/product.validation";
 import { NextRequest } from "next/server";
-import { visiblePublicVariants } from "@/server/utils/product-visibility";
+import {campaignPublicVariants} from "@/server/campaign-pricing";
+import {readSiteContent} from "@/server/site-content";
 
 function getQueryObject(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -220,11 +221,12 @@ export async function GET(request: NextRequest) {
       onlyDeleted: false,
     };
     const result = await productService.getAll(publicFilters, { page, limit });
+    const content=isAdmin?null:await readSiteContent();
     const data = isAdmin ? result : {
       ...result,
       items: result.items.map(product => ({
         ...product,
-        variants: visiblePublicVariants(product.variants),
+        variants: campaignPublicVariants(product.variants,content!,Number(product.id)),
       })),
     };
 
