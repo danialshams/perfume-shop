@@ -21,12 +21,9 @@ function getIdFromRequest(request: NextRequest): number | null {
 }
 
 export async function GET(request: NextRequest) {
+  try { await requireAdmin(request); }
+  catch { return unauthorizedResponse("دسترسی مدیر لازم است."); }
   try {
-    const admin = await requireAdmin(request);
-    if (!admin) {
-      return unauthorizedResponse("Unauthorized");
-    }
-
     const coupons = await couponService.listCoupons();
     return successResponse(coupons, "Coupons fetched successfully");
   } catch (error) {
@@ -35,12 +32,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  try { await requireAdmin(request); }
+  catch { return unauthorizedResponse("دسترسی مدیر لازم است."); }
   try {
-    const admin = await requireAdmin(request);
-    if (!admin) {
-      return unauthorizedResponse("Unauthorized");
-    }
-
     const id = getIdFromRequest(request);
     if (!id) {
       return badRequestResponse("Valid coupon id is required");
@@ -61,12 +55,9 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  try { await requireAdmin(request); }
+  catch { return unauthorizedResponse("دسترسی مدیر لازم است."); }
   try {
-    const admin = await requireAdmin(request);
-    if (!admin) {
-      return unauthorizedResponse("Unauthorized");
-    }
-
     const id = getIdFromRequest(request);
     if (!id) {
       return badRequestResponse("Valid coupon id is required");
