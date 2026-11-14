@@ -10,12 +10,9 @@ import { createCouponSchema } from "@/server/validations/coupon.validation";
 import { requireAdmin } from "@/server/middlewares/admin";
 
 export async function POST(request: NextRequest) {
+  try { await requireAdmin(request); }
+  catch { return unauthorizedResponse("دسترسی مدیر لازم است."); }
   try {
-    const admin = requireAdmin(request);
-    if (!admin) {
-      return unauthorizedResponse("Unauthorized");
-    }
-
     const body = await request.json();
     const parsed = createCouponSchema.safeParse(body);
 
