@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import {currentSeo,seoMetadata} from "@/server/seo-metadata";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
-export const metadata: Metadata = {
-  title: "قوانین و مقررات | FERTINI",
-  description: "چارچوب اولیه استفاده از فروشگاه عطر FERTINI و وضعیت سفارش‌گیری آزمایشی.",
-  alternates: { canonical: "/terms" },
-};
+export async function generateMetadata():Promise<Metadata>{
+ const seo=await currentSeo();
+ return seoMetadata(seo,"/terms",{title:"قوانین و مقررات | FERTINI",description:"چارچوب اولیه استفاده از فروشگاه عطر FERTINI و وضعیت سفارش‌گیری آزمایشی."});
+}
 export default function TermsPage() {
   return <MaisonPage kicker="FERTINI / TERMS OF USE" title="شفافیت، پیش از انتخاب."
     lead="این شرایط در نسخه آزمایشی اطلاع‌رسانی اولیه هستند و جایگزین قوانین نهایی فروش، بازگشت کالا و خدمات پس از خرید نیستند.">
