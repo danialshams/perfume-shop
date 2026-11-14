@@ -15,7 +15,7 @@ import LiveHomePreview from "@/components/admin/LiveHomePreview";
 type Asset = { url: string; label: string };
 type CatalogKey = "bestsellerIds" | "latestIds";
 const sectionTitles: Record<HomepageSection, string> = {
-  campaign:"کمپین‌ها",bestsellers: "پرفروش‌ترین‌ها", latest: "جدیدترین عطرها", families: "گروه‌های بویایی",
+  campaign:"کمپین‌ها",bestsellers: "پرفروش‌ترین‌ها", latest: "جدیدترین عطرها", families: "گروه‌های بویایی", shipping:"روش‌های ارسال",
 };
 
 
@@ -157,7 +157,7 @@ export default function AdminContentPage() {
     <form onSubmit={e => void save(e)} className="grid gap-4">
       <section className="fst-card scroll-mt-24" id="fst-editor-layout">
         <div className="fst-editor-heading"><span>00 / PAGE STRUCTURE</span><h2>ترتیب و نمایش بخش‌ها</h2></div>
-        <p className="fst-helper">هیرو همیشه اول است. کمپین، محصولات و گروه‌های بویایی را می‌توان مستقل از هم جابه‌جا یا پنهان کرد.</p>
+        <p className="fst-helper">هیرو همیشه اول است. کمپین، محصولات، گروه‌های بویایی و راهنمای ارسال را می‌توان مستقل از هم جابه‌جا یا پنهان کرد.</p>
         {content.sectionOrder.map((section, i) => <div className="fst-list-row" key={section}>
           <span className="fst-index">{String(i + 1).padStart(2, "0")}</span>
           <strong className="flex-1 text-sm">{sectionTitles[section]}</strong>
