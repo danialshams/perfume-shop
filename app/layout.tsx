@@ -26,6 +26,7 @@ import "./fertini-account-v5.css";
 import "./fertini-inner-heroes-v5.css";
 import "./fertini-polish-v6.css";
 import "./fertini-engagement.css";
+import "./fertini-management.css";
 
 export async function generateMetadata():Promise<Metadata>{
   const settings=await currentSeo();
