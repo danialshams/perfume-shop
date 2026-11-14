@@ -75,7 +75,7 @@ export default function ScentFamiliesPage(){
     {active===undefined?<div className="fst-empty">برای ویرایش یک گروه را انتخاب کن یا گروه جدید بساز.</div>:
     <form onSubmit={save} className="fst-taxonomy-form">
      <div className="fst-editor-heading"><h2>{active===null?"ایجاد گروه بویایی":"ویرایش گروه بویایی"}</h2><button type="button" aria-label="بستن فرم" onClick={()=>setActive(undefined)}><X size={18}/></button></div>
-     <label className="fst-field">نام گروه بویایی<input value={form.name} required minLength={2} maxLength={120} onChange={e=>setForm(s=>({...s,name:e.target.value}))} placeholder="مثلاً چوبی"/></label>
+     <label className="fst-field">نام گروه بویایی<input value={form.name} required minLength={2} maxLength={120} onChange={e=>setForm(s=>({...s,name:e.target.value}))} placeholder="مثلا چوبی"/></label>
      <label className="fst-field">ترتیب نمایش<input type="number" min="0" max="9999" value={form.sort_order} onChange={e=>setForm(s=>({...s,sort_order:Number(e.target.value)||0}))}/></label>
      <label className="fst-visibility"><input type="checkbox" checked={form.is_active} onChange={e=>setForm(s=>({...s,is_active:e.target.checked}))}/> نمایش این گروه در فروشگاه</label>
      {form.image_url?<div className="fst-taxonomy-photo"><img src={form.image_url} alt="تصویر گروه بویایی" /></div>:<div className="fst-taxonomy-photo fst-taxonomy-placeholder">هنوز تصویر انتخاب نشده است.</div>}
