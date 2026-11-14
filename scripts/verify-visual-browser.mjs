@@ -354,6 +354,15 @@ async function validateAdminScreens(){
   await pageScreenshot({name:"admin-content-mobile",url:base+"/admin/content",width:390,height:844,mobile:true,assertHome:false});
   await pageScreenshot({name:"admin-seo-mobile",url:base+"/admin/seo",width:390,height:844,mobile:true,assertHome:false});
   await pageScreenshot({name:"admin-seo-desktop",url:base+"/admin/seo",width:1440,height:900,mobile:false,assertHome:false});
+
+  await pageScreenshot({name:"admin-products-desktop",url:base+"/admin/products",width:1440,height:900,mobile:false,assertHome:false});
+  await pageScreenshot({name:"admin-content-desktop",url:base+"/admin/content",width:1440,height:900,mobile:false,assertHome:false});
+  await pageScreenshot({name:"admin-orders-desktop",url:base+"/admin/orders",width:1440,height:900,mobile:false,assertHome:false});
+  for (const route of ["categories","customers","reviews","faq","support"]) {
+    await pageScreenshot({name:"admin-"+route+"-mobile",url:base+"/admin/"+route,width:390,height:844,mobile:true,assertHome:false});
+  }
+  await pageScreenshot({name:"admin-categories-desktop",url:base+"/admin/categories",width:1440,height:900,mobile:false,assertHome:false});
+
   // Product image and voice files are managed inside products; legacy media URL redirects.
   const mediaRedirect=await fetch(base+"/admin/media",{redirect:"manual"});
   // Next.js App Router may return HTTP 200 with a streamed RSC redirect instead of a 3xx.
@@ -364,6 +373,41 @@ async function validateAdminScreens(){
   if(!serverRedirect&&!streamedRedirect)
     throw Error("Legacy admin media redirect to products was not found: "+mediaRedirect.status);
   await pageScreenshot({name:"admin-coupons-mobile",url:base+"/admin/coupons",width:390,height:844,mobile:true,assertHome:false});
+
+  for(const [from,to] of [["sliders","content"],["payments","orders"]]) {
+    const result=await fetch(base+"/admin/"+from,{redirect:"manual"});
+    const moved=[301,302,303,307,308].includes(result.status) &&
+      result.headers.get("location")?.includes("/admin/"+to);
+    const streamed=result.status===200 && (await result.text()).includes("NEXT_REDIRECT");
+    if(!moved&&!streamed)throw Error("Retired "+from+" page did not redirect to "+to);
+  }
+  const {send:editCheck,close:closeEditCheck}=await open("about:blank");
+  try{
+    await editCheck("Page.enable");
+    await editCheck("Runtime.enable");
+    await editCheck("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true});
+    await editCheck("Page.navigate",{url:base+"/admin/products"});
+    await until(()=>evaluate(editCheck,'!!document.querySelector(".fst-page-heading button")'),24000);
+    await sleep(800);
+    await evaluate(editCheck,'document.querySelector(".fst-page-heading button")?.click()');
+    await until(()=>evaluate(editCheck,'!!document.querySelector(".fst-product-drawer .ant-drawer-body .fst-product-form")'),18000);
+    const formState=await evaluate(editCheck,`(()=>{
+      const form=document.querySelector(".fst-product-drawer .ant-drawer-body");
+      const text=form?.textContent||"";
+      return {exists:!!form,hasName:text.includes("نام عطر"),hasPrice:text.includes("قیمت"),
+        draft:text.includes("پیش‌نویس")||text.includes("وضعیت انتشار"),
+        featured:text.includes("محصول ویژه")||text.includes("محصول پرفروش"),
+        publish:text.includes("ثبت و انتشار عطر"),
+        scrollWidth:document.documentElement.scrollWidth,windowWidth:innerWidth};
+    })()`);
+    if(!formState.exists||!formState.hasName||!formState.hasPrice||
+       formState.draft||formState.featured||!formState.publish||
+       formState.scrollWidth>formState.windowWidth+4)
+       throw Error("Mobile direct-publish product form failed: "+JSON.stringify(formState));
+    const screenshot=await editCheck("Page.captureScreenshot",{format:"png",captureBeyondViewport:true});
+    await writeFile("artifacts/admin-create-product-mobile.png",Buffer.from(screenshot.data,"base64"));
+  }finally{await closeEditCheck()}
+
   const retiredHealth=await fetch(base+"/admin/database",{redirect:"manual"});
   const healthRedirect=[301,302,303,307,308].includes(retiredHealth.status) &&
     retiredHealth.headers.get("location")?.includes("/admin/dashboard");
