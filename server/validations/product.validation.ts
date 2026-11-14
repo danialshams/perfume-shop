@@ -149,9 +149,7 @@ export const createProductSchema = z
 
     parent_category_id: z.number().int().positive().optional().nullable(),
 
-    category_links: z
-      .array(categoryLinkSchema)
-      .min(1, "At least one category path is required"),
+    category_links: z.array(categoryLinkSchema).default([]),
 
     scent_family_id: z.number().int().positive().optional().nullable(),
 
