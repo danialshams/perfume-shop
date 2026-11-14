@@ -136,7 +136,7 @@ function normalizeNewScentFamily(body: any) {
 }
 
 function normalizeProductBody(body: any) {
-  const type = body.type || "SINGLE";
+  const type = body.type;
   const isSingleProduct = type === "SINGLE";
 
   const slug =
@@ -148,26 +148,20 @@ function normalizeProductBody(body: any) {
 
     ...(slug ? { slug } : {}),
 
-    type,
+    ...(type !== undefined ? { type } : {}),
     status: "ACTIVE" as const,
 
-    is_active: normalizeBoolean(body.is_active, true),
-    is_featured: normalizeBoolean(body.is_featured, false),
-    is_best_seller: normalizeBoolean(body.is_best_seller, false),
+    ...(body.is_active !== undefined ? { is_active: normalizeBoolean(body.is_active, true) } : {}),
+    ...(body.is_featured !== undefined ? { is_featured: normalizeBoolean(body.is_featured, false) } : {}),
+    ...(body.is_best_seller !== undefined ? { is_best_seller: normalizeBoolean(body.is_best_seller, false) } : {}),
 
-    category_id:
-      body.category_id === null ||
-      body.category_id === undefined ||
-      body.category_id === ""
-        ? null
-        : Number(body.category_id),
+    ...(body.category_id !== undefined ? {
+      category_id: body.category_id === null || body.category_id === "" ? null : Number(body.category_id),
+    } : {}),
 
-    parent_category_id:
-      body.parent_category_id === null ||
-      body.parent_category_id === undefined ||
-      body.parent_category_id === ""
-        ? null
-        : Number(body.parent_category_id),
+    ...(body.parent_category_id !== undefined ? {
+      parent_category_id: body.parent_category_id === null || body.parent_category_id === "" ? null : Number(body.parent_category_id),
+    } : {}),
 
     category_links: normalizeCategoryLinks(body),
 
@@ -176,12 +170,9 @@ function normalizeProductBody(body: any) {
     variants: normalizeVariants(body.variants, isSingleProduct),
     ...(body.voice_file === "" ? {voice_file:null} : {}),
 
-    scent_family_id:
-      body.scent_family_id === null ||
-      body.scent_family_id === undefined ||
-      body.scent_family_id === ""
-        ? null
-        : Number(body.scent_family_id),
+    ...(body.scent_family_id !== undefined ? {
+      scent_family_id: body.scent_family_id === null || body.scent_family_id === "" ? null : Number(body.scent_family_id),
+    } : {}),
 
     new_scent_family: normalizeNewScentFamily(body),
   };
