@@ -151,7 +151,7 @@ export default function ProductVariantsList({
                                         <div className="md:col-span-2">
                                             <div className="rounded-2xl border border-neutral-200 p-4">
                                                 <div className="mb-4 text-base font-semibold">
-                                                    تصاویر واریانت
+                                                    عکس‌های این حجم
                                                 </div>
 
                                                 <Form.List name={[field.name, "images"]}>
@@ -180,7 +180,7 @@ export default function ProductVariantsList({
                                                                     <Card
                                                                         key={imageField.key}
                                                                         size="small"
-                                                                        title={`تصویر واریانت ${imageIndex + 1}`}
+                                                                        title={`تصویر حجم ${imageIndex + 1}`}
                                                                         extra={
                                                                             imageFields.length > 1 ? (
                                                                                 <Button
@@ -311,7 +311,7 @@ export default function ProductVariantsList({
                                                                     })
                                                                 }
                                                             >
-                                                                افزودن تصویر برای این واریانت
+                                                                افزودن عکس برای این حجم
                                                             </Button>
                                                         </div>
                                                     )}
