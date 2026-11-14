@@ -95,3 +95,30 @@ body:has([data-fertini-menu-open="true"]) .support-root,body:has(.maison-overlay
 @media (max-width:767px){
  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),textarea,select{font-size:16px!important}
 }
+
+/* The chat is a light modal surface: click-away layer, animated both ways.
+   Keep the panel mounted while closed so its exit transition can complete. */
+.support-backdrop{
+ position:fixed;inset:0;z-index:0;display:block;border:0;padding:0;
+ background:rgba(25,22,18,.17);backdrop-filter:blur(1.5px);
+ opacity:0;visibility:hidden;pointer-events:none;cursor:default;
+ transition:opacity .32s ease,visibility 0s linear .38s
+}
+.support-backdrop.is-open{
+ opacity:1;visibility:visible;pointer-events:auto;
+ transition:opacity .32s ease,visibility 0s
+}
+.support-window{
+ z-index:2;visibility:hidden;opacity:0;pointer-events:none;
+ transform:translateY(15px) scale(.975);transform-origin:bottom right;
+ animation:none;
+ transition:opacity .3s ease,transform .38s cubic-bezier(.2,.8,.2,1),visibility 0s linear .38s
+}
+.support-window.is-open{
+ visibility:visible;opacity:1;pointer-events:auto;transform:translateY(0) scale(1);
+ transition:opacity .3s ease,transform .38s cubic-bezier(.2,.8,.2,1),visibility 0s
+}
+.support-launcher{position:relative;z-index:3}
+@media(prefers-reduced-motion:reduce){
+ .support-backdrop,.support-window{animation:none!important;transition:none!important}
+}
