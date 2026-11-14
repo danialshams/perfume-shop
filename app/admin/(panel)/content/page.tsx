@@ -362,7 +362,7 @@ export default function AdminContentPage() {
       <div className="fst-save-bar">
         <span>{!connected ? "امکان ذخیره فعلاً در دسترس نیست" : changed ? "تغییرات ذخیره‌نشده وجود دارد" : "همه تغییرات ذخیره شده‌اند"}</span>
         <div className="flex gap-2">
-          <button type="button" disabled={busy} onClick={() => void load()} className="fst-btn">بازخوانی <RefreshCw size={15}/></button>
+          <button type="button" disabled={busy} onClick={() => {if(!changed||window.confirm("تغییرات ذخیره‌نشده را کنار می‌گذارید؟"))void load()}} className="fst-btn">بازخوانی <RefreshCw size={15}/></button>
           <button type="submit" disabled={!connected || !changed || busy} className="fst-btn fst-btn-primary">
             {busy ? "در حال ذخیره…" : "ذخیره تغییرات"} <Save size={16}/>
           </button>
