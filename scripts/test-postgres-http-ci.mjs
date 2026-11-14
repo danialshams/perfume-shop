@@ -143,7 +143,7 @@ try{
  const cats=await sql.unsafe("SELECT id,slug FROM categories WHERE slug IN ('fertini-woody','fertini-floral')");
  const parent=Number(cats.find(x=>x.slug==="fertini-woody").id);
  const child=Number(cats.find(x=>x.slug==="fertini-floral").id);
- const body={name:"FERTINI QA",slug:"fertini-ci-qa",type:"SINGLE",
+ const body={name:"FERTINI QA",slug:"fertini-ci-qa",type:"SINGLE",status:"DRAFT",
   scent_family_id:Number(family.id),category_id:child,parent_category_id:parent,
   category_links:[{parent_id:parent,child_id:child}],images:[],
   variants:[{volume_ml:75,price:190000,stock_qty:4,is_active:true}]};
@@ -166,7 +166,6 @@ try{
  assert.equal(noCatResponse.status,201,"Product form must accept optional category and text-only scent family: "+noCatBody);
  const noCatItem=JSON.parse(noCatBody);
  assert.ok(Number(noCatItem.data?.id)>0);
-
  // New products publish immediately without a draft/status field in the form.
  const instantProduct={...noCategory,name:"FERTINI QA Published Immediately",
    new_scent_family:undefined,scent_family_id:Number(family.id)};
@@ -188,20 +187,35 @@ try{
    "Product edits must preserve immediate publication: "+await changedProduct.text());
  assert.equal((await read("/api/v1/products/"+direct.id)).status,200);
 
+
  const [scentRow]=await sql.unsafe("SELECT name,image_url FROM scent_families WHERE name=$1",["CI Crisp New Scent"]);
  assert.equal(scentRow.image_url,"","A new scent family must not require an image");
  const uploadedProduct=await read("/api/v1/products/"+noCatItem.data.id,{headers:auth});
- assert.equal(uploadedProduct.status,200,"Admin can re-open a newly published product");
+ assert.equal(uploadedProduct.status,200,"Admin can re-open newly created product");
 
- assert.equal((await read("/api/v1/products/"+id)).status,200,"All newly created products should be public without draft state");
+ assert.equal((await read("/api/v1/products/"+id)).status,200,"Product should publish immediately even if client requests DRAFT");
+ const [publishedRow]=await sql.unsafe("SELECT status,scent_family_id,category_id FROM products WHERE id=$1",[id]);
+ assert.equal(publishedRow.status,"ACTIVE");
+ assert.equal(Number(publishedRow.scent_family_id),Number(family.id));
+ assert.equal(Number(publishedRow.category_id),child);
  const update=await read("/api/v1/products/"+id,{method:"PUT",
   headers:{...auth,"Content-Type":"application/json"},
-  body:JSON.stringify({status:"ACTIVE",name:"FERTINI QA published"})});
- assert.equal(update.status,200,"product publish failed "+await update.text());
+  body:JSON.stringify({name:"FERTINI QA published"})});
+ assert.equal(update.status,200,"product edit failed "+await update.text());
+ const [editedRow]=await sql.unsafe("SELECT status,scent_family_id,category_id FROM products WHERE id=$1",[id]);
+ assert.equal(editedRow.status,"ACTIVE");
+ assert.equal(Number(editedRow.scent_family_id),Number(family.id),"Partial edit must preserve perfume family");
+ assert.equal(Number(editedRow.category_id),child,"Partial edit must preserve category");
  assert.equal((await read("/api/v1/products/"+id)).status,200);
  const visible=await read("/api/v1/admin/content",{headers:auth});
  assert.equal(visible.status,200);
- const selected={...(await visible.json()).content,bestsellerIds:["db:"+id]};
+ const visibleCatalog=await visible.json();
+ const newlyPublished=visibleCatalog.products.find(x=>x.numericId===id);
+ assert.ok(newlyPublished,"Published product must appear in the homepage editor");
+ assert.equal(newlyPublished.price,190000,"Homepage price must use the same active variant as the product");
+ const [familyInfo]=await sql.unsafe("SELECT name FROM scent_families WHERE id=$1",[Number(family.id)]);
+ assert.equal(newlyPublished.subtitle,familyInfo.name,"Homepage scent name must match selected scent family");
+ const selected={...visibleCatalog.content,bestsellerIds:["db:"+id]};
  const chosen=await read("/api/v1/admin/content",{method:"PUT",
    headers:{...auth,"Content-Type":"application/json"},body:JSON.stringify(selected)});
  assert.equal(chosen.status,200,"Newly published product must be selectable in admin");
@@ -221,7 +235,7 @@ try{
  assert.equal(cartRead.status,200,"cart read failed "+cartPayload);
  const cartJson=JSON.parse(cartPayload);
  assert.equal(cartJson.data?.items?.length,1);
- // Editing the hero and headings must work even when no products are published.
+ // Editing the hero and headings must work even before publishing any products.
  await sql.unsafe("UPDATE products SET status='DRAFT'");
  const empty=await read("/api/v1/admin/content",{headers:auth});
  assert.equal(empty.status,200);

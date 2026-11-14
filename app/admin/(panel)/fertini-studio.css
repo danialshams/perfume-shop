@@ -299,6 +299,43 @@ padding:17px 20px;border:1px solid var(--fst-line);background:#fffefa;border-rad
 }
 @media(prefers-reduced-motion:reduce){.fst-dashboard-task{transition:none}}
 
+/* Quiet merchant surfaces: consistent spacing, restrained cards and touch targets. */
+.fertini-studio{--fst-paper:#f8f7f4;--fst-surface:#fff;--fst-line:#e9e7e2}
+.fst-main{padding-top:30px}
+.fst-card,.fst-dashboard-metric,.fst-dashboard-task,.fst-dashboard-orders,.fst-mobile-product{background:#fff;border:1px solid var(--fst-line);border-radius:12px;box-shadow:none!important}
+.fst-dashboard-metrics,.fst-dashboard-tasks,.fst-grid{gap:16px}
+.fst-dashboard-metric{padding:22px;min-height:120px}
+.fst-dashboard-task{padding:21px;min-height:116px}
+.fst-dashboard-orders{padding:24px}
+.fst-list-row{padding-block:15px}
+.fst-product-drawer .ant-drawer-body{background:#f8f7f4}
+.fst-product-section,.fst-product-type-choice{background:#fff;border:1px solid #e9e7e2;border-radius:12px}
+.fst-product-section{padding:26px;margin-bottom:18px}
+.fst-product-type-choice{padding:20px;margin-bottom:18px}
+.fst-product-form .ant-card,.fst-variant-item{background:#fff!important;border-color:#ece9e4!important;box-shadow:none!important}
+.fst-variant-item{padding:18px;margin-top:13px}
+.fst-product-form .ant-card-body{padding:17px}
+.fst-product-form .ant-form-item{margin-bottom:18px}
+.fst-mobile-product{gap:16px;padding:18px}
+.fst-mobile-product-main{gap:16px}
+.fst-mobile-product-actions{padding-top:14px}
+.fertini-studio :is(.fst-btn,.ant-btn){box-shadow:none!important}
+@media(max-width:820px){
+ .fst-main{padding-top:20px}
+ .fst-dashboard-metrics,.fst-dashboard-tasks,.fst-grid{gap:10px}
+ .fst-dashboard-metric{padding:15px;min-height:98px}
+ .fst-dashboard-task{padding:16px;min-height:82px}
+ .fst-dashboard-orders{padding:17px}
+ .fst-product-section{padding:17px;margin-bottom:12px}
+ .fst-product-type-choice{padding:15px;margin-bottom:12px}
+ .fst-product-form .ant-card-body{padding:12px}
+ .fst-product-form .ant-form-item{margin-bottom:13px}
+ .fst-variant-item{padding:12px;margin-top:9px}
+ .fst-mobile-product{padding:15px;gap:13px}
+ .fst-mobile-product-main{gap:12px}
+}
+
+
 
 /* Fertini Studio 2026 / shared visual system, low-friction touch layouts */
 .fertini-studio{

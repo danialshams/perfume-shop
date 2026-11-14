@@ -40,7 +40,7 @@ export async function POST(req:NextRequest,{params}:Context){
    if(!/^[A-Z0-9_-]{3,40}$/.test(code)||!discount_type||!Number.isFinite(value)||value<=0||(discount_type==="PERCENT"&&value>100))
     return send({error:"کد یا مقدار تخفیف نامعتبر است."},422);
    const [result]=await db.execute<ResultSetHeader>(
-    "INSERT INTO coupons (code,title,discount_type,discount_value,status) VALUES (?,?,?,?,'INACTIVE')",
+    "INSERT INTO coupons (code,title,discount_type,discount_value,status) VALUES (?,?,?,?,'ACTIVE')",
     [code,title||null,discount_type,value]);
    return send({id:result.insertId,created:true},201);
   }

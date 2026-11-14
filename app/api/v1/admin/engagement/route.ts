@@ -63,13 +63,14 @@ export async function POST(req:NextRequest){
   }
   if(action==="faqCreate"){
    const question=text(data.question,600),answer=text(data.answer,2000);
-   if(question.length<8)return send({error:"سؤال کوتاه است."},422);
-   await db.execute("INSERT INTO support_faq(question,answer,published) VALUES(?,?,?)",[question,answer||null,!!answer]);
+   if(question.length<8||!answer)return send({error:"سؤال و پاسخ معتبر لازم است."},422);
+   await db.execute("INSERT INTO support_faq(question,answer,published) VALUES(?,?,TRUE)",[question,answer]);
    return send({success:true},201);
   }
   if(action==="faqReply"&&id){
-   const answer=text(data.answer,2000),published=Boolean(answer)&&data.published===true;
-   await db.execute("UPDATE support_faq SET answer=?,published=?,updated_at=NOW() WHERE id=?",[answer||null,published,id]);
+   const answer=text(data.answer,2000);
+   if(!answer)return send({error:"برای نمایش سؤال، پاسخ را وارد کنید."},422);
+   await db.execute("UPDATE support_faq SET answer=?,published=TRUE,updated_at=NOW() WHERE id=?",[answer,id]);
    return send({success:true});
   }
   if(action==="settings"){

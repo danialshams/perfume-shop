@@ -88,4 +88,11 @@ assert.match(read("app/admin/(panel)/layout.tsx"),/previewGuest/);
 assert.match(read("app/admin/login/layout.tsx"),/redirect\("\/admin\/dashboard"\)/);
 assert.match(read("server/middlewares/admin.ts"),/requireAuth/);
 assert.match(read("server/middlewares/admin.ts"),/user.role !== "ADMIN"/);
+
+assert.match(read("app/api/v1/products/route.ts"),/status: "ACTIVE" as const/);
+assert.match(read("app/api/v1/products/[id]/route.ts"),/status: "ACTIVE" as const/);
+assert.match(read("server/repositories/product.repository.ts"),/data.status \?\? "ACTIVE"/);
+assert.match(read("app/api/v1/admin/engagement/route.ts"),/published=TRUE/);
+assert.match(read("app/api/v1/admin/records/[resource]/route.ts"),/VALUES \(\?,\?,\?,\?,'ACTIVE'\)/);
+
 console.log("Authenticated editor, protected API, preview-only navigation, media and migration contracts passed.");
