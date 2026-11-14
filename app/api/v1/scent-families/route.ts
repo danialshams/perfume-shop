@@ -34,9 +34,11 @@ export async function GET(request: NextRequest) {
      * اگر بعداً لیست گروه‌های غیرفعال هم لازم شد،
      * یک Route ادمین جدا یا پارامتر include_inactive اضافه می‌کنیم.
      */
+    const manage=request.nextUrl.searchParams.get("manage")==="1";
+    if(manage){try{await requireAdmin(request)}catch{return errorResponse("ورود مدیر لازم است",403)}}
     const families = await scentFamilyService.getList({
       ...parsed.data,
-      is_active: parsed.data.is_active ?? 1,
+      is_active: manage ? parsed.data.is_active : 1,
     });
 
     return successResponse(families, "Scent families fetched successfully");
