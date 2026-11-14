@@ -144,7 +144,7 @@ export default function AdminContentPage() {
   return <div>
     <header className="fst-page-heading">
       <div><small>FERTINI / HOMEPAGE STUDIO</small><h1>مدیریت صفحه اصلی</h1>
-        <p>چیدمان بخش‌ها دقیقاً مطابق هوم‌پیج است. هر بخش را انتخاب کن، محتوایش را تغییر بده و ذخیره کن.</p>
+        <p>چیدمان بخش‌ها دقیقا مطابق هوم‌پیج است. هر بخش را انتخاب کن، محتوایش را تغییر بده و ذخیره کن.</p>
       </div>
       <Link href="/" target="_blank" className="fst-btn">مشاهده فروشگاه <ExternalLink size={16}/></Link>
     </header>
@@ -240,7 +240,7 @@ export default function AdminContentPage() {
           <label className="fst-field">توضیح<textarea maxLength={260} value={content.familyDescription}
             onChange={e => edit("familyDescription", e.target.value)}/></label>
         </div>
-        <div className="fst-notice">کارت‌های گروه بویایی مستقیماً از دیتابیس خوانده می‌شوند و تصویر هر گروه را از مدیریت گروه‌های بویایی می‌گیرند.
+        <div className="fst-notice">کارت‌های گروه بویایی مستقیما از دیتابیس خوانده می‌شوند و تصویر هر گروه را از مدیریت گروه‌های بویایی می‌گیرند.
          <Link className="underline mx-1" href="/admin/scent-families">مدیریت عکس و گروه‌های بویایی</Link>
         </div>
       </section>
@@ -260,7 +260,7 @@ export default function AdminContentPage() {
         انجام می‌شود؛ اینجا فقط نحوه نمایش محصولات روی هوم‌پیج تنظیم می‌شود.
       </div>
       <div className="fst-save-bar">
-        <span>{!connected ? "امکان ذخیره فعلاً در دسترس نیست" : changed ? "تغییرات ذخیره‌نشده وجود دارد" : "همه تغییرات ذخیره شده‌اند"}</span>
+        <span>{!connected ? "امکان ذخیره فعلا در دسترس نیست" : changed ? "تغییرات ذخیره‌نشده وجود دارد" : "همه تغییرات ذخیره شده‌اند"}</span>
         <div className="flex gap-2">
           <button type="button" disabled={busy} onClick={() => void load()} className="fst-btn">بازخوانی <RefreshCw size={15}/></button>
           <button type="submit" disabled={!connected || !changed || busy} className="fst-btn fst-btn-primary">
