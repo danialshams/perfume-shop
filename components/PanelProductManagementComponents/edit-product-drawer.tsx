@@ -471,7 +471,6 @@ export default function EditProductDrawer({
                     is_active: Boolean(result.is_active),
                     is_featured: Boolean(result.is_featured),
                     is_best_seller: Boolean(productResult.is_best_seller),
-                    status: result.status || "DRAFT",
                     voice_file: productResult.voice_file || "",
 
                     images: normalizedImages,
@@ -928,7 +927,7 @@ export default function EditProductDrawer({
                 is_active: Boolean(values.is_active),
                 is_featured: Boolean(values.is_featured),
                 is_best_seller: Boolean(values.is_best_seller),
-                status: values.status || "DRAFT",
+                status: "ACTIVE",
                 voice_file: values.voice_file?.trim() || null,
 
                 images: normalizedImages,
@@ -988,7 +987,6 @@ export default function EditProductDrawer({
                 disabled={loading || metaLoading}
                 initialValues={{
                     type: "SINGLE",
-                    status: "DRAFT",
                     is_active: true,
                     is_featured: false,
                     is_best_seller: false,
