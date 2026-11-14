@@ -106,7 +106,9 @@ export function parseContent(raw: unknown): FertiniSiteContent {
     campaigns:Array.isArray(obj.campaigns)?obj.campaigns:[],
     shipping:Array.isArray(obj.shipping)?obj.shipping:DEFAULT_SITE_CONTENT.shipping,
     music:obj.music&&typeof obj.music==="object"?{...DEFAULT_SITE_CONTENT.music,...obj.music}:DEFAULT_SITE_CONTENT.music,
-    sectionOrder:[...new Set(["campaign",...(Array.isArray(obj.sectionOrder)?obj.sectionOrder:DEFAULT_SITE_CONTENT.sectionOrder)])],
+    sectionOrder:Array.isArray(obj.sectionOrder) && obj.sectionOrder.includes("campaign")
+      ? obj.sectionOrder : ["campaign",...(Array.isArray(obj.sectionOrder)?obj.sectionOrder:DEFAULT_SITE_CONTENT.sectionOrder)],
+    familyTitle:obj.familyTitle==="دسته‌بندی رایحه‌ها" ? "گروه‌های بویایی" : obj.familyTitle??DEFAULT_SITE_CONTENT.familyTitle,
     sectionVisibility: { ...DEFAULT_SITE_CONTENT.sectionVisibility,
       ...(obj.sectionVisibility && typeof obj.sectionVisibility === "object" ? obj.sectionVisibility : {}) },
   });
