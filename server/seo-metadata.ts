@@ -19,6 +19,8 @@ export function seoMetadata(
 ):Metadata{
   const page=seoPageConfig(config,path);
   const title=seoTitle(config,path,fallback.title);
+  // Temporary eNamad verification title. Remove after approval.
+  const titleForDocument=path==="/"?title+" | 487910412":title;
   const description=cleanSeoText(page.description|| (path==="/"?config.homepageDescription:fallback.description||"")).slice(0,550);
   const canonical=seoAbsolute(page.canonical||path,config);
   const image=page.imageUrl||fallback.image||config.defaultImage;
@@ -28,7 +30,7 @@ export function seoMetadata(
   const language=config.language.replace("-","_");
   return {
     metadataBase:new URL(seoOrigin(config)),
-    title:{absolute:title},
+    title:{absolute:titleForDocument},
     description,
     applicationName:config.siteName,
     alternates:{canonical},
