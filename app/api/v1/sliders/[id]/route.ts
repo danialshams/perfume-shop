@@ -3,6 +3,7 @@ import { productService } from "@/server/services/product.service";
 import { sliderService } from "@/server/services/slider.service";
 import { errorResponse, successResponse } from "@/lib/response";
 import { requireAdmin } from "@/server/middlewares/admin";
+import { requireAuth } from "@/server/middlewares/auth";
 
 type Context = {
   params: Promise<{ id: string }>;
@@ -28,7 +29,8 @@ export async function GET(request: NextRequest, context: Context) {
     let isAdmin = false;
 
     try {
-      const user = await requireAdmin(request);
+      const user = request.nextUrl.searchParams.get("admin")==="1"
+        ? await requireAdmin(request) : await requireAuth(request);
       isAdmin = user?.role === "ADMIN";
     } catch {
       isAdmin = false;
