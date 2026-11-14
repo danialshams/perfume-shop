@@ -2,17 +2,20 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {LayoutDashboard,Package,Shapes,ShoppingBag,PanelsTopLeft,
-  ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,MessageCircle,HelpCircle,Search,Flower2} from "lucide-react";
+  ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,MessageCircle,HelpCircle,Search,Flower2,Music2,Truck,CalendarRange} from "lucide-react";
 
 const groups=[
  {title:"محتوا و ظاهر فروشگاه",links:[
   {href:"/admin/content",title:"صفحه اصلی",icon:PanelsTopLeft},
+  {href:"/admin/campaigns",title:"کمپین‌ها",icon:CalendarRange},
+  {href:"/admin/music",title:"موسیقی فروشگاه",icon:Music2},
   {href:"/admin/seo",title:"تنظیمات سئو",icon:Search}]},
  {title:"مدیریت فروشگاه",links:[
   {href:"/admin/products",title:"محصولات",icon:Package},
   {href:"/admin/categories",title:"دسته‌بندی محصولات",icon:Shapes},
   {href:"/admin/scent-families",title:"گروه‌های بویایی",icon:Flower2},
   {href:"/admin/orders",title:"سفارش‌ها",icon:ShoppingBag},
+  {href:"/admin/shipping",title:"مدیریت ارسال",icon:Truck},
   {href:"/admin/coupons",title:"کدهای تخفیف",icon:TicketPercent}]},
  {title:"ارتباط با مشتریان",links:[
   {href:"/admin/customers",title:"مشتریان",icon:Users},
