@@ -3,7 +3,7 @@
 import {useEffect,useState} from "react";
 import {App,Button,Drawer,Form,Radio} from "antd";
 import {uploadProductImage} from "@/lib/api";
-import {getScentFamilies,type ProductItem,type ScentFamily} from "@/lib/product";
+import {getScentFamilies,type ProductItem,type ScentFamily,type Category} from "@/lib/product";
 import {toSlug} from "@/lib/utils";
 import {validateMediaMeta} from "@/lib/admin-media-validation";
 import {getProductById,updateProduct} from "./product-api";
@@ -16,9 +16,7 @@ type VariantForm={
   id?:number;volume_ml:number|null;price:number;discount_price:number|null;
   stock_qty:number;is_active:boolean;images:Array<{id?:number;image_url:string;is_main:boolean}>;
 };
-type CategoryForm={
- id:number;name:string;parent_ids?:number[];is_active?:boolean|number;
-};
+type CategoryForm=Category;
 type ProductType="SINGLE"|"GROUPED";
 type Props={open:boolean;productId:number|null;onClose:()=>void;onSuccess?:(product?:ProductItem)=>void};
 
@@ -164,7 +162,7 @@ export default function EditProductDrawer({open,productId,onClose,onSuccess}:Pro
      // Legacy drafts become visible when the merchant saves an edit.
      // Existing inactive stock stays hidden unless deliberately re-enabled separately.
      status:"ACTIVE",
-     is_active:Boolean(product.is_active),
+     is_active:true,
    };
    setSaving(true);
    try{
