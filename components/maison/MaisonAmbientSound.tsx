@@ -3,16 +3,16 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 
-const TRACK_SRC = "/audio/luxury-piano.mp3";
+
 const TARGET_VOLUME = 0.12;
 type AmbientContext = { enabled:boolean; playing:boolean; toggle:()=>void; getLevels:()=>number[] };
 const AmbientSoundContext = createContext<AmbientContext>({enabled:false,playing:false,toggle:()=>{},getLevels:()=>[0,0,0,0,0]});
 export function useAmbientSound(){ return useContext(AmbientSoundContext); }
 
 /** Single audio source with a live frequency analyser; UI controls are in the header. */
-export default function MaisonAmbientSound({children}:{children:ReactNode}){
+export default function MaisonAmbientSound({children,audioUrl="/audio/luxury-piano.mp3",musicEnabled=true}:{children:ReactNode;audioUrl?:string;musicEnabled?:boolean}){
   const pathname = usePathname() || "/";
-  const enabled = pathname === "/" || pathname === "/products" || pathname.startsWith("/products/") || pathname.startsWith("/fragrance/") || pathname.startsWith("/journal") || pathname === "/about";
+  const enabled = musicEnabled && (pathname === "/" || pathname === "/products" || pathname.startsWith("/products/") || pathname.startsWith("/fragrance/") || pathname.startsWith("/journal") || pathname === "/about");
   const ref=useRef<HTMLAudioElement>(null);
   const audioContextRef=useRef<AudioContext|null>(null);
   const analyserRef=useRef<AnalyserNode|null>(null);
@@ -109,6 +109,6 @@ export default function MaisonAmbientSound({children}:{children:ReactNode}){
   const value=useMemo(()=>({enabled,playing,toggle,getLevels}),[enabled,playing,toggle,getLevels]);
   return <AmbientSoundContext.Provider value={value}>
     {children}
-    <audio ref={ref} src={TRACK_SRC} preload="none" loop playsInline aria-hidden="true" />
+    <audio ref={ref} src={audioUrl} preload="none" loop playsInline aria-hidden="true" />
   </AmbientSoundContext.Provider>;
 }
