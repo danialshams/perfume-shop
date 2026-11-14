@@ -1,7 +1,7 @@
 "use client";
 
 import type {Category, ScentFamily} from "@/lib/product";
-import {Form, Input, Select, Switch} from "antd";
+import {Form, Input, Select} from "antd";
 import {useMemo} from "react";
 
 type Props = {
