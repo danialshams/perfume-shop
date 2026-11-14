@@ -41,7 +41,7 @@ export default function SlidersManagement() {
         try {
             setLoading(true);
 
-            const res = await fetch("/api/v1/sliders", {
+            const res = await fetch("/api/v1/sliders?admin=1", {
                 method: "GET",
                 cache: "no-store",
             });

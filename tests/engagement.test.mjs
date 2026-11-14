@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {readFileSync} from "node:fs";
+import {readFileSync,readdirSync} from "node:fs";
 const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
 test("Fertini recommendations use the real catalog's exact scent_family_id",()=>{
  const api=read("app/api/v1/engagement/route.ts");
@@ -62,4 +62,57 @@ test("Chat anchors right, navigation overlays chat and mobile inputs do not trig
 test("Fertini open mobile menu exposes a stable state for hiding the chat layer",()=>{
  const source=read("components/NavbarComponents/MobileMenuOverlay.tsx");
  assert.match(source,/data-fertini-menu-open=\{isOpen/);
+});
+
+test("Admin mutations accept genuine browser same-origin fetches behind reverse proxies without bypassing login",()=>{
+ const route=read("app/api/v1/admin/engagement/route.ts");
+ assert.match(route,/await requireAdmin\(req\)/);
+ assert.match(route,/sec-fetch-site/);
+ assert.match(route,/site==="same-origin"/);
+ assert.match(route,/x-forwarded-host/);
+ assert.match(route,/if\(!sameOriginWrite\(req\)\)/);
+ assert.match(route,/مبدأ درخواست معتبر نیست/);
+});
+test("Open chat blocks page scroll and click-away dismisses with a smooth exit on all devices",()=>{
+ const chat=read("components/maison/SupportChat.tsx");
+ const css=read("app/fertini-engagement.css");
+ assert.match(chat,/body\.style\.position="fixed"/);
+ assert.match(chat,/window\.scrollTo\(0,y\)/);
+ assert.match(chat,/support-backdrop/);
+ assert.match(chat,/onClick=\{\(\)=>setOpen\(false\)\}/);
+ assert.match(chat,/inert=\{!open\}/);
+ assert.match(chat,/event\.key==="Escape"/);
+ assert.match(css,/\.support-backdrop\.is-open/);
+ assert.match(css,/\.support-window\.is-open/);
+ assert.match(css,/transition:opacity \.3s ease,transform \.38s/);
+});
+
+test("All administrative API handlers await authorization before reading or mutating data",()=>{
+ function visit(dir){
+  for(const entry of readdirSync(dir,{withFileTypes:true})){
+   const next=new URL(entry.name+(entry.isDirectory()?"/":""),dir);
+   if(entry.isDirectory())visit(next);
+   else if(entry.name==="route.ts"){
+    const source=readFileSync(next,"utf8");
+    for(const [index,line] of source.split("\n").entries()){
+     if(!/(?:requireAdmin|requireAuth)\(/.test(line)||line.trimStart().startsWith("//"))continue;
+     assert.match(line,/\bawait\s+(?:requireAdmin|requireAuth)\(/,
+      "Authorization must be awaited in "+next.pathname+":"+(index+1));
+    }
+   }
+  }
+ }
+ visit(new URL("../app/api/",import.meta.url));
+});
+
+test("Sliders expose inactive entries only to explicitly authorized management reads",()=>{
+ const list=read("app/api/v1/sliders/route.ts");
+ const item=read("app/api/v1/sliders/[id]/route.ts");
+ const manager=read("components/slider/sliders-management.tsx");
+ assert.match(manager,/\/api\/v1\/sliders\?admin=1/);
+ for(const route of [list,item]){
+  assert.match(route,/searchParams\.get\("admin"\)==="1"/);
+  assert.match(route,/await requireAdmin\(request\)/);
+  assert.match(route,/await requireAuth\(request\)/);
+ }
 });

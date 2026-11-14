@@ -29,7 +29,8 @@ export async function GET(request: NextRequest, context: Context) {
     let isAdmin = false;
 
     try {
-      const user = await requireAuth(request);
+      const user = request.nextUrl.searchParams.get("admin")==="1"
+        ? await requireAdmin(request) : await requireAuth(request);
       isAdmin = user?.role === "ADMIN";
     } catch {
       isAdmin = false;

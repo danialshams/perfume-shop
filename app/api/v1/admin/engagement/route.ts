@@ -7,13 +7,29 @@ export const runtime="nodejs";export const dynamic="force-dynamic";
 const send=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{"Cache-Control":"private, no-store"}});
 const text=(v:unknown,n:number)=>typeof v==="string"?v.trim().slice(0,n):"";
 const idOf=(v:unknown)=>{const n=Number(v);return Number.isSafeInteger(n)&&n>0?n:null};
-async function access(req:NextRequest){try{
- await requireAdmin(req);
- if(req.method!=="GET"&&req.method!=="HEAD"){const origin=req.headers.get("origin");if(!origin||new URL(origin).host!==req.nextUrl.host)return false}
- return true;
-}catch{return false}}
+/** Authorize the editor independently of CSRF/origin checks so a valid
+ * session never turns into the misleading "login required" error. */
+async function authorized(req:NextRequest){
+ try{await requireAdmin(req);return true}catch{return false}
+}
+/** Same-origin browser fetches include Sec-Fetch-Site even when the app is
+ * behind cPanel/PM2 or Vercel proxies with a different internal Host.
+ * For older clients, fall back to the public Host / forwarded Host check.
+ * Never accept cross-site requests solely because they carry a cookie. */
+function sameOriginWrite(req:NextRequest){
+ const site=req.headers.get("sec-fetch-site");
+ if(site)return site==="same-origin";
+ const origin=req.headers.get("origin");
+ if(!origin)return false;
+ try{
+  const url=new URL(origin);
+  if(!["https:","http:"].includes(url.protocol)||url.username||url.password||url.pathname!=="/"||url.search||url.hash)return false;
+  const forwarded=req.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  return [req.nextUrl.host,req.headers.get("host"),forwarded].some(host=>!!host&&host===url.host);
+ }catch{return false}
+}
 export async function GET(req:NextRequest){
- if(!await access(req))return send({error:"ورود مدیر الزامی است."},403);
+ if(!await authorized(req))return send({error:"ورود مدیر الزامی است."},403);
  const view=req.nextUrl.searchParams.get("view");
  try{
   if(view==="reviews"){
@@ -43,7 +59,8 @@ export async function GET(req:NextRequest){
  }catch{return send({error:"دیتابیس در دسترس نیست."},503)}
 }
 export async function POST(req:NextRequest){
- if(!await access(req))return send({error:"ورود مدیر الزامی است."},403);
+ if(!await authorized(req))return send({error:"ورود مدیر الزامی است."},403);
+ if(!sameOriginWrite(req))return send({error:"مبدأ درخواست معتبر نیست؛ صفحه مدیریت را بازخوانی و دوباره تلاش کنید."},403);
  let data:Record<string,unknown>;try{data=await req.json()}catch{return send({error:"داده نامعتبر."},400)}
  const action=text(data.action,50),id=idOf(data.id);
  try{

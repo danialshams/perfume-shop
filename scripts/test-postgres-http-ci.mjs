@@ -39,6 +39,76 @@ try{
  assert.ok(token,"Admin session cookie was not issued");
  const auth={cookie:token[0]};
 
+ // Legacy coupon API must NOT treat the Promise from requireAdmin as authorization.
+ for(const [method,path] of [
+  ["GET","/api/v1/coupons"],["POST","/api/v1/coupons/create"],
+  ["PATCH","/api/v1/coupons?id=1"],["DELETE","/api/v1/coupons?id=1"],
+ ]){
+  const deniedCoupon=await read(path,{
+   method,headers:{"Content-Type":"application/json"},
+   ...(["POST","PATCH"].includes(method)?{body:JSON.stringify({})}:{})
+  });
+  assert.equal(deniedCoupon.status,401,"Unauthorized coupon "+method+" must be denied before processing");
+ }
+ const couponsAuthenticated=await read("/api/v1/coupons",{headers:auth});
+ assert.equal(couponsAuthenticated.status,200,"Authenticated admin should list coupons");
+
+
+ // Verify protected admin features using a real login, not an unrestricted demo user.
+ const anon=await read("/api/v1/admin/engagement?view=threads");
+ assert.equal(anon.status,403,"Unauthenticated visitors cannot inspect customer conversations");
+ for(const path of ["/api/v1/admin/engagement?view=threads","/api/v1/admin/engagement?view=reviews",
+  "/api/v1/admin/engagement?view=faq","/api/v1/admin/engagement?view=settings",
+  "/api/v1/admin/records/customers","/api/v1/admin/records/coupons",
+  "/api/v1/admin/records/payments","/api/v1/orders"]){
+  const r=await read(path,{headers:auth});assert.equal(r.status,200,"Admin read "+path+": "+await r.text());
+ }
+ const guest=await read("/api/v1/engagement",{method:"POST",headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({action:"start",name:"CI customer",subject:"مشاوره محصول"})});
+ assert.equal(guest.status,201,"Customer chat start should succeed");
+ const {threadId,token:guestToken}=await guest.json();
+ const msg=await read("/api/v1/engagement",{method:"POST",
+  headers:{"Content-Type":"application/json","x-support-token":guestToken},
+  body:JSON.stringify({action:"message",threadId,message:"سلام، من درباره عطر سؤال دارم"})});
+ assert.equal(msg.status,201);
+ const thread=await read("/api/v1/admin/engagement?view=thread&id="+threadId,{headers:auth});
+ assert.equal(thread.status,200);
+ const browserHeaders={...auth,"Content-Type":"application/json","Sec-Fetch-Site":"same-origin",Origin:"https://fertiniperfume.com"};
+ const adminReply=await read("/api/v1/admin/engagement",{method:"POST",headers:browserHeaders,
+  body:JSON.stringify({action:"chatReply",id:threadId,body:"سلام، به فرتینی خوش آمدید"})});
+ assert.equal(adminReply.status,200,"A logged-in admin must reply behind reverse proxy: "+await adminReply.text());
+ const guestView=await read("/api/v1/engagement?type=messages&threadId="+threadId,{headers:{"x-support-token":guestToken}});
+ assert.ok((await guestView.json()).messages.some(x=>x.role==="ADMIN"&&x.body.includes("فرتینی")),"Admin reply must reach customer");
+ const blocked=await read("/api/v1/admin/engagement",{method:"POST",
+  headers:{...auth,"Content-Type":"application/json","Sec-Fetch-Site":"cross-site",Origin:"https://attacker.invalid"},
+  body:JSON.stringify({action:"chatReply",id:threadId,body:"blocked"})});
+ assert.equal(blocked.status,403,"Cross-site writes must be rejected");
+ assert.match((await blocked.json()).error,/مبدأ/);
+ const deniedAnonReply=await read("/api/v1/admin/engagement",{method:"POST",
+  headers:{"Content-Type":"application/json","Sec-Fetch-Site":"same-origin"},
+  body:JSON.stringify({action:"chatReply",id:threadId,body:"blocked"})});
+ assert.equal(deniedAnonReply.status,403,"Same-origin metadata cannot replace admin authentication");
+ const proxyReply=await read("/api/v1/admin/engagement",{method:"POST",
+  headers:{...auth,"Content-Type":"application/json",Origin:"https://fertiniperfume.com","x-forwarded-host":"fertiniperfume.com"},
+  body:JSON.stringify({action:"chatReply",id:threadId,body:"پاسخ پشت پراکسی"})});
+ assert.equal(proxyReply.status,200,"Older browser origin check must support proxy external host");
+ const close=await read("/api/v1/admin/engagement",{method:"POST",headers:browserHeaders,
+  body:JSON.stringify({action:"chatStatus",id:threadId,status:"CLOSED"})});
+ assert.equal(close.status,200,"Closing conversation must work");
+ const faq=await read("/api/v1/admin/engagement",{method:"POST",headers:browserHeaders,
+  body:JSON.stringify({action:"faqCreate",question:"چگونه بهترین رایحه را انتخاب کنیم؟",answer:"گروه بویایی را بررسی کنید."})});
+ assert.equal(faq.status,201,"Creating FAQ must work");
+ const publicFaq=await read("/api/v1/engagement?type=faq");
+ assert.ok((await publicFaq.json()).items.some(x=>x.question==="چگونه بهترین رایحه را انتخاب کنیم؟"),"Published FAQ must reach public store");
+ const coupon=await read("/api/v1/admin/records/coupons",{method:"POST",headers:browserHeaders,
+  body:JSON.stringify({code:"CI-SUPPORT-10",discount_type:"PERCENT",discount_value:10,title:"CI coupon"})});
+ assert.equal(coupon.status,201,"Creating coupon must work");
+ const couponId=(await coupon.json()).id;
+ const couponChange=await read("/api/v1/admin/records/coupons",{method:"PATCH",headers:browserHeaders,
+  body:JSON.stringify({id:couponId,status:"INACTIVE"})});
+ assert.equal(couponChange.status,200,"Updating coupon must work");
+
+
  const preflight=await read("/api/v1/admin/media-upload/start",{
    method:"POST",headers:{...auth,"Content-Type":"application/json"},
    body:JSON.stringify({kind:"image",name:"qa.jpg",type:"image/jpeg",size:16}),
