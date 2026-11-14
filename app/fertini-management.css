@@ -1,0 +1,109 @@
+/* Fertini: unified quiet, accessible controls for all admin workspaces. */
+.fertini-studio{
+ --fst-paper:#f7f7f5;--fst-surface:#fff;--fst-ink:#272824;--fst-muted:#747772;
+ --fst-line:#e6e8e4;--fst-accent:#8c806e;
+ font-family:"Vazirmatn RD","Vazirmatn",Tahoma,sans-serif;
+ line-height:1.85;
+}
+.fertini-studio :is(button,input,textarea,select),.fertini-studio :is(.ant-btn,.ant-input,.ant-select,.ant-form,.ant-modal,.ant-table){
+ font-family:"Vazirmatn RD","Vazirmatn",Tahoma,sans-serif!important;
+}
+.fertini-studio .fst-main{width:min(1400px,100%);padding-top:clamp(20px,3vw,40px)}
+.fertini-studio .fst-sidebar,.fertini-studio .fst-topbar{background:#fff}
+.fertini-studio .fst-side-link{border-radius:12px;min-height:44px;transition:background .16s ease,color .16s ease}
+.fertini-studio .fst-side-link.active{background:#ebeae6;color:#2e302d}
+.fertini-studio .fst-page-heading{margin-bottom:23px;gap:15px;align-items:flex-start}
+.fertini-studio .fst-page-heading h1{font-size:clamp(22px,2.5vw,30px);line-height:1.45;letter-spacing:0;font-weight:650}
+.fertini-studio .fst-page-heading p{font-size:13px;line-height:1.95}
+.fertini-studio .fst-card,.fertini-studio .ant-card{
+ background:#fff;border:1px solid #e7e9e5;border-radius:16px;box-shadow:none;padding:clamp(16px,2vw,25px)
+}
+.fertini-studio .fst-btn{border-radius:11px;min-height:42px;font-size:12px;font-weight:550;padding:9px 15px}
+.fertini-studio .fst-btn-primary{background:#2d302c;border-color:#2d302c;color:#fff}
+.fertini-studio .fst-btn-primary:hover{background:#424741;color:#fff}
+.fertini-studio .fst-field{gap:7px;font-size:12px;font-weight:550}
+.fertini-studio .fst-field :is(input,textarea,select){border-color:#e1e4e0;background:#fff;border-radius:10px;font-size:13px;line-height:1.7;transition:border .2s ease,box-shadow .2s ease}
+.fertini-studio .fst-field :is(input,textarea,select):focus{border-color:#8b978b;box-shadow:0 0 0 3px #8b978b1a}
+.fertini-studio .fst-helper{font-size:12px;line-height:1.9;color:#797d76}
+.fertini-studio .fst-notice{border-radius:12px;border-color:#e8e6df;background:#f8f7f4}
+.fertini-studio .fst-list-row{gap:13px;flex-wrap:wrap}
+.fertini-studio .fst-list-row>button{flex:none;min-width:34px;min-height:34px;display:grid;place-items:center;border-radius:9px}
+.fertini-studio .fst-list-row>button:hover{background:#f3f3f1}
+.fertini-studio .fst-editor-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.fertini-studio .fst-editor-heading h2{font-size:17px;line-height:1.65;font-weight:650}
+.fertini-studio .fst-visibility{display:flex;align-items:center;gap:9px;font-size:12px;color:#565951}
+.fertini-studio input[type="checkbox"]{accent-color:#485044;width:16px;height:16px}
+.fertini-studio .ant-table-wrapper{max-width:100%;overflow-x:auto}
+.fertini-studio .ant-table{border:1px solid #e8e9e6;border-radius:12px;overflow:hidden}
+.fertini-studio .ant-table-thead>tr>th{background:#f7f7f5!important;font-size:12px;font-weight:650;padding:14px}
+.fertini-studio .ant-table-tbody>tr>td{font-size:12px;padding:14px;line-height:1.7}
+.fertini-studio .ant-btn{box-shadow:none!important;border-radius:10px;min-height:36px;font-size:12px}
+.fertini-studio .ant-btn-primary{background:#30352f!important;border-color:#30352f!important}
+.fertini-studio .ant-input,.fertini-studio .ant-input-number,.fertini-studio .ant-select-selector,.fertini-studio .ant-picker{
+ border-radius:10px!important;box-shadow:none!important;border-color:#e1e4e0!important}
+.fertini-studio :is(.ant-form-item-label>label,.ant-typography,.ant-table-cell,.ant-modal-title){font-family:"Vazirmatn RD","Vazirmatn",Tahoma,sans-serif!important}
+.fertini-studio .ant-form-item{margin-bottom:19px}
+.fertini-studio :is(.ant-alert,.ant-upload-drag,.ant-drawer-content,.ant-collapse){border-radius:12px}
+.fst-taxonomy-grid{display:grid;grid-template-columns:minmax(230px,.9fr) minmax(0,1.4fr);gap:18px;align-items:start}
+.fst-taxonomy-list{display:grid;gap:8px;max-height:65vh;overflow:auto}
+.fst-taxonomy-item{display:flex;align-items:center;gap:12px;width:100%;min-height:74px;text-align:right;padding:9px;border:1px solid transparent;background:#f7f8f6;border-radius:12px}
+.fst-taxonomy-item:hover,.fst-taxonomy-item.active{border-color:#bbbdb5;background:#f2f3ef}
+.fst-taxonomy-item img,.fst-taxonomy-empty{width:58px;height:58px;object-fit:cover;flex:none;border-radius:8px;background:#edeee9}
+.fst-taxonomy-empty{font-size:9px;display:grid;place-items:center;text-align:center}
+.fst-taxonomy-item>span:last-child{display:grid;gap:3px;min-width:0}.fst-taxonomy-item strong{font-size:13px}.fst-taxonomy-item small{color:#777;font-size:11px}
+.fst-taxonomy-form,.fst-simple-form{display:grid;gap:17px}
+.fst-taxonomy-photo{height:190px;width:100%;overflow:hidden;border-radius:12px;background:#f2f1ed}
+.fst-taxonomy-photo img{width:100%;height:100%;object-fit:cover}
+.fst-taxonomy-placeholder{display:grid;place-items:center;color:#7b7d78;font-size:12px}
+.fst-taxonomy-actions{display:flex;flex-wrap:wrap;gap:9px}
+.fst-marketing-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.fst-marketing-banner{margin:16px 0 11px;height:clamp(145px,23vw,270px);border-radius:12px;overflow:hidden;background:#eceae5}
+.fst-marketing-banner img{width:100%;height:100%;object-fit:cover}
+.fst-marketing-product-heading{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:22px 0 10px}
+.fst-marketing-product-heading strong{font-size:13px}.fst-marketing-product-heading small{font-size:11px;color:#7a7c77}
+.fst-marketing-products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-height:310px;overflow:auto}
+.fst-marketing-choice{display:flex;align-items:center;gap:8px;padding:8px;border-radius:9px;background:#f6f7f5;cursor:pointer;font-size:12px}
+.fst-marketing-choice img{width:37px;height:47px;object-fit:cover;border-radius:6px}
+.fst-live-preview__toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.fst-live-preview__toolbar h2{font-size:16px;font-weight:650}
+.fst-live-preview__actions{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+.fst-live-preview__stage{width:100%;padding:12px;display:flex;justify-content:center;background:#eeeae3;border-radius:14px;overflow:hidden}
+.fst-live-preview__frame{overflow:hidden;border-radius:10px;background:#fff;box-shadow:0 7px 30px #19191418}
+.fst-live-preview iframe{display:block;max-width:none;border:0;transform-origin:top left;background:white}
+.fertini-v5-campaigns{padding-block:clamp(38px,6vw,85px)}
+.fertini-v5-campaign{margin-bottom:clamp(40px,6vw,90px)}
+.fertini-v5-campaign__banner{position:relative;height:clamp(280px,38vw,510px);overflow:hidden;background:#e6e3de}
+.fertini-v5-campaign__banner>img{object-fit:cover}
+.fertini-v5-campaign__banner:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#08080708,#08080788)}
+.fertini-v5-campaign__overlay{position:absolute;z-index:1;right:clamp(15px,5vw,65px);left:15px;top:50%;transform:translateY(-50%);display:grid;gap:15px;color:#fff;max-width:580px}
+.fertini-v5-campaign__overlay span{font:11px Georgia,serif;letter-spacing:.12em}
+.fertini-v5-campaign__overlay h2{font-size:clamp(24px,4vw,46px);font-weight:500;line-height:1.5}
+.fertini-v5-campaign__overlay p{font-size:13px;line-height:1.9}
+.fertini-v5-campaign__overlay strong{font-size:13px;font-weight:550}
+.fertini-v5-campaign__products{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-top:24px}
+.fertini-v5-sale-badge{display:inline-block;margin-inline-start:6px;color:#a26b4a;font-size:11px}
+@media(max-width:900px){
+ .fst-taxonomy-grid{grid-template-columns:minmax(0,1fr)}
+ .fst-marketing-products{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .fertini-v5-campaign__products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+}
+@media(max-width:767px){
+ .fertini-studio .fst-main{padding:18px 14px calc(102px + env(safe-area-inset-bottom))}
+ .fertini-studio .fst-card{padding:16px;border-radius:14px}
+ .fertini-studio .fst-topbar{backdrop-filter:none!important}
+ .fertini-studio .fst-notification-panel{
+   position:fixed!important;z-index:1000!important;top:calc(68px + env(safe-area-inset-top))!important;
+   left:50%!important;right:auto!important;width:calc(100vw - 24px)!important;max-width:390px!important;
+   max-height:calc(100dvh - 155px);transform:translate(-50%,0)!important;overflow-y:auto;
+ }
+ .fst-marketing-fields{grid-template-columns:1fr}
+ .fst-marketing-products{grid-template-columns:1fr}
+ .fst-marketing-product-heading{flex-wrap:wrap}
+ .fst-live-preview__actions{width:100%}.fst-live-preview__actions .fst-btn{flex:1}
+ .fst-live-preview__stage{padding:8px}
+ .fertini-v5-campaign__banner{height:350px}
+ .fertini-v5-campaign__overlay{gap:9px}
+ .fertini-v5-campaign__products{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .fertini-studio :is(input,select,textarea){font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){.fertini-studio :is(.fst-btn,.fst-side-link){transition:none}}
