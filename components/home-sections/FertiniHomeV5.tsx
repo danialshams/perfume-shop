@@ -177,5 +177,12 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
     </section>
     {content.sectionOrder.map(section=>content.sectionVisibility[section]?
       <Fragment key={section}>{sections[section]}</Fragment>:null)}
+    {content.shipping.some(method=>method.enabled)&&<section className="fertini-v5-delivery maison-wide" aria-label="راهنمای روش‌های ارسال">
+      <div><span className="maison-kicker" dir="ltr" lang="en">FERTINI / DELIVERY</span>
+       <h2>ارسال سفارش</h2><p>روش‌های ارسال و زمان تقریبی رسیدن عطر خود را پیش از خرید بررسی کنید.</p></div>
+      <div className="fertini-v5-delivery__methods">{content.shipping.filter(method=>method.enabled).slice(0,3).map(method=>
+        <div key={method.id}><strong>{method.name}</strong><span>{method.estimatedDays||method.description}</span></div>)}</div>
+      <Link className="fertini-v5-cta" href="/shipping">راهنمای ارسال و هزینه‌ها</Link>
+    </section>}
   </main>;
 }
