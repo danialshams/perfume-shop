@@ -2,7 +2,6 @@ import { NextRequest } from "next/server";
 import { productService } from "@/server/services/product.service";
 import { sliderService } from "@/server/services/slider.service";
 import { errorResponse, successResponse } from "@/lib/response";
-import { requireAuth } from "@/server/middlewares/auth";
 import { requireAdmin } from "@/server/middlewares/admin";
 
 type SliderPlacement = "HOME" | "PRODUCTS";
@@ -12,7 +11,7 @@ export async function GET(request: NextRequest) {
     let isAdmin = false;
 
     try {
-      const user = await requireAuth(request);
+      const user = await requireAdmin(request);
       isAdmin = user?.role === "ADMIN";
     } catch {
       isAdmin = false;
