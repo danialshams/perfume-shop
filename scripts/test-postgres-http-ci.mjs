@@ -39,6 +39,21 @@ try{
  assert.ok(token,"Admin session cookie was not issued");
  const auth={cookie:token[0]};
 
+ // Legacy coupon API must NOT treat the Promise from requireAdmin as authorization.
+ for(const [method,path] of [
+  ["GET","/api/v1/coupons"],["POST","/api/v1/coupons/create"],
+  ["PATCH","/api/v1/coupons?id=1"],["DELETE","/api/v1/coupons?id=1"],
+ ]){
+  const deniedCoupon=await read(path,{
+   method,headers:{"Content-Type":"application/json"},
+   ...(["POST","PATCH"].includes(method)?{body:JSON.stringify({})}:{})
+  });
+  assert.equal(deniedCoupon.status,401,"Unauthorized coupon "+method+" must be denied before processing");
+ }
+ const couponsAuthenticated=await read("/api/v1/coupons",{headers:auth});
+ assert.equal(couponsAuthenticated.status,200,"Authenticated admin should list coupons");
+
+
  // Verify protected admin features using a real login, not an unrestricted demo user.
  const anon=await read("/api/v1/admin/engagement?view=threads");
  assert.equal(anon.status,403,"Unauthenticated visitors cannot inspect customer conversations");
