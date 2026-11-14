@@ -67,11 +67,10 @@ export function EngagementAdmin({start="threads"}:{start?:Tab}){
    </article>;
   }):<p>هنوز دیدگاهی ثبت نشده است.</p>}</div>}
   {tab==="faq"&&<div className="eng-entry-list">
-   <form className="eng-entry-add" onSubmit={newFaq}><h2>افزودن سؤال متداول</h2><label>سؤال<textarea required minLength={8} maxLength={600} rows={2} value={question} onChange={e=>setQuestion(e.target.value)}/></label><label>پاسخ<textarea rows={3} maxLength={2000} value={answer} onChange={e=>setAnswer(e.target.value)}/></label><button disabled={loading}>ثبت و انتشار پس از پاسخ</button></form>
-   {items.map(item=>{const id=String(item.id);return <article key={id}><small>{item.published?"منتشرشده":"منتشرنشده"}</small><p>{String(item.question||"")}</p>
+   <form className="eng-entry-add" onSubmit={newFaq}><h2>افزودن سؤال متداول</h2><label>سؤال<textarea required minLength={8} maxLength={600} rows={2} value={question} onChange={e=>setQuestion(e.target.value)}/></label><label>پاسخ<textarea required rows={3} maxLength={2000} value={answer} onChange={e=>setAnswer(e.target.value)}/></label><button disabled={loading||!answer.trim()}>ثبت سؤال و پاسخ</button></form>
+   {items.map(item=>{const id=String(item.id);return <article key={id}><small>{item.answer?"پرسش و پاسخ":"نیازمند پاسخ"}</small><p>{String(item.question||"")}</p>
     <label>پاسخ متنی<textarea rows={3} maxLength={2000} value={drafts[id]??String(item.answer||"")} onChange={e=>setDrafts(v=>({...v,[id]:e.target.value}))}/></label>
-    <div><button onClick={()=>void act({action:"faqReply",id,answer:drafts[id]??String(item.answer||""),published:true})} disabled={loading}>ذخیره و انتشار</button>
-     <button onClick={()=>void act({action:"faqReply",id,answer:drafts[id]??String(item.answer||""),published:false})} disabled={loading}>ذخیره بدون انتشار</button></div>
+    <div><button onClick={()=>void act({action:"faqReply",id,answer:drafts[id]??String(item.answer||"")})} disabled={loading||!(drafts[id]??String(item.answer||"")).trim()}>ذخیره پاسخ</button></div>
    </article>})}</div>}
   {tab==="settings"&&<form className="eng-settings" onSubmit={e=>{e.preventDefault();void act({action:"settings",...settings})}}>
    <label>پیام خوشامدگویی<input maxLength={250} value={settings.welcome} onChange={e=>setSettings(s=>({...s,welcome:e.target.value}))}/><small>متن اولین پیام پنجره چت.</small></label>
