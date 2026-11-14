@@ -362,7 +362,7 @@ function PreviewNotificationBell(){
   const [open,setOpen]=useState(false);
   return <div className="relative shrink-0">
     <button type="button" onClick={()=>setOpen(value=>!value)} aria-label="اعلان‌های سفارش" aria-expanded={open} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-black/10 bg-white text-neutral-700 shadow-sm" title="اعلان‌های سفارش"><Bell size={20}/></button>
-    {open&&<div role="status" className="absolute left-0 top-[calc(100%+10px)] z-50 w-[min(19rem,calc(100vw-1rem))] rounded-2xl border border-black/10 bg-white p-4 text-xs leading-7 text-neutral-700 shadow-xl">
+    {open&&<div role="status" className="fst-notification-panel absolute left-0 top-[calc(100%+10px)] z-50 w-[min(19rem,calc(100vw-1rem))] rounded-2xl border border-black/10 bg-white p-4 text-xs leading-7 text-neutral-700 shadow-xl">
       <strong className="mb-2 block text-sm">اعلان سفارش‌ها</strong>
       در حالت پیش‌نمایش بدون ورود، اطلاعات سفارش مشتریان نمایش داده نمی‌شود. پس از اتصال دیتابیس و ورود مدیر، اعلان‌های واقعی به‌صورت زنده در این بخش ظاهر می‌شوند.
     </div>}
