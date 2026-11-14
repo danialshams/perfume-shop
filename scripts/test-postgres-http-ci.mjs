@@ -187,7 +187,13 @@ try{
  assert.equal((await read("/api/v1/products/"+id)).status,200);
  const visible=await read("/api/v1/admin/content",{headers:auth});
  assert.equal(visible.status,200);
- const selected={...(await visible.json()).content,bestsellerIds:["db:"+id]};
+ const visibleCatalog=await visible.json();
+ const newlyPublished=visibleCatalog.products.find(x=>x.numericId===id);
+ assert.ok(newlyPublished,"Published product must appear in the homepage editor");
+ assert.equal(newlyPublished.price,190000,"Homepage price must use the same active variant as the product");
+ const [familyInfo]=await sql.unsafe("SELECT name FROM scent_families WHERE id=$1",[Number(family.id)]);
+ assert.equal(newlyPublished.subtitle,familyInfo.name,"Homepage scent name must match selected scent family");
+ const selected={...visibleCatalog.content,bestsellerIds:["db:"+id]};
  const chosen=await read("/api/v1/admin/content",{method:"PUT",
    headers:{...auth,"Content-Type":"application/json"},body:JSON.stringify(selected)});
  assert.equal(chosen.status,200,"Newly published product must be selectable in admin");
