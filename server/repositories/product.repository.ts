@@ -525,7 +525,7 @@ export async function createProduct(data: ProductCreateInput) {
         data.is_active === undefined ? 1 : data.is_active ? 1 : 0,
         data.is_featured === undefined ? 0 : data.is_featured ? 1 : 0,
         data.is_best_seller === undefined ? 0 : data.is_best_seller ? 1 : 0,
-        data.status ?? "DRAFT",
+        data.status ?? "ACTIVE",
       ],
     );
 
