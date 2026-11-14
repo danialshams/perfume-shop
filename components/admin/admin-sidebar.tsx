@@ -2,7 +2,7 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {LayoutDashboard,Package,Shapes,ShoppingBag,PanelsTopLeft,
-  ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,MessageCircle,HelpCircle,Search} from "lucide-react";
+  ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,MessageCircle,HelpCircle,Search,Flower2} from "lucide-react";
 
 const groups=[
  {title:"محتوا و ظاهر فروشگاه",links:[
@@ -10,7 +10,8 @@ const groups=[
   {href:"/admin/seo",title:"تنظیمات سئو",icon:Search}]},
  {title:"مدیریت فروشگاه",links:[
   {href:"/admin/products",title:"محصولات",icon:Package},
-  {href:"/admin/categories",title:"دسته‌بندی‌ها",icon:Shapes},
+  {href:"/admin/categories",title:"دسته‌بندی محصولات",icon:Shapes},
+  {href:"/admin/scent-families",title:"گروه‌های بویایی",icon:Flower2},
   {href:"/admin/orders",title:"سفارش‌ها",icon:ShoppingBag},
   {href:"/admin/coupons",title:"کدهای تخفیف",icon:TicketPercent}]},
  {title:"ارتباط با مشتریان",links:[
