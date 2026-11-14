@@ -297,7 +297,7 @@ export default function ProductVariantsList({
 
                                                                            
                                                                         </div>
-                                                                    </div>
+                                                                    </Card>
                                                                 );
                                                             })}
 
@@ -320,7 +320,7 @@ export default function ProductVariantsList({
                                         </div>
                                     ) : null}
                                 </div>
-                            </Card>
+                            </div>
                         ))}
 
                         {!isSingle ? (
