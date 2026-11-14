@@ -24,6 +24,8 @@ try{
  assert.equal(home.status,200,"Home must render with active PostgreSQL catalog");
  const html=await home.text();
  assert.ok(html.includes("FERTINI"),"Homepage should display showroom branding");
+ const title=html.match(/<title>([^<]*)<\/title>/i)?.[1]||"";
+ assert.ok(title.includes("487910412"),"eNamad verification code must appear in homepage HTML title");
  assert.match(html,/<meta name="enamad" content="487910412"\s*\/?\s*>/,
    "eNamad verification tag must be present in the server-rendered homepage");
  const products=await read("/api/v1/products?limit=20&page=1");
