@@ -15,6 +15,40 @@ export function SupportChat(){
  const [message,setMessage]=useState(""),[error,setError]=useState(""),[busy,setBusy]=useState(false),[closed,setClosed]=useState(false);
  const [settings,setSettings]=useState<Config>({enabled:true,welcome:"به فرتینی خوش آمدید؛ برای انتخاب رایحه همراهتان هستیم.",expectedResponse:"مشاور رایحه در اولین فرصت پاسخ می‌دهد.",workingHours:""});
  useEffect(()=>{
+  if(!open)return;
+  const y=window.scrollY;
+  const body=document.body,html=document.documentElement;
+  const previous={
+   overflow:body.style.overflow,position:body.style.position,top:body.style.top,
+   left:body.style.left,right:body.style.right,width:body.style.width,
+   htmlOverflow:html.style.overflow,scrollBehavior:html.style.scrollBehavior,
+  };
+  // Fixed body prevents background touch scrolling in iOS Safari too.
+  html.style.overflow="hidden";
+  body.style.overflow="hidden";
+  body.style.position="fixed";
+  body.style.top="-"+y+"px";
+  body.style.left="0";
+  body.style.right="0";
+  body.style.width="100%";
+  const onKey=(event:KeyboardEvent)=>{if(event.key==="Escape")setOpen(false)};
+  window.addEventListener("keydown",onKey);
+  return()=>{
+   window.removeEventListener("keydown",onKey);
+   body.style.overflow=previous.overflow;
+   body.style.position=previous.position;
+   body.style.top=previous.top;
+   body.style.left=previous.left;
+   body.style.right=previous.right;
+   body.style.width=previous.width;
+   html.style.overflow=previous.htmlOverflow;
+   html.style.scrollBehavior="auto";
+   window.scrollTo(0,y);
+   html.style.scrollBehavior=previous.scrollBehavior;
+  };
+ },[open]);
+ useEffect(()=>{setOpen(false)},[pathname]);
+ useEffect(()=>{
   try{const stored=localStorage.getItem(storageKey);if(stored){const data=JSON.parse(stored) as Credentials;if(data.threadId&&data.token)setSession(data)}}catch{}
   fetch("/api/v1/engagement?type=settings",{cache:"no-store"}).then(r=>r.json()).then(c=>{if(typeof c.enabled==="boolean")setSettings(c as Config)}).catch(()=>{});
  },[]);
@@ -46,7 +80,8 @@ export function SupportChat(){
  }
  if(pathname?.startsWith("/admin")||pathname?.startsWith("/login"))return null;
  return <div className="support-root" dir="rtl">
-  {open&&<section className="support-window" role="dialog" aria-modal="false" aria-label="گفتگوی آنلاین با پشتیبان">
+  <button type="button" className={"support-backdrop"+(open?" is-open":"")} tabIndex={open?0:-1} aria-hidden={!open} aria-label="بستن گفتگو با کلیک خارج از پنجره" onClick={()=>setOpen(false)}/>
+  <section className={"support-window"+(open?" is-open":"")} role="dialog" aria-modal="true" aria-hidden={!open} inert={!open} aria-label="گفتگوی آنلاین با پشتیبان">
    <header className="support-header">
     <div><span className="support-header-overline">مشاور رایحه فرتینی</span><h2>گفتگو با فرتینی</h2><small>{settings.expectedResponse}</small></div>
     <button type="button" aria-label="بستن گفتگو" onClick={()=>setOpen(false)}><X size={21}/></button>
@@ -74,7 +109,7 @@ export function SupportChat(){
    </>}
    {error&&<p role="alert" className="support-error">{error}</p>}
    <footer className="support-footer">برای شروع گفتگو به شماره موبایل یا ایمیل نیازی نیست.</footer>
-  </section>}
+  </section>
   <button type="button" className="support-launcher" aria-label={open?"بستن چت آنلاین":"باز کردن چت آنلاین"} aria-expanded={open} onClick={()=>setOpen(s=>!s)}>{open?<X size={25}/>:<MessageCircle size={27}/>}</button>
  </div>;
 }
