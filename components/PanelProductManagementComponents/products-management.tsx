@@ -24,7 +24,6 @@ const DEFAULT_FILTERS: ProductQueryParams = {
     page: 1,
     limit: 10,
     search: "",
-    status: undefined,
     is_active: undefined,
     is_featured: undefined,
 };
@@ -205,23 +204,13 @@ export default function ProductsManagement() {
 
                 message.success("محصول با موفقیت حذف شد");
 
-                setData((prev) => ({
-                    ...prev,
-                    items: prev.items.map((item) =>
-                        item.id === product.id
-                            ? {
-                                  ...item,
-                                  deleted_at: new Date().toISOString(),
-                              }
-                            : item,
-                    ),
-                }));
+                await fetchData(appliedFilters);
             } catch (error: any) {
                 console.error(error);
                 message.error(error?.message || "حذف محصول انجام نشد");
             }
         },
-        [message],
+        [message, fetchData, appliedFilters],
     );
 
     const handleRestore = useCallback(
@@ -243,23 +232,13 @@ export default function ProductsManagement() {
 
                 message.success("محصول با موفقیت بازیابی شد");
 
-                setData((prev) => ({
-                    ...prev,
-                    items: prev.items.map((item) =>
-                        item.id === product.id
-                            ? {
-                                  ...item,
-                                  deleted_at: null,
-                              }
-                            : item,
-                    ),
-                }));
+                await fetchData(appliedFilters);
             } catch (error: any) {
                 console.error(error);
                 message.error(error?.message || "بازیابی محصول انجام نشد");
             }
         },
-        [message],
+        [message, fetchData, appliedFilters],
     );
 
     const columns = useMemo(
@@ -340,7 +319,7 @@ export default function ProductsManagement() {
                             data={data.items}
                             rowKey={(record) => String(record.id)}
                             loading={loading}
-                            scroll={{ x: 1800 }}
+                            scroll={{ x: 1460 }}
                             pagination={{
                                 current: data.meta.page,
                                 pageSize: data.meta.limit,
