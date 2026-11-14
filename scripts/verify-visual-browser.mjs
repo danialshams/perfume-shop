@@ -470,6 +470,68 @@ async function validateHomepageIntroOnce(){
  }finally{await close()}
 }
 
+async function validateChatModal(){
+ for(const viewport of [{width:1440,height:900,mobile:false},{width:390,height:844,mobile:true}]){
+  const {send,close}=await open("about:blank");
+  try{
+   await send("Page.enable");
+   await send("Runtime.enable");
+   await send("Emulation.setDeviceMetricsOverride",{
+     ...viewport,deviceScaleFactor:1,screenWidth:viewport.width,screenHeight:viewport.height
+   });
+   await send("Emulation.setTouchEmulationEnabled",{enabled:viewport.mobile});
+   await send("Page.addScriptToEvaluateOnNewDocument",{source:
+     "try{sessionStorage.setItem('fertini:intro:seen:v3','1');sessionStorage.setItem('fertini:intro:started:v4','1')}catch{}"
+   });
+   await send("Page.navigate",{url:"http://127.0.0.1:3100/"});
+   await until(()=>evaluate(send,
+     'document.readyState==="complete" && !!document.querySelector(".support-launcher")'),38000);
+   const result=await evaluate(send,`(async()=>{
+     const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+     await sleep(750);
+     const launcher=document.querySelector(".support-launcher");
+     const root=document.querySelector(".support-root");
+     const panel=document.querySelector(".support-window");
+     const backdrop=document.querySelector(".support-backdrop");
+     if(!launcher||!root||!panel||!backdrop)return {missing:true};
+     const beforeY=window.scrollY;
+     launcher.click();await sleep(440);
+     const opened={
+       classOpen:root.classList.contains("is-open"),
+       scrollLocked:document.body.style.position==="fixed" &&
+         document.body.style.overflow==="hidden" &&
+         document.documentElement.style.overflow==="hidden",
+       visible:getComputedStyle(panel).visibility==="visible",
+       backdrop:getComputedStyle(backdrop).pointerEvents==="auto",
+       dialog:panel.getAttribute("aria-modal")==="true"
+     };
+     backdrop.click();await sleep(110);
+     const fadeActive=!root.classList.contains("is-open") &&
+       getComputedStyle(panel).visibility==="visible";
+     await sleep(450);
+     const closed={
+       hidden:getComputedStyle(panel).visibility==="hidden",
+       scrollRestored:document.body.style.position!=="fixed" &&
+         document.documentElement.style.overflow!=="hidden",
+       scrollPosition:Math.abs(window.scrollY-beforeY)<=3
+     };
+     launcher.click();await sleep(400);
+     window.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}));
+     await sleep(430);
+     const escapeClosed=!root.classList.contains("is-open") &&
+       getComputedStyle(panel).visibility==="hidden";
+     return {opened,fadeActive,closed,escapeClosed};
+   })()`);
+   if(result?.missing || !result?.opened?.classOpen || !result?.opened?.scrollLocked ||
+      !result?.opened?.visible || !result?.opened?.backdrop || !result?.opened?.dialog ||
+      !result?.fadeActive || !result?.closed?.hidden ||
+      !result?.closed?.scrollRestored || !result?.closed?.scrollPosition || !result?.escapeClosed)
+     throw Error("Chat modal behavior regression "+JSON.stringify({viewport,result}));
+  }finally{await close()}
+ }
+ process.stdout.write("Support chat modal scroll lock, outside-click exit and Escape passed on mobile/desktop.\n");
+}
+
 try{
  await mkdir("artifacts",{recursive:true});
  await bootChrome();
@@ -479,6 +541,7 @@ try{
   process.stdout.write("Focused admin visual QA passed.\n");
  }else{
  await validateHomepageIntroOnce();
+ await validateChatModal();
  await validateStorefrontInteractions();
  await validateCinematicPhotoReveal();
  await pageScreenshot({name:"home-desktop-full",url:"http://127.0.0.1:3100/",width:1440,height:900,mobile:false,assertHome:true});
