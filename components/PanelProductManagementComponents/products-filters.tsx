@@ -19,7 +19,7 @@ export default function ProductsFilters({
 }: Props) {
     return (
         <div className="mb-5 rounded-[28px] border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur">
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <Input
                     size="large"
                     placeholder="جستجو بر اساس نام، اسلاگ، توضیح..."
@@ -28,21 +28,6 @@ export default function ProductsFilters({
                         onChange({ ...filters, search: e.target.value, page: 1 })
                     }
                     onPressEnter={onSearch}
-                />
-
-                <Select
-                    size="large"
-                    placeholder="وضعیت"
-                    allowClear
-                    value={filters.status || undefined}
-                    onChange={(value) =>
-                        onChange({ ...filters, status: value, page: 1 })
-                    }
-                    options={[
-                        { label: "فعال", value: "ACTIVE" },
-                        { label: "غیرفعال", value: "INACTIVE" },
-                        { label: "پیش‌نویس", value: "DRAFT" },
-                    ]}
                 />
 
                 <Select
