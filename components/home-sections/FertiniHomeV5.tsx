@@ -116,7 +116,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
         <h2 id="fertini-best-title">{content.bestsellerTitle}</h2>
         <p>{content.bestsellerDescription}</p>
       </header>
-      {catalogUnavailable?<p role="status" className="fertini-v5-catalog-notice">کاتالوگ محصولات موقتاً در دسترس نیست.</p>:null}
+      {catalogUnavailable?<p role="status" className="fertini-v5-catalog-notice">کاتالوگ محصولات موقتا در دسترس نیست.</p>:null}
       <div className="fertini-v5-best__grid">{bestselling.map((product,index)=>
         <ProductCard key={product.id} product={product} discountPercent={campaignDiscountPercent(content,product.id)} mode={(["up","right"] as const)[index%2]}/>)}</div>
     </section>,
@@ -126,7 +126,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
         <h2 id="fertini-new-title">{content.latestTitle}</h2>
         <p>{content.latestDescription}</p>
       </header>
-      {catalogUnavailable?<p role="status" className="fertini-v5-catalog-notice">کاتالوگ محصولات موقتاً در دسترس نیست.</p>:null}
+      {catalogUnavailable?<p role="status" className="fertini-v5-catalog-notice">کاتالوگ محصولات موقتا در دسترس نیست.</p>:null}
       <div className="fertini-v5-new__scroll" aria-label="عطرهای جدید مجموعه فرتینی">
         {latest.map((product,index)=><ProductCard key={product.id} product={product} discountPercent={campaignDiscountPercent(content,product.id)} large
           mode={(["stretch","fade"] as const)[index%2]}/>)}
