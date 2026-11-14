@@ -1,7 +1,7 @@
 // proxy.ts
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/server/utils/jwt";
-import {isFertiniPreviewGuestEnabled} from "@/server/admin-preview-guest";
+import {isFertiniPreviewGuestEnabled,isFertiniPublicDemoAdminEnabled} from "@/server/admin-preview-guest";
 import {
   ADMIN_ACCESS_COOKIE_NAME,
   USER_ACCESS_COOKIE_NAME,
@@ -55,8 +55,14 @@ export function proxy(request: NextRequest) {
     if (pathname === "/admin/setup" && process.env.FERTINI_BOOTSTRAP_TOKEN) {
       return NextResponse.next();
     }
-    // Public shell navigation for the isolated preview branch only.
-    // Admin data APIs remain separately protected by requireAdmin().
+    // Use the same explicitly enabled demo mode in the proxy, server
+    // layout and admin APIs; otherwise the UI redirects while writes succeed.
+    // TEMP_PUBLIC_ADMIN_EDIT must never be enabled with live customer data.
+    if(isFertiniPublicDemoAdminEnabled()){
+      if(isAdminLoginRoute)return NextResponse.redirect(new URL("/admin/dashboard",request.url));
+      return NextResponse.next();
+    }
+    // Preview branch is visual-only: admin APIs still require a session.
     if(isFertiniPreviewGuestEnabled())return NextResponse.next();
 
     const token = request.cookies.get(ADMIN_ACCESS_COOKIE_NAME)?.value;
