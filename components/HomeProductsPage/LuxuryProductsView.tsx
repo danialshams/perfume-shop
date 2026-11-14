@@ -123,7 +123,7 @@ export default function LuxuryProductsView({demoMode=false}:{demoMode?:boolean})
             </section>
           ) : !loadingProducts && orderedProducts.length===0 ? (
             <div className="fertini-demo-shelf__heading" role="status">
-              <h2>{productsError ? "کاتالوگ موقتاً در دسترس نیست" : "در حال حاضر محصول منتشرشده‌ای وجود ندارد"}</h2>
+              <h2>{productsError ? "کاتالوگ موقتا در دسترس نیست" : "در حال حاضر محصول منتشرشده‌ای وجود ندارد"}</h2>
               <p>{productsError ?? "محصولات جدید به‌زودی اضافه می‌شوند."}</p>
             </div>
           ) : <ProductsSection
