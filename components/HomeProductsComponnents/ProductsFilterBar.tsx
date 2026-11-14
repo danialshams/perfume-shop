@@ -137,7 +137,7 @@ export default function ProductsFilterBar({
             {selectedSort===sort.value&&<Check size={17} strokeWidth={1.4}/>}
           </button>)}
         </div>}
-        <p className="fertini-filter-panel__foot">انتخاب شما مستقیماً در مجموعه محصولات اعمال می‌شود.</p>
+        <p className="fertini-filter-panel__foot">انتخاب شما مستقیما در مجموعه محصولات اعمال می‌شود.</p>
       </section>
     </div>}
   </>;
