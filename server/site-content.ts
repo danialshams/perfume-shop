@@ -42,10 +42,17 @@ async function updateStoredContent(
 }
 
 export async function writeSiteContent(content:FertiniSiteContent){
-  return updateStoredContent(current=>({...content,seo:current.seo}));
+  return updateStoredContent(current=>({...content,seo:current.seo,
+    campaigns:current.campaigns,shipping:current.shipping,music:current.music}));
 }
 export async function writeSiteSeo(value:FertiniSeoConfig):Promise<FertiniSeoConfig>{
   const parsed=seoConfigSchema.parse(value);
   const next=await updateStoredContent(current=>({...current,seo:parsed}));
   return next.seo;
+}
+
+/** Section settings are updated atomically: editors cannot erase unrelated live settings. */
+export async function writeStoreSettings<K extends "campaigns"|"shipping"|"music">(key:K,value:FertiniSiteContent[K]):Promise<FertiniSiteContent[K]>{
+ const updated=await updateStoredContent(current=>({...current,[key]:value}));
+ return updated[key];
 }
