@@ -10,8 +10,8 @@ export default function MobileProductCard({product,onView,onEdit}:Props){
  const image=getMainImage(product);
  const totalStock=getTotalStock(product);
  const {minPrice,maxPrice,hasRange}=getVariantPriceInfo(product);
- const status=product.status==="ACTIVE"&&boolify(product.is_active)?"active":product.status==="DRAFT"?"draft":"inactive";
- const label=status==="active"?"منتشرشده":status==="draft"?"پیش‌نویس":"غیرفعال";
+ const status=product.status==="ACTIVE"&&boolify(product.is_active)?"active":"inactive";
+ const label=status==="active"?"در فروشگاه":"نمایش داده نمی‌شود";
  return <article className="fst-mobile-product" aria-label={product.name}>
   <div className="fst-mobile-product-main">
    <div className="fst-mobile-product-photo">{image?
