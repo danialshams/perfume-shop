@@ -104,3 +104,15 @@ test("All administrative API handlers await authorization before reading or muta
  }
  visit(new URL("../app/api/",import.meta.url));
 });
+
+test("Sliders expose inactive entries only to explicitly authorized management reads",()=>{
+ const list=read("app/api/v1/sliders/route.ts");
+ const item=read("app/api/v1/sliders/[id]/route.ts");
+ const manager=read("components/slider/sliders-management.tsx");
+ assert.match(manager,/\/api\/v1\/sliders\?admin=1/);
+ for(const route of [list,item]){
+  assert.match(route,/searchParams\.get\("admin"\)==="1"/);
+  assert.match(route,/await requireAdmin\(request\)/);
+  assert.match(route,/await requireAuth\(request\)/);
+ }
+});
