@@ -107,3 +107,13 @@
  .fertini-studio :is(input,select,textarea){font-size:16px}
 }
 @media(prefers-reduced-motion:reduce){.fertini-studio :is(.fst-btn,.fst-side-link){transition:none}}
+
+.fertini-v5-delivery{padding-block:clamp(45px,7vw,105px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:24px 50px;align-items:center;border-top:1px solid #deded7}
+.fertini-v5-delivery h2{font-size:clamp(25px,3vw,39px);font-weight:550;margin:12px 0}
+.fertini-v5-delivery p{max-width:380px;color:#70736e;font-size:13px;line-height:2}
+.fertini-v5-delivery__methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.fertini-v5-delivery__methods>div{display:grid;align-content:start;gap:10px;padding:18px;background:#f5f4f0;border:1px solid #ebe9e3;border-radius:12px}
+.fertini-v5-delivery__methods strong{font-size:13px;font-weight:600}
+.fertini-v5-delivery__methods span{font-size:11px;line-height:1.9;color:#6b6d68}
+.fertini-v5-delivery>.fertini-v5-cta{justify-self:start}
+@media(max-width:767px){.fertini-v5-delivery{grid-template-columns:1fr;gap:22px}}
