@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import {currentSeo,seoMetadata} from "@/server/seo-metadata";
 import { Suspense } from "react";
 import LuxuryProductsView from "@/components/HomeProductsPage/LuxuryProductsView";
 
-export const metadata: Metadata = {
-  title: "کالکشن عطرها | FERTINI",
-  description: "گالری عطرهای FERTINI؛ کشف رایحه‌های مختلف با فیلترها، معرفی کامل، تصاویر و مشخصات هر محصول.",
-  alternates: { canonical: "/products" },
-  openGraph: { type: "website", title: "کالکشن عطرها | FERTINI", url: "/products", images: ["/maison/portrait.jpg"] },
-};
+export async function generateMetadata():Promise<Metadata>{
+ const config=await currentSeo();
+ return seoMetadata(config,"/products",{
+   title:"کالکشن عطرها",description:"گالری عطرهای FERTINI؛ کشف رایحه‌ها، تصاویر و مشخصات محصولات."
+ });
+}
 
 export default function ProductsPage() {
   const demoMode = !(process.env.DATABASE_URL);
