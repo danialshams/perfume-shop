@@ -18,11 +18,11 @@
 .support-start>a{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--support-accent);text-decoration:none}
 .support-history{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain;background:#fefefe}
 .support-intro,.support-note{font-size:12px;line-height:1.8;color:#67717a;margin:0}
-.support-message{max-width:88%;background:var(--support-surface);border-radius:var(--support-round);padding:11px 13px;align-self:flex-end;overflow-wrap:anywhere}
-.support-message.is-admin{align-self:flex-start;background:#f1f2f3}.support-message span{font-size:10px;color:#6e7480}.support-message p{margin:4px 0 0;line-height:1.85;font-size:13px;white-space:pre-wrap}
+.support-message{max-width:88%;background:var(--support-surface);border-radius:var(--support-round);padding:11px 13px;align-self:flex-start;overflow-wrap:anywhere}
+.support-message.is-admin{align-self:flex-end;background:#f1f2f3}.support-message span{font-size:10px;color:#6e7480}.support-message p{margin:4px 0 0;line-height:1.85;font-size:13px;white-space:pre-wrap}
 .support-composer{flex:none;padding:10px;display:flex;gap:8px;border-top:1px solid var(--support-line);align-items:center}
 .support-composer input{flex:1;min-width:0}.support-composer button{background:var(--support-accent);color:#fff;border:0;border-radius:var(--support-round);width:43px;height:43px;flex:none;display:grid;place-items:center;cursor:pointer}
-.support-footer{padding:6px 12px 9px;text-align:center;font-size:10px;color:#74777d;background:var(--support-surface)}
+
 .support-error{color:#a22d2d;font-size:11px;line-height:1.6;padding:6px 12px;margin:0}.support-spin{animation:support-spin .9s linear infinite}@keyframes support-spin{to{transform:rotate(360deg)}}
 .text-reviews{display:grid;gap:26px;text-align:right}.text-reviews-list{display:grid;gap:14px}.text-reviews-list article{padding:15px;border:1px solid var(--support-line);border-radius:var(--support-round)}
 .text-reviews-list strong{font-size:13px}.text-reviews-list p{white-space:pre-wrap;font-size:14px;line-height:2;margin:7px 0}
@@ -64,7 +64,7 @@
 .support-header h2{font-size:21px;font-weight:450;letter-spacing:.005em}
 .support-header small{color:#d6cec4}
 .support-history{background:#fcfbf8}.support-message{background:#eae5dd}.support-message.is-admin{background:#292620;color:#fff}
-.support-message.is-admin span{color:#e0d8cb}.support-footer{background:#f1eee8}
+.support-message.is-admin span{color:#e0d8cb}
 .fertini-product-engagement{padding:70px max(24px,calc((100vw - 1220px)/2));display:grid;gap:100px;color:#2a2724;overflow:hidden;background:#fbfaf7}
 .fertini-product-engagement h2{font-size:clamp(24px,3.2vw,42px);font-weight:450;letter-spacing:-.02em;margin:10px 0 24px}
 .fertini-overline{font-size:10px;letter-spacing:.25em;color:#8a7562}
