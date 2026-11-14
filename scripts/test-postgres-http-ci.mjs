@@ -22,6 +22,9 @@ try{
  const read=async(path,init)=>fetch(base+path,init);
  const home=await read("/");
  assert.equal(home.status,200,"Home must render with active PostgreSQL catalog");
+ const verificationFile=await read("/487910412.txt");
+ assert.equal(verificationFile.status,200,"eNamad domain verification file must be publicly available");
+ assert.equal(await verificationFile.text(),"","eNamad verification file must be empty");
  const html=await home.text();
  assert.ok(html.includes("FERTINI"),"Homepage should display showroom branding");
  const title=html.match(/<title>([^<]*)<\/title>/i)?.[1]||"";
