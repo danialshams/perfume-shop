@@ -63,3 +63,41 @@ test("Fertini open mobile menu exposes a stable state for hiding the chat layer"
  const source=read("components/NavbarComponents/MobileMenuOverlay.tsx");
  assert.match(source,/data-fertini-menu-open=\{isOpen/);
 });
+
+test("Admin chat writes enforce browser same-origin while accepting reverse proxy host rewrites",()=>{
+ const route=read("app/api/v1/admin/engagement/route.ts");
+ const helper=read("server/middlewares/admin-mutation-origin.ts");
+ assert.match(route,/await requireAdmin\(req\)/);
+ assert.match(route,/isSameOriginAdminMutation\(req\)/);
+ assert.match(route,/invalid-origin/);
+ assert.doesNotMatch(route,/new URL\(origin\)\.host!==req\.nextUrl\.host/);
+ assert.match(helper,/sec-fetch-site/);
+ assert.match(helper,/fetchSite === "cross-site"/);
+ assert.match(helper,/fetchSite === "same-origin"/);
+ assert.match(helper,/x-forwarded-host/);
+});
+test("Demo navigation and every coupon mutation use the same server-side admin rule",()=>{
+ const proxy=read("proxy.ts");
+ const auth=read("server/middlewares/admin.ts");
+ assert.match(proxy,/if\(isFertiniPublicDemoAdminEnabled\(\)\)/);
+ assert.match(auth,/if \(isFertiniPublicDemoAdminEnabled\(\)\)/);
+ for(const path of ["app/api/v1/coupons/route.ts","app/api/v1/coupons/create/route.ts"]){
+  const source=read(path);
+  assert.doesNotMatch(source,/const admin = requireAdmin\(/);
+  assert.match(source,/await requireAdmin\(request\)/);
+  assert.match(source,/catch \{ return unauthorizedResponse/);
+ }
+});
+test("Chat is a responsive modal with retained exit animation and storefront scroll lock",()=>{
+ const chat=read("components/maison/SupportChat.tsx");
+ const css=read("app/fertini-engagement.css");
+ assert.match(chat,/className="support-backdrop"/);
+ assert.match(chat,/onClick=\{\(\)=>setOpen\(false\)\}/);
+ assert.match(chat,/body\.style\.position="fixed"/);
+ assert.match(chat,/window\.scrollTo\(0,scrollY\)/);
+ assert.match(chat,/event\.key==="Escape"/);
+ assert.match(chat,/inert=\{!open\}/);
+ assert.match(css,/\.support-root\.is-open \.support-window/);
+ assert.match(css,/\.support-root\.is-open \.support-backdrop/);
+ assert.match(css,/transition:opacity/);
+});
