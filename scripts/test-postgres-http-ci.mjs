@@ -69,10 +69,10 @@ try{
   body:JSON.stringify({action:"chatReply",id:threadId,body:"blocked"})});
  assert.equal(blocked.status,403,"Cross-site writes must be rejected");
  assert.match((await blocked.json()).error,/مبدأ/);
- const denied=await read("/api/v1/admin/engagement",{method:"POST",
+ const deniedAnonReply=await read("/api/v1/admin/engagement",{method:"POST",
   headers:{"Content-Type":"application/json","Sec-Fetch-Site":"same-origin"},
   body:JSON.stringify({action:"chatReply",id:threadId,body:"blocked"})});
- assert.equal(denied.status,403,"Same-origin metadata cannot replace admin authentication");
+ assert.equal(deniedAnonReply.status,403,"Same-origin metadata cannot replace admin authentication");
  const proxyReply=await read("/api/v1/admin/engagement",{method:"POST",
   headers:{...auth,"Content-Type":"application/json",Origin:"https://fertiniperfume.com","x-forwarded-host":"fertiniperfume.com"},
   body:JSON.stringify({action:"chatReply",id:threadId,body:"پاسخ پشت پراکسی"})});
