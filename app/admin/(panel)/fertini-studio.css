@@ -466,3 +466,14 @@ padding:17px 20px;border:1px solid var(--fst-line);background:#fffefa;border-rad
 @media(prefers-reduced-motion:reduce){
  .fst-side-link,.fst-dashboard-task,.fst-btn{transition:none}
 }
+
+.fst-admin-page-header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:19px;flex-wrap:wrap;background:none;border:0;box-shadow:none;padding:0}
+.fst-admin-page-header h1{font-size:clamp(22px,2vw,27px);font-weight:650;margin:0}
+.fst-admin-page-header p{margin-top:5px;font-size:12px;color:var(--fst-muted);line-height:1.9}
+.fst-admin-page-header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.fst-admin-page-header-actions .ant-btn{min-height:42px}
+@media(max-width:820px){.fst-admin-page-header{align-items:flex-start;margin-bottom:13px}
+ .fst-admin-page-header h1{font-size:21px}
+ .fst-admin-page-header p{font-size:11px}
+ .fst-admin-page-header-actions .ant-btn{min-height:39px}
+}
