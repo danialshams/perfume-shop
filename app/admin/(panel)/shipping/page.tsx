@@ -16,13 +16,13 @@ export default function ShippingAdmin(){
   <div className="fst-marketing-fields">
    <label className="fst-field">نام روش ارسال<input required maxLength={100} value={m.name} onChange={e=>edit(m.id,{name:e.target.value})}/></label>
    <label className="fst-field">هزینه (تومان)<input required type="number" min="0" max="1000000000" value={m.cost} onChange={e=>edit(m.id,{cost:Number(e.target.value)})}/></label>
-   <label className="fst-field">زمان تقریبی تحویل<input maxLength={100} value={m.estimatedDays} onChange={e=>edit(m.id,{estimatedDays:e.target.value})} placeholder="مثلاً ۲ تا ۵ روز کاری"/></label>
+   <label className="fst-field">زمان تقریبی تحویل<input maxLength={100} value={m.estimatedDays} onChange={e=>edit(m.id,{estimatedDays:e.target.value})} placeholder="مثلا ۲ تا ۵ روز کاری"/></label>
    <label className="fst-visibility"><input type="checkbox" checked={m.enabled} onChange={e=>edit(m.id,{enabled:e.target.checked})}/> نمایش به مشتری</label>
   </div>
   <label className="fst-field">توضیح روش<textarea maxLength={300} value={m.description} onChange={e=>edit(m.id,{description:e.target.value})}/></label>
  </section>)}
  <div className="fst-card"><button type="button" className="fst-btn" disabled={methods.length>=12} onClick={()=>setMethods(a=>[...a,{id:"delivery-"+Date.now(),name:"روش ارسال جدید",description:"",estimatedDays:"",cost:0,enabled:false}])}><Plus size={16}/> روش ارسال جدید</button>
- <p className="fst-helper mt-3">این تنظیمات فعلاً در صفحه راهنمای ارسال نمایش داده می‌شوند. هزینه واقعی در پرداخت نهایی پس از اتصال انتخاب روش ارسال به تسویه‌حساب اعمال خواهد شد.</p></div>
+ <p className="fst-helper mt-3">این تنظیمات فعلا در صفحه راهنمای ارسال نمایش داده می‌شوند. هزینه واقعی در پرداخت نهایی پس از اتصال انتخاب روش ارسال به تسویه‌حساب اعمال خواهد شد.</p></div>
  <div className="fst-save-bar"><span>تغییرات در دیتابیس نگهداری می‌شوند.</span><button type="submit" disabled={busy||!loaded} className="fst-btn fst-btn-primary"><Save size={16}/>{busy?"در حال ذخیره…":"ذخیره روش‌ها"}</button></div>
  </form></div>;
 }
