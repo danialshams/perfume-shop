@@ -15,14 +15,14 @@ export function EngagementAdmin({start="threads"}:{start?:Tab}){
   if(!res.ok)throw Error(data.error||"دریافت اطلاعات ممکن نیست.");
   return data;
  },[]);
- const refresh=useCallback(async(current:Tab)=>{
-  try{setLoading(true);setNotice("");
+ const refresh=useCallback(async(current:Tab,quiet=false)=>{
+  try{if(!quiet){setLoading(true);setNotice("")}
    if(current==="settings"){const result=await read("settings");setSettings(result.item||defaultSettings)}
    else setItems((await read(current)).items||[]);
-  }catch(e){setNotice(e instanceof Error?e.message:"خطای دریافت اطلاعات")}finally{setLoading(false)}
+  }catch(e){setNotice(e instanceof Error?e.message:"خطای دریافت اطلاعات")}finally{if(!quiet)setLoading(false)}
  },[read]);
  useEffect(()=>{void refresh(tab)},[tab,refresh]);
- useEffect(()=>{if(tab!=="threads")return;const timer=setInterval(()=>void refresh("threads"),7000);return()=>clearInterval(timer)},[tab,refresh]);
+ useEffect(()=>{if(tab!=="threads")return;const timer=setInterval(()=>void refresh("threads",true),7000);return()=>clearInterval(timer)},[tab,refresh]);
  const openThread=useCallback(async (id:string)=>{
   try{const result=await read("thread","&id="+encodeURIComponent(id));setActive(id);setMessages(result.messages||[]);setNotice("")}
   catch(e){setNotice(e instanceof Error?e.message:"دریافت گفتگو ممکن نیست.")}
@@ -32,7 +32,7 @@ export function EngagementAdmin({start="threads"}:{start?:Tab}){
   setLoading(true);setNotice("");
   try{const res=await fetch("/api/v1/admin/engagement",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
    const result=await res.json();if(!res.ok)throw Error(result.error||"ذخیره انجام نشد.");
-   setNotice("تغییرات ذخیره شد.");await refresh(tab);
+   setNotice("تغییرات ذخیره شد.");await refresh(tab,true);
    if(tab==="threads"&&active)await openThread(active);
    return true;
   }catch(e){setNotice(e instanceof Error?e.message:"ذخیره انجام نشد.");return false}
@@ -40,11 +40,20 @@ export function EngagementAdmin({start="threads"}:{start?:Tab}){
  }
  async function replyChat(e:FormEvent){e.preventDefault();if(!response.trim()||!active)return;if(await act({action:"chatReply",id:active,body:response}))setResponse("")}
  async function newFaq(e:FormEvent){e.preventDefault();if(await act({action:"faqCreate",question,answer})){setQuestion("");setAnswer("")}}
- const tabs:{id:Tab;label:string}[]=[{id:"threads",label:"چت آنلاین"},{id:"reviews",label:"دیدگاه‌ها"},{id:"faq",label:"سؤال‌های متداول"},{id:"settings",label:"تنظیمات پاسخ‌گویی"}];
+ const sectionTitles:Record<Exclude<Tab,"settings">,{title:string;help:string}>={
+ threads:{title:"چت آنلاین",help:"پیام‌های مشتریان، پاسخ‌ها و تنظیمات گفتگو."},
+ reviews:{title:"دیدگاه‌ها",help:"بررسی دیدگاه‌ها و پاسخ مدیر به مشتریان."},
+ faq:{title:"سؤال‌های متداول",help:"سؤال و پاسخ‌های متنیِ نمایش‌داده‌شده در فروشگاه."},
+};
+ const page=sectionTitles[start==="settings"?"threads":start];
  return <section className="eng-admin" dir="rtl">
-  <header className="eng-admin-heading"><div><span>پشتیبانی مشتریان</span><h1>پیام‌ها و دیدگاه‌ها</h1><p>مدیریت گفتگو، دیدگاه‌های متنی، پرسش‌های متداول و زمان پاسخ‌گویی.</p></div>
-   <button type="button" onClick={()=>void refresh(tab)} disabled={loading}>بازخوانی</button></header>
-  <nav className="eng-admin-tabs" aria-label="بخش‌های پشتیبانی">{tabs.map(t=><button type="button" key={t.id} className={tab===t.id?"active":""} onClick={()=>{setTab(t.id);setActive("")}}>{t.label}</button>)}</nav>
+  <header className="eng-admin-heading"><div><span>FERTINI / مدیریت</span>
+   <h1>{tab==="settings"?"تنظیمات چت":page.title}</h1><p>{page.help}</p></div>
+   {start==="threads"&&<button type="button" className="fst-btn"
+      onClick={()=>{setTab(tab==="settings"?"threads":"settings");setActive("")}}>
+      {tab==="settings"?"بازگشت به گفتگوها":"تنظیمات چت"}
+   </button>}
+  </header>
   {notice&&<p role="status" className="eng-admin-notice">{notice}</p>}
   {tab==="threads"&&<div className="eng-chat-desk">
    <div className="eng-chat-list"><h2>گفتگوها</h2>{items.length?items.map(t=><button type="button" key={t.id} className={active===t.id?"selected":""} onClick={()=>void openThread(t.id)}>
@@ -67,10 +76,11 @@ export function EngagementAdmin({start="threads"}:{start?:Tab}){
    </article>;
   }):<p>هنوز دیدگاهی ثبت نشده است.</p>}</div>}
   {tab==="faq"&&<div className="eng-entry-list">
-   <form className="eng-entry-add" onSubmit={newFaq}><h2>افزودن سؤال متداول</h2><label>سؤال<textarea required minLength={8} maxLength={600} rows={2} value={question} onChange={e=>setQuestion(e.target.value)}/></label><label>پاسخ<textarea required rows={3} maxLength={2000} value={answer} onChange={e=>setAnswer(e.target.value)}/></label><button disabled={loading||!answer.trim()}>ثبت سؤال و پاسخ</button></form>
+   <form className="eng-entry-add" onSubmit={newFaq}><h2>افزودن سؤال متداول</h2><label>سؤال<textarea required minLength={8} maxLength={600} rows={2} value={question} onChange={e=>setQuestion(e.target.value)}/></label><label>پاسخ<textarea rows={3} required minLength={2} maxLength={2000} value={answer} onChange={e=>setAnswer(e.target.value)}/></label><button disabled={loading||!answer.trim()}>ثبت سؤال و پاسخ</button></form>
    {items.map(item=>{const id=String(item.id);return <article key={id}><small>{item.answer?"پرسش و پاسخ":"نیازمند پاسخ"}</small><p>{String(item.question||"")}</p>
     <label>پاسخ متنی<textarea rows={3} maxLength={2000} value={drafts[id]??String(item.answer||"")} onChange={e=>setDrafts(v=>({...v,[id]:e.target.value}))}/></label>
-    <div><button onClick={()=>void act({action:"faqReply",id,answer:drafts[id]??String(item.answer||"")})} disabled={loading||!(drafts[id]??String(item.answer||"")).trim()}>ذخیره پاسخ</button></div>
+    <div><button onClick={()=>void act({action:"faqReply",id,answer:drafts[id]??String(item.answer||"")})} disabled={loading||!(drafts[id]??String(item.answer||"")).trim()}>ذخیره پاسخ</button>
+</div>
    </article>})}</div>}
   {tab==="settings"&&<form className="eng-settings" onSubmit={e=>{e.preventDefault();void act({action:"settings",...settings})}}>
    <label>پیام خوشامدگویی<input maxLength={250} value={settings.welcome} onChange={e=>setSettings(s=>({...s,welcome:e.target.value}))}/><small>متن اولین پیام پنجره چت.</small></label>

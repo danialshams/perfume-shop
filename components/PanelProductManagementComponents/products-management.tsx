@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { App, Button, Segmented } from "antd";
+import { App, Button } from "antd";
 import { Plus } from "lucide-react";
 import ProductsFilters from "./products-filters";
 import ProductDetailsModal from "./product-details-modal";
@@ -24,8 +24,6 @@ const DEFAULT_FILTERS: ProductQueryParams = {
     page: 1,
     limit: 10,
     search: "",
-    is_active: undefined,
-    is_featured: undefined,
 };
 
 type CategoryOption = {
@@ -72,8 +70,6 @@ export default function ProductsManagement() {
 
     const [detailsOpen, setDetailsOpen] = useState(false);
 
-    const [mobileView, setMobileView] =
-        useState<"cards" | "table">("cards");
 
     const normalizeArrayResponse = useCallback((result: any) => {
         if (Array.isArray(result)) return result;
@@ -161,11 +157,6 @@ export default function ProductsManagement() {
         setEditingProductId(null);
     }, []);
 
-    const handleRefresh = () => {
-        fetchData(appliedFilters);
-        fetchCategories();
-    };
-
     const handleSearch = () => {
         setAppliedFilters({
             ...filters,
@@ -204,41 +195,17 @@ export default function ProductsManagement() {
 
                 message.success("محصول با موفقیت حذف شد");
 
+                setData((prev) => ({
+                    ...prev,
+                    items: prev.items.filter((item) => item.id !== product.id),
+                }));
                 await fetchData(appliedFilters);
             } catch (error: any) {
                 console.error(error);
                 message.error(error?.message || "حذف محصول انجام نشد");
             }
         },
-        [message, fetchData, appliedFilters],
-    );
-
-    const handleRestore = useCallback(
-        async (product: ProductItem) => {
-            try {
-                const res = await fetch(`/api/v1/products/${product.id}`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ action: "restore" }),
-                });
-
-                const result = await res.json().catch(() => null);
-
-                if (!res.ok) {
-                    throw new Error(result?.message || "بازیابی محصول انجام نشد");
-                }
-
-                message.success("محصول با موفقیت بازیابی شد");
-
-                await fetchData(appliedFilters);
-            } catch (error: any) {
-                console.error(error);
-                message.error(error?.message || "بازیابی محصول انجام نشد");
-            }
-        },
-        [message, fetchData, appliedFilters],
+        [message,fetchData,appliedFilters],
     );
 
     const columns = useMemo(
@@ -250,20 +217,16 @@ export default function ProductsManagement() {
                     openEditDrawer(product);
                 },
 
-                onImages: openEditDrawer,
-                onVariants: openEditDrawer,
-
                 onDelete: handleDelete,
-                onRestore: handleRestore,
             }),
-        [openDetailsModal, openEditDrawer, handleDelete, handleRestore],
+        [openDetailsModal, openEditDrawer, handleDelete],
     );
 
     return (
         <div className="space-y-5">
             <AdminPageHeader
                 title="مدیریت محصولات"
-                subtitle="افزودن عطر، تعیین قیمت و موجودی و مدیریت تصاویر."
+                subtitle="عطرها را اضافه، مشاهده و ویرایش کنید."
                 actions={
                     <>
                         <Button
@@ -272,29 +235,11 @@ export default function ProductsManagement() {
                             icon={<Plus size={16} />}
                             onClick={() => setCreateOpen(true)}
                         >
-                            افزودن محصول
+                            افزودن عطر
                         </Button>
                     </>
                 }
             />
-
-            <div className="md:hidden">
-                <Segmented
-                    block
-                    value={mobileView}
-                    onChange={(value) => setMobileView(value as "cards" | "table")}
-                    options={[
-                        {
-                            label: "نمای کارت",
-                            value: "cards",
-                        },
-                        {
-                            label: "نمای جدول",
-                            value: "table",
-                        },
-                    ]}
-                />
-            </div>
 
             <ProductsFilters
                 filters={filters}
@@ -319,7 +264,7 @@ export default function ProductsManagement() {
                             data={data.items}
                             rowKey={(record) => String(record.id)}
                             loading={loading}
-                            scroll={{ x: 1460 }}
+                            scroll={{ x: 740 }}
                             pagination={{
                                 current: data.meta.page,
                                 pageSize: data.meta.limit,
@@ -334,41 +279,18 @@ export default function ProductsManagement() {
                     </div>
 
                     <div className="md:hidden">
-                        {mobileView === "cards" ? (
-                            <div className="grid grid-cols-1 gap-3">
-                                {data.items.map((product) => (
-                                    <MobileProductCard
-                                        key={product.id}
-                                        product={product}
-                                        onView={() => openDetailsModal(product)}
-                                        onEdit={() => openEditDrawer(product)}
-                                    />
-                                ))}
-                                <div className="flex items-center justify-between gap-2 p-3 border border-[#e7e2da] rounded-lg bg-[#fffefa]">
-                                 <Button disabled={data.meta.page<=1} onClick={()=>handlePageChange(data.meta.page-1,data.meta.limit)}>صفحه قبل</Button>
-                                 <span className="text-xs text-neutral-500">{data.meta.page.toLocaleString("fa-IR")} / {data.meta.totalPages.toLocaleString("fa-IR")}</span>
-                                 <Button disabled={data.meta.page>=data.meta.totalPages} onClick={()=>handlePageChange(data.meta.page+1,data.meta.limit)}>صفحه بعد</Button>
-                                </div>
-                            </div>
-                        ) : (
-                            <AdminDataTable<ProductItem>
-                                columns={columns}
-                                data={data.items}
-                                rowKey={(record) => String(record.id)}
-                                loading={loading}
-                                scroll={{ x: 1500 }}
-                                pagination={{
-                                    current: data.meta.page,
-                                    pageSize: data.meta.limit,
-                                    total: data.meta.total,
-                                    showSizeChanger: true,
-                                    pageSizeOptions: ["10", "20", "50", "100"],
-                                    onChange: handlePageChange,
-                                    showTotal: (total, range) =>
-                                        `${range[0]} - ${range[1]} از ${total} مورد`,
-                                }}
-                            />
-                        )}
+                      <div className="fst-product-mobile-list">
+                        {data.items.map((product)=>(
+                          <MobileProductCard key={product.id} product={product}
+                            onView={()=>openDetailsModal(product)}
+                            onEdit={()=>openEditDrawer(product)}/>
+                        ))}
+                      </div>
+                      {data.meta.totalPages>1&&<nav aria-label="صفحه‌بندی عطرها" className="fst-product-pagination">
+                        <Button disabled={data.meta.page<=1} onClick={()=>handlePageChange(data.meta.page-1,data.meta.limit)}>قبلی</Button>
+                        <span>{data.meta.page.toLocaleString("fa-IR")} از {data.meta.totalPages.toLocaleString("fa-IR")}</span>
+                        <Button disabled={data.meta.page>=data.meta.totalPages} onClick={()=>handlePageChange(data.meta.page+1,data.meta.limit)}>بعدی</Button>
+                      </nav>}
                     </div>
                 </>
             )}
@@ -385,7 +307,9 @@ export default function ProductsManagement() {
                 onClose={() => setCreateOpen(false)}
                 categories={categories}
                 onSuccess={() => {
-                    fetchData(appliedFilters);
+                    setFilters(DEFAULT_FILTERS);
+                    setAppliedFilters(DEFAULT_FILTERS);
+                    fetchData(DEFAULT_FILTERS);
                     fetchCategories();
                 }}
             />

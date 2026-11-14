@@ -236,7 +236,8 @@ export default function CreateProductDrawer({
                 ...restValues,
 
                 type: selectedType,
-                status: "ACTIVE",
+                status: "ACTIVE" as const,
+                is_active: true,
                 slug: toSlug(values.name || ""),
 
                 category_id: values.category_id ?? null,
@@ -291,8 +292,8 @@ export default function CreateProductDrawer({
             rootClassName="fst-product-drawer"
             open={open}
             onClose={onClose}
-            title="ایجاد محصول"
-            width="min(100vw, 1000px)"
+            title="افزودن عطر"
+            width="min(100vw, 790px)"
             destroyOnClose
             maskClosable={mediaUploads===0}
             placement="left"
@@ -327,7 +328,7 @@ export default function CreateProductDrawer({
                     <section className="fst-product-section" aria-label="عکس و صدای محصول">
                         <div className="fst-product-section-title"><span className="fst-product-step">۲</span><div><h3>عکس و معرفی صوتی</h3><p>عکس اصلی و در صورت نیاز فایل صوتی را اضافه کنید.</p></div></div>
                         <ProductImagesList form={form} validateBeforeUpload={validateBeforeUpload} onUploadingChange={markMediaUpload}/>
-                        <div className="my-5 border-t border-[#e8e1d9]"/>
+                        <div className="fst-product-divider"/>
                         <VoiceUploader form={form} validateBeforeUpload={validateVoiceBeforeUpload} onUploadingChange={markMediaUpload}/>
                         {mediaUploads>0?<p role="status" className="mt-4 text-xs text-amber-800">آپلود فایل در جریان است؛ تا پایان آن محصول را ثبت نکنید.</p>:null}
                     </section>
@@ -351,7 +352,7 @@ export default function CreateProductDrawer({
                             disabled={mediaUploads>0}
                             onClick={handleSubmit}
                         >
-                            ثبت محصول
+                            ثبت و انتشار عطر
                         </Button>
                     </div>
                 </Form>
