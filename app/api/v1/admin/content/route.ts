@@ -47,8 +47,8 @@ export async function PUT(request: NextRequest) {
     if (parsed.data.families.some(x => x.categoryId !== null && !categoryIds.has(x.categoryId))) {
       return NextResponse.json({ error: "دسته‌بندی انتخاب‌شده در دیتابیس وجود ندارد." }, { status: 422 });
     }
-    await writeSiteContent(parsed.data);
-    return NextResponse.json({ content: parsed.data, saved: true }, { headers });
+    const saved=await writeSiteContent(parsed.data);
+    return NextResponse.json({ content: saved, saved: true }, { headers });
   } catch {
     return NextResponse.json({ error: "ذخیره به دیتابیس انجام نشد؛ هیچ تغییری در سایت ثبت نشده است." }, { status: 503, headers });
   }
