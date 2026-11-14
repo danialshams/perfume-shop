@@ -143,7 +143,7 @@ try{
  const cats=await sql.unsafe("SELECT id,slug FROM categories WHERE slug IN ('fertini-woody','fertini-floral')");
  const parent=Number(cats.find(x=>x.slug==="fertini-woody").id);
  const child=Number(cats.find(x=>x.slug==="fertini-floral").id);
- const body={name:"FERTINI QA",slug:"fertini-ci-qa",type:"SINGLE",status:"DRAFT",
+ const body={name:"FERTINI QA",slug:"fertini-ci-qa",type:"SINGLE",
   scent_family_id:Number(family.id),category_id:child,parent_category_id:parent,
   category_links:[{parent_id:parent,child_id:child}],images:[],
   variants:[{volume_ml:75,price:190000,stock_qty:4,is_active:true}]};
@@ -191,9 +191,9 @@ try{
  const [scentRow]=await sql.unsafe("SELECT name,image_url FROM scent_families WHERE name=$1",["CI Crisp New Scent"]);
  assert.equal(scentRow.image_url,"","A new scent family must not require an image");
  const uploadedProduct=await read("/api/v1/products/"+noCatItem.data.id,{headers:auth});
- assert.equal(uploadedProduct.status,200,"Admin can re-open newly created draft product");
+ assert.equal(uploadedProduct.status,200,"Admin can re-open a newly published product");
 
- assert.equal((await read("/api/v1/products/"+id)).status,404);
+ assert.equal((await read("/api/v1/products/"+id)).status,200,"All newly created products should be public without draft state");
  const update=await read("/api/v1/products/"+id,{method:"PUT",
   headers:{...auth,"Content-Type":"application/json"},
   body:JSON.stringify({status:"ACTIVE",name:"FERTINI QA published"})});
@@ -221,7 +221,7 @@ try{
  assert.equal(cartRead.status,200,"cart read failed "+cartPayload);
  const cartJson=JSON.parse(cartPayload);
  assert.equal(cartJson.data?.items?.length,1);
- // Editing the hero and headings must work even before publishing any products.
+ // Editing the hero and headings must work even when no products are published.
  await sql.unsafe("UPDATE products SET status='DRAFT'");
  const empty=await read("/api/v1/admin/content",{headers:auth});
  assert.equal(empty.status,200);
