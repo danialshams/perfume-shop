@@ -4,7 +4,7 @@ import {useRouter,usePathname} from "next/navigation";
 import {useState} from "react";
 import NotificationBell from "@/components/panel-sections/notification-bell";
 const names:Record<string,string>={
- dashboard:"نمای کلی",products:"محصولات و موجودی",categories:"دسته‌بندی‌ها",
+ dashboard:"نمای کلی",seo:"تنظیمات سئو",products:"محصولات و موجودی",categories:"دسته‌بندی‌ها",
  orders:"سفارش‌ها",content:"محتوای صفحه اصلی",
  customers:"مشتریان",
  reviews:"دیدگاه‌ها",coupons:"کدهای تخفیف"

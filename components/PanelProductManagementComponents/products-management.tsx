@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { App, Button, Segmented } from "antd";
-import { Plus, RefreshCcw } from "lucide-react";
+import { Plus } from "lucide-react";
 import ProductsFilters from "./products-filters";
 import ProductDetailsModal from "./product-details-modal";
 import { getProducts } from "./product-api";
@@ -284,17 +284,9 @@ export default function ProductsManagement() {
         <div className="space-y-5">
             <AdminPageHeader
                 title="مدیریت محصولات"
-                subtitle="مشاهده، بررسی، فیلتر و مدیریت کامل محصولات، تصاویر و واریانت‌ها"
+                subtitle="افزودن عطر، تعیین قیمت و موجودی و مدیریت تصاویر."
                 actions={
                     <>
-                        <Button
-                            size="large"
-                            icon={<RefreshCcw size={16} />}
-                            onClick={handleRefresh}
-                        >
-                            بروزرسانی
-                        </Button>
-
                         <Button
                             type="primary"
                             size="large"

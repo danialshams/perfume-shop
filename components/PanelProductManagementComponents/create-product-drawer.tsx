@@ -200,28 +200,11 @@ export default function CreateProductDrawer({
     };
 
     const handleSelectType = (type: ProductType) => {
+        if(type===selectedType)return;
         setSelectedType(type);
-
-        form.setFieldsValue({
-            type,
-            status: "DRAFT",
-            is_active: true,
-            is_featured: false,
-            is_best_seller: false,
-
-            scent_family_mode: "EXISTING",
-            scent_family_id: undefined,
-            new_scent_family: undefined,
-
-            images: [
-                {
-                    image_url: "",
-                    is_main: true,
-                },
-            ],
-
-            variants: buildInitialVariants(type),
-        });
+        // Preserve entered name, category, scent family and uploaded media when
+        // switching between single-size and multi-size products.
+        form.setFieldsValue({type,variants:buildInitialVariants(type)});
     };
 
     const handleSubmit = async () => {

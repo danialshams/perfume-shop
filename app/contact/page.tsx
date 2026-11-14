@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import {currentSeo,seoMetadata} from "@/server/seo-metadata";
 import Link from "next/link";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
-export const metadata: Metadata = {
-  title: "ارتباط با FERTINI",
-  description: "راهنمای پیگیری سفارش‌ها و ارتباط با فروشگاه عطر FERTINI.",
-  alternates: { canonical: "/contact" },
-};
+export async function generateMetadata():Promise<Metadata>{
+ const seo=await currentSeo();
+ return seoMetadata(seo,"/contact",{title:"ارتباط با FERTINI",description:"راهنمای پیگیری سفارش‌ها و ارتباط با فروشگاه عطر FERTINI."});
+}
 export default function ContactPage() {
   return <MaisonPage kicker="FERTINI / CONTACT" title="در کنار انتخاب شما."
     lead="برای بررسی اطلاعات حساب و سفارش‌های پیشین، از مسیر حساب کاربری استفاده کنید.">

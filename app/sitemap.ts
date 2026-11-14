@@ -1,11 +1,14 @@
 import type { MetadataRoute } from "next";
 import { productService } from "@/server/services/product.service";
+import {currentSeo} from "@/server/seo-metadata";
+import {seoOrigin,seoPageConfig} from "@/lib/fertini-seo";
 
 export const dynamic = "force-dynamic";
-const base = (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL ||
-  "https://perfume-shop-danialshams-projects.vercel.app").replace(/\/$/, "");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const seo=await currentSeo();
+  if(!seo.sitemapEnabled || !seo.indexSite || process.env.VERCEL_ENV==="preview")return [];
+  const base=seoOrigin(seo);
   const paths = [
     { path: "/", priority: 1, frequency: "weekly" },
     { path: "/products", priority: .9, frequency: "daily" },
@@ -17,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/privacy", priority: .2, frequency: "yearly" },
     { path: "/terms", priority: .2, frequency: "yearly" },
   ];
-  const entries: MetadataRoute.Sitemap = paths.map(item => ({
+  const entries: MetadataRoute.Sitemap = paths.filter(item=>!seoPageConfig(seo,item.path).noindex).map(item => ({
     url: base + item.path,
     changeFrequency: item.frequency as "weekly" | "daily" | "monthly" | "yearly",
     priority: item.priority,
@@ -36,7 +39,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const id = Number(item.id);
       if (!Number.isSafeInteger(id) || id <= 0 || seen.has(id)) continue;
       seen.add(id);
-      entries.push({ url: base + "/products/" + id, changeFrequency: "weekly", priority: .65 });
+      const path="/products/"+id;
+      if(!seoPageConfig(seo,path).noindex) entries.push({ url: base + path, changeFrequency: "weekly", priority: .65 });
     }
   } catch {
     // Installation / disconnected database: static indexed pages remain available.

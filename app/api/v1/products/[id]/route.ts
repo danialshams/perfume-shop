@@ -173,6 +173,7 @@ function normalizeProductBody(body: any) {
     images: normalizeImages(body.images),
 
     variants: normalizeVariants(body.variants, isSingleProduct),
+    ...(body.voice_file === "" ? {voice_file:null} : {}),
 
     scent_family_id:
       body.scent_family_id === null ||
@@ -243,7 +244,7 @@ export async function PUT(request: NextRequest, context: Context) {
         JSON.stringify(parsed.error.issues, null, 2),
       );
 
-      return errorResponse("Invalid product data", 400, {
+      return errorResponse("لطفاً اطلاعات محصول را بررسی کنید؛ بعضی فیلدها معتبر نیستند.", 400, {
         flatten: parsed.error.flatten(),
         issues: parsed.error.issues,
       });

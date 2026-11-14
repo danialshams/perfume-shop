@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import {currentSeo,seoMetadata} from "@/server/seo-metadata";
 import Image from "next/image";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
-export const metadata: Metadata = {
-  title: "درباره FERTINI | فلسفه گالری رایحه",
-  description: "با نگاه و زبان بصری FERTINI آشنا شوید؛ گالری‌ای برای کشف آرام، شخصی و آگاهانه عطر.",
-  alternates: { canonical: "/about" },
-};
+export async function generateMetadata():Promise<Metadata>{
+ const seo=await currentSeo();
+ return seoMetadata(seo,"/about",{title:"درباره FERTINI | فلسفه گالری رایحه",description:"با نگاه و زبان بصری FERTINI آشنا شوید؛ گالری‌ای برای کشف آرام، شخصی و آگاهانه عطر."});
+}
 export default function AboutPage() {
   return <MaisonPage kicker="THE FERTINI — OUR POINT OF VIEW" title="سکوت تصویر، حضور رایحه."
     lead="FERTINI تلاشی است برای دیدن عطر فراتر از یک کالا؛ تجربه‌ای میان خاطره، انتخاب و زیبایی.">

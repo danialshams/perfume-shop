@@ -22,7 +22,19 @@ async function parseJsonResponse<T>(res: Response): Promise<T> {
   const json = await res.json().catch(() => null);
 
   if (!res.ok) {
-    const message = json?.message || json?.error || "درخواست با خطا مواجه شد";
+    const issues = Array.isArray(json?.errors?.issues) ? json.errors.issues : [];
+    const names: Record<string,string> = {
+      name:"نام عطر",slug:"شناسه آدرس",category_links:"دسته‌بندی",
+      scent_family_id:"گروه بویایی",new_scent_family:"گروه بویایی جدید",
+      images:"تصاویر محصول",variants:"قیمت و موجودی",volume_ml:"حجم عطر",
+      price:"قیمت",stock_qty:"موجودی",voice_file:"فایل صوتی",discount_price:"قیمت تخفیف",
+    };
+    const fields = issues.slice(0,3).map((issue:{path:(string|number)[];message:string})=>{
+      const key=issue.path.map(String).find(part=>names[part])||"";
+      return (names[key]||"اطلاعات محصول")+": "+issue.message;
+    });
+    const message = fields.length ? fields.join(" | ") :
+      json?.message || json?.error || "درخواست با خطا مواجه شد";
     throw new Error(message);
   }
 

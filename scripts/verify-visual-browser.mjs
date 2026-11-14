@@ -352,6 +352,8 @@ async function validateAdminScreens(){
   await pageScreenshot({name:"admin-products-mobile",url:base+"/admin/products",width:390,height:844,mobile:true,assertHome:false});
   await pageScreenshot({name:"admin-orders-mobile",url:base+"/admin/orders",width:390,height:844,mobile:true,assertHome:false});
   await pageScreenshot({name:"admin-content-mobile",url:base+"/admin/content",width:390,height:844,mobile:true,assertHome:false});
+  await pageScreenshot({name:"admin-seo-mobile",url:base+"/admin/seo",width:390,height:844,mobile:true,assertHome:false});
+  await pageScreenshot({name:"admin-seo-desktop",url:base+"/admin/seo",width:1440,height:900,mobile:false,assertHome:false});
   // Product image and voice files are managed inside products; legacy media URL redirects.
   const mediaRedirect=await fetch(base+"/admin/media",{redirect:"manual"});
   // Next.js App Router may return HTTP 200 with a streamed RSC redirect instead of a 3xx.

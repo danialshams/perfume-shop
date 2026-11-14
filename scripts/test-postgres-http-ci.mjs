@@ -88,6 +88,32 @@ try{
  const after=await read("/api/v1/admin/content",{headers:auth});
  const reloaded=await after.json();
  assert.equal(reloaded.content.bestsellerTitle,updated.bestsellerTitle,"Homepage setting was not persisted");
+
+ const seoGet=await read("/api/v1/admin/seo",{headers:auth});
+ assert.equal(seoGet.status,200,"authenticated SEO dashboard should be available");
+ const seoBefore=await seoGet.json();
+ assert.equal(seoBefore.seo.siteUrl,"https://fertiniperfume.com");
+ const seoNext={...seoBefore.seo,homepageTitle:"فرتینی | تنظیمات سئو تست شد",
+   homepageDescription:"توضیحات آزمایشی برای بررسی ذخیره واقعی سئوی فرتینی از طریق PostgreSQL و نمایش در نتیجه جستجوی گوگل.",
+   googleVerification:"ci-search-console-token", pages:{
+     ...seoBefore.seo.pages,"/":{title:"SEO FERTINI QA Homepage",
+       description:"توضیح تستی مخصوص صفحه اصلی فرتینی جهت بررسی سئوی اختصاصی و داده‌های سایت.",
+       noindex:false,noarchive:false,imageUrl:"",imageAlt:"",canonical:""}
+   }};
+ const seoSave=await read("/api/v1/admin/seo",{method:"PUT",
+   headers:{...auth,"Content-Type":"application/json"},body:JSON.stringify(seoNext)});
+ const seoSaveBody=await seoSave.text();
+ assert.equal(seoSave.status,200,"SEO save failed "+seoSaveBody);
+ const seoSaved=await read("/api/v1/admin/seo",{headers:auth});
+ assert.equal((await seoSaved.json()).seo.googleVerification,"ci-search-console-token");
+ const homeSeoHtml=await (await read("/")).text();
+ assert.ok(homeSeoHtml.includes("SEO FERTINI QA Homepage"),"SEO title must be used in real homepage metadata");
+ assert.ok(homeSeoHtml.includes("ci-search-console-token"),"Search Console verification must render in metadata");
+ const robotsSeo=await (await read("/robots.txt")).text();
+ assert.ok(robotsSeo.includes("sitemap.xml"),"robots.txt must expose sitemap when enabled");
+ const mapSeo=await (await read("/sitemap.xml")).text();
+ assert.ok(mapSeo.includes("fertiniperfume.com"),"sitemap must use configured domain");
+
  const renderedHome=await read("/");
  assert.equal(renderedHome.status,200);
  const renderedHtml=await renderedHome.text();
@@ -128,6 +154,23 @@ try{
  const record=JSON.parse(creationPayload);
  const id=Number(record.data?.id);
  assert.ok(id>0);
+
+ const noCategory={name:"FERTINI QA Without Category",type:"SINGLE",status:"DRAFT",
+   category_links:[],category_id:null,parent_category_id:null,
+   scent_family_id:null,new_scent_family:{name:"CI Crisp New Scent",image_url:""},
+   voice_file:"",images:[{image_url:imagePath,is_main:true}],
+   variants:[{volume_ml:50,price:125000,stock_qty:2,is_active:true,images:[]}]};
+ const noCatResponse=await read("/api/v1/products",{method:"POST",
+   headers:{...auth,"Content-Type":"application/json"},body:JSON.stringify(noCategory)});
+ const noCatBody=await noCatResponse.text();
+ assert.equal(noCatResponse.status,201,"Product form must accept optional category and text-only scent family: "+noCatBody);
+ const noCatItem=JSON.parse(noCatBody);
+ assert.ok(Number(noCatItem.data?.id)>0);
+ const [scentRow]=await sql.unsafe("SELECT name,image_url FROM scent_families WHERE name=$1",["CI Crisp New Scent"]);
+ assert.equal(scentRow.image_url,"","A new scent family must not require an image");
+ const uploadedProduct=await read("/api/v1/products/"+noCatItem.data.id,{headers:auth});
+ assert.equal(uploadedProduct.status,200,"Admin can re-open newly created draft product");
+
  assert.equal((await read("/api/v1/products/"+id)).status,404);
  const update=await read("/api/v1/products/"+id,{method:"PUT",
   headers:{...auth,"Content-Type":"application/json"},
@@ -173,6 +216,9 @@ try{
  const emptyHtml=await emptyHome.text();
  assert.ok(emptyHtml.includes(copy.bestsellerTitle));
  assert.ok(!emptyHtml.includes("FERTINI QA published"),"Draft products must be hidden");
+ const afterContentSeo=await read("/api/v1/admin/seo",{headers:auth});
+ assert.equal((await afterContentSeo.json()).seo.homepageTitle,"فرتینی | تنظیمات سئو تست شد","Homepage editor must preserve SEO data");
+
  const [dbRow]=await sql.unsafe("SELECT content_json FROM storefront_content WHERE id=1");
  assert.equal(JSON.parse(dbRow.content_json).bestsellerTitle,copy.bestsellerTitle);
  console.log("POSTGRES LIVE HTTP SUCCESS: catalog, admin login, homepage save/read, invalid ID, overview, health, notifications.");

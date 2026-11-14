@@ -4,6 +4,18 @@ on:
     branches: [main]
     paths:
       - 'next.config.ts'
+      - 'app/layout.tsx'
+      - 'app/page.tsx'
+      - 'app/robots.ts'
+      - 'app/sitemap.ts'
+      - 'app/admin/**'
+      - 'components/admin/**'
+      - 'components/PanelProductManagementComponents/**'
+      - 'lib/fertini-seo.ts'
+      - 'server/seo-metadata.ts'
+      - 'server/site-content.ts'
+      - 'app/api/v1/admin/seo/**'
+      - 'app/api/v1/products/**'
       - '.github/workflows/cpanel-standalone.yml'
       - 'server/storage/**'
       - 'app/api/v1/media/**'

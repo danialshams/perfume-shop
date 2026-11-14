@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import {currentSeo,seoMetadata} from "@/server/seo-metadata";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
-export const metadata: Metadata = {
-  title: "حفظ حریم خصوصی | FERTINI",
-  description: "اطلاعات اولیه درباره داده‌های حساب کاربری، نشانی و سفارش‌ها در فروشگاه عطر FERTINI.",
-  alternates: { canonical: "/privacy" },
-};
+export async function generateMetadata():Promise<Metadata>{
+ const seo=await currentSeo();
+ return seoMetadata(seo,"/privacy",{title:"حفظ حریم خصوصی | FERTINI",description:"اطلاعات اولیه درباره داده‌های حساب کاربری، نشانی و سفارش‌ها در فروشگاه عطر FERTINI."});
+}
 export default function PrivacyPage() {
   return <MaisonPage kicker="FERTINI / PRIVACY" title="حریم خصوصی شما."
     lead="این متن درباره داده‌هایی است که ساختار فعلی فروشگاه می‌تواند برای خدمات حساب و سفارش دریافت کند. نسخه حقوقی نهایی پیش از آغاز فروش باید بررسی شود.">

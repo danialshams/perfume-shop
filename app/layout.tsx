@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import {currentSeo,seoMetadata} from "@/server/seo-metadata";
 import type { ReactNode } from "react";
 import { CartCountProvider } from "@/context/CartCountContext";
 import MaisonAmbientSound from "@/components/maison/MaisonAmbientSound";
@@ -24,25 +25,13 @@ import "./fertini-inner-heroes-v5.css";
 import "./fertini-polish-v6.css";
 import "./fertini-engagement.css";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL ||
-  "https://perfume-shop-danialshams-projects.vercel.app";
-const isPreview = process.env.VERCEL_ENV === "preview";
-
-export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl),
-  title: { default: "FERTINI | گالری عطر و رایحه", template: "%s" },
-  description: "FERTINI؛ تجربه‌ای آرام، سینمایی و شخصی برای کشف دنیای عطرها و آشنایی با رایحه‌های متفاوت.",
-  applicationName: "FERTINI",
-  keywords: ["عطر", "گالری عطر", "رایحه", "عطر زنانه", "عطر مردانه", "پرفیوم", "FERTINI"],
-  alternates: { canonical: "/" },
-  robots: { index: !isPreview, follow: !isPreview },
-  openGraph: {
-    type: "website", locale: "fa_IR", siteName: "FERTINI", title: "FERTINI | گالری عطر و رایحه",
-    description: "دنیای عطرها را با نگاه یک گالری سینمایی کشف کنید.",
-    url: "/", images: [{ url: "/fertini/hero-01.svg", alt: "گالری عطر FERTINI" }],
-  },
-  twitter: { card: "summary_large_image", title: "FERTINI | گالری عطر" },
-};
+export async function generateMetadata():Promise<Metadata>{
+  const settings=await currentSeo();
+  const result=seoMetadata(settings,"/",{title:"FERTINI | گالری عطر و رایحه",
+    description:"گالری عطر و رایحه فرتینی"});
+  // Never stamp the homepage canonical onto every subpage inheriting the root layout.
+  return {...result,alternates:undefined};
+}
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return <html lang="fa" dir="rtl" className="h-full antialiased">

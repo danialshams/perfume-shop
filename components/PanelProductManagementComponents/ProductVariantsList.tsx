@@ -32,23 +32,12 @@ export default function ProductVariantsList({
                 return (
                     <div className="space-y-4">
                         {renderFields.map((field, index) => (
-                            <Card
-                                key={field.key}
-                                title={isSingle ? "واریانت پیش‌فرض" : `واریانت ${index + 1}`}
-                                extra={
-                                    !isSingle && fields.length > 1 ? (
-                                        <Button
-                                            danger
-                                            type="text"
-                                            icon={<Trash2 size={16} />}
-                                            onClick={() => remove(field.name)}
-                                        >
-                                            حذف
-                                        </Button>
-                                    ) : null
-                                }
-                                className="rounded-2xl"
-                            >
+                            <div key={field.key} className="fst-variant-item">
+                              {!isSingle&&<div className="fst-variant-heading">
+                                <strong>حجم {index+1}</strong>
+                                {fields.length>1&&<Button danger type="text" icon={<Trash2 size={15}/>}
+                                  onClick={()=>remove(field.name)}>حذف</Button>}
+                              </div>}
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <Form.Item
                                         label="حجم (میلی‌لیتر)"
@@ -331,7 +320,7 @@ export default function ProductVariantsList({
                                         </div>
                                     ) : null}
                                 </div>
-                            </Card>
+                            </div>
                         ))}
 
                         {!isSingle ? (

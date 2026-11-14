@@ -2,13 +2,13 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {useEffect,useState,type ReactNode} from "react";
-import {Home,PanelsTopLeft,Package,ShoppingBag,Menu,X} from "lucide-react";
+import {Home,Search,Package,ShoppingBag,Menu,X} from "lucide-react";
 import AdminSidebar from "./admin-sidebar";
 import AdminHeader from "./admin-header";
 
 const shortcuts=[
  {href:"/admin/dashboard",title:"خانه",icon:Home},
- {href:"/admin/content",title:"صفحه اصلی",icon:PanelsTopLeft},
+ {href:"/admin/seo",title:"سئو",icon:Search},
  {href:"/admin/products",title:"محصولات",icon:Package},
  {href:"/admin/orders",title:"سفارش‌ها",icon:ShoppingBag},
 ] as const;

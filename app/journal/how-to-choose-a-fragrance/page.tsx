@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import {currentSeo,seoMetadata} from "@/server/seo-metadata";
 import Image from "next/image";
 import Link from "next/link";
 import { MaisonPage, MaisonSection } from "@/components/maison/MaisonContentPage";
 
-export const metadata: Metadata = {
-  title: "چگونه عطر مناسب انتخاب کنیم؟ | ژورنال FERTINI",
-  description: "راهنمای ساده و کاربردی شناخت نت‌های اولیه، میانی و پایه، آزمایش روی پوست و انتخاب رایحه بر اساس سلیقه و موقعیت.",
-  alternates: { canonical: "/journal/how-to-choose-a-fragrance" },
-};
+export async function generateMetadata():Promise<Metadata>{
+ const seo=await currentSeo();
+ return seoMetadata(seo,"/journal/how-to-choose-a-fragrance",{title:"چگونه عطر مناسب انتخاب کنیم؟ | ژورنال FERTINI",description:"راهنمای ساده و کاربردی شناخت نت‌های اولیه، میانی و پایه، آزمایش روی پوست و انتخاب رایحه بر اساس سلیقه و موقعیت."});
+}
 export default function FragranceGuide() {
   return <MaisonPage kicker="THE FERTINI JOURNAL / FIELD NOTE 001" title="چگونه عطر مناسب خود را پیدا کنیم؟"
     lead="پیش از نام برند یا شکل بطری، به حسی فکر کنید که قرار است با شما بماند.">
