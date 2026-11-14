@@ -1,5 +1,5 @@
 "use client";
-import {ArrowUpLeft,LogOut,Menu,ChevronLeft} from "lucide-react";
+import {LogOut,Menu,ChevronLeft} from "lucide-react";
 import {useRouter,usePathname} from "next/navigation";
 import {useState} from "react";
 import NotificationBell from "@/components/panel-sections/notification-bell";
@@ -23,7 +23,6 @@ export default function AdminHeader({onMenuClick,previewGuest=false}:{onMenuClic
    <span className="fst-route-parent">خانه عطر <ChevronLeft size={14}/></span><strong>{current}</strong>
   </div>
   <div className="fst-top-actions">
-   <a href="/" target="_blank" rel="noreferrer" className="fst-visit">مشاهده سایت <ArrowUpLeft size={16}/></a>
    <NotificationBell previewGuest={previewGuest}/>
    {previewGuest?<span className="text-[11px] text-[#887c6e] leading-5" role="status">پیش‌نمایش بدون ورود</span>:<>
     <button type="button" onClick={()=>void logout()} disabled={busy} className="fst-exit" aria-label="خروج از پنل" title="خروج">
