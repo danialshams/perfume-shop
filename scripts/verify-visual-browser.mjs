@@ -172,6 +172,28 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
      if(!menuState.opened || !menuState.closing || !menuState.search)throw Error(name+" navigation interactions failed "+JSON.stringify(menuState));
      const unlocked=await evaluate(send,'getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden"');
      if(!unlocked)throw Error(name+" document scroll lock was not released after menus");
+     // Exercise the live React chat on both desktop and mobile, including exit motion.
+     const chat=await evaluate(send,`(async()=>{
+       await new Promise(r=>setTimeout(r,460));
+       window.scrollTo(0,300);
+       await new Promise(r=>setTimeout(r,220));
+       const y=window.scrollY,launcher=document.querySelector(".support-launcher");
+       if(!launcher)return{error:"missing launcher"};
+       launcher.click();
+       await new Promise(r=>setTimeout(r,190));
+       const panel=document.querySelector(".support-window");
+       const shown=panel?.classList.contains("is-open")&&launcher.getAttribute("aria-expanded")==="true";
+       const locked=document.body.style.position==="fixed"&&document.documentElement.style.overflow==="hidden";
+       document.querySelector(".support-backdrop")?.click();
+       await new Promise(r=>setTimeout(r,90));
+       const exiting=!!panel&&!panel.classList.contains("is-open")&&getComputedStyle(panel).transitionDuration!=="0s";
+       await new Promise(r=>setTimeout(r,470));
+       const closed=getComputedStyle(panel).visibility==="hidden";
+       const restored=document.body.style.position!=="fixed"&&document.documentElement.style.overflow!=="hidden";
+       const keptPosition=Math.abs(window.scrollY-y)<5;
+       return {shown,locked,exiting,closed,restored,keptPosition};
+     })()`);
+     if(Object.values(chat).some(v=>v!==true))throw Error(name+" chat overlay interactions failed "+JSON.stringify(chat));
    }
   process.stdout.write(name+" "+JSON.stringify(state)+"\n");
  }finally{await close()}
