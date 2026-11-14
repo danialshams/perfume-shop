@@ -51,7 +51,7 @@ export const DEFAULT_SITE_CONTENT: FertiniSiteContent = {
   latestCtaLabel: "مشاهده همه عطرها",
   bestsellerIds: FERTINI_DEMOS.filter(x => x.collection === "bestseller").slice(0, 6).map(x => x.id),
   latestIds: FERTINI_DEMOS.filter(x => x.collection === "new").slice(0, 6).map(x => x.id),
-  familyTitle: "دسته‌بندی رایحه‌ها",
+  familyTitle: "گروه‌های بویایی",
   familyDescription: "انتخاب را از حال‌وهوای خودتان آغاز کنید.",
   families: FERTINI_FAMILIES.map(x => ({
     id: x.id, name: x.name, subtitle: x.subtitle, photo: x.image, scentFamilyId: null, categoryId: null,
