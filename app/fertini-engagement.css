@@ -95,3 +95,30 @@ body:has([data-fertini-menu-open="true"]) .support-root,body:has(.maison-overlay
 @media (max-width:767px){
  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),textarea,select{font-size:16px!important}
 }
+
+/* Chat behaves as a modal: outside click dismisses smoothly; storefront stays still. */
+.support-root .support-backdrop{
+ position:fixed;inset:0;z-index:0;display:block;width:100vw;height:100dvh;
+ border:0;margin:0;padding:0;background:rgba(20,18,16,.26);
+ opacity:0;visibility:hidden;pointer-events:none;touch-action:none;
+ transition:opacity .32s ease,visibility 0s linear .32s
+}
+.support-root.is-open .support-backdrop{
+ opacity:1;visibility:visible;pointer-events:auto;
+ transition:opacity .32s ease,visibility 0s
+}
+.support-root .support-window{
+ z-index:1;animation:none;opacity:0;visibility:hidden;pointer-events:none;
+ transform:translateY(20px) scale(.975);transform-origin:bottom right;
+ transition:opacity .3s ease,transform .36s cubic-bezier(.22,.8,.24,1),visibility 0s linear .36s;
+ overscroll-behavior:contain
+}
+.support-root.is-open .support-window{
+ opacity:1;visibility:visible;pointer-events:auto;
+ transform:translateY(0) scale(1);
+ transition:opacity .3s ease,transform .36s cubic-bezier(.22,.8,.24,1),visibility 0s
+}
+.support-root .support-launcher{position:relative;z-index:2}
+@media(prefers-reduced-motion:reduce){
+ .support-root .support-window,.support-root .support-backdrop{transition:none}
+}
