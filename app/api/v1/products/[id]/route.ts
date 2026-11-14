@@ -149,6 +149,7 @@ function normalizeProductBody(body: any) {
     ...(slug ? { slug } : {}),
 
     type,
+    status: "ACTIVE" as const,
 
     is_active: normalizeBoolean(body.is_active, true),
     is_featured: normalizeBoolean(body.is_featured, false),
