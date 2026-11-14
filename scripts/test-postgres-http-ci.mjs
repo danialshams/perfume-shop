@@ -39,6 +39,77 @@ try{
  assert.ok(token,"Admin session cookie was not issued");
  const auth={cookie:token[0]};
 
+ // Chat's authenticated POST must work behind a public-domain reverse proxy.
+ const visitorStart=await read("/api/v1/engagement",{
+   method:"POST",headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({action:"start",name:"CI visitor",subject:"QA support"})
+ });
+ assert.equal(visitorStart.status,201,"Visitor should be able to open chat");
+ const visitorThread=await visitorStart.json();
+ assert.ok(Number(visitorThread.threadId)>0 && visitorThread.token);
+
+ const supportPayload={action:"chatReply",id:visitorThread.threadId,body:"پاسخ آزمایشی مدیر"};
+ const unauthenticatedReply=await read("/api/v1/admin/engagement",{
+   method:"POST",headers:{"Content-Type":"application/json","Origin":base},
+   body:JSON.stringify(supportPayload)
+ });
+ assert.equal(unauthenticatedReply.status,403,"Anonymous users must never reply as admin");
+ assert.match((await unauthenticatedReply.json()).error,/ورود مدیر/);
+
+ const crossSiteReply=await read("/api/v1/admin/engagement",{
+   method:"POST",headers:{...auth,"Content-Type":"application/json","Origin":"https://attacker.invalid","Sec-Fetch-Site":"cross-site"},
+   body:JSON.stringify(supportPayload)
+ });
+ assert.equal(crossSiteReply.status,403,"Authenticated cross-site writes must be rejected");
+ assert.match((await crossSiteReply.json()).error,/مبدأ/);
+
+ const proxiedReply=await read("/api/v1/admin/engagement",{
+   method:"POST",headers:{...auth,"Content-Type":"application/json",
+     "Origin":"https://fertiniperfume.com","Sec-Fetch-Site":"same-origin"},
+   body:JSON.stringify(supportPayload)
+ });
+ assert.equal(proxiedReply.status,200,"Same-origin browser behind a reverse proxy should reply: "+await proxiedReply.text());
+ const visitorMessages=await read("/api/v1/engagement?type=messages&threadId="+visitorThread.threadId,{
+   headers:{"x-support-token":visitorThread.token}
+ });
+ assert.equal(visitorMessages.status,200);
+ assert.ok((await visitorMessages.json()).messages.some(m=>m.role==="ADMIN"&&m.body===supportPayload.body),
+   "Admin reply must appear in the visitor's conversation");
+ const closeChat=await read("/api/v1/admin/engagement",{
+   method:"POST",headers:{...auth,"Content-Type":"application/json","Origin":base},
+   body:JSON.stringify({action:"chatStatus",id:visitorThread.threadId,status:"CLOSED"})
+ });
+ assert.equal(closeChat.status,200,"Admin must be able to close a conversation");
+
+ const saveSupportSettings=await read("/api/v1/admin/engagement",{
+   method:"POST",headers:{...auth,"Content-Type":"application/json","Origin":base},
+   body:JSON.stringify({action:"settings",welcome:"خوش آمدید به پشتیبانی CI",
+     expectedResponse:"پاسخ در زمان کاری",workingHours:"شنبه تا پنجشنبه",enabled:true})
+ });
+ assert.equal(saveSupportSettings.status,200,"Admin support settings must save successfully");
+ const faqQuestion="سؤال متداول آزمایشی درباره ماندگاری عطر چیست؟";
+ const createFaq=await read("/api/v1/admin/engagement",{
+   method:"POST",headers:{...auth,"Content-Type":"application/json","Origin":base},
+   body:JSON.stringify({action:"faqCreate",question:faqQuestion,answer:"پاسخ اولیه تست"})
+ });
+ assert.equal(createFaq.status,201,"Admin FAQ create should publish without a draft");
+ const readFaq=await read("/api/v1/admin/engagement?view=faq",{headers:auth});
+ assert.equal(readFaq.status,200);
+ const faqItem=(await readFaq.json()).items.find(item=>item.question===faqQuestion);
+ assert.ok(faqItem?.published,"FAQ must publish with its initial answer");
+ const updateFaq=await read("/api/v1/admin/engagement",{
+   method:"POST",headers:{...auth,"Content-Type":"application/json","Origin":base},
+   body:JSON.stringify({action:"faqReply",id:faqItem.id,answer:"پاسخ ویرایش‌شده تست"})
+ });
+ assert.equal(updateFaq.status,200,"Admin FAQ update must save");
+
+ for(const [url,method] of [["/api/v1/coupons","GET"],["/api/v1/coupons","PATCH"],
+   ["/api/v1/coupons","DELETE"],["/api/v1/coupons/create","POST"]]){
+   const denied=await read(url,{method,headers:{"Content-Type":"application/json"},
+     ...(method!=="GET"?{body:JSON.stringify({})}:{})});
+   assert.equal(denied.status,401,"Coupon operations must reject unauthenticated requests: "+method+" "+url);
+ }
+
  const preflight=await read("/api/v1/admin/media-upload/start",{
    method:"POST",headers:{...auth,"Content-Type":"application/json"},
    body:JSON.stringify({kind:"image",name:"qa.jpg",type:"image/jpeg",size:16}),
