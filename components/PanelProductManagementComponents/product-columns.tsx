@@ -27,7 +27,8 @@ type Props = {
 // اگر مطمئنی همیشه is_active داری، می‌تونی این helper رو ساده‌تر کنی
 function resolveIsActive(record: ProductItem): boolean {
     const v = (record as any)?.is_active;
-    if (v === true || v === false) return v;
+    if (v === true || v === false) return v && record.status === "ACTIVE";
+    if (v === 0 || v === 1) return v === 1 && record.status === "ACTIVE";
 
     // fallback برای داده‌های قدیمی/ناقص
     return (record as any)?.status === "ACTIVE";
@@ -77,13 +78,8 @@ export function getProductColumns({
                     <div className="line-clamp-1 font-black text-neutral-900">{record.name}</div>
                     <div className="mt-1 text-xs text-neutral-500">{record.slug}</div>
                     <div className="mt-2 flex flex-wrap gap-2">
-                        {record.brand?.name ? (
-                            <span className="rounded-full bg-violet-50 px-2 py-1 text-[11px] text-violet-700">
-                                برند: {record.brand.name}
-                            </span>
-                        ) : null}
                         {record.category?.name ? (
-                            <span className="rounded-full bg-sky-50 px-2 py-1 text-[11px] text-sky-700">
+                            <span className="text-[11px] text-neutral-500">
                                 دسته: {record.category.name}
                             </span>
                         ) : null}
@@ -147,9 +143,9 @@ export function getProductColumns({
                 const isActive = resolveIsActive(record);
 
                 return isActive ? (
-                    <AdminStatusBadge type="active" label="فعال" />
+                    <AdminStatusBadge type="active" label="در فروشگاه" />
                 ) : (
-                    <AdminStatusBadge type="inactive" label="غیرفعال" />
+                    <AdminStatusBadge type="inactive" label="نمایش داده نمی‌شود" />
                 );
             },
         },
