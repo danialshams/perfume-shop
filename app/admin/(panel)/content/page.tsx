@@ -244,6 +244,11 @@ export default function AdminContentPage() {
          <Link className="underline mx-1" href="/admin/scent-families">مدیریت عکس و گروه‌های بویایی</Link>
         </div>
       </section>
+      <section className="fst-card scroll-mt-24" id="fst-editor-shipping">
+       <div className="fst-editor-heading"><span>DELIVERY / METHODS</span><h2>راهنمای ارسال</h2></div>
+       <p className="fst-helper">بخش روش‌های ارسال نیز در ترتیب صفحه اصلی قابل جابه‌جایی و پنهان کردن است. متن، هزینه و زمان تحویل را در صفحه اختصاصی تنظیم کن.</p>
+       <Link href="/admin/shipping" className="fst-btn">مدیریت روش‌های ارسال <ExternalLink size={15}/></Link>
+      </section>
       <section className="fst-card scroll-mt-24" id="fst-editor-footer">
         <div className="fst-editor-heading"><span>FOOTER / COPY</span><h2>متن‌های فوتر</h2></div>
         <div className="fst-tools-grid">
