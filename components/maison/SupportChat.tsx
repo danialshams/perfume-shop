@@ -18,6 +18,43 @@ export function SupportChat(){
   try{const stored=localStorage.getItem(storageKey);if(stored){const data=JSON.parse(stored) as Credentials;if(data.threadId&&data.token)setSession(data)}}catch{}
   fetch("/api/v1/engagement?type=settings",{cache:"no-store"}).then(r=>r.json()).then(c=>{if(typeof c.enabled==="boolean")setSettings(c as Config)}).catch(()=>{});
  },[]);
+ useEffect(()=>{setOpen(false)},[pathname]);
+ useEffect(()=>{
+  if(!open)return;
+  const root=document.documentElement;
+  const body=document.body;
+  const scrollY=window.scrollY;
+  const before={
+   rootOverflow:root.style.overflow,
+   bodyOverflow:body.style.overflow,
+   position:body.style.position,
+   top:body.style.top,
+   left:body.style.left,
+   right:body.style.right,
+   width:body.style.width,
+  };
+  // Lock the storefront on desktop and iOS while keeping chat history scrollable.
+  root.style.overflow="hidden";
+  body.style.overflow="hidden";
+  body.style.position="fixed";
+  body.style.top=`-${scrollY}px`;
+  body.style.left="0";
+  body.style.right="0";
+  body.style.width="100%";
+  const handleKey=(event:KeyboardEvent)=>{if(event.key==="Escape")setOpen(false)};
+  window.addEventListener("keydown",handleKey);
+  return ()=>{
+   window.removeEventListener("keydown",handleKey);
+   root.style.overflow=before.rootOverflow;
+   body.style.overflow=before.bodyOverflow;
+   body.style.position=before.position;
+   body.style.top=before.top;
+   body.style.left=before.left;
+   body.style.right=before.right;
+   body.style.width=before.width;
+   window.scrollTo(0,scrollY);
+  };
+ },[open]);
  const load=useCallback(async(current:Credentials)=>{
   const res=await fetch("/api/v1/engagement?type=messages&threadId="+encodeURIComponent(current.threadId),{
    headers:{"x-support-token":current.token},cache:"no-store"
@@ -45,8 +82,11 @@ export function SupportChat(){
   }catch(e){setError(e instanceof Error?e.message:"ارسال پیام ممکن نیست.")}finally{setBusy(false)}
  }
  if(pathname?.startsWith("/admin")||pathname?.startsWith("/login"))return null;
- return <div className="support-root" dir="rtl">
-  {open&&<section className="support-window" role="dialog" aria-modal="false" aria-label="گفتگوی آنلاین با پشتیبان">
+ return <div className={"support-root"+(open?" is-open":"")} dir="rtl">
+  <button type="button" className="support-backdrop" tabIndex={open?0:-1} aria-hidden={!open}
+   aria-label="بستن گفتگو با کلیک بیرون" onClick={()=>setOpen(false)}/>
+  <section className="support-window" role="dialog" aria-modal={open} aria-hidden={!open}
+   inert={!open} aria-label="گفتگوی آنلاین با پشتیبان">
    <header className="support-header">
     <div><span className="support-header-overline">مشاور رایحه فرتینی</span><h2>گفتگو با فرتینی</h2><small>{settings.expectedResponse}</small></div>
     <button type="button" aria-label="بستن گفتگو" onClick={()=>setOpen(false)}><X size={21}/></button>
@@ -74,7 +114,7 @@ export function SupportChat(){
    </>}
    {error&&<p role="alert" className="support-error">{error}</p>}
    <footer className="support-footer">برای شروع گفتگو به شماره موبایل یا ایمیل نیازی نیست.</footer>
-  </section>}
+  </section>
   <button type="button" className="support-launcher" aria-label={open?"بستن چت آنلاین":"باز کردن چت آنلاین"} aria-expanded={open} onClick={()=>setOpen(s=>!s)}>{open?<X size={25}/>:<MessageCircle size={27}/>}</button>
  </div>;
 }
