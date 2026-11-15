@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { App, Button, Segmented } from "antd";
-import { Plus } from "lucide-react";
+import { App, Button, Popconfirm, Segmented } from "antd";
+import { Database, Plus } from "lucide-react";
 import ProductsFilters from "./products-filters";
 import ProductDetailsModal from "./product-details-modal";
 import { getProducts } from "./product-api";
@@ -48,6 +48,7 @@ export default function ProductsManagement() {
         useState<ProductQueryParams>(DEFAULT_FILTERS);
 
     const [createOpen, setCreateOpen] = useState(false);
+    const [editorialImporting, setEditorialImporting] = useState(false);
 
     const [editOpen, setEditOpen] = useState(false);
     const [editingProductId, setEditingProductId] = useState<number | null>(null);
@@ -165,6 +166,36 @@ export default function ProductsManagement() {
         fetchData(appliedFilters);
         fetchCategories();
     };
+    // Registers the six existing cinematic showcase photos through a real
+    // authenticated admin endpoint. Zero stock means nothing is buyable
+    // until real inventory is entered in the product editor.
+    const handleEditorialImport = async () => {
+        if (editorialImporting) return;
+        setEditorialImporting(true);
+        try {
+            const res = await fetch("/api/v1/admin/editorial-import", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({confirm:true}),
+            });
+            const result = await res.json().catch(() => null);
+            if (!res.ok || !result?.ok)
+                throw new Error(result?.error || "ثبت عطرهای گالری انجام نشد.");
+            const count = Array.isArray(result.created) ? result.created.length : 0;
+            message.success(count > 0
+                ? count.toLocaleString("fa-IR")+" عطر با موجودی صفر به دیتابیس اضافه شد."
+                : "هر شش عطر قبلاً در دیتابیس ثبت شده‌اند.");
+            setAppliedFilters({...DEFAULT_FILTERS});
+            await fetchData(DEFAULT_FILTERS);
+            await fetchCategories();
+        } catch (error) {
+            message.error(error instanceof Error ? error.message : "اتصال به دیتابیس در دسترس نیست.");
+        } finally {
+            setEditorialImporting(false);
+        }
+    };
+
 
     const handleSearch = () => {
         setAppliedFilters({
@@ -265,7 +296,19 @@ export default function ProductsManagement() {
                 title="مدیریت محصولات"
                 subtitle="افزودن عطر، تعیین قیمت و موجودی و مدیریت تصاویر."
                 actions={
-                    <>
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                        <Popconfirm
+                            title="ثبت شش عطر گالری در دیتابیس"
+                            description="هر عطر با گروه بویایی و عکس خودش، قیمت نمونه و موجودی صفر ثبت می‌شود. محصول تکراری ساخته نمی‌شود."
+                            okText="ثبت در دیتابیس"
+                            cancelText="انصراف"
+                            onConfirm={handleEditorialImport}
+                            okButtonProps={{loading:editorialImporting}}
+                        >
+                            <Button size="large" loading={editorialImporting} icon={<Database size={16}/>} >
+                                ثبت عطرهای گالری
+                            </Button>
+                        </Popconfirm>
                         <Button
                             type="primary"
                             size="large"
@@ -274,7 +317,7 @@ export default function ProductsManagement() {
                         >
                             افزودن محصول
                         </Button>
-                    </>
+                    </div>
                 }
             />
 
