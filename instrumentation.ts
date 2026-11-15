@@ -17,4 +17,11 @@ export async function register(){
  }catch(error){
   console.error("FERTINI catalog initialization failed (site remains available)",error);
  }
+ // Products committed as catalog/products.csv are create-only on each release.
+ // An admin's edits to existing inventory are never overwritten by a Git push.
+ try{
+  const {syncGitCatalog}=await import("./server/git-catalog-sync");
+  const result=await syncGitCatalog();
+  console.info("FERTINI GitHub catalog synced",result);
+ }catch(error){console.error("FERTINI GitHub catalog import failed",error)}
 }
