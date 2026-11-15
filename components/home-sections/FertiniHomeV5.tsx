@@ -226,7 +226,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
         ?bestselling.map((product,index)=><ProductCard key={product.id} product={product}
            editorialImage={editorialBestsellers[index]} discountPercent={campaignDiscountPercent(content,product.id)}
            mode={(["up","right"] as const)[index%2]}/>)
-        :bestEditorialPreviews.map((item,index)=><EditorialPreviewCard key={item.src} {...item}
+        :bestEditorialPreviews.map((item,index)=><EditorialPreviewCard key={item.slug} {...item}
            mode={(["up","right"] as const)[index%2]}/>)}</div>
     </section>,
     latest: <section className="fertini-v5-new maison-wide" aria-labelledby="fertini-new-title">
@@ -241,7 +241,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
           ?latest.map((product,index)=><ProductCard key={product.id} product={product}
              editorialImage={editorialNewest[index]} discountPercent={campaignDiscountPercent(content,product.id)}
              large mode={(["stretch","fade"] as const)[index%2]}/>)
-          :newestEditorialPreviews.map((item,index)=><EditorialPreviewCard key={item.src} {...item} large
+          :newestEditorialPreviews.map((item,index)=><EditorialPreviewCard key={item.slug} {...item} large
              mode={(["stretch","fade"] as const)[index%2]}/>)}
       </div>
       <div className="fertini-v5-new__bottom"><span lang="en" dir="ltr">
