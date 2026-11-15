@@ -103,7 +103,7 @@ export async function POST(request:NextRequest){
  }
  if(parsed.data.confirm!==true)return NextResponse.json({error:"تأیید عملیات لازم است."},{status:400,headers:noCache});
  const created:string[]=[],updated:string[]=[],skipped:string[]=[],errors:{sku:string;reason:string}[]=[];
- let families=await scentFamilyService.getList();
+ let families:Array<{id:number;name:string}>=await scentFamilyService.getList();
  for(const item of products){
   try{
    let family=families.find(x=>x.name.trim()===item.group);
