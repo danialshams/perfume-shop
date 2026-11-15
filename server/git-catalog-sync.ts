@@ -10,13 +10,21 @@ import {scentFamilyService} from "@/server/services/scent-family.service";
  */
 function csvRows(text:string):string[][]{
  const out:string[][]=[];let row:string[]=[],cell="",quoted=false;
- for(const c of text.replace(/^\uFEFF/,"")){
-  if(c==='"'){quoted=!quoted;continue}
+ const src=text.replace(/^\uFEFF/,"");
+ for(let i=0;i<src.length;i++){
+  const c=src[i];
+  if(c==='"'){
+   if(quoted&&src[i+1]==='"'){cell+='"';i++;continue}
+   if(quoted||cell===""){quoted=!quoted;continue}
+  }
   if(c===","&&!quoted){row.push(cell);cell="";continue}
-  if(c==="\n"&&!quoted){row.push(cell);out.push(row);row=[];cell="";continue}
-  if(c==="\r"&&!quoted)continue;
+  if((c==="\n"||c==="\r")&&!quoted){
+   if(c==="\r"&&src[i+1]==="\n")i++;
+   row.push(cell);out.push(row);row=[];cell="";continue;
+  }
   cell+=c;
  }
+ if(quoted)throw Error("Unterminated quoted CSV cell");
  row.push(cell);if(row.some(x=>x.trim()))out.push(row);
  return out.filter(x=>x.some(v=>v.trim()));
 }
