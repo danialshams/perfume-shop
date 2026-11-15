@@ -38,6 +38,12 @@ export async function POST(request:NextRequest) {
   process.env.APP_URL?new URL(process.env.APP_URL).origin:"",
   process.env.NEXT_PUBLIC_SITE_URL?new URL(process.env.NEXT_PUBLIC_SITE_URL).origin:"",
  ].filter(Boolean));
+ // GitHub Actions runs the disposable PostgreSQL integration server on an
+ // IP loopback that Next may normalize to localhost. This exception exists
+ // ONLY in the isolated CI database, never on a real hosted deployment.
+ if(process.env.CI==="true" &&
+    process.env.FERTINI_PG_TEST==="isolated-disposable")
+   allowedOrigins.add("http://127.0.0.1:3211");
  if(!origin||!allowedOrigins.has(origin))
   return NextResponse.json({error:"Origin not allowed"},{status:403});
 
