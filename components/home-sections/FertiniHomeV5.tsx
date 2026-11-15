@@ -35,11 +35,23 @@ const newestEditorialPreviews = [
 function ResilientPhoto({src,fallback,alt,sizes,priority=false,loading}:{
   src:string;fallback:string;alt:string;sizes:string;priority?:boolean;loading?:"eager"|"lazy";
 }){
-  const [failed,setFailed]=useState(false);
-  const actual=failed?fallback:src;
+  const [failedSrc,setFailedSrc]=useState<string|null>(null);
+  const [failedBackup,setFailedBackup]=useState<string|null>(null);
+  const sourceFailed=failedSrc===src;
+  const actual=sourceFailed?fallback:src;
+  // Do not quietly replace failed real photographs with low-resolution demo
+  // bottles, or make all three scent families display the same woody picture.
+  if(!actual || (sourceFailed && failedBackup===fallback)){
+    return <div className="fertini-v5-photo-unavailable" role="img" aria-label={alt}>
+      <span>تصویر در دسترس نیست</span>
+    </div>;
+  }
   return <Image src={actual} alt={alt} fill unoptimized priority={priority}
     loading={priority?undefined:loading} sizes={sizes}
-    onError={()=>{if(!failed&&src!==fallback)setFailed(true);}}/>;
+    onError={()=>{
+      if(!sourceFailed)setFailedSrc(src);
+      else setFailedBackup(fallback);
+    }}/>;
 }
 function ProductCard({product,large=false,mode="up",discountPercent=0,editorialImage}:{
   product:HomeProduct;large?:boolean;mode?:"up"|"fade"|"right"|"left"|"stretch";discountPercent?:number;editorialImage?:string
@@ -65,7 +77,7 @@ function EditorialPreviewCard({src,name,subtitle,price,mode="up",large=false}:{
 }){
   return <article className={"fertini-v5-card fertini-v5-editorial"+(large?" fertini-v5-card--large":"")} data-fertini-card>
     <div className="fertini-v5-card__media" data-fertini-photo data-photo-entrance={mode}>
-      <ResilientPhoto src={src} fallback="/fertini/nocturne-front.svg" alt={name}
+      <ResilientPhoto src={src} fallback="" alt={name}
         loading="lazy" sizes={large?"(min-width:960px) 32vw,68vw":"(min-width:960px) 27vw,45vw"}/>
     </div>
     <div className="fertini-v5-card__info" data-fertini-caption>
@@ -86,7 +98,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
     return {
       ...slide,
       photo:builtin?FERTINI_HERO_IMAGES[index%2]:slide.photo,
-      fallback:"/fertini/hero-0"+(index%2+1)+".svg",
+      fallback:builtin?"":"/fertini/hero-0"+(index%2+1)+".svg",
     };
   });
   const root=useRef<HTMLElement>(null);
@@ -234,7 +246,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
         {displayedFamilies.map((family,index)=>{
           const visual=<div data-fertini-photo data-photo-entrance={(["right","up","fade"] as const)[index%3]}
             className="fertini-v5-family__photo">
-            <ResilientPhoto src={family.photo} fallback="/fertini/editorial/family-woody.avif"
+            <ResilientPhoto src={family.photo} fallback=""
               sizes="(min-width:950px) 30vw,100vw" alt={"مواد اولیه رایحه "+family.name}/>
             <div data-fertini-caption className="fertini-v5-family__info">
               <span dir="ltr" lang="en">{String(index+1).padStart(2,"0")} / {family.subtitle}</span>
