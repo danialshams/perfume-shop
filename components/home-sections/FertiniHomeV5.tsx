@@ -7,37 +7,27 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { DEMO_HOME_PRODUCTS, type HomeProduct } from "@/lib/fertini-home-products";
 import {DEFAULT_SITE_CONTENT,type FertiniSiteContent,getActiveCampaigns,campaignDiscountPercent} from "@/lib/fertini-site-content";
+import {FERTINI_HERO_IMAGES,FERTINI_PRODUCT_IMAGES,FERTINI_FAMILY_IMAGES} from "@/lib/fertini-editorial";
 
 
-// Static editorial demo photography is used only on the homepage.
-// Original product images/stock/prices in PostgreSQL remain untouched.
-const editorialBestsellers=[
-  "/fertini/editorial/product-amber-01.avif",
-  "/fertini/editorial/product-amber-02.avif",
-  "/fertini/editorial/product-amber-03.avif",
-  "/fertini/editorial/product-ivory-02.avif",
-  "/fertini/editorial/product-amber-02.avif",
-  "/fertini/editorial/product-amber-01.avif",
+// Five different product photos are split between the two galleries.
+// Remaining published products keep their own real photos: never repeat the
+// same staged bottle merely to fill twelve separate card slots.
+const editorialBestsellers = FERTINI_PRODUCT_IMAGES.slice(0,3);
+const editorialNewest = FERTINI_PRODUCT_IMAGES.slice(3,5);
+
+// Editorial previews are not saleable items. The production catalogue can
+// initially be empty; in that case preserve a rich homepage without fake
+// prices, product IDs, inventory or misleading buy links.
+const bestEditorialPreviews = [
+  {src:editorialBestsellers[0],name:"رز و کریستال",subtitle:"ROSE / CRYSTAL"},
+  {src:editorialBestsellers[1],name:"چوب سدر و وتیور",subtitle:"CEDAR / VETIVER"},
+  {src:editorialBestsellers[2],name:"زعفران و کهربا",subtitle:"SAFFRON / AMBER"},
 ];
-const editorialNewest=[
-  "/fertini/editorial/product-ivory-01.avif",
-  "/fertini/editorial/product-ivory-02.avif",
-  "/fertini/editorial/product-ivory-01.avif",
-  "/fertini/editorial/product-amber-03.avif",
-  "/fertini/editorial/product-ivory-02.avif",
-  "/fertini/editorial/product-ivory-01.avif",
+const newestEditorialPreviews = [
+  {src:editorialNewest[0],name:"وانیل و تونکا",subtitle:"VANILLA / TONKA"},
+  {src:editorialNewest[1],name:"نرولی و چای سبز",subtitle:"NEROLI / GREEN TEA"},
 ];
-// Low-bitrate editorial samples were only 5-6 KB and produced visibly soft
-// category images. Prefer a store manager's real upload; otherwise use the
-// existing crisp local bottle illustrations instead of enlarging thumbnails.
-const familyStillLife=(name:string,index:number)=>{
-  const normalized=name.toLowerCase();
-  if(/گلی|floral|گل|رز|یاس/.test(normalized))return "/fertini/lumiere-front.svg";
-  if(/عود|oud|agar|شرقی|amber|گرم|ادویه/.test(normalized))return "/fertini/sillage-front.svg";
-  if(/چوب|wood|cedar|سدر|دودی/.test(normalized))return "/fertini/nocturne-front.svg";
-  return ["/fertini/nocturne-front.svg","/fertini/lumiere-front.svg","/fertini/sillage-front.svg"][index%3];
-
-};
 
 // Serve home images directly from the host rather than depending on its
 // Next.js /_next/image transcoding service. A failed photo has a local backup.
@@ -56,7 +46,7 @@ function ProductCard({product,large=false,mode="up",discountPercent=0,editorialI
   const displayPrice=product.price===null?null:Math.round(product.price*(100-discountPercent)/100);
   return <Link href={product.href} className={"fertini-v5-card"+(large?" fertini-v5-card--large":"")} data-fertini-card>
     <div className="fertini-v5-card__media" data-fertini-photo data-photo-entrance={mode}>
-      <ResilientPhoto src={product.image} fallback={editorialImage||"/fertini/nocturne-front.svg"}
+      <ResilientPhoto src={editorialImage||product.image} fallback={product.image||"/fertini/nocturne-front.svg"}
         alt={product.name} loading={large?"eager":"lazy"}
         sizes={large?"(min-width:960px) 32vw, 68vw":"(min-width:960px) 27vw, (min-width:600px) 46vw, 45vw"}/>
     </div>
@@ -67,17 +57,35 @@ function ProductCard({product,large=false,mode="up",discountPercent=0,editorialI
     </div>
   </Link>;
 }
+function EditorialPreviewCard({src,name,subtitle,mode="up",large=false}:{
+  src:string;name:string;subtitle:string;mode?:"up"|"fade"|"right"|"left"|"stretch";large?:boolean;
+}){
+  return <article className={"fertini-v5-card fertini-v5-editorial"+(large?" fertini-v5-card--large":"")} data-fertini-card>
+    <div className="fertini-v5-card__media" data-fertini-photo data-photo-entrance={mode}>
+      <ResilientPhoto src={src} fallback="/fertini/nocturne-front.svg" alt={name}
+        loading="eager" sizes={large?"(min-width:960px) 32vw,68vw":"(min-width:960px) 27vw,45vw"}/>
+    </div>
+    <div className="fertini-v5-card__info" data-fertini-caption>
+      <span lang="en" dir="ltr">{subtitle}</span>
+      <h3>{name}</h3>
+      <p>تصویر مفهومی مجموعه فرتینی</p>
+    </div>
+  </article>;
+}
 export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEMO_HOME_PRODUCTS,catalogState="demo",scentFamilies=[]}:{
   content?:FertiniSiteContent;products?:HomeProduct[];catalogState?:"demo"|"database"|"unavailable";scentFamilies?:Array<{id:number;name:string;image_url:string|null}>
 }){
-  // The 9 KB editorial AVIF "hero" was virtually an empty dark gradient
-  // despite decoding successfully. Use visible full-resolution vector artwork
-  // for the built-in demo; any manager-uploaded real photo remains untouched.
-  const slides=content.heroSlides.map((slide,index)=>({
-    ...slide,
-    photo:slide.photo,
-    fallback:"/fertini/hero-0"+(index%2+1)+".svg",
-  }));
+  // Replace only the built-in, low-quality placeholder slides.
+  // Saved photographs chosen in the admin panel are left untouched.
+  const slides=content.heroSlides.map((slide,index)=>{
+    const builtin=/^\\/fertini\\/hero-0[12]\\.svg$/.test(slide.photo) ||
+      /^\\/fertini\\/editorial\\/hero-(amber|bronze)\\.avif$/.test(slide.photo);
+    return {
+      ...slide,
+      photo:builtin?FERTINI_HERO_IMAGES[index%2]:slide.photo,
+      fallback:"/fertini/hero-0"+(index%2+1)+".svg",
+    };
+  });
   const root=useRef<HTMLElement>(null);
   const [active,setActive]=useState(0);
   const [autoPlay,setAutoPlay]=useState(true);
@@ -150,11 +158,20 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
   const latest=content.latestIds.map(id=>byId.get(id)).filter((x):x is HomeProduct=>Boolean(x));
   const catalogUnavailable=catalogState==="unavailable";
   const activeCampaigns=getActiveCampaigns(content);
-  const displayedFamilies=catalogState==="database"
-    ?scentFamilies.map((f,index)=>({id:String(f.id),name:f.name,subtitle:"",photo:f.image_url&&!/\.svg(?:$|\?)/i.test(f.image_url)&&!f.image_url.includes("placeholder")?f.image_url:familyStillLife(f.name,index),url:"/products?scent_family_id="+f.id}))
-    :content.families.map((f,index)=>({id:f.id,name:f.name,subtitle:f.subtitle,
-        photo:f.photo,
-        url:"/products?family="+f.id}));
+  // Families are an olfactive editorial: ingredients, not perfume bottles.
+  // Link only when a matching REAL family exists in the live catalogue.
+  const familyStory=[
+    {id:"woody",name:"چوبی و سدر",subtitle:"WOODY / CEDAR",photo:FERTINI_FAMILY_IMAGES.woody,
+      match:/چوب|سدر|wood|cedar/i},
+    {id:"oud",name:"عود و دود",subtitle:"OUD / SMOKE",photo:FERTINI_FAMILY_IMAGES.oud,
+      match:/عود|oud|بخور|incense/i},
+    {id:"vanilla",name:"وانیل و شکوفه",subtitle:"VANILLA / ORCHID",photo:FERTINI_FAMILY_IMAGES.vanilla,
+      match:/وانیل|vanilla/i},
+  ];
+  const displayedFamilies=familyStory.map(f=>{
+    const live=catalogState==="database"?scentFamilies.find(x=>f.match.test(x.name)):undefined;
+    return {...f,url:live?"/products?scent_family_id="+live.id:null};
+  });
   const sections={
     shipping:content.shipping.some(method=>method.enabled)?<section className="fertini-v5-delivery maison-wide" aria-label="راهنمای روش‌های ارسال">
       <div><span className="maison-kicker" dir="ltr" lang="en">FERTINI / DELIVERY</span>
@@ -182,8 +199,12 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
         <p>{content.bestsellerDescription}</p>
       </header>
       {catalogUnavailable?<p role="status" className="fertini-v5-catalog-notice">کاتالوگ محصولات موقتا در دسترس نیست.</p>:null}
-      <div className="fertini-v5-best__grid">{bestselling.map((product,index)=>
-        <ProductCard key={product.id} product={product} editorialImage={editorialBestsellers[index%editorialBestsellers.length]} discountPercent={campaignDiscountPercent(content,product.id)} mode={(["up","right"] as const)[index%2]}/>)}</div>
+      <div className="fertini-v5-best__grid">{bestselling.length
+        ?bestselling.map((product,index)=><ProductCard key={product.id} product={product}
+           editorialImage={editorialBestsellers[index]} discountPercent={campaignDiscountPercent(content,product.id)}
+           mode={(["up","right"] as const)[index%2]}/>)
+        :bestEditorialPreviews.map((item,index)=><EditorialPreviewCard key={item.src} {...item}
+           mode={(["up","right"] as const)[index%2]}/>)}</div>
     </section>,
     latest: <section className="fertini-v5-new maison-wide" aria-labelledby="fertini-new-title">
       <header className="fertini-v5-heading" data-fertini-heading>
@@ -193,11 +214,15 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
       </header>
       {catalogUnavailable?<p role="status" className="fertini-v5-catalog-notice">کاتالوگ محصولات موقتا در دسترس نیست.</p>:null}
       <div className="fertini-v5-new__scroll" aria-label="عطرهای جدید مجموعه فرتینی">
-        {latest.map((product,index)=><ProductCard key={product.id} product={product} editorialImage={editorialNewest[index%editorialNewest.length]} discountPercent={campaignDiscountPercent(content,product.id)} large
-          mode={(["stretch","fade"] as const)[index%2]}/>)}
+        {latest.length
+          ?latest.map((product,index)=><ProductCard key={product.id} product={product}
+             editorialImage={editorialNewest[index]} discountPercent={campaignDiscountPercent(content,product.id)}
+             large mode={(["stretch","fade"] as const)[index%2]}/>)
+          :newestEditorialPreviews.map((item,index)=><EditorialPreviewCard key={item.src} {...item} large
+             mode={(["stretch","fade"] as const)[index%2]}/>)}
       </div>
       <div className="fertini-v5-new__bottom"><span lang="en" dir="ltr">
-        NEW SCENTS / {String(latest.length).padStart(2,"0")}</span>
+        NEW SCENTS / {String(latest.length||newestEditorialPreviews.length).padStart(2,"0")}</span>
         <Link href="/products" className="fertini-v5-cta">{content.latestCtaLabel}</Link>
       </div>
     </section>,
@@ -208,19 +233,21 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
         <p>{content.familyDescription}</p>
       </header>
       <div className="fertini-v5-families__grid">
-        {displayedFamilies.map((family,index)=><Link key={family.id}
-          href={family.url}
-          className={"fertini-v5-family fertini-v5-family--"+family.id} data-fertini-card>
-          <div data-fertini-photo data-photo-entrance={(["right","up","fade"] as const)[index%3]} className="fertini-v5-family__photo">
-            <ResilientPhoto src={family.photo}
-              fallback={["/fertini/nocturne-front.svg","/fertini/lumiere-front.svg","/fertini/sillage-front.svg"][index%3]}
-              sizes="(min-width:950px) 30vw,100vw" alt={"گروه بویایی "+family.name}/>
+        {displayedFamilies.map((family,index)=>{
+          const visual=<div data-fertini-photo data-photo-entrance={(["right","up","fade"] as const)[index%3]}
+            className="fertini-v5-family__photo">
+            <ResilientPhoto src={family.photo} fallback="/fertini/editorial/family-woody.avif"
+              sizes="(min-width:950px) 30vw,100vw" alt={"مواد اولیه رایحه "+family.name}/>
             <div data-fertini-caption className="fertini-v5-family__info">
-              <span dir="ltr" lang="en">{String(index+1).padStart(2,"0")} / {family.subtitle||"OLFACTIVE FAMILY"}</span>
+              <span dir="ltr" lang="en">{String(index+1).padStart(2,"0")} / {family.subtitle}</span>
               <h3>{family.name}</h3>
             </div>
-          </div>
-        </Link>)}
+          </div>;
+          const className="fertini-v5-family fertini-v5-family--"+family.id;
+          return family.url
+            ?<Link key={family.id} href={family.url} className={className} data-fertini-card>{visual}</Link>
+            :<article key={family.id} className={className} data-fertini-card>{visual}</article>;
+        })}
       </div>
     </section>
   };
