@@ -71,7 +71,7 @@ assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{autoAlph
 assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{backgroundPosition'));
 assert.match(home,/function ResilientPhoto/);
 assert.match(home,/fill unoptimized priority=/);
-assert.match(home,/src=\{editorialImage\|\|product.image\}/);
+assert.match(home,/src=\{product.isDemo\?\(editorialImage\|\|product.image\):product.image\}/);
 assert.match(home,/fallback=\{slide.fallback\}/);
 assert.match(home,/photo:builtin\?FERTINI_HERO_IMAGES\[index%2\]:slide.photo/);
 assert.doesNotMatch(home,/editorialHeroes/);
@@ -94,13 +94,42 @@ assert.match(editorial,/family-03-vanilla\.png/);
 assert.match(editorialRoute,/localMediaDirectory/);
 assert.match(editorialRoute,/allowed\.has\(filename\)/);
 assert.match(editorialRoute,/O_NOFOLLOW/);
-assert.match(editorialRoute,/Content-Type": "image\/png"/);
+assert.match(editorialRoute,/const contentType = extension === "webp" \? "image\/webp" : "image\/png"/);
 assert.doesNotMatch(editorialRoute,/readLocalMedia\(/);
 assert.match(home,/bestEditorialPreviews\.map/);
 assert.match(home,/newestEditorialPreviews\.map/);
 assert.match(home,/familyStory\.map/);
 assert.match(home,/live\?"\/products\?scent_family_id="/);
 assert.doesNotMatch(home,/familyStillLife/);
+
+assert.match(editorial,/OPTIMIZED_EDITORIAL_IMAGE_NAMES/);
+for(const filename of [
+  "hero-01-golden-citrus-blossom.webp",
+  "hero-02-luxury-oud-amber.webp",
+  "product-01-rose-crystal.webp",
+  "product-02-vanilla-tonka.webp",
+  "product-03-smoked-vetiver-cedar.webp",
+  "product-04-neroli-green-tea.webp",
+  "product-05-ruby-amber-saffron.webp",
+  "product-06-iris-marine.webp",
+  "family-01-woody.webp",
+  "family-02-oud-smoky.webp",
+  "family-03-vanilla.webp",
+]){
+  assert.ok(editorial.includes(filename),"Missing optimized editorial filename "+filename);
+}
+assert.match(editorialRoute,/isValidPicture/);
+assert.match(editorialRoute,/candidateNames/);
+assert.match(editorialRoute,/max-age=86400/);
+assert.match(home,/const duration=5600/);
+assert.match(home,/editorialNewest = FERTINI_PRODUCT_IMAGES.slice\(3,6\)/);
+assert.match(home,/newestEditorialPreviews = \[/);
+assert.match(home,/price.toLocaleString\("fa-IR"\)/);
+assert.doesNotMatch(home,/تصویر مفهومی مجموعه فرتینی/);
+assert.doesNotMatch(home,/FERTINI \/ DELIVERY/);
+assert.doesNotMatch(home,/fertini-v5-delivery maison-wide/);
+assert.match(home,/shipping:null/);
+
 
 assert.doesNotMatch(home, /fertini-hero__text/);
 assert.match(nav, /menuMounted/);
