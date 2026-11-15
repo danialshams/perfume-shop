@@ -19,6 +19,7 @@ assert.doesNotMatch(shell, /<InitialLoader/);
 const intro = read("components/maison/MaisonIntro.tsx");
 assert.match(read("app/maison-experience.css"), /\.maison-intro__brand,\.maison-intro__sub \{ opacity: 0; visibility: hidden; \}/);
 assert.match(intro, /const START_KEY = "fertini:intro:started:v4"/);
+assert.doesNotMatch(intro,/عبور از مقدمه|maison-intro__skip/);
 assert.match(intro, /window\.sessionStorage\.setItem\(START_KEY, "1"\)/);
 assert.match(intro, /introStartedAt/);
 assert.match(intro, /performance\.now\(\) - introStartedAt/);
