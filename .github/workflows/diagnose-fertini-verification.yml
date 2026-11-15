@@ -1,0 +1,35 @@
+name: Diagnose live Fertini verification routes
+on:
+  push:
+    branches:
+      - diagnostic/fertini-public-verification-20261115
+permissions:
+  contents: read
+jobs:
+  public-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check public DNS and verification endpoints without credentials
+        shell: bash
+        run: |
+          set +e
+          echo "::group::DNS"
+          for domain in fertiniperfume.com www.fertiniperfume.com; do
+            echo "DOMAIN: $domain"
+            getent ahostsv4 "$domain" | head -6
+            echo "getent code: ${PIPESTATUS[0]}"
+            nslookup "$domain" | head -30
+          done
+          echo "::endgroup::"
+          for url in             https://fertiniperfume.com/             https://fertiniperfume.com/google6d68355c33f96d32.html             https://fertiniperfume.com/api/v1/deployment             https://www.fertiniperfume.com/google6d68355c33f96d32.html ; do
+            echo "::group::CHECK $url"
+            curl -k -L -S -s --max-time 20 --connect-timeout 8               -D /tmp/fertini-headers -o /tmp/fertini-body               -w 'HTTP=%{http_code} IP=%{remote_ip} REDIRECT=%{redirect_url} FINAL=%{url_effective} SIZE=%{size_download}\n' "$url"
+            echo "curl rc=$?"
+            echo "HEADERS:"
+            head -25 /tmp/fertini-headers || true
+            echo "BODY (max 150 bytes):"
+            head -c 150 /tmp/fertini-body || true
+            echo
+            echo "::endgroup::"
+          done
