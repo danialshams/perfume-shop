@@ -16,8 +16,8 @@ export function CinematicFooter({ content }:{ content?: FertiniSiteContent } = {
     const ctx=gsap.context(()=>{
       const targets=gsap.utils.toArray<HTMLElement>(".fertini-footer-reveal",ref.current);
       const tl=gsap.timeline({paused:true});
-      tl.fromTo(".maison-footer__wordmark",{y:38,autoAlpha:0,letterSpacing:".24em"},
-        {y:0,autoAlpha:1,letterSpacing:".08em",duration:1.3,ease:"power3.out",clearProps:"transform,opacity,visibility,letterSpacing"});
+      tl.fromTo(".maison-footer__wordmark",{y:38,autoAlpha:0},
+        {y:0,autoAlpha:1,duration:1.3,ease:"power3.out",clearProps:"transform,opacity,visibility"});
       tl.fromTo(targets,{y:19,autoAlpha:0},
         {y:0,autoAlpha:1,stagger:.095,duration:.8,ease:"power3.out",clearProps:"transform,opacity,visibility"},"-=.65");
       ScrollTrigger.create({trigger:ref.current,start:"top 66%",once:true,invalidateOnRefresh:true,onEnter:()=>tl.play()});
