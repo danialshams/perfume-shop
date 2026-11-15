@@ -1,2 +1,2 @@
-import RecordsManager from "@/components/admin/RecordsManager";
-export default function Page(){return <RecordsManager resource="customers"/>}
+import CustomerClub from "@/components/admin/CustomerClub";
+export default function Page(){return <CustomerClub/>}
