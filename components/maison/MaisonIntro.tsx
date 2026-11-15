@@ -91,7 +91,9 @@ export default function MaisonIntro() {
       // Only the intro assembles letters; section headings reveal as full lines.
       gsap.set(brand,{autoAlpha:1});
       gsap.set(line,{scaleX:0,autoAlpha:1,transformOrigin:"50% 50%"});
+      // A light beam only, never a second copy of the FERTINI letters.
       gsap.set(sheen,{autoAlpha:0,backgroundPosition:"180% 50%"});
+      gsap.set(letters,{color:"#302d29",textShadow:"0 0 0 rgba(215,174,123,0)"});
       gsap.set(sub,{autoAlpha:0,y:9});
       const scatteredX = [-104,64,-67,92,-83,75,118];
       const scatteredY = [-26,35,19,-34,30,-19,24];
@@ -103,9 +105,21 @@ export default function MaisonIntro() {
         {autoAlpha:1,x:0,y:0,filter:"blur(0px)",duration:1.48,stagger:{each:.075,from:"center"},ease:"power3.out"},.08)
         .to(line,{scaleX:1,duration:.94,ease:"power2.inOut"},2.08)
         .to(sub,{autoAlpha:1,y:0,duration:.56,ease:"power2.out"},3.10)
-        .to(sheen,{autoAlpha:.93,duration:.16},3.19)
-        .to(sheen,{backgroundPosition:"-180% 50%",duration:1.42,ease:"none"},3.20)
-        .to(sheen,{autoAlpha:0,duration:.20,ease:"sine.out"},4.46)
+        // The glow touches the real assembled letters after the hairline.
+        // Sequential color/light changes create one soft traversal; no ghost.
+        .to(sheen,{autoAlpha:.78,duration:.18},3.19)
+        .to(sheen,{backgroundPosition:"-180% 50%",duration:1.42,ease:"sine.inOut"},3.20)
+        .to(letters,{
+          color:"#a68a6a",
+          textShadow:"0 0 11px rgba(232,194,143,.65)",
+          duration:.27,stagger:{each:.14},ease:"sine.out"
+        },3.29)
+        .to(letters,{
+          color:"#302d29",
+          textShadow:"0 0 0 rgba(215,174,123,0)",
+          duration:.43,stagger:{each:.14},ease:"sine.inOut"
+        },3.59)
+        .to(sheen,{autoAlpha:0,duration:.24,ease:"sine.out"},4.48)
         .to(root,{autoAlpha:0,duration:.50,ease:"power2.inOut"},4.93);
       const elapsed = Math.max(0,(performance.now() - introStartedAt!)/1000);
       tl.time(Math.min(elapsed,tl.duration()));
@@ -126,7 +140,7 @@ export default function MaisonIntro() {
       <div className="maison-intro__brand" aria-label="FERTINI">{Array.from("FERTINI").map((letter,index)=>
         <span data-intro-letter key={index} aria-hidden="true">{letter}</span>)}</div>
       <div className="maison-intro__rule" aria-hidden="true"/>
-      <div className="maison-intro__shine" aria-hidden="true">FERTINI</div>
+      <div className="maison-intro__shine" aria-hidden="true"/>
       <span className="maison-intro__sub" dir="ltr">THE ART OF SCENT</span>
     </div>
   </div>;
