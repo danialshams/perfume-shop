@@ -126,6 +126,15 @@ html[dir="rtl"] body{font-synthesis:none}
  .fertini-v5 .fertini-v5-hero .fertini-hero__image img{object-position:50% 50%!important}
 }
 
+/* The self-hosted demo SVG has its bottle towards the left. Portrait
+   object-fit:cover must align that subject, while custom photographic slides
+   keep centered cropping. */
+@media(max-width:600px){
+ .fertini-v5 .fertini-v5-hero .fertini-hero__image.is-vector-art img{
+   object-position:12% 50%!important
+ }
+}
+
 /* V7: actual layout fixes, not global button sizing fallbacks. */
 .fertini-fragrance__variants .fertini-fragrance__quantity{flex:0 0 auto;display:grid;grid-template-columns:38px minmax(23px,auto) 38px;align-items:center;justify-items:center;gap:8px;direction:ltr}
 .fertini-fragrance__variants .fertini-fragrance__quantity svg{display:block;width:16px;height:16px;flex-shrink:0}

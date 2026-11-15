@@ -27,10 +27,6 @@ const editorialNewest=[
   "/fertini/editorial/product-ivory-02.avif",
   "/fertini/editorial/product-ivory-01.avif",
 ];
-const editorialHeroes=[
-  "/fertini/editorial/hero-amber.avif",
-  "/fertini/editorial/hero-bronze.avif",
-];
 // Low-bitrate editorial samples were only 5-6 KB and produced visibly soft
 // category images. Prefer a store manager's real upload; otherwise use the
 // existing crisp local bottle illustrations instead of enlarging thumbnails.
@@ -74,11 +70,13 @@ function ProductCard({product,large=false,mode="up",discountPercent=0,editorialI
 export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEMO_HOME_PRODUCTS,catalogState="demo",scentFamilies=[]}:{
   content?:FertiniSiteContent;products?:HomeProduct[];catalogState?:"demo"|"database"|"unavailable";scentFamilies?:Array<{id:number;name:string;image_url:string|null}>
 }){
+  // The 9 KB editorial AVIF "hero" was virtually an empty dark gradient
+  // despite decoding successfully. Use visible full-resolution vector artwork
+  // for the built-in demo; any manager-uploaded real photo remains untouched.
   const slides=content.heroSlides.map((slide,index)=>({
     ...slide,
-    photo:/^\/fertini\/hero-0[12]\.svg$/.test(slide.photo)
-      ? (index===0?editorialHeroes[0]:slide.photo) : slide.photo,
-    fallback:/^\/fertini\/hero-0[12]\.svg$/.test(slide.photo)?slide.photo:"/fertini/hero-0"+(index%2+1)+".svg",
+    photo:slide.photo,
+    fallback:"/fertini/hero-0"+(index%2+1)+".svg",
   }));
   const root=useRef<HTMLElement>(null);
   const [active,setActive]=useState(0);
@@ -230,7 +228,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
     <section className="fertini-hero fertini-v5-hero fertini-hero--immersive" aria-labelledby="fertini-hero-title">
       <h1 id="fertini-hero-title" className="sr-only">FERTINI — خانه عطر فرتینی</h1>
       <div className="fertini-hero__gallery">
-        {slides.map((slide,index)=><div key={index} className={"fertini-hero__image"+(index===active?" is-active":"")} aria-hidden={index!==active}>
+        {slides.map((slide,index)=><div key={index} className={"fertini-hero__image"+(index===active?" is-active":"")+(slide.photo.endsWith(".svg")?" is-vector-art":"")} aria-hidden={index!==active}>
           <ResilientPhoto src={slide.photo} fallback={slide.fallback}
             priority={index===0} sizes="100vw" alt={index===active?slide.alt:""}/>
         </div>)}
