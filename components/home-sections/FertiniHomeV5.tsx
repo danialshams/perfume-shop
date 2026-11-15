@@ -48,7 +48,7 @@ function FragranceCardInfo({name,subtitle,price,discountPercent=0,preview=false}
   name:string;subtitle:string;price:number|null;discountPercent?:number;preview?:boolean;
 }){
   return <div className="fertini-v5-card__info" data-fertini-caption>
-    <div className="fertini-v5-card__details">
+    <div className="fertini-v5-card__details" dir="ltr">
       <div className="fertini-v5-card__identity" dir="rtl">
         <div className="fertini-v5-card__text-mask">
           <h3 data-fertini-caption-line>{name}</h3>

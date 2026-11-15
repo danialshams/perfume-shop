@@ -129,6 +129,9 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    const name=card?.querySelector(".fertini-v5-card__identity h3");
    const price=card?.querySelector(".fertini-v5-card__price");
    const subtitle=card?.querySelector(".fertini-v5-card__subtitle");
+   const latestCard=document.querySelector(".fertini-v5-new__scroll .fertini-v5-card");
+   const latestName=latestCard?.querySelector(".fertini-v5-card__identity h3");
+   const latestPrice=latestCard?.querySelector(".fertini-v5-card__price");
    return{
     url:location.pathname,width:window.innerWidth,scrollWidth:document.documentElement.scrollWidth,
     height:document.documentElement.scrollHeight,
@@ -137,6 +140,10 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroMediaUnavailable:!!document.querySelector(".fertini-hero__image.is-active .fertini-v5-photo-unavailable"),
     heroTitleOpacity:title?Number(getComputedStyle(title).opacity):null,
     cardNameLeftOfPrice:!!name&&!!price&&name.getBoundingClientRect().right<=price.getBoundingClientRect().left+3,
+    cardLayoutIsPhysicalGrid:card?.querySelector(".fertini-v5-card__details")?
+      getComputedStyle(card.querySelector(".fertini-v5-card__details")).display==="grid":false,
+    latestNameLeftOfPrice:!!latestName&&!!latestPrice&&
+      latestName.getBoundingClientRect().right<=latestPrice.getBoundingClientRect().left+3,
     cardSubtitleBelowName:!!name&&!!subtitle&&subtitle.getBoundingClientRect().top>=name.getBoundingClientRect().bottom-4,
     cardMaskedLines:card?.querySelectorAll("[data-fertini-caption-line]").length||0,
     headerFound:!!document.querySelector("header"),
@@ -172,7 +179,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    if(state.failedImageCount>0)throw Error(name+" has failed visible media: "+JSON.stringify(state));
    if(state.optimizedImageCount>0)throw Error(name+" is still dependent on cPanel /_next/image: "+JSON.stringify(state));
    if(state.familyCaptionCount<3)throw Error(name+" scent families must have captions inside photos: "+JSON.stringify(state));
-   if(!state.cardNameLeftOfPrice||!state.cardSubtitleBelowName||state.cardMaskedLines<3)
+   if(!state.cardNameLeftOfPrice||!state.latestNameLeftOfPrice||!state.cardLayoutIsPhysicalGrid||!state.cardSubtitleBelowName||state.cardMaskedLines<3)
      throw Error(name+" perfume name, right-hand price or subordinate scent label misaligned: "+JSON.stringify(state));
    if(state.familyFailedFallbacks>0)throw Error(name+" repeats the low-quality woody fallback: "+JSON.stringify(state));
    if(state.heroHasCopy)throw Error(name+" should have a pure full-image hero");
@@ -496,7 +503,7 @@ async function validateHomepageIntroOnce(){
     let previouslyVisible=false;
     const trace=window.__fertiniIntroTrace={
       starts:0,completions:0,samples:0,mounts:0,timestamps:[],
-      lineDoneAt:null,firstShineAt:null,shinePasses:0
+      lineDoneAt:null,firstShineAt:null,shinePasses:0,ghostWordSeen:false
     };
     let previouslyMounted=false,wasShining=false;
     const inspect=()=>{
@@ -521,6 +528,7 @@ async function validateHomepageIntroOnce(){
           trace.lineDoneAt=performance.now();
       }
       const shine=document.querySelector(".maison-intro__shine");
+      if(shine?.textContent?.trim())trace.ghostWordSeen=true;
       const shining=!!shine&&getComputedStyle(shine).display!=="none"&&Number(getComputedStyle(shine).opacity)>.20;
       if(shining&&!wasShining){
         trace.shinePasses++;
@@ -548,11 +556,12 @@ async function validateHomepageIntroOnce(){
     lineDoneAt:window.__fertiniIntroTrace.lineDoneAt,
     firstShineAt:window.__fertiniIntroTrace.firstShineAt,
     shinePasses:window.__fertiniIntroTrace.shinePasses,
+    ghostWordSeen:window.__fertiniIntroTrace.ghostWordSeen,
     started:sessionStorage.getItem("fertini:intro:started:v4")
   })`);
   if(!introTrace || introTrace.starts!==1 || introTrace.completions!==1 ||
       introTrace.started!=="1" || !introTrace.lineDoneAt ||
-      !(introTrace.firstShineAt>introTrace.lineDoneAt) || introTrace.shinePasses!==1)
+      !(introTrace.firstShineAt>introTrace.lineDoneAt) || introTrace.shinePasses!==1 || introTrace.ghostWordSeen)
    throw Error("Cold-load intro flashed or restarted more than once: "+JSON.stringify(introTrace));
   process.stdout.write("COLD START INTRO TRACE "+JSON.stringify(introTrace)+"\\n");
   // The decision dialog must come AFTER the first intro and must never

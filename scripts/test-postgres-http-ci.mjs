@@ -354,5 +354,55 @@ try{
 
  const [dbRow]=await sql.unsafe("SELECT content_json FROM storefront_content WHERE id=1");
  assert.equal(JSON.parse(dbRow.content_json).bestsellerTitle,copy.bestsellerTitle);
+ // The editorial importer is a REAL authenticated DB operation, not a
+ // build-time data seed. Verify access control, zero stock and repeat safety
+ // against the isolated disposable PostgreSQL test database.
+ const importUrl="/api/v1/admin/editorial-import";
+ // CI uses an explicit loopback-only exception in the isolated PostgreSQL
+ // environment. Production retains its configured canonical HTTPS origin.
+ const importOrigin=base;
+ const importHeaders={...auth,Origin:importOrigin,"Content-Type":"application/json"};
+ const deniedImport=await read(importUrl,{method:"POST",
+  headers:{Origin:importOrigin,"Content-Type":"application/json"},
+  body:JSON.stringify({confirm:true})});
+ assert.equal(deniedImport.status,401,"Anonymous visitors must never import editorial products");
+ const csrfImport=await read(importUrl,{method:"POST",
+  headers:{...auth,"Content-Type":"application/json"},
+  body:JSON.stringify({confirm:true})});
+ assert.equal(csrfImport.status,403,"Cross-origin/Origin-less import must be rejected");
+ const unconfirmed=await read(importUrl,{method:"POST",headers:importHeaders,
+  body:JSON.stringify({confirm:false})});
+ assert.equal(unconfirmed.status,400,"Explicit admin confirmation required");
+ const firstImport=await read(importUrl,{method:"POST",headers:importHeaders,
+  body:JSON.stringify({confirm:true})});
+ const firstBody=await firstImport.text();
+ assert.equal(firstImport.status,200,"Admin gallery import failed: "+firstBody);
+ const registered=JSON.parse(firstBody);
+ assert.equal(registered.created.length,6,"All six real products must register in the DB");
+ assert.equal(registered.stock,"zero","Imported concept items may not have invented stock");
+ const [editorialCount]=await sql.unsafe(
+  "SELECT COUNT(*)::integer AS count FROM products WHERE slug LIKE 'fertini-editorial-%' AND status='ACTIVE'");
+ assert.equal(Number(editorialCount.count),6,"One product per stable editorial slug");
+ const importedLinks=await sql.unsafe(
+  "SELECT p.slug,p.name,p.scent_family_id,p.status,pi.image_url,pv.stock_qty FROM products p "+
+  "JOIN product_images pi ON pi.product_id=p.id AND pi.is_main=1 "+
+  "JOIN product_variants pv ON pv.product_id=p.id "+
+  "WHERE p.slug LIKE 'fertini-editorial-%' ORDER BY p.slug");
+ assert.equal(importedLinks.length,6);
+ assert.ok(importedLinks.every(p=>Number(p.scent_family_id)>0 &&
+  Number(p.stock_qty)===0 &&
+  String(p.image_url).startsWith("/api/v1/editorial/product-") &&
+  String(p.image_url).endsWith(".webp")),"DB records must have correct WebP, family and zero stock");
+ const repeatImport=await read(importUrl,{method:"POST",headers:importHeaders,
+  body:JSON.stringify({confirm:true})});
+ assert.equal(repeatImport.status,200);
+ const repeatBody=await repeatImport.json();
+ assert.equal(repeatBody.created.length,0,"Repeated import must be idempotent");
+ assert.equal(repeatBody.skipped.length,6);
+ const publishedImport=await read("/api/v1/products?limit=20&page=1");
+ const publishedBody=await publishedImport.json();
+ assert.ok(publishedBody.data.items.some(p=>p.slug==="fertini-editorial-roselia"),
+   "Imported products must be visible to the storefront");
+
  console.log("POSTGRES LIVE HTTP SUCCESS: catalog, admin login, homepage save/read, invalid ID, overview, health, notifications.");
 }finally{await sql.end();}

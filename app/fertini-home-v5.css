@@ -125,14 +125,18 @@
    Bestsellers and New Arrivals, on desktop and on narrow mobile screens. */
 .fertini-v5 .fertini-v5-card__info{padding-top:clamp(13px,1.6vw,21px)}
 .fertini-v5 .fertini-v5-card__details{
- display:flex;align-items:flex-start;justify-content:space-between;
- direction:ltr;gap:clamp(10px,1.8vw,24px);min-width:0;
+ /* Physical columns, not logical RTL flex order:
+    left = name + small label, right = price + discount/demo label. */
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,44%);
+ grid-template-rows:auto;align-items:start;direction:ltr;
+ column-gap:clamp(10px,1.8vw,24px);min-width:0;
 }
 .fertini-v5 .fertini-v5-card__identity{
- flex:1 1 auto;min-width:0;direction:rtl;text-align:left;
+ grid-column:1;grid-row:1;min-width:0;direction:rtl;text-align:left;
 }
 .fertini-v5 .fertini-v5-card__price-column{
- flex:0 1 auto;min-width:0;max-width:49%;direction:rtl;text-align:right;
+ grid-column:2;grid-row:1;min-width:0;max-width:100%;
+ direction:rtl;text-align:right;justify-self:stretch;
 }
 .fertini-v5 .fertini-v5-card__text-mask{
  display:block;overflow:hidden;line-height:normal;
@@ -162,7 +166,7 @@
  .fertini-v5 .fertini-v5-card__details{gap:7px}
  .fertini-v5 .fertini-v5-card__identity h3{font-size:clamp(16px,4.5vw,21px);line-height:1.55}
  .fertini-v5 .fertini-v5-card__subtitle{font-size:9px;letter-spacing:.04em;line-height:1.5}
- .fertini-v5 .fertini-v5-card__price-column{max-width:53%}
+ .fertini-v5 .fertini-v5-card__price-column{max-width:100%}
  .fertini-v5 .fertini-v5-card__price-column p.fertini-v5-card__price{font-size:clamp(10px,2.7vw,12px);line-height:1.8}
  .fertini-v5 .fertini-v5-card__price-note{font-size:9px}
 }

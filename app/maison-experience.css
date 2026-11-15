@@ -57,13 +57,26 @@
 .maison-intro__brand{display:flex;justify-content:center;white-space:nowrap;font:400 clamp(60px,11vw,152px)/1 Georgia,"Times New Roman",serif;letter-spacing:.19em;padding-left:.19em}
 .maison-intro__brand [data-intro-letter]{display:inline-block;visibility:hidden;opacity:0;will-change:transform,opacity,filter}
 .maison-intro__rule{width:clamp(110px,19vw,220px);height:1px;background:linear-gradient(90deg,transparent,#ad9070 18%,#886d51 50%,#ad9070 82%,transparent);transform:scaleX(0);transform-origin:50% 50%;opacity:0;margin-top:2px}
-.maison-intro__shine{position:absolute;left:50%;top:0;transform:translateX(-50%);white-space:nowrap;pointer-events:none;
- font:400 clamp(60px,11vw,152px)/1 Georgia,"Times New Roman",serif;letter-spacing:.19em;padding-left:.19em;
- color:transparent;background:linear-gradient(106deg,transparent 28%,rgba(164,123,72,.12) 36%,rgba(176,131,75,.48) 44%,rgba(255,252,233,.97) 51%,rgba(175,133,82,.44) 58%,transparent 71%);
- background-size:240% 100%;background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;opacity:0}
+/* This is a light, not a second text layer. Actual letter spans carry the
+   subtle gold highlight, so no shifted copy of FERTINI can move past the logo. */
+.maison-intro__shine{
+ position:absolute;left:50%;top:0;transform:translateX(-50%);
+ width:100%;height:clamp(60px,11vw,152px);
+ z-index:2;pointer-events:none;opacity:0;
+ background:linear-gradient(107deg,
+  transparent 37%,
+  rgba(188,150,104,.035) 42%,
+  rgba(212,178,126,.11) 46%,
+  rgba(255,251,223,.30) 50%,
+  rgba(199,161,111,.12) 54%,
+  transparent 63%);
+ background-size:240% 100%;background-repeat:no-repeat;
+ filter:blur(3px);mix-blend-mode:screen;
+}
 .maison-intro__sub{font-size:11px;letter-spacing:.15em}
 @media(max-width:600px){
- .maison-intro__brand,.maison-intro__shine{font-size:clamp(47px,12vw,68px);letter-spacing:.13em;padding-left:.13em}
+ .maison-intro__brand{font-size:clamp(47px,12vw,68px);letter-spacing:.13em;padding-left:.13em}
+ .maison-intro__shine{height:clamp(47px,12vw,68px)}
  .maison-intro__rule{width:148px}
 }
 
@@ -79,21 +92,12 @@
   box-shadow:0 0 1px rgba(96,70,48,.14);
   transform-origin:center center;
 }
-/* Match the very same wordmark metrics, so the reflective pass is registered
-   perfectly over FERTINI rather than appearing as a second shifted word. */
-.fertini-intro .maison-intro__shine{
-  /* Exact same glyph size and tracking as the actual FERTINI lettering. */
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:clamp(60px,11vw,152px);
-  font-weight:400;
-  letter-spacing:.19em;
-  padding-left:.19em;
-  filter:drop-shadow(0 0 5px rgba(226,190,137,.20));
+/* The sweep uses the position of the stationary wordmark, not a copied word.
+   Respect each assembled letter's own color and leave the hairline clear. */
+.fertini-intro .maison-intro__shine{white-space:normal;letter-spacing:normal;padding:0}
+.fertini-intro .maison-intro__brand [data-intro-letter]{
+ position:relative;z-index:3;will-change:color,text-shadow,transform,filter;
 }
 @media(max-width:600px){
-  .fertini-intro .maison-intro__shine{
-    font-size:clamp(47px,12vw,68px);
-    letter-spacing:.13em;
-    padding-left:.13em;
-  }
+ .fertini-intro .maison-intro__shine{height:clamp(47px,12vw,68px)}
 }
