@@ -1,0 +1,72 @@
+/* Pages for editorial preview fragrances: same olive/ivory palette, never
+   imply that an unregistered preview is a saleable database product. */
+.fertini-editorial-page{background:#f4f5f2;color:#344139;min-height:100dvh}
+.fertini-editorial-page__main{width:min(1340px,calc(100% - clamp(30px,6vw,100px)));margin:0 auto;padding:35px 0 115px}
+.fertini-editorial-page__breadcrumb{display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+ font:350 11px/1.8 "Vazirmatn",sans-serif;color:#8d988e;margin-bottom:42px}
+.fertini-editorial-page__breadcrumb a{color:#5f7565;transition:color .25s}
+.fertini-editorial-page__breadcrumb a:hover{color:#344139}
+.fertini-editorial-page__layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);align-items:center;gap:clamp(30px,6.5vw,105px)}
+.fertini-editorial-page__photo{position:relative;width:100%;aspect-ratio:4/5;background:#e5e9e3;overflow:hidden}
+.fertini-editorial-page__photo img{object-fit:cover;transition:transform 1.2s cubic-bezier(.22,1,.36,1)}
+.fertini-editorial-page__photo:hover img{transform:scale(1.025)}
+.fertini-editorial-page__copy{display:flex;flex-direction:column;align-items:flex-start;padding:40px 0;gap:18px}
+.fertini-editorial-page__eyebrow{font:400 10px/1.7 Georgia,serif;letter-spacing:.23em;color:#849486}
+.fertini-editorial-page__copy h1,.fertini-editorial-collection__head h1{font:350 clamp(38px,5vw,72px)/1.5 "Vazirmatn",sans-serif;margin:0}
+.fertini-editorial-page__latin{font:400 11px/1.5 Georgia,serif;color:#99a79a;letter-spacing:.18em}
+.fertini-editorial-page__copy>p:not(.fertini-editorial-page__notice){font:350 15px/2.5 "Vazirmatn",sans-serif;max-width:470px;color:#68796b;margin:12px 0}
+.fertini-editorial-page__family-link{font-size:12px;color:#536a59;border-bottom:1px solid #b8c4b6;padding-bottom:8px;transition:opacity .3s}
+.fertini-editorial-page__family-link:hover{opacity:.65}
+.fertini-editorial-page__price{width:100%;max-width:430px;margin-top:20px;padding:21px 0;border-top:1px solid #dce2da;border-bottom:1px solid #dce2da;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.fertini-editorial-page__price span{font-size:12px;color:#859286}
+.fertini-editorial-page__price strong{font:450 16px/1.8 "Vazirmatn",sans-serif;color:#405448}
+.fertini-editorial-page__notice{font:350 11px/2.3 "Vazirmatn",sans-serif;color:#9aa69c;max-width:600px}
+.fertini-editorial-page__notes,.fertini-editorial-page__related{margin-top:clamp(70px,10vw,150px)}
+.fertini-editorial-page__notes>span{font:10px/1.6 Georgia,serif;letter-spacing:.25em;color:#94a097}
+.fertini-editorial-page__notes h2,.fertini-editorial-page__related h2,.fertini-editorial-collection__products h2{font:350 clamp(25px,3vw,40px)/1.7 "Vazirmatn",sans-serif;margin:14px 0 34px}
+.fertini-editorial-page__notes>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(15px,3vw,45px)}
+.fertini-editorial-page__notes article{padding:24px 0;border-top:1px solid #cdd5ca}
+.fertini-editorial-page__notes article>span{color:#a3aea3;font:11px Georgia,serif}
+.fertini-editorial-page__notes h3{font:400 19px/1.9 "Vazirmatn",sans-serif;margin:16px 0 8px}
+.fertini-editorial-page__notes p{font:350 13px/2.2 "Vazirmatn",sans-serif;color:#7f8f80}
+.fertini-editorial-page__related>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px}
+.fertini-editorial-page__related a{display:flex;flex-direction:column;gap:11px;min-width:0;color:#4d5e51}
+.fertini-editorial-page__related-photo{width:100%;aspect-ratio:4/5;position:relative;overflow:hidden;background:#e3e9e1}
+.fertini-editorial-page__related-photo img{object-fit:cover;transition:transform .9s ease}
+.fertini-editorial-page__related a:hover img{transform:scale(1.035)}
+.fertini-editorial-page__related strong{font:400 18px/1.8 "Vazirmatn",sans-serif}
+.fertini-editorial-page__related small{color:#8e9c90;font:350 11px/1.7 "Vazirmatn",sans-serif}
+.fertini-editorial-collection__head{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(25px,5vw,80px);align-items:center}
+.fertini-editorial-collection__head>div:first-child{padding:30px 0}
+.fertini-editorial-collection__head p{font:350 15px/2.5 "Vazirmatn",sans-serif;color:#819083;max-width:420px}
+.fertini-editorial-collection__photo{position:relative;aspect-ratio:5/4;background:#e7e9e3;overflow:hidden}
+.fertini-editorial-collection__photo img{object-fit:cover}
+.fertini-editorial-collection__products{margin-top:clamp(75px,10vw,135px)}
+.fertini-editorial-collection__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,3vw,40px)}
+.fertini-editorial-collection__card{display:block;min-width:0;color:#46594a}
+.fertini-editorial-collection__card-photo{position:relative;aspect-ratio:4/5;overflow:hidden;background:#e3e9e1}
+.fertini-editorial-collection__card-photo img{object-fit:cover;transition:transform .9s ease}
+.fertini-editorial-collection__card:hover img{transform:scale(1.03)}
+.fertini-editorial-collection__card-info{display:flex;justify-content:space-between;align-items:start;gap:15px;margin-top:16px}
+.fertini-editorial-collection__card-info span{font:400 18px/1.7 "Vazirmatn",sans-serif}
+.fertini-editorial-collection__card-info small{font:350 11px/2 "Vazirmatn",sans-serif;color:#89978b;text-align:left}
+.fertini-editorial-collection__products>.fertini-editorial-page__notice{margin-top:30px}
+@media(max-width:850px){
+ .fertini-editorial-page__layout{grid-template-columns:1fr;gap:20px}
+ .fertini-editorial-page__copy{padding:20px 0}
+ .fertini-editorial-page__photo{aspect-ratio:1/1}
+ .fertini-editorial-collection__head{grid-template-columns:1fr}
+ .fertini-editorial-collection__photo{order:-1}
+ .fertini-editorial-page__main{padding-top:20px}
+}
+@media(max-width:600px){
+ .fertini-editorial-page__notes>div{grid-template-columns:1fr;gap:8px}
+ .fertini-editorial-page__related>div,.fertini-editorial-collection__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+ .fertini-editorial-page__related strong,.fertini-editorial-collection__card-info span{font-size:15px}
+ .fertini-editorial-collection__card-info{flex-direction:column;gap:2px}
+ .fertini-editorial-page__breadcrumb{margin-bottom:24px}
+ .fertini-editorial-page__main{padding-bottom:70px}
+}
+@media(prefers-reduced-motion:reduce){
+ .fertini-editorial-page img{transition:none!important;transform:none!important}
+}
