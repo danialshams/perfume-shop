@@ -48,7 +48,13 @@ export default function FertiniEditorialMotion(){
    el.dataset.cinematicMode=mode;
    el.dataset.photoRevealState="waiting";
    const card=el.closest<HTMLElement>("[data-fertini-card]");
-   const captions=[...(card?.querySelectorAll<HTMLElement>("[data-fertini-caption] > *")||[])];
+   // Product copy sits behind real overflow masks and rises only AFTER the
+   // photo's clip has fully opened (longest photo reveal: 1.55 seconds).
+   // Family captions keep their existing simpler reveal behavior.
+   const maskedCaptions=[...(card?.querySelectorAll<HTMLElement>("[data-fertini-caption-line]")||[])];
+   const captions=maskedCaptions.length
+     ? maskedCaptions
+     : [...(card?.querySelectorAll<HTMLElement>("[data-fertini-caption] > *")||[])];
    const mask={value:0},tl=gsap.timeline({paused:true});
    if(mode==="fade"){
     gsap.set(el,{autoAlpha:0});
@@ -61,15 +67,25 @@ export default function FertiniEditorialMotion(){
    gsap.set(img,{scale:1.045,transformOrigin:"center center"});
    tl.to(img,{scale:1,duration:mode==="stretch"?2.45:2.1,ease:"sine.out"},mode==="fade"?.85:mode==="stretch"?1.43:1.05);
    if(captions.length){
-    gsap.set(captions,{autoAlpha:0,y:12});
-    tl.to(captions,{autoAlpha:1,y:0,duration:.73,stagger:.1,ease:"power2.out"},.32);
+    if(maskedCaptions.length){
+     gsap.set(captions,{autoAlpha:0,yPercent:112});
+     // Start at 1.74s, after up/right/left/stretch/fade photo masks reveal.
+     // Name, label and price follow in a restrained vertical masked sequence.
+     tl.to(captions,{autoAlpha:1,yPercent:0,duration:.78,stagger:.11,ease:"power3.out"},1.74);
+    }else{
+     gsap.set(captions,{autoAlpha:0,y:12});
+     tl.to(captions,{autoAlpha:1,y:0,duration:.73,stagger:.1,ease:"power2.out"},.32);
+    }
    }
    let loaded=false,loading=false,started=false;
    const finish=()=>{
     el.style.clipPath="";
     gsap.set(el,{autoAlpha:1});
     gsap.set(img,{scale:1});
-    if(captions.length)gsap.set(captions,{autoAlpha:1,y:0});
+    if(captions.length){
+     if(maskedCaptions.length)gsap.set(captions,{autoAlpha:1,yPercent:0});
+     else gsap.set(captions,{autoAlpha:1,y:0});
+    }
     el.dataset.photoRevealProgress="1.000";
     el.dataset.photoRevealState="complete";
     el.dataset.fertiniMotionDone="true";
