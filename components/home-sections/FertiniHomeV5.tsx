@@ -78,8 +78,8 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
   // Replace only the built-in, low-quality placeholder slides.
   // Saved photographs chosen in the admin panel are left untouched.
   const slides=content.heroSlides.map((slide,index)=>{
-    const builtin=/^\\/fertini\\/hero-0[12]\\.svg$/.test(slide.photo) ||
-      /^\\/fertini\\/editorial\\/hero-(amber|bronze)\\.avif$/.test(slide.photo);
+    const builtin=/^\/fertini\/hero-0[12]\.svg$/.test(slide.photo) ||
+      /^\/fertini\/editorial\/hero-(amber|bronze)\.avif$/.test(slide.photo);
     return {
       ...slide,
       photo:builtin?FERTINI_HERO_IMAGES[index%2]:slide.photo,
