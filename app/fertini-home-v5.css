@@ -95,3 +95,15 @@
  .fertini-v5 .fertini-v5-family__photo .fertini-v5-family__info{bottom:18px}
  .fertini-v5 .fertini-v5-family__photo .fertini-v5-family__info h3{font-size:24px}
 }
+
+
+/* Compact price note for a staged fragrance card without live inventory.
+   The actual catalogue continues to show database-backed product prices. */
+.fertini-v5-editorial__demo-label {
+  display:inline-block;
+  font-size:10px;
+  font-weight:350;
+  margin-inline-start:8px;
+  opacity:.62;
+  vertical-align:baseline;
+}

@@ -14,19 +14,20 @@ import {FERTINI_HERO_IMAGES,FERTINI_PRODUCT_IMAGES,FERTINI_FAMILY_IMAGES} from "
 // Remaining published products keep their own real photos: never repeat the
 // same staged bottle merely to fill twelve separate card slots.
 const editorialBestsellers = FERTINI_PRODUCT_IMAGES.slice(0,3);
-const editorialNewest = FERTINI_PRODUCT_IMAGES.slice(3,5);
+const editorialNewest = FERTINI_PRODUCT_IMAGES.slice(3,6);
 
-// Editorial previews are not saleable items. The production catalogue can
-// initially be empty; in that case preserve a rich homepage without fake
-// prices, product IDs, inventory or misleading buy links.
+// These are display-only concept fragrances until the store manager publishes
+// real products; never turn them into buy links or fictitious stock entries.
+// Product names and actual prices from the database always win once available.
 const bestEditorialPreviews = [
-  {src:editorialBestsellers[0],name:"رز و کریستال",subtitle:"ROSE / CRYSTAL"},
-  {src:editorialBestsellers[1],name:"چوب سدر و وتیور",subtitle:"CEDAR / VETIVER"},
-  {src:editorialBestsellers[2],name:"زعفران و کهربا",subtitle:"SAFFRON / AMBER"},
+  {src:editorialBestsellers[0],name:"روزلیا",subtitle:"FERTINI / EAU DE PARFUM",price:2980000},
+  {src:editorialBestsellers[1],name:"نوآر",subtitle:"FERTINI / EAU DE PARFUM",price:3250000},
+  {src:editorialBestsellers[2],name:"امبرا",subtitle:"FERTINI / EAU DE PARFUM",price:3680000},
 ];
 const newestEditorialPreviews = [
-  {src:editorialNewest[0],name:"وانیل و تونکا",subtitle:"VANILLA / TONKA"},
-  {src:editorialNewest[1],name:"نرولی و چای سبز",subtitle:"NEROLI / GREEN TEA"},
+  {src:editorialNewest[0],name:"ولورا",subtitle:"FERTINI / EAU DE PARFUM",price:2890000},
+  {src:editorialNewest[1],name:"لومیرا",subtitle:"FERTINI / EAU DE PARFUM",price:3120000},
+  {src:editorialNewest[2],name:"آزور",subtitle:"FERTINI / EAU DE PARFUM",price:3450000},
 ];
 
 // Serve home images directly from the host rather than depending on its
@@ -46,8 +47,9 @@ function ProductCard({product,large=false,mode="up",discountPercent=0,editorialI
   const displayPrice=product.price===null?null:Math.round(product.price*(100-discountPercent)/100);
   return <Link href={product.href} className={"fertini-v5-card"+(large?" fertini-v5-card--large":"")} data-fertini-card>
     <div className="fertini-v5-card__media" data-fertini-photo data-photo-entrance={mode}>
-      <ResilientPhoto src={editorialImage||product.image} fallback={product.image||"/fertini/nocturne-front.svg"}
-        alt={product.name} loading={large?"eager":"lazy"}
+      <ResilientPhoto src={product.isDemo?(editorialImage||product.image):product.image}
+        fallback={product.image||"/fertini/nocturne-front.svg"}
+        alt={product.name} loading="lazy"
         sizes={large?"(min-width:960px) 32vw, 68vw":"(min-width:960px) 27vw, (min-width:600px) 46vw, 45vw"}/>
     </div>
     <div className="fertini-v5-card__info" data-fertini-caption>
@@ -57,18 +59,19 @@ function ProductCard({product,large=false,mode="up",discountPercent=0,editorialI
     </div>
   </Link>;
 }
-function EditorialPreviewCard({src,name,subtitle,mode="up",large=false}:{
-  src:string;name:string;subtitle:string;mode?:"up"|"fade"|"right"|"left"|"stretch";large?:boolean;
+function EditorialPreviewCard({src,name,subtitle,price,mode="up",large=false}:{
+  src:string;name:string;subtitle:string;price:number;
+  mode?:"up"|"fade"|"right"|"left"|"stretch";large?:boolean;
 }){
   return <article className={"fertini-v5-card fertini-v5-editorial"+(large?" fertini-v5-card--large":"")} data-fertini-card>
     <div className="fertini-v5-card__media" data-fertini-photo data-photo-entrance={mode}>
       <ResilientPhoto src={src} fallback="/fertini/nocturne-front.svg" alt={name}
-        loading="eager" sizes={large?"(min-width:960px) 32vw,68vw":"(min-width:960px) 27vw,45vw"}/>
+        loading="lazy" sizes={large?"(min-width:960px) 32vw,68vw":"(min-width:960px) 27vw,45vw"}/>
     </div>
     <div className="fertini-v5-card__info" data-fertini-caption>
       <span lang="en" dir="ltr">{subtitle}</span>
       <h3>{name}</h3>
-      <p>تصویر مفهومی مجموعه فرتینی</p>
+      <p>{price.toLocaleString("fa-IR")} تومان <span className="fertini-v5-editorial__demo-label">نمایشی</span></p>
     </div>
   </article>;
 }
@@ -107,7 +110,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
   useEffect(()=>{
     if(!ready)return;
     let raf=0,last=0;
-    const duration=6800;
+    const duration=5600;
     const tick=(time:number)=>{
       if(last===0)last=time;
       const delta=Math.min(80,time-last);
@@ -173,13 +176,8 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
     return {...f,url:live?"/products?scent_family_id="+live.id:null};
   });
   const sections={
-    shipping:content.shipping.some(method=>method.enabled)?<section className="fertini-v5-delivery maison-wide" aria-label="راهنمای روش‌های ارسال">
-      <div><span className="maison-kicker" dir="ltr" lang="en">FERTINI / DELIVERY</span>
-       <h2>ارسال سفارش</h2><p>روش‌های ارسال و زمان تقریبی رسیدن عطر خود را پیش از خرید بررسی کنید.</p></div>
-      <div className="fertini-v5-delivery__methods">{content.shipping.filter(method=>method.enabled).slice(0,3).map(method=>
-        <div key={method.id}><strong>{method.name}</strong><span>{method.estimatedDays||method.description}</span></div>)}</div>
-      <Link className="fertini-v5-cta" href="/shipping">راهنمای ارسال و هزینه‌ها</Link>
-    </section>:null,
+    // Delivery information is available on /shipping; no delivery block on home.
+    shipping:null,
     campaign:activeCampaigns.length>0?<section className="fertini-v5-campaigns maison-wide" aria-label="کمپین‌های فعال">
       {activeCampaigns.map(c=><div className="fertini-v5-campaign" key={c.id}>
         <div className="fertini-v5-campaign__banner">
@@ -257,7 +255,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
       <div className="fertini-hero__gallery">
         {slides.map((slide,index)=><div key={index} className={"fertini-hero__image"+(index===active?" is-active":"")+(slide.photo.endsWith(".svg")?" is-vector-art":"")} aria-hidden={index!==active}>
           <ResilientPhoto src={slide.photo} fallback={slide.fallback}
-            priority={index===0} sizes="100vw" alt={index===active?slide.alt:""}/>
+            priority={index<2} sizes="100vw" alt={index===active?slide.alt:""}/>
         </div>)}
         <div className="fertini-hero__controls" role="group" aria-label="اسلایدهای معرفی">
           <span lang="en" dir="ltr">{String(active+1).padStart(2,"0")} / {String(slides.length).padStart(2,"0")}</span>
