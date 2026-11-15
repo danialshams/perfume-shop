@@ -179,7 +179,9 @@ const productStyle=read("app/fertini-home-v5.css");
 assert.ok(intro.includes('gsap.set(sheen,{autoAlpha:0,backgroundPosition:"180% 50%"})'));
 assert.ok(intro.includes('.to(sheen,{backgroundPosition:"-180% 50%"'));
 assert.ok(intro.includes('.to(sheen,{autoAlpha:.78'));
-assert.ok(intro.includes('textShadow:"0 0 11px rgba(232,194,143,.65)"'));
+assert.ok(!intro.includes('textShadow:"0 0 11px rgba(232,194,143,.65)"'));
+assert.ok(!intro.includes('.to(letters,{\n          color:'));
+assert.doesNotMatch(footerMotion,/letterSpacing:/);
 assert.ok(intro.includes('className="maison-intro__shine" aria-hidden="true"/'));
 assert.ok(!intro.includes('aria-hidden="true">FERTINI</div>'));
 assert.doesNotMatch(introCss,/-webkit-background-clip:text/);
@@ -195,7 +197,9 @@ assert.match(productStyle,/direction:ltr;/);
 assert.ok(productStyle.includes("display:grid;grid-template-columns:minmax(0,1fr) minmax(0,44%)"));
 assert.ok(productStyle.includes("grid-column:1;grid-row:1"));
 assert.ok(productStyle.includes("grid-column:2;grid-row:1"));
-assert.ok(home.includes('className="fertini-v5-card__details" dir="ltr"'));
+assert.ok(home.includes('className="fertini-v5-card__details" dir="ltr" style={{display:"flex"'));
+assert.ok(home.includes('flex:"1 1 56%"'));
+assert.ok(home.includes('flex:"0 0 40%"'));
 assert.match(productStyle,/\.fertini-v5-card__text-mask\{/);
 assert.match(productStyle,/overflow:hidden/);
 assert.ok(productMotion.includes('querySelectorAll<HTMLElement>("[data-fertini-caption-line]")'));
@@ -243,18 +247,29 @@ assert.match(familyPage,/editorialFragranceHref/);
 assert.match(pagesCss,/fertini-editorial-collection__card/);
 assert.doesNotMatch(detail,/addToCart|productService.create|checkout/);
 
-// The DB importer only accepts real administrator tokens and explicit
-// confirmation. It adds no invented stock and skips products by stable slug.
+// Inventory management: one shared importer for 1000 CSV rows with preview
+// and real admin protection. Runtime boot sync is create-only and idempotent.
 const importer=read("app/api/v1/admin/editorial-import/route.ts");
+const bulk=read("app/api/v1/admin/product-bulk-import/route.ts");
 const panelProducts=read("components/PanelProductManagementComponents/products-management.tsx");
+const sync=read("server/curated-catalog-sync.ts");
+const boot=read("instrumentation.ts");
+const git=read("server/git-catalog-sync.ts");
 assert.ok(importer.includes("await requireAuth(request)"));
-assert.ok(importer.includes('admin.role!=="ADMIN"'));
-assert.ok(importer.includes("body?.confirm!==true"));
-assert.ok(importer.includes("getByIdOrSlug(slug)"));
-assert.ok(importer.includes("stock_qty:0"));
-assert.ok(importer.includes("createProductSchema.parse(data)"));
-assert.ok(panelProducts.includes("ثبت عطرهای گالری"));
-assert.ok(panelProducts.includes("Popconfirm"));
-assert.ok(panelProducts.includes("/api/v1/admin/editorial-import"));
+assert.ok(sync.includes("getByIdOrSlug(slug)"));
+assert.ok(sync.includes("stock_qty:0"));
+assert.ok(sync.includes("createProductSchema.parse"));
+assert.ok(boot.includes("/home/fertinip/fertini-runtime"));
+assert.ok(boot.includes("syncGitCatalog"));
+assert.ok(git.includes('catalog/products.csv'));
+assert.ok(bulk.includes("await requireAuth(request)"));
+assert.ok(bulk.includes('action==="preview"'));
+assert.ok(bulk.includes('existing==="skip"'));
+assert.ok(panelProducts.includes("ProductBulkImport"));
+assert.ok(!panelProducts.includes("ثبت عطرهای گالری"));
+assert.ok(read("app/admin/(panel)/customers/page.tsx").includes("CustomerClub"));
+assert.ok(read("components/admin/CustomerClub.tsx").includes("purchaseCount"));
+assert.ok(!read("components/admin/CustomerClub.tsx").includes("points"));
+assert.ok(read("server/validations/product.validation.ts").includes("validatePhotoChoices"));
 
 console.log("FERTINI v4 showroom, filters, motion and editorial SEO assertions passed.");
