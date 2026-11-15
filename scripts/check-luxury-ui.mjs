@@ -70,15 +70,27 @@ assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{autoAlph
 assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{backgroundPosition'));
 assert.match(home,/function ResilientPhoto/);
 assert.match(home,/fill unoptimized priority=/);
-assert.match(home,/src=\{product.image\} fallback=/);
+assert.match(home,/product.isDemo&&editorialImage/);
 assert.match(home,/fallback=\{slide.fallback\}/);
-assert.match(home,/photo:slide.photo/);
+assert.match(home,/photography\/hero-0/);
 assert.doesNotMatch(home,/editorialHeroes/);
 assert.match(read("app/fertini-polish-v6.css"),/\.fertini-hero__image\.is-vector-art img/);
-assert.match(home,/fallback=\{\["\/fertini\/nocturne-front.svg"/);
+assert.match(home,/fallback=\{editorialFamilies\[index%3\]\}/);
 assert.match(galleryCss,/\.fertini-v5-family__photo::after/);
 assert.match(galleryCss,/\.fertini-v5-family__photo \.fertini-v5-family__info/);
 assert.match(home,/family.subtitle\|\|"OLFACTIVE FAMILY"/);
+for(const image of ["hero-01","hero-02","fragrance-01","fragrance-02","fragrance-03","fragrance-04","fragrance-05","fragrance-06","fragrance-07"]){
+ const file="public/fertini/photography/"+image+".webp";
+ const bytes=readFileSync(file);
+ assert.ok(bytes.length>20000,"photo is too small: "+file);
+ assert.equal(bytes.toString("ascii",0,4),"RIFF","Invalid WebP: "+file);
+ assert.equal(bytes.toString("ascii",8,12),"WEBP","Invalid WebP: "+file);
+}
+assert.match(home,/function EditorialCard/);
+assert.match(home,/bestselling.length/);
+assert.match(home,/latest.length/);
+assert.match(home,/liveFamilies.length>=3/);
+
 
 assert.doesNotMatch(home, /fertini-hero__text/);
 assert.match(nav, /menuMounted/);
