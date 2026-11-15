@@ -224,7 +224,7 @@ export default function SeoStudio(){
   </div>}
   <footer className="fst-seo-savebar">
    <span>{changed?"تغییرات ذخیره نشده‌اند":"همه تغییرات ذخیره شده‌اند"}</span>
-   <div><button className="fst-btn" type="button" disabled={busy} onClick={()=>void reload()}><RefreshCw size={15}/> بازخوانی</button>
+   <div><button className="fst-btn" type="button" disabled={busy} onClick={()=>{if(!changed||window.confirm("تغییرات ذخیره‌نشده حذف شوند؟"))void reload()}}><RefreshCw size={15}/> بازخوانی</button>
    <button className="fst-btn fst-btn-primary" type="submit" disabled={busy||!changed}><Save size={16}/> {busy?"در حال ذخیره…":"ذخیره تنظیمات"}</button></div>
   </footer>
   </form>

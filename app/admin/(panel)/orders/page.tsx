@@ -812,7 +812,7 @@ function AdminOrdersPageContent() {
       </div>
     </div>
     {operationError&&<div className="fst-error" role="alert">{operationError}</div>}
-    <main className="mx-auto w-full max-w-7xl py-4 md:py-6">
+    <section className="mx-auto w-full max-w-7xl py-4 md:py-6">
       {/* ---------- Filters ---------- */}
       <div
         className={`${
@@ -904,7 +904,7 @@ function AdminOrdersPageContent() {
             return (
               <article
                 key={order.id}
-                className="overflow-hidden rounded-2xl border border-zinc-200 bg-white"
+                className="fst-order-mobile overflow-hidden rounded-2xl border border-zinc-200 bg-white"
               >
                 {/* row 1: id + payment */}
                 <div className="flex items-center justify-between gap-3 border-b border-zinc-100 px-4 py-3">
@@ -1118,7 +1118,7 @@ function AdminOrdersPageContent() {
           </button>
         </div>
       </div>
-    </main>
+    </section>
 
     {/* ---------- Details: bottom sheet on mobile, modal on desktop ---------- */}
     {openDetails && selectedOrder ? (
@@ -1181,7 +1181,7 @@ function AdminOrdersPageContent() {
               <div className="space-y-3 p-3 sm:space-y-4 sm:p-5">
                 {/* amounts – most scanned, so first */}
                 <Section title="مبالغ">
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                     <InfoRow
                       label="تخفیف"
                       value={`${formatPrice(selectedOrder.discount_amount)}`}
