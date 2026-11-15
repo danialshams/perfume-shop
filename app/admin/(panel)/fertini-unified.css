@@ -87,3 +87,51 @@
  .fertini-studio .fst-club-stats{grid-template-columns:1fr 1fr}
  .fertini-studio .fst-club-stats b{font-size:11px}
 }
+
+/* Product media selection and Excel-friendly bulk intake */
+.fertini-studio .fst-image-main{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 15px;
+ border:1px solid #d8e1d6;color:#617666;background:#f4f7f3;border-radius:5px;font-size:12px;cursor:pointer;
+ transition:background .2s,color .2s,border-color .2s}
+.fertini-studio .fst-image-main:hover{border-color:#708b76;background:#edf2eb}
+.fertini-studio .fst-image-main.is-main{background:#435d4b;color:#fff;border-color:#435d4b}
+.fertini-studio .fst-image-main:disabled{opacity:.45;cursor:not-allowed}
+.fst-bulk-overlay{position:fixed;inset:0;z-index:1800;background:rgba(30,43,34,.46);
+ backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:clamp(8px,3vw,28px)}
+.fst-bulk-dialog{width:min(100%,760px);max-height:min(92dvh,920px);overflow:hidden;display:flex;flex-direction:column;
+ background:#fbfcf8;border:1px solid #e1e7df;border-radius:8px;
+ box-shadow:0 24px 68px rgba(25,35,28,.14);color:#3d5040}
+.fst-bulk-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;
+ padding:clamp(20px,3vw,31px);border-bottom:1px solid #e6ece4}
+.fst-bulk-head small{font:10px Georgia,serif;letter-spacing:.17em;color:#97a69a}
+.fst-bulk-head h2{font:500 clamp(21px,2.5vw,28px)/1.8 "Vazirmatn",sans-serif;margin:7px 0}
+.fst-bulk-head p{font:350 12px/2.1 "Vazirmatn",sans-serif;color:#849587}
+.fst-bulk-head>button{background:none;border:0;color:#8d9a8f;padding:10px;cursor:pointer}
+.fst-bulk-body{overflow-y:auto;padding:clamp(18px,3vw,31px);display:flex;flex-direction:column;gap:15px}
+.fst-bulk-body>.fst-helper{color:#829184;font-size:12px;line-height:2.1}
+.fst-bulk-template{align-self:flex-start}
+.fst-bulk-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;
+ min-height:160px;padding:20px;border:1px dashed #c2d0c1;background:#f4f7f2;text-align:center;
+ border-radius:6px;cursor:pointer;transition:background .25s}
+.fst-bulk-drop:hover{background:#ecf1ea}
+.fst-bulk-drop svg{color:#718a76}
+.fst-bulk-drop strong{font-size:13px;font-weight:500}
+.fst-bulk-drop span{font-size:11px;color:#93a194}
+.fst-bulk-drop input{display:none}
+.fst-bulk-selected{display:flex;align-items:center;gap:10px;font-size:12px;color:#607665}
+.fst-bulk-preview{padding:15px;border:1px solid #e2e8df;border-radius:5px}
+.fst-bulk-preview>strong{font-size:13px;font-weight:500}
+.fst-bulk-preview>div{max-height:205px;overflow:auto;margin:12px 0}
+.fst-bulk-preview>div>div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #edf0eb;font-size:12px}
+.fst-bulk-preview small{font-size:11px;color:#98a79a}
+.fst-bulk-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;border-top:1px solid #e6ece4;padding:18px clamp(18px,3vw,31px);background:#fffefa}
+.fst-bulk-dialog :is(button,input,select):focus-visible{outline:2px solid #8fa895;outline-offset:2px}
+.fst-bulk-dialog button:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:650px){
+ .fst-bulk-overlay{padding:0;align-items:flex-end}
+ .fst-bulk-dialog{width:100%;max-height:95dvh;border-radius:12px 12px 0 0}
+ .fst-bulk-head{padding:20px 18px}
+ .fst-bulk-body{padding:18px}
+ .fst-bulk-actions{position:sticky;bottom:0;padding:14px 18px calc(14px + env(safe-area-inset-bottom))}
+ .fst-bulk-actions>.fst-btn{flex:1}
+ .fst-bulk-drop{min-height:135px}
+}
