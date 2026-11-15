@@ -22,15 +22,18 @@ try{
  const read=async(path,init)=>fetch(base+path,init);
  const home=await read("/");
  assert.equal(home.status,200,"Home must render with active PostgreSQL catalog");
- const verificationFile=await read("/487910412.txt");
- assert.equal(verificationFile.status,200,"eNamad domain verification file must be publicly available");
- assert.equal(await verificationFile.text(),"","eNamad verification file must be empty");
+ // Search Console requires the *exact* HTML file, and it must remain public after verification.
+ const verificationFile=await read("/google6d68355c33f96d32.html");
+ assert.equal(verificationFile.status,200,"Google ownership HTML file must be publicly available");
+ assert.equal(await verificationFile.text(),"google-site-verification: google6d68355c33f96d32.html",
+  "Search Console ownership file must contain the exact Google-provided token without modifications");
+ const oldVerification=await read("/487910412.txt");
+ assert.equal(oldVerification.status,404,"Obsolete eNamad ownership file must be removed");
  const html=await home.text();
  assert.ok(html.includes("FERTINI"),"Homepage should display showroom branding");
  const title=html.match(/<title>([^<]*)<\/title>/i)?.[1]||"";
- assert.ok(title.includes("487910412"),"eNamad verification code must appear in homepage HTML title");
- assert.match(html,/<meta name="enamad" content="487910412"\s*\/?\s*>/,
-   "eNamad verification tag must be present in the server-rendered homepage");
+ assert.ok(!title.includes("487910412"),"Obsolete eNamad code must not remain in homepage title");
+ assert.doesNotMatch(html,/<meta[^>]*name=["']enamad["']/i,"Obsolete eNamad meta tag must be removed");
  const products=await read("/api/v1/products?limit=20&page=1");
  assert.equal(products.status,200,"Public product API failed: "+products.status);
  const catalog=await products.json();
