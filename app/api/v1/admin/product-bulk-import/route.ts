@@ -76,6 +76,9 @@ export async function POST(request:NextRequest){
   process.env.APP_URL?new URL(process.env.APP_URL).origin:"",
   process.env.NEXT_PUBLIC_SITE_URL?new URL(process.env.NEXT_PUBLIC_SITE_URL).origin:"",
  ].filter(Boolean));
+ allowedOrigins.add("https://fertiniperfume.com");
+ if(process.env.CI==="true"&&process.env.FERTINI_PG_TEST==="isolated-disposable")
+  allowedOrigins.add("http://127.0.0.1:3211");
  if(!origin||!allowedOrigins.has(origin))
   return NextResponse.json({error:"مبدأ درخواست معتبر نیست."},{status:403,headers:noCache});
  try{const admin=await requireAuth(request);if(admin.role!=="ADMIN")throw Error("Forbidden");}
