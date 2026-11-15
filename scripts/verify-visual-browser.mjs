@@ -131,6 +131,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     familyCaptionCount:[...document.querySelectorAll(".fertini-v5-family__photo .fertini-v5-family__info h3")].filter(x=>x.textContent?.trim().length>1).length,
     heroHasCopy:!!hero?.querySelector(".fertini-hero__text"),
     heroImagePosition:img?getComputedStyle(img).objectPosition:null,
+    heroPhotoUrl:img?(img.currentSrc||img.src):"",
     persianFont:getComputedStyle(document.body).fontFamily,
     unfinishedPhotoClip:[...document.querySelectorAll(".fertini-v5 [data-fertini-photo][data-photo-reveal-state='complete']")].some(el=>getComputedStyle(el).clipPath!=="none"),
     documentScrollUnlocked: getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden",
@@ -151,7 +152,12 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    if(state.optimizedImageCount>0)throw Error(name+" is still dependent on cPanel /_next/image: "+JSON.stringify(state));
    if(state.familyCaptionCount<3)throw Error(name+" scent families must have captions inside photos: "+JSON.stringify(state));
    if(state.heroHasCopy)throw Error(name+" should have a pure full-image hero");
-   if(state.width<600&&!state.heroImagePosition?.startsWith("50%"))throw Error(name+" portrait hero bottle is not centered: "+JSON.stringify(state));
+   if(state.width<600){
+     const builtin=state.heroPhotoUrl.includes("/fertini/hero-0");
+     const target=builtin?"12%":"50%";
+     if(!state.heroImagePosition?.startsWith(target))
+       throw Error(name+" portrait hero framing was incorrect: "+JSON.stringify(state));
+   }
    if(!state.persianFont.includes("Vazirmatn"))throw Error(name+" Persian font not applied");
    if(state.unfinishedPhotoClip)throw Error(name+" completed photo was clipped again: "+JSON.stringify(state));
    if(!state.documentScrollUnlocked)throw Error(name+" document remains scroll locked after intro: "+JSON.stringify(state));
