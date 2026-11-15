@@ -9,7 +9,7 @@ const metrics=[
  {key:"products",label:"محصولات",icon:Package},
  {key:"orders",label:"سفارش‌ها",icon:ShoppingBag},
  {key:"categories",label:"دسته‌بندی‌ها",icon:Shapes},
- {key:"customers",label:"مشتریان",icon:Users},
+ {key:"customers",label:"مشتریان باشگاه",icon:Users},
 ] as const;
 const tasks=[
  {href:"/admin/products",title:"مدیریت عطرها",detail:"افزودن عطر، قیمت، عکس و موجودی",icon:Package},
