@@ -71,6 +71,9 @@ jobs:
           test -d .next/static
           mkdir -p .next/standalone/.next
           cp -a public .next/standalone/public
+          # Catalog is server-only: include for PM2 import, never expose in /public.
+          mkdir -p .next/standalone/catalog
+          cp -a catalog/products.csv .next/standalone/catalog/products.csv
           cp -a .next/static .next/standalone/.next/static
           # cPanel's app runner uses "npm start"; do not run "next start"
           # because the standalone runtime has only traced dependencies.
