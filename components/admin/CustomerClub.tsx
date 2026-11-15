@@ -72,3 +72,4 @@ export default function CustomerClub(){
     </div>
    </>:<div className="fst-card fst-club-empty">مشتری‌ای با این مشخصات پیدا نشد.</div>}
  </div>;
+}
