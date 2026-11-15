@@ -22,9 +22,10 @@ jobs:
             nslookup "$domain" | head -30
           done
           echo "::endgroup::"
-          for url in             https://fertiniperfume.com/             https://fertiniperfume.com/google6d68355c33f96d32.html             https://fertiniperfume.com/api/v1/deployment             https://www.fertiniperfume.com/google6d68355c33f96d32.html ; do
+          for url in             https://fertiniperfume.com/             https://fertiniperfume.com/google6d68355c33f96d32.html             https://fertiniperfume.com/api/v1/deployment             https://www.fertiniperfume.com/google6d68355c33f96d32.html \
+            https://fertiniperfume.com/robots.txt ; do
             echo "::group::CHECK $url"
-            curl -k -L -S -s --max-time 20 --connect-timeout 8               -D /tmp/fertini-headers -o /tmp/fertini-body               -w 'HTTP=%{http_code} IP=%{remote_ip} REDIRECT=%{redirect_url} FINAL=%{url_effective} SIZE=%{size_download}\n' "$url"
+            curl -L -S -s --max-time 20 --connect-timeout 8               -D /tmp/fertini-headers -o /tmp/fertini-body               -w 'HTTP=%{http_code} IP=%{remote_ip} REDIRECT=%{redirect_url} FINAL=%{url_effective} SIZE=%{size_download}\n' "$url"
             echo "curl rc=$?"
             echo "HEADERS:"
             head -25 /tmp/fertini-headers || true
