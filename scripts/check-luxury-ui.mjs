@@ -67,7 +67,7 @@ const galleryCss=read("app/fertini-home-v5.css");
 assert.doesNotMatch(refinementCss,/\.fertini-intro \.maison-intro__overline,\.fertini-intro \.maison-intro__rule\{display:none!important\}/);
 assert.match(introCss,/\.fertini-intro \.maison-intro__rule\{[\s\S]*?display:block!important/);
 assert.match(introCss,/background-repeat:no-repeat/);
-assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{autoAlpha:.82'));
+assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{autoAlpha:.93'));
 assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{backgroundPosition'));
 assert.match(home,/function ResilientPhoto/);
 assert.match(home,/fill unoptimized priority=/);
