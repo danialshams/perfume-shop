@@ -58,6 +58,25 @@ for (const name of ["hero-amber","hero-bronze","product-amber-01","product-amber
  assert.ok(existsSync("public/fertini/editorial/" + name + ".avif"),"Missing editorial media: "+name);
 }
 
+// Regression guards for the hosted homepage: the legacy refinement sheet
+// must not hide the intro hairline, and the light sweep must not tile/repeat.
+const introCss=read("app/maison-experience.css");
+const refinementCss=read("app/fertini-refinement.css");
+const galleryCss=read("app/fertini-home-v5.css");
+assert.doesNotMatch(refinementCss,/\.fertini-intro \.maison-intro__overline,\.fertini-intro \.maison-intro__rule\{display:none!important\}/);
+assert.match(introCss,/\.fertini-intro \.maison-intro__rule\{[\s\S]*?display:block!important/);
+assert.match(introCss,/background-repeat:no-repeat/);
+assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{autoAlpha:.82'));
+assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{backgroundPosition'));
+assert.match(home,/function ResilientPhoto/);
+assert.match(home,/fill unoptimized priority=/);
+assert.match(home,/src=\{product.image\} fallback=/);
+assert.match(home,/fallback=\{slide.fallback\}/);
+assert.match(home,/fallback=\{\["\/fertini\/nocturne-front.svg"/);
+assert.match(galleryCss,/\.fertini-v5-family__photo::after/);
+assert.match(galleryCss,/\.fertini-v5-family__photo \.fertini-v5-family__info/);
+assert.match(home,/family.subtitle\|\|"OLFACTIVE FAMILY"/);
+
 assert.doesNotMatch(home, /fertini-hero__text/);
 assert.match(nav, /menuMounted/);
 assert.match(home, /HomeProduct/);
