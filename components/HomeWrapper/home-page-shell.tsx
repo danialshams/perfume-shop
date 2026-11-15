@@ -1,4 +1,5 @@
 import MaisonIntro from "@/components/maison/MaisonIntro";
+import MaisonMusicInvitation from "@/components/maison/MaisonMusicInvitation";
 import LuxuryNavbar from "@/components/home-sections/navbar";
 import CinematicStorefront, { CinematicFooter } from "@/components/home-sections/CinematicStorefront";
 import type { FertiniSiteContent } from "@/lib/fertini-site-content";
@@ -12,6 +13,7 @@ export default function HomePageShell({ content, products, catalogState, scentFa
 }) {
   return <div className="ql-home min-h-screen">
     <MaisonIntro />
+    <MaisonMusicInvitation />
     <LuxuryNavbar />
     <CinematicStorefront content={content} products={products} catalogState={catalogState} scentFamilies={scentFamilies}/>
     <CinematicFooter content={content} />
