@@ -107,3 +107,15 @@
   opacity:.62;
   vertical-align:baseline;
 }
+
+/* When a private host photograph cannot be read, surface an honest error
+   rather than silently swapping every family for the same blurry bottle. */
+.fertini-v5-photo-unavailable{
+  position:absolute;inset:0;z-index:0;display:grid;place-items:center;
+  color:rgba(255,255,255,.78);font-size:12px;line-height:1.8;
+  text-align:center;padding:25px;background:transparent;
+}
+.fertini-v5-photo-unavailable span{padding:8px 14px;background:rgba(20,24,21,.36);border-radius:2px}
+.fertini-v5-family--woody .fertini-v5-family__photo{background:linear-gradient(140deg,#674e3a,#9a7656 45%,#483728)}
+.fertini-v5-family--oud .fertini-v5-family__photo{background:linear-gradient(150deg,#141719,#51423b 55%,#262321)}
+.fertini-v5-family--vanilla .fertini-v5-family__photo{background:linear-gradient(140deg,#be9c74,#e6d5bb 55%,#aa855d)}
