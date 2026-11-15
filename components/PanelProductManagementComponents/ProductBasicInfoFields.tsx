@@ -31,17 +31,17 @@ export default function ProductBasicInfoFields({categories = [], scentFamilies =
       <div><h3>اطلاعات محصول</h3><p>نام، دسته و گروه بویایی را انتخاب کنید.</p></div>
     </div>
     <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2">
-      <Form.Item name="name" label="نام عطر" className="md:col-span-2"
+      <Form.Item name="name" label="نام عطر *" className="md:col-span-2"
         rules={[{required:true,message:"نام عطر را وارد کنید"},{min:2,message:"نام باید حداقل دو حرف داشته باشد"}]}>
         <Input size="large" placeholder="مثلاً فرتینی نوآر" autoComplete="off"/>
       </Form.Item>
 
-      <Form.Item name="parent_category_id" label="دسته‌بندی اصلی">
+      <Form.Item name="parent_category_id" label="دسته‌بندی اصلی (اختیاری)">
         <Select size="large" allowClear showSearch optionFilterProp="label"
           placeholder="انتخاب دسته اصلی" options={parents}
           onChange={() => form.setFieldValue("category_id", undefined)}/>
       </Form.Item>
-      <Form.Item name="category_id" label="زیردسته">
+      <Form.Item name="category_id" label="زیردسته (اختیاری)">
         <Select size="large" allowClear showSearch optionFilterProp="label"
           placeholder={parentId ? "انتخاب زیردسته" : "ابتدا دسته اصلی را انتخاب کنید"}
           disabled={!parentId} options={children}/>
@@ -57,14 +57,14 @@ export default function ProductBasicInfoFields({categories = [], scentFamilies =
         }}/>
       </Form.Item>
       {mode === "EXISTING" ?
-        <Form.Item name="scent_family_id" className="md:col-span-2" label="رایحه محصول"
+        <Form.Item name="scent_family_id" className="md:col-span-2" label="گروه بویایی *"
           rules={[{required:true,message:"گروه بویایی را انتخاب کنید"}]}>
           <Select size="large" showSearch optionFilterProp="label" options={families}
             placeholder={families.length ? "گروه بویایی را انتخاب کنید" : "ابتدا گروه بویایی جدید بسازید"}/>
         </Form.Item>
         :
         <Form.Item name={["new_scent_family","name"]} className="md:col-span-2"
-          label="نام گروه بویایی جدید"
+          label="نام گروه بویایی جدید *"
           rules={[{required:true,message:"نام گروه بویایی را وارد کنید"},{min:2,message:"نام حداقل دو حرف داشته باشد"}]}>
           <Input size="large" placeholder="مثلاً چوبی، مرکباتی یا گلی"/>
         </Form.Item>
@@ -74,14 +74,12 @@ export default function ProductBasicInfoFields({categories = [], scentFamilies =
         برای گروه بویایی محصول نیازی به آپلود تصویر نیست.
       </p>
 
-      <Form.Item name="description" label="توضیحات محصول" className="md:col-span-2">
+      <Form.Item name="description" label="توضیحات محصول (اختیاری)" className="md:col-span-2">
         <Input.TextArea rows={4} placeholder="رایحه، حس و ویژگی‌های عطر را به زبان ساده توصیف کنید." showCount maxLength={5000}/>
       </Form.Item>
 
       <div className="md:col-span-2 fst-product-options">
-        <Form.Item name="is_featured" valuePropName="checked" label="محصول ویژه">
-          <Switch/>
-        </Form.Item>
+  
         <Form.Item name="is_best_seller" valuePropName="checked" label="پرفروش">
           <Switch/>
         </Form.Item>

@@ -404,5 +404,59 @@ try{
  assert.ok(publishedBody.data.items.some(p=>p.slug==="fertini-editorial-roselia"),
    "Imported products must be visible to the storefront");
 
+ // Generic 100+ perfume CSV/JSON import: preview has no writes, repeated
+ // SKUs become grouped sizes and a retry does not duplicate DB inventory.
+ const bulkUrl="/api/v1/admin/product-bulk-import";
+ const bulkHeaders={...auth,Origin:base,"Content-Type":"application/json"};
+ const basic=(sku,volume)=>({sku,name:"عطر تست گروهی",group:"چوبی و سدر",
+  type:"GROUPED",volume_ml:volume,price:volume*4100,discount_price:null,stock_qty:2,
+  images:[imagePath],main_image:imagePath,description:"تست ورود گروهی",is_best_seller:false});
+ const bulkRows=[basic("fertini-bulk-ci",50),basic("fertini-bulk-ci",100)];
+ const anonymousBulk=await read(bulkUrl,{method:"POST",headers:{Origin:base,"Content-Type":"application/json"},
+  body:JSON.stringify({rows:bulkRows,action:"preview",existing:"skip"})});
+ assert.equal(anonymousBulk.status,401,"Bulk catalogue must require an actual administrator");
+ const preview=await read(bulkUrl,{method:"POST",headers:bulkHeaders,
+  body:JSON.stringify({rows:bulkRows,action:"preview",existing:"skip"})});
+ assert.equal(preview.status,200,"Bulk preview must validate before saving: "+await preview.text().catch(()=>"?"));
+ const [beforeBulk]=await sql.unsafe("SELECT COUNT(*)::integer AS total FROM products WHERE slug='fertini-bulk-ci'");
+ assert.equal(Number(beforeBulk.total),0,"Preview may not mutate production tables");
+ const applyBulk=await read(bulkUrl,{method:"POST",headers:bulkHeaders,
+  body:JSON.stringify({rows:bulkRows,action:"import",existing:"skip",confirm:true})});
+ const applyResult=await applyBulk.json();
+ assert.equal(applyBulk.status,200,"Bulk insert failed "+JSON.stringify(applyResult));
+ assert.deepEqual(applyResult.created,["fertini-bulk-ci"]);
+ const importedVolumes=await sql.unsafe(
+  "SELECT v.volume_ml, v.stock_qty, v.price FROM product_variants v JOIN products p ON p.id=v.product_id WHERE p.slug='fertini-bulk-ci' ORDER BY v.volume_ml");
+ assert.deepEqual(importedVolumes.map(x=>Number(x.volume_ml)),[50,100]);
+ const applyBulkAgain=await read(bulkUrl,{method:"POST",headers:bulkHeaders,
+  body:JSON.stringify({rows:bulkRows,action:"import",existing:"skip",confirm:true})});
+ assert.equal(applyBulkAgain.status,200);
+ const repeatedBulk=await applyBulkAgain.json();
+ assert.deepEqual(repeatedBulk.skipped,["fertini-bulk-ci"],"Importing twice must not duplicate products");
+ const invalidBulk=await read(bulkUrl,{method:"POST",headers:bulkHeaders,
+  body:JSON.stringify({rows:[{...basic("ci-invalid",50),discount_price:9999999999}],action:"import",existing:"skip",confirm:true})});
+ assert.equal(invalidBulk.status,422,"Higher discounted price must be rejected before DB mutation");
+
+ // Paid orders are ranked by actual total and order count, normalized by
+ // mobile number, without any arbitrary points system.
+ const orderSpecs=[
+  ["ci-club-a","+989121111111",500000],["ci-club-b","09121111111",1000000],
+  ["ci-club-c","09129999999",2000000],["ci-club-cancelled","09120000000",9000000],
+ ];
+ for(const [number,phone,amount] of orderSpecs){
+  await sql.unsafe("INSERT INTO orders (order_number,customer_name,customer_phone,status,payment_status,shipping_province,shipping_city,shipping_address,total_amount) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+   [number,"مشتری باشگاه تست",phone,number==="ci-club-cancelled"?"CANCELLED":"PROCESSING",
+    "PAID","تهران","تهران","آدرس تست",amount]);
+ }
+ const club=await read("/api/v1/admin/customer-club?page=1&limit=100",{headers:auth});
+ assert.equal(club.status,200,"Real customer club must be accessible to authenticated admin");
+ const clubBody=await club.json();
+ const merged=clubBody.items.find(x=>x.mobile==="09121111111");
+ assert.ok(merged&&merged.purchaseCount===2&&merged.totalSpent===1500000,
+  "Mobile normalization should merge the same buyer's paid orders");
+ assert.ok(!clubBody.items.some(x=>x.mobile==="09120000000"&&x.purchaseCount>0),
+  "Cancelled orders must not increase club purchase totals");
+ assert.ok(!("points" in merged),"The club does not calculate points");
+
  console.log("POSTGRES LIVE HTTP SUCCESS: catalog, admin login, homepage save/read, invalid ID, overview, health, notifications.");
 }finally{await sql.end();}

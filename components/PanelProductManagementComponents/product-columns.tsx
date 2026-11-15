@@ -151,18 +151,6 @@ export function getProductColumns({
         },
 
         {
-            title: "ویژه",
-            dataIndex: "is_featured",
-            key: "is_featured",
-            width: 100,
-            render: (value) =>
-                boolify(value) ? (
-                    <AdminStatusBadge type="featured" label="بله" />
-                ) : (
-                    <AdminStatusBadge type="not-featured" label="خیر" />
-                ),
-        },
-        {
             title: "پرفروش",
             dataIndex: "is_best_seller",
             key: "is_best_seller",

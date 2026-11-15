@@ -93,7 +93,7 @@ export default function MaisonIntro() {
       gsap.set(line,{scaleX:0,autoAlpha:1,transformOrigin:"50% 50%"});
       // A light beam only, never a second copy of the FERTINI letters.
       gsap.set(sheen,{autoAlpha:0,backgroundPosition:"180% 50%"});
-      gsap.set(letters,{color:"#302d29",textShadow:"0 0 0 rgba(215,174,123,0)"});
+      // Letter fill and font metrics must remain constant throughout the entire animation.
       gsap.set(sub,{autoAlpha:0,y:9});
       const scatteredX = [-104,64,-67,92,-83,75,118];
       const scatteredY = [-26,35,19,-34,30,-19,24];
@@ -109,16 +109,8 @@ export default function MaisonIntro() {
         // Sequential color/light changes create one soft traversal; no ghost.
         .to(sheen,{autoAlpha:.78,duration:.18},3.19)
         .to(sheen,{backgroundPosition:"-180% 50%",duration:1.42,ease:"sine.inOut"},3.20)
-        .to(letters,{
-          color:"#a68a6a",
-          textShadow:"0 0 11px rgba(232,194,143,.65)",
-          duration:.27,stagger:{each:.14},ease:"sine.out"
-        },3.29)
-        .to(letters,{
-          color:"#302d29",
-          textShadow:"0 0 0 rgba(215,174,123,0)",
-          duration:.43,stagger:{each:.14},ease:"sine.inOut"
-        },3.59)
+        // A real light beam crosses the motionless wordmark: never recolor
+        // or re-render letters, which changes font antialiasing/weight.
         .to(sheen,{autoAlpha:0,duration:.24,ease:"sine.out"},4.48)
         .to(root,{autoAlpha:0,duration:.50,ease:"power2.inOut"},4.93);
       const elapsed = Math.max(0,(performance.now() - introStartedAt!)/1000);

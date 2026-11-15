@@ -38,10 +38,10 @@ export default function ProductImagesList({
               throw new Error("حداقل یک تصویر برای محصول وارد کنید");
             }
 
-            const hasMain = images.some((item: { is_main?: boolean }) => Boolean(item?.is_main));
+            const countMain=images.filter((item: {is_main?:boolean;image_url?:string})=>Boolean(item?.is_main&&item?.image_url)).length;
 
-            if (!hasMain) {
-              throw new Error("حداقل یک تصویر باید به عنوان تصویر اصلی انتخاب شود");
+            if (countMain !== 1) {
+              throw new Error("دقیقاً یک تصویر آپلودشده را به عنوان عکس اصلی انتخاب کنید");
             }
           },
         },
@@ -189,8 +189,17 @@ export default function ProductImagesList({
                       }}
                     />
                   </Form.Item>
-
-
+                  <Form.Item noStyle shouldUpdate>
+                    {()=>{const images=(form.getFieldValue("images")||[]) as Array<{image_url?:string;is_main?:boolean}>;
+                      const selected=Boolean(images[field.name]?.is_main);
+                      const available=Boolean(images[field.name]?.image_url);
+                      return <button type="button" className={"fst-image-main"+(selected?" is-main":"")}
+                        disabled={!available} aria-pressed={selected}
+                        onClick={()=>form.setFieldValue("images",images.map((im,i)=>({...im,is_main:i===field.name})))}>
+                        {selected?"تصویر اصلی محصول":"انتخاب به‌عنوان تصویر اصلی"}
+                      </button>;
+                    }}
+                  </Form.Item>
                 </div>
               </div>
             );

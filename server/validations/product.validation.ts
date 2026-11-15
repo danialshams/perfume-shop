@@ -68,8 +68,8 @@ const productVariantImageSchema = z.object({
 
 const productVariantSchema = z.object({
   volume_ml: z.number().int().positive().nullable().optional(),
-  price: z.number().nonnegative("Price must be non-negative"),
-  discount_price: z.number().nonnegative().optional().nullable(),
+  price: z.number().positive("قیمت باید بیشتر از صفر باشد"),
+  discount_price: z.number().positive("قیمت تخفیف باید بیشتر از صفر باشد").optional().nullable(),
   stock_qty: z.number().int().nonnegative("Stock is required"),
   is_active: z.boolean().optional(),
   images: z.array(productVariantImageSchema).optional().default([]),
@@ -129,6 +129,31 @@ export const productIdOrSlugParamSchema = z.object({
   id: z.string().trim().min(1, "Product id or slug is required"),
 });
 
+function validatePhotoChoices(data:{images?:Array<{image_url:string;is_main?:boolean}>,
+ variants?:Array<{volume_ml?:number|null;price:number;discount_price?:number|null;
+ images?:Array<{image_url:string;is_main?:boolean}>}>,
+ type?:"SINGLE"|"GROUPED"},ctx:z.RefinementCtx){
+ if(data.images!==undefined&&data.images.length>0&&data.images.filter(x=>x.is_main).length!==1){
+  ctx.addIssue({code:z.ZodIssueCode.custom,path:["images"],message:"دقیقاً یک عکس اصلی برای محصول انتخاب کنید"});
+ }
+ const variants=data.variants||[];
+ const seen=new Set<number>();
+ for(let i=0;i<variants.length;i++){
+  const v=variants[i];
+  if(v.discount_price!==null&&v.discount_price!==undefined&&v.discount_price>=v.price)
+   ctx.addIssue({code:z.ZodIssueCode.custom,path:["variants",i,"discount_price"],message:"قیمت تخفیف باید کمتر از قیمت اصلی باشد"});
+  if(v.volume_ml!=null){
+   if(seen.has(v.volume_ml))ctx.addIssue({code:z.ZodIssueCode.custom,path:["variants",i,"volume_ml"],message:"حجم تکراری است"});
+   seen.add(v.volume_ml);
+  }
+  if(data.type==="GROUPED"){
+   if(!v.images?.length)ctx.addIssue({code:z.ZodIssueCode.custom,path:["variants",i,"images"],message:"برای هر مدل حداقل یک تصویر آپلود کنید"});
+   else if(v.images.filter(im=>im.is_main).length!==1)
+    ctx.addIssue({code:z.ZodIssueCode.custom,path:["variants",i,"images"],message:"برای هر مدل دقیقاً یک تصویر اصلی مشخص کنید"});
+  }
+ }
+}
+
 export const createProductSchema = z
   .object({
     type: productTypeSchema.default("SINGLE"),
@@ -168,6 +193,7 @@ export const createProductSchema = z
       .min(1, "At least one variant is required"),
   })
   .superRefine((data, ctx) => {
+    validatePhotoChoices(data,ctx);
     if (
       data.parent_category_id &&
       data.category_id &&
@@ -269,6 +295,7 @@ export const updateProductSchema = z
     variants: z.array(productVariantSchema).optional(),
   })
   .superRefine((data, ctx) => {
+    validatePhotoChoices(data,ctx);
     if (
       data.parent_category_id &&
       data.category_id &&
