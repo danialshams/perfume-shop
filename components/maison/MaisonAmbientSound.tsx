@@ -5,8 +5,8 @@ import gsap from "gsap";
 
 
 const TARGET_VOLUME = 0.12;
-type AmbientContext = { enabled:boolean; playing:boolean; toggle:()=>void; getLevels:()=>number[] };
-const AmbientSoundContext = createContext<AmbientContext>({enabled:false,playing:false,toggle:()=>{},getLevels:()=>[0,0,0,0,0]});
+type AmbientContext = { enabled:boolean; playing:boolean; toggle:()=>void; play:()=>void; getLevels:()=>number[] };
+const AmbientSoundContext = createContext<AmbientContext>({enabled:false,playing:false,toggle:()=>{},play:()=>{},getLevels:()=>[0,0,0,0,0]});
 export function useAmbientSound(){ return useContext(AmbientSoundContext); }
 
 /** Single audio source with a live frequency analyser; UI controls are in the header. */
@@ -106,7 +106,8 @@ export default function MaisonAmbientSound({children,audioUrl="/audio/luxury-pia
     analyserRef.current=null;
     samplesRef.current=null;
   },[]);
-  const value=useMemo(()=>({enabled,playing,toggle,getLevels}),[enabled,playing,toggle,getLevels]);
+  const play=useCallback(()=>{void start();},[start]);
+  const value=useMemo(()=>({enabled,playing,toggle,play,getLevels}),[enabled,playing,toggle,play,getLevels]);
   return <AmbientSoundContext.Provider value={value}>
     {children}
     <audio ref={ref} src={audioUrl} preload="none" loop playsInline aria-hidden="true" />

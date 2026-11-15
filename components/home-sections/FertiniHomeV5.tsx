@@ -8,6 +8,7 @@ import { Pause, Play } from "lucide-react";
 import { DEMO_HOME_PRODUCTS, type HomeProduct } from "@/lib/fertini-home-products";
 import {DEFAULT_SITE_CONTENT,type FertiniSiteContent,getActiveCampaigns,campaignDiscountPercent} from "@/lib/fertini-site-content";
 import {FERTINI_HERO_IMAGES,FERTINI_PRODUCT_IMAGES,FERTINI_FAMILY_IMAGES} from "@/lib/fertini-editorial";
+import {FERTINI_EDITORIAL_FRAGRANCES,editorialFragranceHref,editorialFamilyHref,type EditorialFamily} from "@/lib/fertini-editorial-collection";
 
 
 // Five different product photos are split between the two galleries.
@@ -16,19 +17,9 @@ import {FERTINI_HERO_IMAGES,FERTINI_PRODUCT_IMAGES,FERTINI_FAMILY_IMAGES} from "
 const editorialBestsellers = FERTINI_PRODUCT_IMAGES.slice(0,3);
 const editorialNewest = FERTINI_PRODUCT_IMAGES.slice(3,6);
 
-// These are display-only concept fragrances until the store manager publishes
-// real products; never turn them into buy links or fictitious stock entries.
-// Product names and actual prices from the database always win once available.
-const bestEditorialPreviews = [
-  {src:editorialBestsellers[0],name:"روزلیا",subtitle:"FERTINI / EAU DE PARFUM",price:2980000},
-  {src:editorialBestsellers[1],name:"نوآر",subtitle:"FERTINI / EAU DE PARFUM",price:3250000},
-  {src:editorialBestsellers[2],name:"امبرا",subtitle:"FERTINI / EAU DE PARFUM",price:3680000},
-];
-const newestEditorialPreviews = [
-  {src:editorialNewest[0],name:"ولورا",subtitle:"FERTINI / EAU DE PARFUM",price:2890000},
-  {src:editorialNewest[1],name:"لومیرا",subtitle:"FERTINI / EAU DE PARFUM",price:3120000},
-  {src:editorialNewest[2],name:"آزور",subtitle:"FERTINI / EAU DE PARFUM",price:3450000},
-];
+// Clearly marked showroom editions; they are NOT database inventory.
+const bestEditorialPreviews=FERTINI_EDITORIAL_FRAGRANCES.slice(0,3);
+const newestEditorialPreviews=FERTINI_EDITORIAL_FRAGRANCES.slice(3,6);
 
 // Serve home images directly from the host rather than depending on its
 // Next.js /_next/image transcoding service. A failed photo has a local backup.
@@ -96,17 +87,18 @@ function ProductCard({product,large=false,mode="up",discountPercent=0,editorialI
       price={displayPrice} discountPercent={discountPercent}/>
   </Link>;
 }
-function EditorialPreviewCard({src,name,subtitle,price,mode="up",large=false}:{
-  src:string;name:string;subtitle:string;price:number;
+function EditorialPreviewCard({slug,image,name,subtitle,price,mode="up",large=false}:{
+  slug:string;image:string;name:string;subtitle:string;price:number;
   mode?:"up"|"fade"|"right"|"left"|"stretch";large?:boolean;
 }){
-  return <article className={"fertini-v5-card fertini-v5-editorial"+(large?" fertini-v5-card--large":"")} data-fertini-card>
+  return <Link href={editorialFragranceHref(slug)}
+    className={"fertini-v5-card fertini-v5-editorial"+(large?" fertini-v5-card--large":"")} data-fertini-card>
     <div className="fertini-v5-card__media" data-fertini-photo data-photo-entrance={mode}>
-      <ResilientPhoto src={src} fallback="" alt={name}
+      <ResilientPhoto src={image} fallback="" alt={name}
         loading="lazy" sizes={large?"(min-width:960px) 32vw,68vw":"(min-width:960px) 27vw,45vw"}/>
     </div>
     <FragranceCardInfo name={name} subtitle={subtitle} price={price} preview/>
-  </article>;
+  </Link>;
 }
 export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEMO_HOME_PRODUCTS,catalogState="demo",scentFamilies=[]}:{
   content?:FertiniSiteContent;products?:HomeProduct[];catalogState?:"demo"|"database"|"unavailable";scentFamilies?:Array<{id:number;name:string;image_url:string|null}>
@@ -206,7 +198,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
   ];
   const displayedFamilies=familyStory.map(f=>{
     const live=catalogState==="database"?scentFamilies.find(x=>f.match.test(x.name)):undefined;
-    return {...f,url:live?"/products?scent_family_id="+live.id:null};
+    return {...f,url:live?"/products?scent_family_id="+live.id:editorialFamilyHref(f.id as EditorialFamily)};
   });
   const sections={
     // Delivery information is available on /shipping; no delivery block on home.
@@ -234,7 +226,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
         ?bestselling.map((product,index)=><ProductCard key={product.id} product={product}
            editorialImage={editorialBestsellers[index]} discountPercent={campaignDiscountPercent(content,product.id)}
            mode={(["up","right"] as const)[index%2]}/>)
-        :bestEditorialPreviews.map((item,index)=><EditorialPreviewCard key={item.src} {...item}
+        :bestEditorialPreviews.map((item,index)=><EditorialPreviewCard key={item.slug} {...item}
            mode={(["up","right"] as const)[index%2]}/>)}</div>
     </section>,
     latest: <section className="fertini-v5-new maison-wide" aria-labelledby="fertini-new-title">
@@ -249,7 +241,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
           ?latest.map((product,index)=><ProductCard key={product.id} product={product}
              editorialImage={editorialNewest[index]} discountPercent={campaignDiscountPercent(content,product.id)}
              large mode={(["stretch","fade"] as const)[index%2]}/>)
-          :newestEditorialPreviews.map((item,index)=><EditorialPreviewCard key={item.src} {...item} large
+          :newestEditorialPreviews.map((item,index)=><EditorialPreviewCard key={item.slug} {...item} large
              mode={(["stretch","fade"] as const)[index%2]}/>)}
       </div>
       <div className="fertini-v5-new__bottom"><span lang="en" dir="ltr">
@@ -275,9 +267,8 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
             </div>
           </div>;
           const className="fertini-v5-family fertini-v5-family--"+family.id;
-          return family.url
-            ?<Link key={family.id} href={family.url} className={className} data-fertini-card>{visual}</Link>
-            :<article key={family.id} className={className} data-fertini-card>{visual}</article>;
+          return <Link key={family.id} href={family.url} className={className}
+            aria-label={"مشاهده عطرهای گروه "+family.name} data-fertini-card>{visual}</Link>;
         })}
       </div>
     </section>

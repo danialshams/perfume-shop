@@ -1,0 +1,198 @@
+/* FERTINI: restrained post-intro audio invitation, premium navigation and chat.
+   This layer is scoped to the storefront; management screens are unaffected. */
+
+/* Ambient invitation: no sound until the visitor explicitly requests it. */
+.fertini-music-consent{
+ position:fixed;inset:0;z-index:4000;direction:rtl;
+ display:grid;place-items:center;padding:clamp(16px,4vw,40px);
+ pointer-events:none;visibility:hidden;
+ transition:visibility 0s linear .55s;
+}
+.fertini-music-consent.is-open{
+ pointer-events:auto;visibility:visible;transition:visibility 0s;
+}
+.fertini-music-consent__shade{
+ position:absolute;inset:0;
+ background:rgba(24,29,24,.40);
+ backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+ opacity:0;transition:opacity .56s ease;
+}
+.fertini-music-consent.is-open .fertini-music-consent__shade{opacity:1}
+.fertini-music-consent__panel{
+ position:relative;width:min(100%,475px);
+ display:flex;flex-direction:column;align-items:center;text-align:center;
+ background:#f4f4ef;border:1px solid rgba(93,103,88,.22);
+ box-shadow:0 22px 85px rgba(26,34,27,.15);
+ padding:clamp(35px,5vw,61px) clamp(24px,5vw,53px) clamp(32px,4vw,47px);
+ opacity:0;transform:translateY(25px) scale(.982);
+ transition:opacity .48s ease,transform .65s cubic-bezier(.22,1,.36,1);
+}
+.fertini-music-consent.is-open .fertini-music-consent__panel{
+ opacity:1;transform:translateY(0) scale(1);
+}
+.fertini-music-consent__eyebrow{
+ font:400 10px/1.7 Georgia,serif;letter-spacing:.23em;color:#7d867c;
+}
+.fertini-music-consent__line{
+ display:block;width:66px;height:1px;background:#b7bcb0;margin:24px 0 23px;
+ transform:scaleX(.6);transition:transform .8s cubic-bezier(.22,1,.36,1) .16s;
+}
+.fertini-music-consent.is-open .fertini-music-consent__line{transform:scaleX(1)}
+.fertini-music-consent h2{
+ color:#344339;font:350 clamp(17px,2.4vw,23px)/2 "Vazirmatn","Vazirmatn RD",sans-serif;
+ margin:0;max-width:360px;letter-spacing:0;
+}
+.fertini-music-consent__actions{
+ display:flex;align-items:center;justify-content:center;gap:12px;
+ margin-top:clamp(27px,4vw,38px);width:100%;
+}
+.fertini-music-consent__action{
+ min-height:46px;flex:1;max-width:175px;
+ border:1px solid #afb6a9;border-radius:1px;
+ font:350 12px/1.7 "Vazirmatn",sans-serif;
+ background:transparent;color:#465448;
+ cursor:pointer;transition:background .35s,color .35s,border-color .35s;
+}
+.fertini-music-consent__action.is-accept{
+ background:#475b4d;border-color:#475b4d;color:#f8f9f4;
+}
+.fertini-music-consent__action.is-accept:hover{background:#36473b}
+.fertini-music-consent__action.is-decline:hover{background:#e8ebe3}
+.fertini-music-consent__action:focus-visible{
+ outline:1px solid #536e5b;outline-offset:4px;
+}
+.fertini-music-consent__hint{
+ display:block;margin-top:24px;color:#9aa097;
+ font:350 10px/2 "Vazirmatn",sans-serif;
+}
+@media(max-width:600px){
+ .fertini-music-consent__panel{padding:40px 24px 35px}
+ .fertini-music-consent__actions{gap:9px}
+ .fertini-music-consent h2{font-size:18px}
+}
+
+/* Play falls downward and fades; live sound bars slide in from above. */
+.fertini-header-sound{position:relative;overflow:hidden;isolation:isolate}
+.fertini-sound-toggle__play,.fertini-sound-toggle__bars{
+ position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+ will-change:transform,opacity;pointer-events:none;
+ transition:opacity .32s ease,transform .53s cubic-bezier(.22,1,.36,1);
+}
+.fertini-sound-toggle__play{opacity:1;transform:translateY(0)}
+.fertini-sound-toggle__bars{opacity:0;transform:translateY(-23px)}
+.fertini-header-sound.is-playing .fertini-sound-toggle__play{
+ opacity:0;transform:translateY(23px);
+}
+.fertini-header-sound.is-playing .fertini-sound-toggle__bars{
+ opacity:1;transform:translateY(0);
+}
+
+/* Search closing: keep DOM mounted during a matching reverse transition. */
+.maison-overlay--search.is-closing{pointer-events:none}
+.maison-overlay--search.is-closing .maison-search{
+ animation:maison-search-in .52s cubic-bezier(.22,1,.36,1) reverse both;
+}
+.maison-overlay--search.is-closing .maison-overlay__backdrop{
+ animation:maison-backdrop .52s ease reverse both;
+}
+.maison-overlay--search.is-open .maison-search{
+ animation:maison-search-in .52s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* Support: soften contrast and simplify details to the site green + ivory. */
+.support-root{
+ --support-accent:#657366;--support-surface:#f4f5f0;
+ --support-ink:#354239;--support-line:#e0e4dc;--support-round:3px;
+ color:var(--support-ink);
+}
+.support-root .support-launcher{
+ background:#526457;border:1px solid rgba(245,249,242,.54);color:#f8f9f5;
+ width:54px;height:54px;
+ box-shadow:0 9px 24px rgba(33,49,36,.12);
+ transition:background .35s ease,transform .35s ease,box-shadow .35s ease;
+}
+.support-root .support-launcher:hover{
+ background:#46574a;transform:translateY(-2px);
+ box-shadow:0 12px 27px rgba(33,49,36,.17);
+}
+.support-root .support-window{
+ background:#fafbf7;border:1px solid #e0e5dc;
+ border-radius:6px;box-shadow:0 16px 48px rgba(31,44,35,.13);
+}
+.support-root .support-header{
+ background:#f5f6f2;color:#344239;border-bottom:1px solid #e4e7df;
+ padding:23px 23px 20px;gap:18px;
+}
+.support-root .support-header-overline{
+ color:#8c9a8b;letter-spacing:.04em;font-size:10px;
+}
+.support-root .support-header h2{
+ color:#344239;font-size:18px;font-weight:400;
+ margin:7px 0 5px;letter-spacing:0;
+}
+.support-root .support-header small{
+ color:#89988c;font-size:11px;line-height:1.9;
+}
+.support-root .support-header button{
+ color:#7c897f;transition:color .25s ease;
+}
+.support-root .support-header button:hover{color:#344239}
+.support-root .support-start{padding:23px;gap:17px}
+.support-root .support-start>p{font-size:13px;color:#677568}
+.support-root .support-start label{color:#6b796d;font-size:12px;gap:7px}
+.support-root .support-start input,
+.support-root .support-start select,
+.support-root .support-composer input{
+ border:1px solid #e0e4dc;color:#37463c;background:#fcfcf9;
+ border-radius:2px;box-shadow:none;outline:none;
+ transition:border-color .3s ease,background .3s ease;
+}
+.support-root .support-start input:focus,
+.support-root .support-start select:focus,
+.support-root .support-composer input:focus{
+ border-color:#99a99a;background:#fff;
+}
+.support-root .support-start form button{
+ background:#657567;border:1px solid #657567;color:#f8faf6;
+ border-radius:2px;font-weight:350;
+}
+.support-root .support-start form button:hover{background:#536357}
+.support-root .support-start>a{color:#667969}
+.support-root .support-history{background:#fafbf8;gap:14px;padding:19px}
+.support-root .support-intro,
+.support-root .support-note{color:#8b988d}
+.support-root .support-message{
+ background:#eff2ed;border:1px solid #e8ece5;color:#425247;
+ border-radius:6px 6px 1px 6px;
+ padding:12px 14px;max-width:88%;
+}
+.support-root .support-message.is-admin{
+ background:#e5ebe4;border-color:#dde6dc;color:#35473a;
+ border-radius:6px 6px 6px 1px;
+}
+.support-root .support-message span,
+.support-root .support-message.is-admin span{color:#829185}
+.support-root .support-composer{background:#fafbf8;border-color:#e3e8e0;padding:13px}
+.support-root .support-composer button{
+ background:#657567;border-radius:2px;
+}
+.support-root .support-composer button:hover{background:#526557}
+.support-root .support-backdrop{
+ background:rgba(31,42,33,.14);backdrop-filter:blur(2px);
+}
+@media(max-width:720px){
+ .support-root .support-launcher{width:51px;height:51px}
+ .support-root .support-header{padding:18px}
+ .support-root .support-start{padding:19px}
+}
+@media(prefers-reduced-motion:reduce){
+ .fertini-music-consent,.fertini-music-consent *,
+ .fertini-header-sound .fertini-sound-toggle__play,
+ .fertini-header-sound .fertini-sound-toggle__bars{
+  transition:none!important;animation:none!important;
+ }
+ .maison-overlay--search .maison-search,
+ .maison-overlay--search .maison-overlay__backdrop{
+  animation:none!important;
+ }
+}
