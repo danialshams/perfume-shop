@@ -91,7 +91,7 @@ export default function MaisonIntro() {
       // Only the intro assembles letters; section headings reveal as full lines.
       gsap.set(brand,{autoAlpha:1});
       gsap.set(line,{scaleX:0,autoAlpha:1,transformOrigin:"50% 50%"});
-      gsap.set(sheen,{autoAlpha:0,backgroundPosition:"-180% 50%"});
+      gsap.set(sheen,{autoAlpha:0,backgroundPosition:"180% 50%"});
       gsap.set(sub,{autoAlpha:0,y:9});
       const scatteredX = [-104,64,-67,92,-83,75,118];
       const scatteredY = [-26,35,19,-34,30,-19,24];
@@ -103,8 +103,8 @@ export default function MaisonIntro() {
         {autoAlpha:1,x:0,y:0,filter:"blur(0px)",duration:1.48,stagger:{each:.075,from:"center"},ease:"power3.out"},.08)
         .to(line,{scaleX:1,duration:.94,ease:"power2.inOut"},2.08)
         .to(sub,{autoAlpha:1,y:0,duration:.56,ease:"power2.out"},3.10)
-        .to(sheen,{autoAlpha:.82,duration:.12},3.19)
-        .to(sheen,{backgroundPosition:"180% 50%",duration:1.42,ease:"none"},3.20)
+        .to(sheen,{autoAlpha:.93,duration:.16},3.19)
+        .to(sheen,{backgroundPosition:"-180% 50%",duration:1.42,ease:"none"},3.20)
         .to(sheen,{autoAlpha:0,duration:.20,ease:"sine.out"},4.46)
         .to(root,{autoAlpha:0,duration:.50,ease:"power2.inOut"},4.93);
       const elapsed = Math.max(0,(performance.now() - introStartedAt!)/1000);
