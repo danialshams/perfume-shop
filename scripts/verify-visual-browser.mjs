@@ -206,8 +206,14 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
        return {opened,closing,search};
      })()`);
      if(!menuState.opened || !menuState.closing || !menuState.search)throw Error(name+" navigation interactions failed "+JSON.stringify(menuState));
-     const unlocked=await evaluate(send,'getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden"');
-     if(!unlocked)throw Error(name+" document scroll lock was not released after menus");
+     // Search now exits over 520ms, mirroring its opening animation.
+     // Keep the scroll lock while the panel is moving, then release it.
+     const searchClosing=await evaluate(send,'!!document.querySelector(".maison-overlay--search.is-closing")');
+     if(!searchClosing)throw Error(name+" search must have a smooth mounted closing state");
+     const unlocked=await until(()=>evaluate(send,
+       'getComputedStyle(document.body).overflow!=="hidden" && getComputedStyle(document.documentElement).overflow!=="hidden"'
+     ),2200).then(()=>true,()=>false);
+     if(!unlocked)throw Error(name+" document scroll lock was not released after search exit");
      // Exercise the live React chat on both desktop and mobile, including exit motion.
      const chat=await evaluate(send,`(async()=>{
        await new Promise(r=>setTimeout(r,460));
