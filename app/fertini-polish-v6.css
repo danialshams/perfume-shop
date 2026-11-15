@@ -264,3 +264,20 @@ html.fertini-intro-seen .maison-intro{display:none!important}
 /* The five bars are SVG rectangles and cannot be affected by legacy i selectors. */
 .fertini-header-sound .fertini-sound-meter{display:block;width:30px!important;height:28px!important;max-width:none;margin:auto;color:inherit;overflow:visible}
 .fertini-header-sound .fertini-sound-meter rect{fill:currentColor;stroke:none}
+
+/* Hosted, original editorial photography must retain its natural colour and
+   fill the exact hero and catalogue frames (no tint, crop gaps or upscaling). */
+.fertini-v5 .fertini-v5-hero .fertini-hero__image img[src*="/api/v1/editorial/"]{
+  object-fit:cover!important;object-position:center center!important;
+  filter:none!important;
+}
+.fertini-v5 [data-fertini-photo] img[src*="/api/v1/editorial/"]{
+  object-fit:cover!important;object-position:center!important;filter:none!important;
+}
+@media(max-width:600px){
+  /* If a remote photograph is unavailable during an offline build, the
+     fallback local vector artwork has a left-positioned bottle. */
+  .fertini-v5 .fertini-v5-hero .fertini-hero__image img[src*="/fertini/hero-0"]{
+    object-position:12% 50%!important;
+  }
+}

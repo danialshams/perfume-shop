@@ -70,15 +70,36 @@ assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{autoAlph
 assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{backgroundPosition'));
 assert.match(home,/function ResilientPhoto/);
 assert.match(home,/fill unoptimized priority=/);
-assert.match(home,/src=\{product.image\} fallback=/);
+assert.match(home,/src=\{editorialImage\|\|product.image\}/);
 assert.match(home,/fallback=\{slide.fallback\}/);
-assert.match(home,/photo:slide.photo/);
+assert.match(home,/photo:builtin\?FERTINI_HERO_IMAGES\[index%2\]:slide.photo/);
 assert.doesNotMatch(home,/editorialHeroes/);
 assert.match(read("app/fertini-polish-v6.css"),/\.fertini-hero__image\.is-vector-art img/);
-assert.match(home,/fallback=\{\["\/fertini\/nocturne-front.svg"/);
+assert.match(home,/src=\{family.photo\}/);
 assert.match(galleryCss,/\.fertini-v5-family__photo::after/);
 assert.match(galleryCss,/\.fertini-v5-family__photo \.fertini-v5-family__info/);
-assert.match(home,/family.subtitle\|\|"OLFACTIVE FAMILY"/);
+assert.match(home,/\{family.subtitle\}/);
+
+// The user uploaded real photography to durable cPanel media storage, not
+// to a GitHub build or to arbitrary public_html paths.
+const editorial=read("lib/fertini-editorial.ts");
+const editorialRoute=read("app/api/v1/editorial/[filename]/route.ts");
+assert.match(editorial,/https:\/\/fertiniperfume\.com\/api\/v1\/editorial\//);
+assert.match(editorial,/hero-01-golden-citrus-blossom\.png/);
+assert.match(editorial,/hero-02-luxury-oud-amber\.png/);
+assert.match(editorial,/family-01-woody\.png/);
+assert.match(editorial,/family-02-oud-smoky\.png/);
+assert.match(editorial,/family-03-vanilla\.png/);
+assert.match(editorialRoute,/localMediaDirectory/);
+assert.match(editorialRoute,/allowed\.has\(filename\)/);
+assert.match(editorialRoute,/O_NOFOLLOW/);
+assert.match(editorialRoute,/Content-Type": "image\/png"/);
+assert.doesNotMatch(editorialRoute,/readLocalMedia\(/);
+assert.match(home,/bestEditorialPreviews\.map/);
+assert.match(home,/newestEditorialPreviews\.map/);
+assert.match(home,/familyStory\.map/);
+assert.match(home,/live\?"\/products\?scent_family_id="/);
+assert.doesNotMatch(home,/familyStillLife/);
 
 assert.doesNotMatch(home, /fertini-hero__text/);
 assert.match(nav, /menuMounted/);
