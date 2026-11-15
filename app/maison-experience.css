@@ -60,9 +60,34 @@
 .maison-intro__shine{position:absolute;left:50%;top:0;transform:translateX(-50%);white-space:nowrap;pointer-events:none;
  font:400 clamp(60px,11vw,152px)/1 Georgia,"Times New Roman",serif;letter-spacing:.19em;padding-left:.19em;
  color:transparent;background:linear-gradient(106deg,transparent 34%,rgba(255,248,225,.92) 48%,transparent 62%);
- background-size:240% 100%;-webkit-background-clip:text;background-clip:text;opacity:0}
+ background-size:240% 100%;background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;opacity:0}
 .maison-intro__sub{font-size:11px;letter-spacing:.15em}
 @media(max-width:600px){
  .maison-intro__brand,.maison-intro__shine{font-size:clamp(47px,12vw,68px);letter-spacing:.13em;padding-left:.13em}
  .maison-intro__rule{width:148px}
+}
+
+/* The subtle hairline is a required part of the intro, not an optional ornament.
+   Never hide it with older Maison refinements. */
+.fertini-intro .maison-intro__rule{
+  display:block!important;
+  flex:0 0 1px;
+  width:clamp(120px,19vw,220px);
+  height:1px;
+  opacity:1;
+  background:#998069;
+  box-shadow:0 0 1px rgba(96,70,48,.14);
+  transform-origin:center center;
+}
+/* Match the very same wordmark metrics, so the reflective pass is registered
+   perfectly over FERTINI rather than appearing as a second shifted word. */
+.fertini-intro .maison-intro__shine{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(64px,12vw,140px);
+  font-weight:300;
+  letter-spacing:.2em;
+  padding-left:.2em;
+}
+@media(max-width:600px){
+  .fertini-intro .maison-intro__shine{font-size:clamp(58px,15vw,85px)}
 }

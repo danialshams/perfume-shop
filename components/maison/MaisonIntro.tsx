@@ -95,15 +95,18 @@ export default function MaisonIntro() {
       gsap.set(sub,{autoAlpha:0,y:9});
       const scatteredX = [-104,64,-67,92,-83,75,118];
       const scatteredY = [-26,35,19,-34,30,-19,24];
+      // Stage each movement; the line starts only once the letters have settled.
+      // The glint passes across the wordmark ONCE, without replaying or looping.
       const tl = gsap.timeline({ paused:true,onComplete:finish });
       tl.fromTo(letters,
         {autoAlpha:0,x:(i:number)=>scatteredX[i],y:(i:number)=>scatteredY[i],filter:"blur(12px)"},
-        {autoAlpha:1,x:0,y:0,filter:"blur(0px)",duration:1.34,stagger:{each:.075,from:"center"},ease:"power3.out"},0.05)
-        .to(line,{scaleX:1,duration:.84,ease:"power2.inOut"},1.23)
-        .to(sheen,{autoAlpha:1,duration:.16},1.94)
-        .to(sheen,{backgroundPosition:"180% 50%",duration:.9,ease:"sine.inOut"},1.95)
-        .to(sub,{autoAlpha:1,y:0,duration:.48,ease:"power2.out"},2.04)
-        .to(root,{autoAlpha:0,duration:.43,ease:"power2.inOut"},2.92);
+        {autoAlpha:1,x:0,y:0,filter:"blur(0px)",duration:1.48,stagger:{each:.075,from:"center"},ease:"power3.out"},.08)
+        .to(line,{scaleX:1,duration:.94,ease:"power2.inOut"},2.08)
+        .to(sub,{autoAlpha:1,y:0,duration:.56,ease:"power2.out"},3.10)
+        .to(sheen,{autoAlpha:.82,duration:.12},3.19)
+        .to(sheen,{backgroundPosition:"180% 50%",duration:1.42,ease:"none"},3.20)
+        .to(sheen,{autoAlpha:0,duration:.20,ease:"sine.out"},4.46)
+        .to(root,{autoAlpha:0,duration:.50,ease:"power2.inOut"},4.93);
       const elapsed = Math.max(0,(performance.now() - introStartedAt!)/1000);
       tl.time(Math.min(elapsed,tl.duration()));
       if(elapsed<tl.duration())tl.play();
