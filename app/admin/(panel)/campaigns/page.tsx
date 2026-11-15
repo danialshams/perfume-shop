@@ -1,6 +1,8 @@
 "use client";
 import {useEffect,useState,type FormEvent} from "react";
 import Link from "next/link";
+import {App as AntdApp} from "antd";
+import CreateProductDrawer from "@/components/PanelProductManagementComponents/create-product-drawer";
 import {ArrowDown,ArrowUp,ImagePlus,Plus,Save,Trash2} from "lucide-react";
 import {uploadAdminFile} from "@/lib/admin-upload-client";
 import type {FertiniCampaign} from "@/lib/fertini-site-content";
@@ -13,6 +15,9 @@ export default function CampaignStudio(){
  const [items,setItems]=useState<FertiniCampaign[]>([]),[products,setProducts]=useState<HomeProduct[]>([]);
  const [loaded,setLoaded]=useState(false),[busy,setBusy]=useState(false),[uploading,setUploading]=useState("");
  const [error,setError]=useState(""),[success,setSuccess]=useState("");
+ const [createProductOpen,setCreateProductOpen]=useState(false);
+ const [categoryOptions,setCategoryOptions]=useState<any[]>([]);
+ const [productSearch,setProductSearch]=useState("");
  async function load(){
   setBusy(true);setError("");
   try{const r=await fetch("/api/v1/admin/store-settings",{cache:"no-store",credentials:"same-origin"});const d=await r.json();
@@ -21,6 +26,20 @@ export default function CampaignStudio(){
   }catch(e){setError(e instanceof Error?e.message:"خطای دریافت اطلاعات")}finally{setBusy(false)}
  }
  useEffect(()=>{void load()},[]);
+ async function reloadProducts(){
+  const res=await fetch("/api/v1/admin/store-settings",{cache:"no-store",credentials:"same-origin"});
+  const data=await res.json().catch(()=>null);
+  if(!res.ok)throw Error(data?.error||"محصولات دریافت نشدند");
+  setProducts(data.products||[]);
+ }
+ async function openNewProduct(){
+  try{
+   const res=await fetch("/api/v1/categories",{cache:"no-store"});
+   const data=await res.json().catch(()=>null);
+   setCategoryOptions(Array.isArray(data)?data:Array.isArray(data?.data)?data.data:[]);
+   setCreateProductOpen(true);
+  }catch(e){setError(e instanceof Error?e.message:"دریافت دسته‌بندی ناموفق بود")}
+ }
  const edit=(id:string,patch:Partial<FertiniCampaign>)=>setItems(a=>a.map(x=>x.id===id?{...x,...patch}:x));
  async function upload(id:string,file:File){
   setUploading(id);setError("");
@@ -41,7 +60,7 @@ export default function CampaignStudio(){
    <p>بنر، بازه زمانی، درصد تخفیف و عطرهای کمپین را تنظیم کن. نمایش کمپین فعال به زمان شروع و پایان آن وابسته است.</p></div>
    <button type="button" className="fst-btn fst-btn-primary" onClick={()=>setItems(a=>[...a,initial()])} disabled={items.length>=12||!loaded}><Plus size={16}/> کمپین جدید</button></header>
   {error&&<p className="fst-error" role="alert">{error}</p>}{success&&<p className="fst-notice" role="status">{success}</p>}
-  <div className="fst-notice mb-4">برای ایجاد عطر مخصوص کمپین، ابتدا آن را در <Link href="/admin/products" className="underline">مدیریت محصولات</Link> ایجاد کن، سپس از فهرست پایین انتخابش کن. برای حفظ صحت پرداخت، تخفیف نهایی باید با قیمت گونه‌های محصول هماهنگ باشد.</div>
+  <div className="fst-notice mb-4">عطر کمپین را همین‌جا اضافه کن یا از محصولات موجود انتخاب کن. قیمت تخفیفی در خرید نهایی با قوانین کمپین محاسبه می‌شود.</div>
   <form className="grid gap-4" onSubmit={save}>
    {items.map((item,index)=><section className="fst-card" key={item.id}>
     <div className="fst-editor-heading"><div><span>CAMPAIGN / {String(index+1).padStart(2,"0")}</span><h2>{item.title}</h2></div>
@@ -59,8 +78,15 @@ export default function CampaignStudio(){
     <div className="fst-marketing-banner">{item.banner&&<img src={item.banner} alt={item.title}/>}</div>
     <label className="fst-btn w-fit cursor-pointer"><ImagePlus size={16}/>{uploading===item.id?"در حال آپلود…":"بارگذاری بنر کمپین"}
      <input className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" disabled={!!uploading} onChange={e=>{const file=e.target.files?.[0];if(file)void upload(item.id,file);e.target.value=""}}/></label>
-    <div className="fst-marketing-product-heading"><strong>عطرهای این کمپین ({item.productIds.length})</strong><small>از محصولات فعال انتخاب کن؛ حداکثر ۶۰ عطر</small></div>
-    <div className="fst-marketing-products">{products.map(p=><label key={p.id} className="fst-marketing-choice">
+    <div className="fst-marketing-product-heading">
+     <strong>عطرهای این کمپین ({item.productIds.length})</strong>
+     <button type="button" className="fst-btn" onClick={()=>void openNewProduct()}><Plus size={15}/> ساخت محصول جدید</button>
+    </div>
+    <label className="fst-field mt-3"><span>جستجو در محصولات موجود (اختیاری)</span>
+     <input value={productSearch} onChange={e=>setProductSearch(e.target.value)}
+      placeholder="نام عطر را وارد کن"/>
+    </label>
+    <div className="fst-marketing-products">{products.filter(p=>p.name.toLowerCase().includes(productSearch.trim().toLowerCase())).map(p=><label key={p.id} className="fst-marketing-choice">
      <input type="checkbox" checked={item.productIds.includes(p.id)} disabled={!item.productIds.includes(p.id)&&item.productIds.length>=60}
       onChange={e=>edit(item.id,{productIds:e.target.checked?[...item.productIds,p.id]:item.productIds.filter(x=>x!==p.id)})}/>
      <img src={p.image} alt=""/><span>{p.name}</span></label>)}</div>
@@ -68,5 +94,8 @@ export default function CampaignStudio(){
    {!items.length&&<div className="fst-card"><p className="fst-empty">هنوز کمپینی ساخته نشده است. کمپین جدید بساز تا در صفحه اصلی نمایش داده شود.</p></div>}
    <div className="fst-save-bar"><span>کمپین‌ها در دیتابیس ذخیره می‌شوند.</span><button className="fst-btn fst-btn-primary" type="submit" disabled={busy||!!uploading||!loaded}><Save size={16}/>{busy?"در حال ذخیره…":"ذخیره کمپین‌ها"}</button></div>
   </form>
+  <AntdApp><CreateProductDrawer open={createProductOpen} categories={categoryOptions}
+   onClose={()=>setCreateProductOpen(false)}
+   onSuccess={()=>{void reloadProducts().catch(e=>setError(e instanceof Error?e.message:"دریافت محصولات جدید ناموفق بود"));}}/></AntdApp>
  </div>;
 }
