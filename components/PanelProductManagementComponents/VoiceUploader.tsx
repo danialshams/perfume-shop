@@ -70,7 +70,7 @@ export default function VoiceUploader({
             : "";
 
     return (
-        <Form.Item label="فایل صوتی معرفی محصول">
+        <Form.Item label="فایل صوتی معرفی (اختیاری)">
             <div className="space-y-3">
                 <Form.Item name="voice_file" noStyle><Input type="hidden"/></Form.Item>
                 {voiceFile ? (
