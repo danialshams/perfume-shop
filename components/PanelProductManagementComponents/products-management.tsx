@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { App, Button, Popconfirm, Segmented } from "antd";
-import { Database, Plus } from "lucide-react";
+import { App, Button } from "antd";
+import { FileUp, Plus } from "lucide-react";
+import ProductBulkImport from "@/components/admin/ProductBulkImport";
 import ProductsFilters from "./products-filters";
 import ProductDetailsModal from "./product-details-modal";
 import { getProducts } from "./product-api";
@@ -48,7 +49,7 @@ export default function ProductsManagement() {
         useState<ProductQueryParams>(DEFAULT_FILTERS);
 
     const [createOpen, setCreateOpen] = useState(false);
-    const [editorialImporting, setEditorialImporting] = useState(false);
+    const [bulkOpen, setBulkOpen] = useState(false);
 
     const [editOpen, setEditOpen] = useState(false);
     const [editingProductId, setEditingProductId] = useState<number | null>(null);
@@ -72,9 +73,6 @@ export default function ProductsManagement() {
         useState<ProductItem | null>(null);
 
     const [detailsOpen, setDetailsOpen] = useState(false);
-
-    const [mobileView, setMobileView] =
-        useState<"cards" | "table">("cards");
 
     const normalizeArrayResponse = useCallback((result: any) => {
         if (Array.isArray(result)) return result;
@@ -166,37 +164,6 @@ export default function ProductsManagement() {
         fetchData(appliedFilters);
         fetchCategories();
     };
-    // Registers the six existing cinematic showcase photos through a real
-    // authenticated admin endpoint. Zero stock means nothing is buyable
-    // until real inventory is entered in the product editor.
-    const handleEditorialImport = async () => {
-        if (editorialImporting) return;
-        setEditorialImporting(true);
-        try {
-            const res = await fetch("/api/v1/admin/editorial-import", {
-                method: "POST",
-                credentials: "same-origin",
-                headers: {"Content-Type":"application/json"},
-                body: JSON.stringify({confirm:true}),
-            });
-            const result = await res.json().catch(() => null);
-            if (!res.ok || !result?.ok)
-                throw new Error(result?.error || "ثبت عطرهای گالری انجام نشد.");
-            const count = Array.isArray(result.created) ? result.created.length : 0;
-            message.success(count > 0
-                ? count.toLocaleString("fa-IR")+" عطر با موجودی صفر به دیتابیس اضافه شد."
-                : "هر شش عطر قبلاً در دیتابیس ثبت شده‌اند.");
-            setAppliedFilters({...DEFAULT_FILTERS});
-            await fetchData(DEFAULT_FILTERS);
-            await fetchCategories();
-        } catch (error) {
-            message.error(error instanceof Error ? error.message : "اتصال به دیتابیس در دسترس نیست.");
-        } finally {
-            setEditorialImporting(false);
-        }
-    };
-
-
     const handleSearch = () => {
         setAppliedFilters({
             ...filters,
@@ -297,18 +264,9 @@ export default function ProductsManagement() {
                 subtitle="افزودن عطر، تعیین قیمت و موجودی و مدیریت تصاویر."
                 actions={
                     <div className="flex flex-wrap items-center justify-end gap-2">
-                        <Popconfirm
-                            title="ثبت شش عطر گالری در دیتابیس"
-                            description="هر عطر با گروه بویایی و عکس خودش، قیمت نمونه و موجودی صفر ثبت می‌شود. محصول تکراری ساخته نمی‌شود."
-                            okText="ثبت در دیتابیس"
-                            cancelText="انصراف"
-                            onConfirm={handleEditorialImport}
-                            okButtonProps={{loading:editorialImporting}}
-                        >
-                            <Button size="large" loading={editorialImporting} icon={<Database size={16}/>} >
-                                ثبت عطرهای گالری
-                            </Button>
-                        </Popconfirm>
+                        <Button size="large" icon={<FileUp size={16}/>} onClick={()=>setBulkOpen(true)}>
+                            ورود گروهی محصولات
+                        </Button>
                         <Button
                             type="primary"
                             size="large"
@@ -320,24 +278,6 @@ export default function ProductsManagement() {
                     </div>
                 }
             />
-
-            <div className="md:hidden">
-                <Segmented
-                    block
-                    value={mobileView}
-                    onChange={(value) => setMobileView(value as "cards" | "table")}
-                    options={[
-                        {
-                            label: "نمای کارت",
-                            value: "cards",
-                        },
-                        {
-                            label: "نمای جدول",
-                            value: "table",
-                        },
-                    ]}
-                />
-            </div>
 
             <ProductsFilters
                 filters={filters}
@@ -377,7 +317,6 @@ export default function ProductsManagement() {
                     </div>
 
                     <div className="md:hidden">
-                        {mobileView === "cards" ? (
                             <div className="grid grid-cols-1 gap-3">
                                 {data.items.map((product) => (
                                     <MobileProductCard
@@ -393,25 +332,6 @@ export default function ProductsManagement() {
                                  <Button disabled={data.meta.page>=data.meta.totalPages} onClick={()=>handlePageChange(data.meta.page+1,data.meta.limit)}>صفحه بعد</Button>
                                 </div>
                             </div>
-                        ) : (
-                            <AdminDataTable<ProductItem>
-                                columns={columns}
-                                data={data.items}
-                                rowKey={(record) => String(record.id)}
-                                loading={loading}
-                                scroll={{ x: 1500 }}
-                                pagination={{
-                                    current: data.meta.page,
-                                    pageSize: data.meta.limit,
-                                    total: data.meta.total,
-                                    showSizeChanger: true,
-                                    pageSizeOptions: ["10", "20", "50", "100"],
-                                    onChange: handlePageChange,
-                                    showTotal: (total, range) =>
-                                        `${range[0]} - ${range[1]} از ${total} مورد`,
-                                }}
-                            />
-                        )}
                     </div>
                 </>
             )}
@@ -423,6 +343,8 @@ export default function ProductsManagement() {
                 onClose={closeDetailsModal}
             />
 
+            <ProductBulkImport open={bulkOpen} onClose={()=>setBulkOpen(false)}
+                onImported={()=>{void fetchData(appliedFilters);void fetchCategories();}}/>
             <CreateProductDrawer
                 open={createOpen}
                 onClose={() => setCreateOpen(false)}
