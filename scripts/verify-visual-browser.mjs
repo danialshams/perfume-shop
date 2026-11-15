@@ -141,7 +141,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroTitleOpacity:title?Number(getComputedStyle(title).opacity):null,
     cardNameLeftOfPrice:!!name&&!!price&&name.getBoundingClientRect().right<=price.getBoundingClientRect().left+3,
     cardLayoutIsPhysicalGrid:card?.querySelector(".fertini-v5-card__details")?
-      getComputedStyle(card.querySelector(".fertini-v5-card__details")).display==="grid":false,
+      getComputedStyle(card.querySelector(".fertini-v5-card__details")).display==="flex":false,
     latestNameLeftOfPrice:!!latestName&&!!latestPrice&&
       latestName.getBoundingClientRect().right<=latestPrice.getBoundingClientRect().left+3,
     cardSubtitleBelowName:!!name&&!!subtitle&&subtitle.getBoundingClientRect().top>=name.getBoundingClientRect().bottom-4,
