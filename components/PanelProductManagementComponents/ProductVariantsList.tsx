@@ -151,7 +151,7 @@ export default function ProductVariantsList({
                                         <div className="md:col-span-2">
                                             <div className="rounded-2xl border border-neutral-200 p-4">
                                                 <div className="mb-4 text-base font-semibold">
-                                                    تصاویر واریانت
+                                                    تصاویر مدل / حجم
                                                 </div>
 
                                                 <Form.List name={[field.name, "images"]}>
@@ -180,7 +180,7 @@ export default function ProductVariantsList({
                                                                     <Card
                                                                         key={imageField.key}
                                                                         size="small"
-                                                                        title={`تصویر واریانت ${imageIndex + 1}`}
+                                                                        title={`تصویر مدل / حجم ${imageIndex + 1}`}
                                                                         extra={
                                                                             imageFields.length > 1 ? (
                                                                                 <Button
@@ -206,9 +206,9 @@ export default function ProductVariantsList({
                                                                                     value={imageUrl}
                                                                                     loading={loading}
                                                                                     previewAlt="variant-preview"
-                                                                                    emptyTitle="تصویر واریانت را آپلود کنید"
-                                                                                    successMessage="تصویر واریانت با موفقیت آپلود شد"
-                                                                                    errorMessage="آپلود تصویر واریانت با خطا مواجه شد"
+                                                                                    emptyTitle="تصویر مدل / حجم را آپلود کنید"
+                                                                                    successMessage="تصویر مدل / حجم با موفقیت آپلود شد"
+                                                                                    errorMessage="آپلود تصویر مدل / حجم با خطا مواجه شد"
                                                                                     validateBeforeUpload={
                                                                                         validateBeforeUpload
                                                                                     }
@@ -288,7 +288,7 @@ export default function ProductVariantsList({
                                                                                     {
                                                                                         required: true,
                                                                                         message:
-                                                                                            "آپلود تصویر واریانت الزامی است",
+                                                                                            "آپلود تصویر مدل / حجم الزامی است",
                                                                                     },
                                                                                 ]}
                                                                             >
@@ -297,6 +297,23 @@ export default function ProductVariantsList({
 
                                                                            
                                                                         </div>
+                                                                        <Form.Item noStyle shouldUpdate>
+                                                                          {()=>{const variants=form.getFieldValue("variants")||[];
+                                                                            const images=(variants[field.name]?.images||[]) as Array<{image_url?:string;is_main?:boolean}>;
+                                                                            const selected=Boolean(images[imageField.name]?.is_main);
+                                                                            const available=Boolean(images[imageField.name]?.image_url);
+                                                                            return <button type="button" className={"fst-image-main"+(selected?" is-main":"")}
+                                                                              disabled={!available} aria-pressed={selected}
+                                                                              onClick={()=>{
+                                                                               const next=[...variants];
+                                                                               next[field.name]={...next[field.name],
+                                                                                 images:images.map((im,j)=>({...im,is_main:j===imageField.name}))};
+                                                                               form.setFieldValue("variants",next);
+                                                                              }}>
+                                                                              {selected?"عکس اصلی این مدل":"انتخاب عکس اصلی این مدل"}
+                                                                            </button>;
+                                                                          }}
+                                                                        </Form.Item>
                                                                     </Card>
                                                                 );
                                                             })}
@@ -311,7 +328,7 @@ export default function ProductVariantsList({
                                                                     })
                                                                 }
                                                             >
-                                                                افزودن تصویر برای این واریانت
+                                                                افزودن تصویر برای این مدل / حجم
                                                             </Button>
                                                         </div>
                                                     )}
@@ -343,7 +360,7 @@ export default function ProductVariantsList({
                                     })
                                 }
                             >
-                                افزودن واریانت
+                                افزودن مدل / حجم
                             </Button>
                         ) : null}
                     </div>
