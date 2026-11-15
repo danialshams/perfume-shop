@@ -33,6 +33,27 @@ export default function CreateProductDrawer({
     const markMediaUpload=(busy:boolean)=>setMediaUploads(value=>Math.max(0,value+(busy?1:-1)));
 
     const [selectedType, setSelectedType] = useState<ProductType>("SINGLE");
+    const watchedName=Form.useWatch("name",form);
+    const watchedFamilyMode=Form.useWatch("scent_family_mode",form);
+    const watchedFamilyId=Form.useWatch("scent_family_id",form);
+    const watchedNewFamily=Form.useWatch("new_scent_family",form);
+    const watchedImages=Form.useWatch("images",form);
+    const watchedVariants=Form.useWatch("variants",form);
+    const productReady=String(watchedName??"").trim().length>=2 &&
+      (watchedFamilyMode==="NEW"
+       ? String(watchedNewFamily?.name??"").trim().length>=2
+       : Number(watchedFamilyId)>0) &&
+      Array.isArray(watchedImages)&&watchedImages.filter((im:any)=>im?.image_url&&im.is_main).length===1 &&
+      Array.isArray(watchedVariants)&&watchedVariants.length>0&&
+      (selectedType==="GROUPED"||watchedVariants.length===1) &&
+      watchedVariants.every((v:any)=>
+       Number.isFinite(Number(v?.price))&&Number(v.price)>0&&
+       Number.isInteger(Number(v?.stock_qty))&&Number(v.stock_qty)>=0&&
+       (v?.discount_price==null||v.discount_price===""||Number(v.discount_price)<Number(v.price))&&
+       (selectedType==="SINGLE"||
+         (Array.isArray(v?.images)&&v.images.filter((im:any)=>im?.image_url&&im.is_main).length===1)));
+
+
     const [uploadingMap, setUploadingMap] = useState<Record<string, boolean>>(
         {},
     );
@@ -236,6 +257,7 @@ export default function CreateProductDrawer({
                 ...restValues,
 
                 type: selectedType,
+                is_featured:false,
                 status: "ACTIVE",
                 slug: toSlug(values.name || ""),
 
@@ -273,6 +295,7 @@ export default function CreateProductDrawer({
             };
           
             await createProduct(payload);
+            message.success("محصول با موفقیت در دیتابیس ثبت شد.");
 
             form.resetFields();
             setSelectedType("SINGLE");
@@ -342,13 +365,14 @@ export default function CreateProductDrawer({
                         validateBeforeUpload={validateBeforeUpload}
                     /></section>
 
+                    {!productReady&&<p role="status" className="fst-product-hint">برای ثبت، نام، گروه بویایی، قیمت و موجودی را کامل کنید و برای هر محصول یا مدل یک تصویر اصلی تعیین کنید.</p>}
                     <div className="fst-product-actions">
                         <Button onClick={onClose} disabled={mediaUploads>0}>انصراف</Button>
 
                         <Button
                             type="primary"
                             loading={submitting}
-                            disabled={mediaUploads>0}
+                            disabled={mediaUploads>0||submitting||!productReady}
                             onClick={handleSubmit}
                         >
                             ثبت محصول
