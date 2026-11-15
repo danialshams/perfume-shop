@@ -108,8 +108,9 @@ export async function POST(request:NextRequest){
   try{
    let family=families.find(x=>x.name.trim()===item.group);
    if(!family){
-    family=await scentFamilyService.create({name:item.group,image_url:"",is_active:true,sort_order:families.length});
-    if(!family)throw Error("ساخت گروه بویایی ناموفق بود.");
+    const createdFamily=await scentFamilyService.create({name:item.group,image_url:"",is_active:true,sort_order:families.length});
+    if(!createdFamily)throw Error("ساخت گروه بویایی ناموفق بود.");
+    family={id:createdFamily.id,name:createdFamily.name};
     families=[...families,family];
    }
    const current=await productService.getByIdOrSlug(item.sku);
