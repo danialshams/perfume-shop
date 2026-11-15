@@ -73,8 +73,9 @@ export async function syncGitCatalog(){
   if(await productService.getByIdOrSlug(item.sku)){skipped++;continue;}
   let family=families.find(f=>f.name.trim()===item.group);
   if(!family){
-   family=await scentFamilyService.create({name:item.group,image_url:"",is_active:true,sort_order:families.length});
-   if(!family)throw Error("Failed to create scent family "+item.group);
+   const createdFamily=await scentFamilyService.create({name:item.group,image_url:"",is_active:true,sort_order:families.length});
+   if(!createdFamily)throw Error("Failed to create scent family "+item.group);
+   family={id:createdFamily.id,name:createdFamily.name};
    families=[...families,family];
   }
   const payload=createProductSchema.parse({
