@@ -68,7 +68,7 @@ export async function syncGitCatalog(){
   item.variants.push({volume_ml:volume,price,discount_price:discount,stock_qty:stock,
    is_active:true,images:type==="GROUPED"?urls.map(u=>({image_url:u,is_main:u===main})):[]});
  }
- let families=await scentFamilyService.getList(),created=0,skipped=0;
+ let families:Array<{id:number;name:string}>=await scentFamilyService.getList(),created=0,skipped=0;
  for(const item of grouped.values()){
   if(await productService.getByIdOrSlug(item.sku)){skipped++;continue;}
   let family=families.find(f=>f.name.trim()===item.group);
