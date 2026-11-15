@@ -71,6 +71,8 @@ async function until(check,ms=16000){
  while(Date.now()<deadline){try{const x=await check();if(x)return x;}catch{}await sleep(220)}
  throw new Error("Chrome or local server did not become ready");
 }
+// Isolate unrelated visual tests from the post-intro permission overlay.
+let bypassMusicInvitationForTests=true;
 async function open(url){
  const response=await fetch(endpoint+"/json/new?"+encodeURIComponent(url),{method:"PUT"});
  if(!response.ok)throw new Error("Cannot open CDP tab: "+response.status);
@@ -86,6 +88,11 @@ async function open(url){
   const id=++state.seq;state.pending.set(id,{resolve,reject});
   ws.send(JSON.stringify({id,method,params}));
  });
+ if(bypassMusicInvitationForTests){
+   await send("Page.addScriptToEvaluateOnNewDocument",{
+    source:'try{sessionStorage.setItem("fertini:ambient-invitation:answered:v1","1")}catch{}'
+   });
+ }
  const close=async()=>{
   try{ws.close()}catch{}
   try{await fetch(endpoint+"/json/close/"+encodeURIComponent(data.id))}catch{}
@@ -471,6 +478,7 @@ async function validateAdminScreens(){
 // Regression: homepage intro is a single animation, remains hidden after reload,
 // and cannot leave scroll locked after completion.
 async function validateHomepageIntroOnce(){
+ bypassMusicInvitationForTests=false;
  const {send,close}=await open("about:blank");
  try{
   await send("Page.enable");
@@ -541,6 +549,27 @@ async function validateHomepageIntroOnce(){
       !(introTrace.firstShineAt>introTrace.lineDoneAt) || introTrace.shinePasses!==1)
    throw Error("Cold-load intro flashed or restarted more than once: "+JSON.stringify(introTrace));
   process.stdout.write("COLD START INTRO TRACE "+JSON.stringify(introTrace)+"\\n");
+  // The decision dialog must come AFTER the first intro and must never
+  // autoplay audio. Decline, then verify scroll is restored and the choice
+  // persists only for the current browsing session.
+  await until(()=>evaluate(send,'!!document.querySelector(".fertini-music-consent.is-open")'),3500);
+  const invitation=await evaluate(send,`(()=>({
+    heading:document.querySelector("#fertini-music-consent-title")?.textContent?.trim(),
+    choices:[...document.querySelectorAll(".fertini-music-consent__action")].map(x=>x.textContent?.trim()),
+    paused:document.querySelector("audio")?.paused,
+    playIcon:!!document.querySelector(".fertini-header-sound .fertini-sound-toggle__play")
+  }))()`);
+  if(!invitation.heading?.includes("برای تجربه بهتر") ||
+     !invitation.choices?.includes("پخش") ||
+     !invitation.choices?.includes("تمایل ندارم") ||
+     invitation.paused!==true || !invitation.playIcon)
+    throw Error("Post-loader music consent or muted header icon was incorrect: "+JSON.stringify(invitation));
+  await evaluate(send,'document.querySelector(".fertini-music-consent__action.is-decline")?.click()');
+  await until(()=>evaluate(send,
+    'sessionStorage.getItem("fertini:ambient-invitation:answered:v1")==="1" && !document.querySelector(".fertini-music-consent.is-open")'
+  ),3500);
+  await sleep(570);
+
   const first=await evaluate(send,`(()=>({
     seen:sessionStorage.getItem("fertini:intro:seen:v3"),
     done:document.documentElement.classList.contains("fertini-intro-seen"),
@@ -560,7 +589,7 @@ async function validateHomepageIntroOnce(){
   if(reload.seen!=="1"||reload.introVisible||!reload.done)
    throw Error("Intro replayed on page reload: "+JSON.stringify(reload));
   process.stdout.write("One-time cinematic intro and reload skip verified.\\n");
- }finally{await close()}
+ }finally{bypassMusicInvitationForTests=true;await close()}
 }
 
 try{
@@ -585,6 +614,9 @@ try{
  await pageScreenshot({name:"cart-mobile-full",url:"http://127.0.0.1:3100/cart",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"login-mobile-full",url:"http://127.0.0.1:3100/login",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"checkout-mobile-full",url:"http://127.0.0.1:3100/checkout",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"editorial-perfume-desktop",url:"http://127.0.0.1:3100/fragrance/edition/roselia",width:1440,height:900,mobile:false,assertHome:false});
+ await pageScreenshot({name:"editorial-perfume-mobile",url:"http://127.0.0.1:3100/fragrance/edition/azure",width:390,height:844,mobile:true,assertHome:false});
+ await pageScreenshot({name:"editorial-family-mobile",url:"http://127.0.0.1:3100/fragrance/collection/woody",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"journal-desktop-full",url:"http://127.0.0.1:3100/journal",width:1440,height:900,mobile:false,assertHome:false});
  await pageScreenshot({name:"journal-mobile-full",url:"http://127.0.0.1:3100/journal",width:390,height:844,mobile:true,assertHome:false});
  await pageScreenshot({name:"journal-article-mobile-full",url:"http://127.0.0.1:3100/journal/how-to-choose-a-fragrance",width:390,height:844,mobile:true,assertHome:false});
