@@ -18,7 +18,7 @@ const groups=[
   {href:"/admin/shipping",title:"مدیریت ارسال",icon:Truck},
   {href:"/admin/coupons",title:"کدهای تخفیف",icon:TicketPercent}]},
  {title:"ارتباط با مشتریان",links:[
-  {href:"/admin/customers",title:"مشتریان",icon:Users},
+  {href:"/admin/customers",title:"باشگاه مشتریان",icon:Users},
   {href:"/admin/reviews",title:"دیدگاه‌ها",icon:MessageSquare},
   {href:"/admin/support",title:"چت آنلاین",icon:MessageCircle},
   {href:"/admin/faq",title:"سؤال‌های متداول",icon:HelpCircle} ]}
