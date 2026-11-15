@@ -20,7 +20,7 @@ export function CinematicFooter({ content }:{ content?: FertiniSiteContent } = {
         {y:0,autoAlpha:1,letterSpacing:".08em",duration:1.3,ease:"power3.out",clearProps:"transform,opacity,visibility,letterSpacing"});
       tl.fromTo(targets,{y:19,autoAlpha:0},
         {y:0,autoAlpha:1,stagger:.095,duration:.8,ease:"power3.out",clearProps:"transform,opacity,visibility"},"-=.65");
-      ScrollTrigger.create({trigger:ref.current,start:"top 87%",once:true,onEnter:()=>tl.play()});
+      ScrollTrigger.create({trigger:ref.current,start:"top 66%",once:true,invalidateOnRefresh:true,onEnter:()=>tl.play()});
     },ref);
     return ()=>ctx.revert();
   },[pathname]);
