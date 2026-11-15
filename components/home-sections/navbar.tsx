@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { ArrowLeft, ArrowUpLeft, Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
+import { ArrowLeft, ArrowUpLeft, Menu, Play, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import { useAmbientSound } from "@/components/maison/MaisonAmbientSound";
 import MaisonSoundBars from "@/components/maison/MaisonSoundBars";
 import { lockDocumentScroll } from "@/lib/document-scroll-lock";
@@ -19,6 +19,17 @@ const menuLinks = [
   { href: "/about", label: "درباره ما", sub: "OUR STORY" },
 ] as const;
 
+function SoundToggle({playing,toggle,className}:{
+ playing:boolean;toggle:()=>void;className:string;
+}){
+ return <button type="button"
+   className={"maison-icon-button fertini-header-sound "+className+(playing?" is-playing":"")}
+   onClick={toggle} aria-label={playing?"قطع موسیقی":"پخش موسیقی محیط"}
+   aria-pressed={playing} title={playing?"توقف موسیقی":"پخش موسیقی"}>
+   <span className="fertini-sound-toggle__play" aria-hidden="true"><Play size={19} strokeWidth={1.4}/></span>
+   <span className="fertini-sound-toggle__bars" aria-hidden="true"><MaisonSoundBars/></span>
+ </button>;
+}
 export default function LuxuryNavbar() {
   const pathname = usePathname();
   const { cartCount } = useCartCount();
@@ -28,6 +39,7 @@ export default function LuxuryNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuMounted, setMenuMounted] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchMounted, setSearchMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -55,7 +67,7 @@ export default function LuxuryNavbar() {
     return () => window.cancelAnimationFrame(id);
   }, [pathname, dismiss]);
 
-  const overlayOpen = menuMounted || searchOpen;
+  const overlayOpen = menuMounted || searchMounted;
   useEffect(() => {
     if (!overlayOpen) return;
     const releaseScroll = lockDocumentScroll();
@@ -105,10 +117,17 @@ export default function LuxuryNavbar() {
     const timeout=window.setTimeout(()=>setMenuMounted(false),580);
     return ()=>window.clearTimeout(timeout);
   },[menuMounted,menuOpen]);
+  // Keep the search panel and its backdrop in the DOM for their exit motion.
+  useEffect(() => {
+    if (!searchMounted || searchOpen) return;
+    const timeout=window.setTimeout(()=>setSearchMounted(false),520);
+    return ()=>window.clearTimeout(timeout);
+  },[searchMounted,searchOpen]);
   function openSearch(event: React.MouseEvent<HTMLButtonElement>) {
     lastTriggerRef.current = event.currentTarget;
     setMenuOpen(false);
     setMenuMounted(false);
+    setSearchMounted(true);
     setSearchOpen(true);
   }
 
@@ -120,10 +139,7 @@ export default function LuxuryNavbar() {
             <button type="button" className="maison-icon-button maison-menu-trigger" onClick={openMenu} aria-label="باز کردن منو" aria-expanded={menuOpen} aria-controls="maison-menu">
               <Menu size={21} strokeWidth={1.3} />
             </button>
-            {soundEnabled && <button type="button" className={"maison-icon-button fertini-header-sound fertini-header-sound--mobile"+(soundPlaying?" is-playing":"")} onClick={toggleSound}
-              aria-label={soundPlaying ? "قطع موسیقی" : "پخش موسیقی محیط"} aria-pressed={soundPlaying}>
-              <MaisonSoundBars />
-            </button>}
+            {soundEnabled && <SoundToggle playing={soundPlaying} toggle={toggleSound} className="fertini-header-sound--mobile"/>}
             <nav className="maison-header__navigation" aria-label="ناوبری اصلی">
               <Link href="/" aria-current={pathname === "/" ? "page" : undefined}>خانه</Link>
               <Link href="/products" aria-current={pathname === "/products" ? "page" : undefined}>عطرها</Link>
@@ -134,11 +150,7 @@ export default function LuxuryNavbar() {
             <strong>FERTINI</strong><span>THE FRAGRANCE HOUSE</span>
           </Link>
           <div className="maison-header__left">
-            {soundEnabled && <button type="button" className={"maison-icon-button fertini-header-sound fertini-header-sound--desktop"+(soundPlaying?" is-playing":"")} onClick={toggleSound}
-              aria-label={soundPlaying ? "قطع موسیقی" : "پخش موسیقی محیط"} aria-pressed={soundPlaying}
-              title={soundPlaying ? "Sound on" : "Sound off"}>
-              <MaisonSoundBars />
-            </button>}
+            {soundEnabled && <SoundToggle playing={soundPlaying} toggle={toggleSound} className="fertini-header-sound--desktop"/>}
             <button type="button" className="maison-icon-button" aria-label="جستجوی عطرها" aria-expanded={searchOpen} onClick={openSearch}><Search size={20} strokeWidth={1.3} /></button>
             <Link href="/account" className="maison-icon-button maison-header__account" aria-label="حساب کاربری"><UserRound size={20} strokeWidth={1.3} /></Link>
             <Link href="/cart" className="maison-icon-button maison-header__cart" aria-label={"سبد خرید، " + displayedCartCount + " محصول"}>
@@ -170,8 +182,8 @@ export default function LuxuryNavbar() {
         </div>
       )}
 
-      {searchOpen && (
-        <div className="maison-overlay maison-active-overlay" role="dialog" aria-modal="true" aria-label="جستجوی عطرها">
+      {searchMounted && (
+        <div className={"maison-overlay maison-active-overlay maison-overlay--search"+(searchOpen?" is-open":" is-closing")} role="dialog" aria-modal={searchOpen} aria-hidden={!searchOpen} inert={!searchOpen} aria-label="جستجوی عطرها">
           <button type="button" className="maison-overlay__backdrop" onClick={dismiss} aria-label="بستن جستجو" tabIndex={-1} />
           <section className="maison-search" dir="rtl">
             <div className="maison-search__head">
