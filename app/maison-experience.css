@@ -60,7 +60,7 @@
 .maison-intro__shine{position:absolute;left:50%;top:0;transform:translateX(-50%);white-space:nowrap;pointer-events:none;
  font:400 clamp(60px,11vw,152px)/1 Georgia,"Times New Roman",serif;letter-spacing:.19em;padding-left:.19em;
  color:transparent;background:linear-gradient(106deg,transparent 34%,rgba(255,248,225,.92) 48%,transparent 62%);
- background-size:240% 100%;-webkit-background-clip:text;background-clip:text;opacity:0}
+ background-size:240% 100%;background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;opacity:0}
 .maison-intro__sub{font-size:11px;letter-spacing:.15em}
 @media(max-width:600px){
  .maison-intro__brand,.maison-intro__shine{font-size:clamp(47px,12vw,68px);letter-spacing:.13em;padding-left:.13em}
