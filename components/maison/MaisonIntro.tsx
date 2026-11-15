@@ -129,6 +129,5 @@ export default function MaisonIntro() {
       <div className="maison-intro__shine" aria-hidden="true">FERTINI</div>
       <span className="maison-intro__sub" dir="ltr">THE ART OF SCENT</span>
     </div>
-    <button className="maison-intro__skip" type="button" onClick={finish}>عبور از مقدمه</button>
   </div>;
 }
