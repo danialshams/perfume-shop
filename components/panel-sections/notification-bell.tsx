@@ -237,8 +237,8 @@ function ConnectedNotificationBell() {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-black/10 bg-white text-neutral-700 shadow-sm transition-all duration-200 hover:scale-[1.03] hover:bg-black/[0.03] active:scale-[0.98] ${
-          hasNewEffect ? "animate-bounce" : ""
+        className={`relative inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#e1e7df] bg-white text-[#536958] transition-all duration-200 hover:scale-[1.03] hover:bg-black/[0.03] active:scale-[0.98] ${
+          hasNewEffect ? "ring-1 ring-[#9daf9e]" : ""
         }`}
         aria-label="اعلان‌ها"
         aria-expanded={open}
@@ -246,7 +246,7 @@ function ConnectedNotificationBell() {
         <Bell className="h-5 w-5" />
 
         {unreadCount > 0 ? (
-          <span className="absolute -right-1 -top-1 inline-flex min-w-[22px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[11px] font-bold text-white shadow-lg ring-4 ring-white animate-pulse">
+          <span className="absolute -right-1 -top-1 inline-flex min-w-[22px] items-center justify-center rounded-full bg-[#657e69] px-1.5 py-0.5 text-[11px] font-medium text-white ring-2 ring-white">
             {badgeLabel}
           </span>
         ) : null}
@@ -303,7 +303,7 @@ function ConnectedNotificationBell() {
               <div
                 key={item.id}
                 className={`flex items-start gap-2 border-b border-black/5 px-3 py-3 transition hover:bg-neutral-50 ${
-                  item.is_read === 0 ? "bg-red-50/50" : "bg-white"
+                  item.is_read === 0 ? "bg-[#f0f5ef]" : "bg-white"
                 }`}
               >
                 <button
