@@ -9,14 +9,43 @@ import { DEMO_HOME_PRODUCTS, type HomeProduct } from "@/lib/fertini-home-product
 import {DEFAULT_SITE_CONTENT,type FertiniSiteContent,getActiveCampaigns,campaignDiscountPercent} from "@/lib/fertini-site-content";
 
 
+// Static editorial demo photography is used only on the homepage.
+// Original product images/stock/prices in PostgreSQL remain untouched.
+const editorialBestsellers=[
+  "/fertini/editorial/product-amber-01.avif",
+  "/fertini/editorial/product-amber-02.avif",
+  "/fertini/editorial/product-amber-03.avif",
+  "/fertini/editorial/product-ivory-02.avif",
+  "/fertini/editorial/product-amber-02.avif",
+  "/fertini/editorial/product-amber-01.avif",
+];
+const editorialNewest=[
+  "/fertini/editorial/product-ivory-01.avif",
+  "/fertini/editorial/product-ivory-02.avif",
+  "/fertini/editorial/product-ivory-01.avif",
+  "/fertini/editorial/product-amber-03.avif",
+  "/fertini/editorial/product-ivory-02.avif",
+  "/fertini/editorial/product-ivory-01.avif",
+];
+const editorialHeroes=[
+  "/fertini/editorial/hero-amber.avif",
+  "/fertini/editorial/hero-bronze.avif",
+];
+const familyStillLife=(name:string,index:number)=>{
+  const normalized=name.toLowerCase();
+  if(/گلی|floral|گل|رز|یاس/.test(normalized))return "/fertini/editorial/family-floral.avif";
+  if(/عود|oud|agar|شرقی|amber|گرم|ادویه/.test(normalized))return "/fertini/editorial/family-oud.avif";
+  if(/چوب|wood|cedar|سدر|دودی/.test(normalized))return "/fertini/editorial/family-woody.avif";
+  return ["/fertini/editorial/family-woody.avif","/fertini/editorial/family-floral.avif","/fertini/editorial/family-oud.avif"][index%3];
+};
 
-function ProductCard({product,large=false,mode="up",discountPercent=0}:{
-  product:HomeProduct;large?:boolean;mode?:"up"|"fade"|"right"|"left"|"stretch";discountPercent?:number
+function ProductCard({product,large=false,mode="up",discountPercent=0,editorialImage}:{
+  product:HomeProduct;large?:boolean;mode?:"up"|"fade"|"right"|"left"|"stretch";discountPercent?:number;editorialImage?:string
 }){
   const displayPrice=product.price===null?null:Math.round(product.price*(100-discountPercent)/100);
   return <Link href={product.href} className={"fertini-v5-card"+(large?" fertini-v5-card--large":"")} data-fertini-card>
     <div className="fertini-v5-card__media" data-fertini-photo data-photo-entrance={mode}>
-      <Image src={product.image} alt={product.name} fill unoptimized={!product.isDemo}
+      <Image src={editorialImage||product.image} alt={editorialImage?"تصویر مفهومی عطر بدون برند — "+product.name:product.name} fill unoptimized={!product.isDemo&&!editorialImage}
         loading={large?"eager":"lazy"}
         sizes={large?"(min-width:960px) 32vw, 68vw":"(min-width:960px) 27vw, (min-width:600px) 46vw, 45vw"} />
     </div>
@@ -30,7 +59,9 @@ function ProductCard({product,large=false,mode="up",discountPercent=0}:{
 export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEMO_HOME_PRODUCTS,catalogState="demo",scentFamilies=[]}:{
   content?:FertiniSiteContent;products?:HomeProduct[];catalogState?:"demo"|"database"|"unavailable";scentFamilies?:Array<{id:number;name:string;image_url:string|null}>
 }){
-  const slides=content.heroSlides;
+  const slides=content.heroSlides.map((slide,index)=>({
+    ...slide,photo:/^\/fertini\/hero-0[12]\.svg$/.test(slide.photo)?editorialHeroes[index%editorialHeroes.length]:slide.photo,
+  }));
   const root=useRef<HTMLElement>(null);
   const [active,setActive]=useState(0);
   const [autoPlay,setAutoPlay]=useState(true);
@@ -80,10 +111,19 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
     gsap.registerPlugin(ScrollTrigger);
     const ctx=gsap.context(()=>{
       root.current?.querySelectorAll<HTMLElement>("[data-fertini-heading]").forEach(head=>{
-        const children=[...head.children];
+        const title=head.querySelector<HTMLElement>("h2");
+        const kicker=head.querySelector<HTMLElement>(".maison-kicker");
+        const paragraph=head.querySelector<HTMLElement>("p");
         const tl=gsap.timeline({paused:true});
-        tl.fromTo(children,{y:26,autoAlpha:0},{y:0,autoAlpha:1,stagger:.18,duration:.9,ease:"power3.out",clearProps:"transform,opacity,visibility"});
-        ScrollTrigger.create({trigger:head,start:"top 90%",once:true,onEnter:()=>tl.play()});
+        // Full-line masked reveal, NOT the loader's scattered-letter assembly.
+        // Preserve RTL shaping by never wrapping or splitting Persian glyphs.
+        if(kicker)tl.fromTo(kicker,{y:14,autoAlpha:0},{y:0,autoAlpha:1,duration:.58,ease:"power2.out"},0);
+        if(title)tl.fromTo(title,
+          {y:34,autoAlpha:0,clipPath:"inset(0% 0% 100% 0%)",filter:"blur(9px)"},
+          {y:0,autoAlpha:1,clipPath:"inset(0% 0% 0% 0%)",filter:"blur(0px)",duration:1.16,
+           ease:"power3.out",clearProps:"clipPath,filter,transform,opacity,visibility"},.16);
+        if(paragraph)tl.fromTo(paragraph,{y:17,autoAlpha:0},{y:0,autoAlpha:1,duration:.76,ease:"power2.out",clearProps:"transform,opacity,visibility"},.57);
+        ScrollTrigger.create({trigger:head,start:"top 87%",once:true,onEnter:()=>tl.play()});
       });
     },root);
     return()=>ctx.revert();
@@ -95,8 +135,10 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
   const catalogUnavailable=catalogState==="unavailable";
   const activeCampaigns=getActiveCampaigns(content);
   const displayedFamilies=catalogState==="database"
-    ?scentFamilies.map(f=>({id:String(f.id),name:f.name,subtitle:"",photo:f.image_url||"/fertini/hero-01.svg",url:"/products?scent_family_id="+f.id}))
-    :content.families.map(f=>({id:f.id,name:f.name,subtitle:f.subtitle,photo:f.photo,url:"/products?family="+f.id}));
+    ?scentFamilies.map((f,index)=>({id:String(f.id),name:f.name,subtitle:"",photo:f.image_url&&!/\.svg(?:$|\?)/i.test(f.image_url)&&!f.image_url.includes("placeholder")?f.image_url:familyStillLife(f.name,index),url:"/products?scent_family_id="+f.id}))
+    :content.families.map((f,index)=>({id:f.id,name:f.name,subtitle:f.subtitle,
+        photo:/\.svg(?:$|\?)/i.test(f.photo)?familyStillLife(f.name,index):f.photo,
+        url:"/products?family="+f.id}));
   const sections={
     shipping:content.shipping.some(method=>method.enabled)?<section className="fertini-v5-delivery maison-wide" aria-label="راهنمای روش‌های ارسال">
       <div><span className="maison-kicker" dir="ltr" lang="en">FERTINI / DELIVERY</span>
@@ -125,7 +167,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
       </header>
       {catalogUnavailable?<p role="status" className="fertini-v5-catalog-notice">کاتالوگ محصولات موقتا در دسترس نیست.</p>:null}
       <div className="fertini-v5-best__grid">{bestselling.map((product,index)=>
-        <ProductCard key={product.id} product={product} discountPercent={campaignDiscountPercent(content,product.id)} mode={(["up","right"] as const)[index%2]}/>)}</div>
+        <ProductCard key={product.id} product={product} editorialImage={editorialBestsellers[index%editorialBestsellers.length]} discountPercent={campaignDiscountPercent(content,product.id)} mode={(["up","right"] as const)[index%2]}/>)}</div>
     </section>,
     latest: <section className="fertini-v5-new maison-wide" aria-labelledby="fertini-new-title">
       <header className="fertini-v5-heading" data-fertini-heading>
@@ -135,7 +177,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
       </header>
       {catalogUnavailable?<p role="status" className="fertini-v5-catalog-notice">کاتالوگ محصولات موقتا در دسترس نیست.</p>:null}
       <div className="fertini-v5-new__scroll" aria-label="عطرهای جدید مجموعه فرتینی">
-        {latest.map((product,index)=><ProductCard key={product.id} product={product} discountPercent={campaignDiscountPercent(content,product.id)} large
+        {latest.map((product,index)=><ProductCard key={product.id} product={product} editorialImage={editorialNewest[index%editorialNewest.length]} discountPercent={campaignDiscountPercent(content,product.id)} large
           mode={(["stretch","fade"] as const)[index%2]}/>)}
       </div>
       <div className="fertini-v5-new__bottom"><span lang="en" dir="ltr">

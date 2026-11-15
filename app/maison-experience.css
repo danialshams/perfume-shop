@@ -49,3 +49,20 @@
   .maison-intro, .maison-intro * { animation: none !important; transition: none !important; }
   .maison-sound--playing .maison-sound__bars i { animation: none !important; height: 7px; }
 }
+
+
+/* Cinematic signature: assemble the existing FERTINI wordmark; a center-out hairline;
+   one restrained metallic glint. Keep the brand font exactly as before. */
+.maison-intro__content{position:relative;gap:15px}
+.maison-intro__brand{display:flex;justify-content:center;white-space:nowrap;font:400 clamp(60px,11vw,152px)/1 Georgia,"Times New Roman",serif;letter-spacing:.19em;padding-left:.19em}
+.maison-intro__brand [data-intro-letter]{display:inline-block;visibility:hidden;opacity:0;will-change:transform,opacity,filter}
+.maison-intro__rule{width:clamp(110px,19vw,220px);height:1px;background:linear-gradient(90deg,transparent,#ad9070 18%,#886d51 50%,#ad9070 82%,transparent);transform:scaleX(0);transform-origin:50% 50%;opacity:0;margin-top:2px}
+.maison-intro__shine{position:absolute;left:50%;top:0;transform:translateX(-50%);white-space:nowrap;pointer-events:none;
+ font:400 clamp(60px,11vw,152px)/1 Georgia,"Times New Roman",serif;letter-spacing:.19em;padding-left:.19em;
+ color:transparent;background:linear-gradient(106deg,transparent 34%,rgba(255,248,225,.92) 48%,transparent 62%);
+ background-size:240% 100%;-webkit-background-clip:text;background-clip:text;opacity:0}
+.maison-intro__sub{font-size:11px;letter-spacing:.15em}
+@media(max-width:600px){
+ .maison-intro__brand,.maison-intro__shine{font-size:clamp(47px,12vw,68px);letter-spacing:.13em;padding-left:.13em}
+ .maison-intro__rule{width:148px}
+}

@@ -82,19 +82,33 @@ export default function MaisonIntro() {
 
     let finishFrame = 0;
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ paused: true, onComplete: finish });
-      tl.fromTo(".maison-intro__brand",
-        { autoAlpha: 0, y: 24, filter: "blur(10px)", letterSpacing: ".34em" },
-        { autoAlpha: 1, y: 0, filter: "blur(0px)", letterSpacing: ".20em", duration: .8, ease: "power3.out" })
-        .fromTo(".maison-intro__sub", { autoAlpha: 0, y: 11 },
-          { autoAlpha: 1, y: 0, duration: .45, ease: "power2.out" }, .35)
-        .to(root, { autoAlpha: 0, duration: .45, ease: "power2.inOut" }, "+=.18");
-
-      const elapsed = Math.max(0, (performance.now() - introStartedAt!) / 1000);
-      tl.time(Math.min(elapsed, tl.duration()));
-      if (elapsed < tl.duration()) tl.play();
-      else finishFrame = window.requestAnimationFrame(finish);
-    }, root);
+      const letters = root.querySelectorAll<HTMLElement>("[data-intro-letter]");
+      const brand = root.querySelector<HTMLElement>(".maison-intro__brand");
+      const line = root.querySelector<HTMLElement>(".maison-intro__rule");
+      const sheen = root.querySelector<HTMLElement>(".maison-intro__shine");
+      const sub = root.querySelector<HTMLElement>(".maison-intro__sub");
+      // All characters use the exact same existing Georgia wordmark font.
+      // Only the intro assembles letters; section headings reveal as full lines.
+      gsap.set(brand,{autoAlpha:1});
+      gsap.set(line,{scaleX:0,autoAlpha:1,transformOrigin:"50% 50%"});
+      gsap.set(sheen,{autoAlpha:0,backgroundPosition:"-180% 50%"});
+      gsap.set(sub,{autoAlpha:0,y:9});
+      const scatteredX = [-104,64,-67,92,-83,75,118];
+      const scatteredY = [-26,35,19,-34,30,-19,24];
+      const tl = gsap.timeline({ paused:true,onComplete:finish });
+      tl.fromTo(letters,
+        {autoAlpha:0,x:(i:number)=>scatteredX[i],y:(i:number)=>scatteredY[i],filter:"blur(12px)"},
+        {autoAlpha:1,x:0,y:0,filter:"blur(0px)",duration:1.34,stagger:{each:.075,from:"center"},ease:"power3.out"},0.05)
+        .to(line,{scaleX:1,duration:.84,ease:"power2.inOut"},1.23)
+        .to(sheen,{autoAlpha:1,duration:.16},1.94)
+        .to(sheen,{backgroundPosition:"180% 50%",duration:.9,ease:"sine.inOut"},1.95)
+        .to(sub,{autoAlpha:1,y:0,duration:.48,ease:"power2.out"},2.04)
+        .to(root,{autoAlpha:0,duration:.43,ease:"power2.inOut"},2.92);
+      const elapsed = Math.max(0,(performance.now() - introStartedAt!)/1000);
+      tl.time(Math.min(elapsed,tl.duration()));
+      if(elapsed<tl.duration())tl.play();
+      else finishFrame=window.requestAnimationFrame(finish);
+    },root);
 
     return () => {
       window.cancelAnimationFrame(finishFrame);
@@ -106,7 +120,10 @@ export default function MaisonIntro() {
   if (!visible) return null;
   return <div className="maison-intro fertini-intro" ref={rootRef} role="status" aria-label="در حال نمایش مقدمه فرتینی">
     <div className="maison-intro__content" dir="ltr">
-      <div className="maison-intro__brand">FERTINI</div>
+      <div className="maison-intro__brand" aria-label="FERTINI">{Array.from("FERTINI").map((letter,index)=>
+        <span data-intro-letter key={index} aria-hidden="true">{letter}</span>)}</div>
+      <div className="maison-intro__rule" aria-hidden="true"/>
+      <div className="maison-intro__shine" aria-hidden="true">FERTINI</div>
       <span className="maison-intro__sub" dir="ltr">THE ART OF SCENT</span>
     </div>
     <button className="maison-intro__skip" type="button" onClick={finish}>عبور از مقدمه</button>
