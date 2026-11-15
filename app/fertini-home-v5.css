@@ -119,3 +119,55 @@
 .fertini-v5-family--woody .fertini-v5-family__photo{background:linear-gradient(140deg,#674e3a,#9a7656 45%,#483728)}
 .fertini-v5-family--oud .fertini-v5-family__photo{background:linear-gradient(150deg,#141719,#51423b 55%,#262321)}
 .fertini-v5-family--vanilla .fertini-v5-family__photo{background:linear-gradient(140deg,#be9c74,#e6d5bb 55%,#aa855d)}
+
+/* Editorial product captions: name on the left, price on the right,
+   and the small fragrance label below the name. Works for all cards in
+   Bestsellers and New Arrivals, on desktop and on narrow mobile screens. */
+.fertini-v5 .fertini-v5-card__info{padding-top:clamp(13px,1.6vw,21px)}
+.fertini-v5 .fertini-v5-card__details{
+ display:flex;align-items:flex-start;justify-content:space-between;
+ direction:ltr;gap:clamp(10px,1.8vw,24px);min-width:0;
+}
+.fertini-v5 .fertini-v5-card__identity{
+ flex:1 1 auto;min-width:0;direction:rtl;text-align:left;
+}
+.fertini-v5 .fertini-v5-card__price-column{
+ flex:0 1 auto;min-width:0;max-width:49%;direction:rtl;text-align:right;
+}
+.fertini-v5 .fertini-v5-card__text-mask{
+ display:block;overflow:hidden;line-height:normal;
+ padding-bottom:3px;margin-bottom:-3px; /* protect descenders while clipping */
+}
+.fertini-v5 .fertini-v5-card__text-mask [data-fertini-caption-line]{
+ display:block;will-change:transform,opacity;
+}
+.fertini-v5 .fertini-v5-card__identity h3{
+ color:#35473a;font:350 clamp(19px,2.15vw,31px)/1.6 "Vazirmatn","Vazirmatn RD",sans-serif;
+ margin:0;letter-spacing:0;overflow-wrap:anywhere;text-align:left;
+}
+.fertini-v5 .fertini-v5-card__subtitle{
+ font:400 clamp(9px,.9vw,11px)/1.7 "Cormorant Garamond",Georgia,serif;
+ letter-spacing:.11em;color:#849189;text-align:left;
+ margin-top:1px;
+}
+.fertini-v5 .fertini-v5-card__price-column p.fertini-v5-card__price{
+ color:#3c5040;font:400 clamp(11px,1.05vw,14px)/2 "Vazirmatn",sans-serif;
+ text-align:right;margin:3px 0 0;white-space:normal;
+}
+.fertini-v5 .fertini-v5-card__price-note{
+ color:#8c998e;font:350 10px/1.8 "Vazirmatn",sans-serif;
+ text-align:right;margin-top:1px;
+}
+@media(max-width:600px){
+ .fertini-v5 .fertini-v5-card__details{gap:7px}
+ .fertini-v5 .fertini-v5-card__identity h3{font-size:clamp(16px,4.5vw,21px);line-height:1.55}
+ .fertini-v5 .fertini-v5-card__subtitle{font-size:9px;letter-spacing:.04em;line-height:1.5}
+ .fertini-v5 .fertini-v5-card__price-column{max-width:53%}
+ .fertini-v5 .fertini-v5-card__price-column p.fertini-v5-card__price{font-size:clamp(10px,2.7vw,12px);line-height:1.8}
+ .fertini-v5 .fertini-v5-card__price-note{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .fertini-v5 .fertini-v5-card__text-mask [data-fertini-caption-line]{
+   transform:none!important;opacity:1!important;visibility:visible!important;
+ }
+}

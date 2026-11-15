@@ -118,6 +118,10 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    const hero=document.querySelector(".fertini-hero");
    const img=document.querySelector(".fertini-hero__image.is-active img");
    const title=hero?.querySelector("h1");
+   const card=document.querySelector(".fertini-v5-best__grid .fertini-v5-card");
+   const name=card?.querySelector(".fertini-v5-card__identity h3");
+   const price=card?.querySelector(".fertini-v5-card__price");
+   const subtitle=card?.querySelector(".fertini-v5-card__subtitle");
    return{
     url:location.pathname,width:window.innerWidth,scrollWidth:document.documentElement.scrollWidth,
     height:document.documentElement.scrollHeight,
@@ -125,6 +129,9 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroImageLoaded:!!img?.complete&&Number(img?.naturalWidth)>50,
     heroMediaUnavailable:!!document.querySelector(".fertini-hero__image.is-active .fertini-v5-photo-unavailable"),
     heroTitleOpacity:title?Number(getComputedStyle(title).opacity):null,
+    cardNameLeftOfPrice:!!name&&!!price&&name.getBoundingClientRect().right<=price.getBoundingClientRect().left+3,
+    cardSubtitleBelowName:!!name&&!!subtitle&&subtitle.getBoundingClientRect().top>=name.getBoundingClientRect().bottom-4,
+    cardMaskedLines:card?.querySelectorAll("[data-fertini-caption-line]").length||0,
     headerFound:!!document.querySelector("header"),
     imageCount:document.querySelectorAll(".fertini-v5 img").length,
     explicitUnavailableCount:document.querySelectorAll(".fertini-v5 .fertini-v5-photo-unavailable").length,
@@ -158,6 +165,8 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    if(state.failedImageCount>0)throw Error(name+" has failed visible media: "+JSON.stringify(state));
    if(state.optimizedImageCount>0)throw Error(name+" is still dependent on cPanel /_next/image: "+JSON.stringify(state));
    if(state.familyCaptionCount<3)throw Error(name+" scent families must have captions inside photos: "+JSON.stringify(state));
+   if(!state.cardNameLeftOfPrice||!state.cardSubtitleBelowName||state.cardMaskedLines<3)
+     throw Error(name+" perfume name, right-hand price or subordinate scent label misaligned: "+JSON.stringify(state));
    if(state.familyFailedFallbacks>0)throw Error(name+" repeats the low-quality woody fallback: "+JSON.stringify(state));
    if(state.heroHasCopy)throw Error(name+" should have a pure full-image hero");
    if(state.width<600&&state.heroImageLoaded){
@@ -236,6 +245,19 @@ async function validateCinematicPhotoReveal(){
   await sleep(330);
   const second=await evaluate(send,'Number(document.querySelector('+JSON.stringify(photoSelector)+')?.dataset.photoRevealProgress)');
   if(!(second>first && second<1.001))throw Error("Cinematic clip did not advance smoothly "+JSON.stringify({first,second}));
+  // Photo begins its masked wipe before product names/prices are allowed to
+  // rise out of their own clipping wrappers.
+  const copyBefore=await evaluate(send,`(()=>{
+    const card=document.querySelector(".fertini-v5-best__grid [data-fertini-card]");
+    const name=card?.querySelector(".fertini-v5-card__identity h3");
+    const price=card?.querySelector(".fertini-v5-card__price");
+    return {nameOpacity:name?Number(getComputedStyle(name).opacity):null,
+      priceOpacity:price?Number(getComputedStyle(price).opacity):null};
+  })()`);
+  if(copyBefore.nameOpacity===null||copyBefore.priceOpacity===null||
+     copyBefore.nameOpacity>.10||copyBefore.priceOpacity>.10)
+    throw Error("Perfume copy revealed before photo mask finished: "+JSON.stringify(copyBefore));
+
   await until(()=>evaluate(send,'document.querySelector('+JSON.stringify(photoSelector)+')?.dataset.photoRevealState==="complete"'),7600);
   const finished=await evaluate(send,`(()=>{
     const f=document.querySelector(".fertini-v5-best__grid [data-fertini-photo]");
@@ -244,6 +266,17 @@ async function validateCinematicPhotoReveal(){
       scale:img?new DOMMatrixReadOnly(getComputedStyle(img).transform).a:null};
   })()`);
   if(!finished.complete||finished.clip!=="none"||Math.abs(finished.scale-1)>.009)throw Error("Photo did not settle to its final still frame "+JSON.stringify(finished));
+  const copyAfter=await evaluate(send,`(()=>{
+    const card=document.querySelector(".fertini-v5-best__grid [data-fertini-card]");
+    const name=card?.querySelector(".fertini-v5-card__identity h3");
+    const price=card?.querySelector(".fertini-v5-card__price");
+    return {nameOpacity:name?Number(getComputedStyle(name).opacity):null,
+      priceOpacity:price?Number(getComputedStyle(price).opacity):null};
+  })()`);
+  if(copyAfter.nameOpacity===null||copyAfter.priceOpacity===null||
+     copyAfter.nameOpacity<.95||copyAfter.priceOpacity<.95)
+    throw Error("Perfume masked caption did not finish after photo: "+JSON.stringify(copyAfter));
+
   await evaluate(send,'window.scrollTo({top:0,behavior:"instant"})');
   await sleep(500);
   const returned=await evaluate(send,'(()=>{const f=document.querySelector(".fertini-v5-best__grid [data-fertini-photo]");return {state:f?.dataset.photoRevealState,clip:getComputedStyle(f).clipPath};})()');

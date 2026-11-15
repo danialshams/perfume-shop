@@ -67,7 +67,7 @@ const galleryCss=read("app/fertini-home-v5.css");
 assert.doesNotMatch(refinementCss,/\.fertini-intro \.maison-intro__overline,\.fertini-intro \.maison-intro__rule\{display:none!important\}/);
 assert.match(introCss,/\.fertini-intro \.maison-intro__rule\{[\s\S]*?display:block!important/);
 assert.match(introCss,/background-repeat:no-repeat/);
-assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{autoAlpha:.82'));
+assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{autoAlpha:.93'));
 assert.ok(intro.indexOf('.to(line,{scaleX:1')<intro.indexOf('.to(sheen,{backgroundPosition'));
 assert.match(home,/function ResilientPhoto/);
 assert.match(home,/fill unoptimized priority=/);
@@ -171,4 +171,30 @@ for (const path of ["journal","about","contact","shipping","privacy","terms"]) {
  assert.ok(existsSync("app/" + path + "/page.tsx"), "missing destination: "+path);
 }
 assert.ok(existsSync("app/journal/how-to-choose-a-fragrance/page.tsx"));
+// Cinematic refinement: a single, warm, reversed highlight over the exact
+// wordmark, responsive side-by-side product captions, and later footer entry.
+const productMotion=read("components/maison/FertiniEditorialMotion.tsx");
+const footerMotion=read("components/home-sections/CinematicStorefront.tsx");
+const productStyle=read("app/fertini-home-v5.css");
+assert.ok(intro.includes('gsap.set(sheen,{autoAlpha:0,backgroundPosition:"180% 50%"})'));
+assert.ok(intro.includes('.to(sheen,{backgroundPosition:"-180% 50%"'));
+assert.ok(intro.includes('.to(sheen,{autoAlpha:.93'));
+assert.ok(introCss.includes("rgba(175,133,82,.44)"));
+assert.ok(introCss.includes("font-size:clamp(60px,11vw,152px)"));
+assert.match(home,/function FragranceCardInfo/);
+assert.match(home,/fertini-v5-card__details/);
+assert.match(home,/fertini-v5-card__identity/);
+assert.match(home,/fertini-v5-card__price-column/);
+assert.match(home,/data-fertini-caption-line/);
+assert.match(productStyle,/\.fertini-v5-card__details\{/);
+assert.match(productStyle,/direction:ltr;gap:/);
+assert.match(productStyle,/\.fertini-v5-card__text-mask\{/);
+assert.match(productStyle,/overflow:hidden/);
+assert.ok(productMotion.includes('querySelectorAll<HTMLElement>("[data-fertini-caption-line]")'));
+assert.ok(productMotion.includes('gsap.set(captions,{autoAlpha:0,yPercent:112})'));
+assert.ok(productMotion.includes('tl.to(captions,{autoAlpha:1,yPercent:0'));
+assert.ok(productMotion.includes('},1.74)'));
+assert.ok(footerMotion.includes('start:"top 66%"'));
+assert.ok(!footerMotion.includes('start:"top 87%"'));
+
 console.log("FERTINI v4 showroom, filters, motion and editorial SEO assertions passed.");
