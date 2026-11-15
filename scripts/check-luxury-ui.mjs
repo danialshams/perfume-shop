@@ -47,13 +47,13 @@ assert.match(home, /fertini:intro:complete/);
 assert.match(home, /ScrollTrigger\.create/);
 // The new heading animation intentionally uses clipPath only on the title,
  // while photos retain their separate decode-ahead cinematic reveal.
-assert.match(home, /clipPath:"inset\\(0% 0% 100% 0%\\)"/);
+assert.ok(home.includes('clipPath:"inset(0% 0% 100% 0%)"'));
 assert.match(home, /clearProps:"clipPath,filter,transform/);
 assert.match(home, /data-fertini-photo/);
 assert.match(intro, /data-intro-letter/);
 assert.match(intro, /scatteredX/);
-assert.match(intro, /\.to\\(line,\\{scaleX:1/);
-assert.match(intro, /\.to\\(sheen,\\{backgroundPosition/);
+assert.ok(intro.includes('.to(line,{scaleX:1'));
+assert.ok(intro.includes('.to(sheen,{backgroundPosition'));
 for (const name of ["hero-amber","hero-bronze","product-amber-01","product-amber-02","product-amber-03","product-ivory-01","product-ivory-02","family-woody","family-floral","family-oud"]) {
  assert.ok(existsSync("public/fertini/editorial/" + name + ".avif"),"Missing editorial media: "+name);
 }
