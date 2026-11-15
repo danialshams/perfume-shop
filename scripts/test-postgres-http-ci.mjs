@@ -358,9 +358,9 @@ try{
  // build-time data seed. Verify access control, zero stock and repeat safety
  // against the isolated disposable PostgreSQL test database.
  const importUrl="/api/v1/admin/editorial-import";
- // In production the site's configured canonical HTTPS origin is used for
- // privileged requests; the disposable CI service itself runs on localhost.
- const importOrigin="https://fertiniperfume.com";
+ // CI uses an explicit loopback-only exception in the isolated PostgreSQL
+ // environment. Production retains its configured canonical HTTPS origin.
+ const importOrigin=base;
  const importHeaders={...auth,Origin:importOrigin,"Content-Type":"application/json"};
  const deniedImport=await read(importUrl,{method:"POST",
   headers:{Origin:importOrigin,"Content-Type":"application/json"},
