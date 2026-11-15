@@ -403,7 +403,7 @@ export default function ProductDetailsModal({
                                     />
 
                                     <MiniStat
-                                        label="واریانت"
+                                        label="مدل / حجم"
                                         value={formatNumber(
                                             safeProduct.variant_count ??
                                             normalizedVariants.length ??
@@ -580,7 +580,7 @@ export default function ProductDetailsModal({
                 <section className="space-y-4">
                     <SectionHeader
                         title="تصاویر محصول"
-                        description="تصاویر عمومی محصول، جدا از تصاویر واریانت‌ها"
+                        description="تصاویر عمومی محصول، جدا از تصاویر مدل / حجم‌ها"
                     />
 
                     <ProductImagesGrid images={productImages.map((image, index) => ({ ...image, id: Number(image.id) || index + 1, is_main: image.is_main ?? false }))} />
@@ -590,11 +590,11 @@ export default function ProductDetailsModal({
 
                 <section className="space-y-4">
                     <SectionHeader
-                        title={isSingle ? "قیمت و موجودی" : "واریانت‌ها"}
+                        title={isSingle ? "قیمت و موجودی" : "مدل / حجم‌ها"}
                         description={
                             isSingle
-                                ? "برای محصول ساده فقط اولین واریانت معتبر نمایش داده می‌شود"
-                                : "لیست واریانت‌ها، قیمت‌ها و موجودی هرکدام"
+                                ? "برای محصول ساده فقط اولین مدل / حجم معتبر نمایش داده می‌شود"
+                                : "لیست مدل / حجم‌ها، قیمت‌ها و موجودی هرکدام"
                         }
                     />
 
@@ -623,8 +623,8 @@ export default function ProductDetailsModal({
 
                         <section className="space-y-4">
                             <SectionHeader
-                                title="تصاویر هر واریانت"
-                                description="برای محصولات گروهی، تصاویر اختصاصی هر واریانت در این بخش نمایش داده می‌شود"
+                                title="تصاویر هر مدل / حجم"
+                                description="برای محصولات گروهی، تصاویر اختصاصی هر مدل / حجم در این بخش نمایش داده می‌شود"
                             />
 
                             {normalizedVariants.length > 0 ? (
@@ -655,7 +655,7 @@ export default function ProductDetailsModal({
                                     )}
                                 </div>
                             ) : (
-                                <EmptyState message="این محصول هیچ واریانتی ندارد" />
+                                <EmptyState message="این محصول هیچ مدل / حجمی ندارد" />
                             )}
                         </section>
                     </>
@@ -848,7 +848,7 @@ function VariantImagesBlock({
             <div className="mb-4 flex flex-col gap-3 border-b border-neutral-100 pb-4 md:flex-row md:items-center md:justify-between">
                 <div>
                     <h4 className="text-sm font-black text-neutral-900">
-                        واریانت {toPersianDigits(variantIndex + 1)}
+                        مدل / حجم {toPersianDigits(variantIndex + 1)}
                     </h4>
 
                     <div className="mt-2 grid grid-cols-1 gap-2 text-xs text-neutral-500 sm:grid-cols-2 lg:grid-cols-4">
@@ -939,7 +939,7 @@ function VariantImagesBlock({
                     ))}
                 </div>
             ) : (
-                <EmptyState message="برای این واریانت تصویری ثبت نشده است" />
+                <EmptyState message="برای این مدل / حجم تصویری ثبت نشده است" />
             )}
         </div>
     );
