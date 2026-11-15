@@ -126,6 +126,9 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroTitleOpacity:title?Number(getComputedStyle(title).opacity):null,
     headerFound:!!document.querySelector("header"),
     imageCount:document.querySelectorAll(".fertini-v5 img").length,
+    failedImageCount:[...document.querySelectorAll(".fertini-v5 img")].filter(img=>img.complete&&img.naturalWidth===0).length,
+    optimizedImageCount:[...document.querySelectorAll(".fertini-v5 img")].filter(img=>(img.currentSrc||img.src).includes("/_next/image?")).length,
+    familyCaptionCount:[...document.querySelectorAll(".fertini-v5-family__photo .fertini-v5-family__info h3")].filter(x=>x.textContent?.trim().length>1).length,
     heroHasCopy:!!hero?.querySelector(".fertini-hero__text"),
     heroImagePosition:img?getComputedStyle(img).objectPosition:null,
     persianFont:getComputedStyle(document.body).fontFamily,
@@ -144,6 +147,9 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
    if(!state.heroFound||!state.heroImageLoaded)throw Error(name+" cinematic hero did not load: "+JSON.stringify(state));
    if(state.heroTitleOpacity!==null&&state.heroTitleOpacity<.8)throw Error(name+" text not fully visible: "+JSON.stringify(state));
    if(state.imageCount<7)throw Error(name+" missing fragrance images: "+JSON.stringify(state));
+   if(state.failedImageCount>0)throw Error(name+" has failed visible media: "+JSON.stringify(state));
+   if(state.optimizedImageCount>0)throw Error(name+" is still dependent on cPanel /_next/image: "+JSON.stringify(state));
+   if(state.familyCaptionCount<3)throw Error(name+" scent families must have captions inside photos: "+JSON.stringify(state));
    if(state.heroHasCopy)throw Error(name+" should have a pure full-image hero");
    if(state.width<600&&!state.heroImagePosition?.startsWith("50%"))throw Error(name+" portrait hero bottle is not centered: "+JSON.stringify(state));
    if(!state.persianFont.includes("Vazirmatn"))throw Error(name+" Persian font not applied");
@@ -429,8 +435,9 @@ async function validateHomepageIntroOnce(){
     let previouslyVisible=false;
     const trace=window.__fertiniIntroTrace={
       starts:0,completions:0,samples:0,mounts:0,timestamps:[],
+      lineDoneAt:null,firstShineAt:null,shinePasses:0
     };
-    let previouslyMounted=false;
+    let previouslyMounted=false,wasShining=false;
     const inspect=()=>{
       const el=document.querySelector(".maison-intro__brand");
       const mounted=!!el;
@@ -446,6 +453,19 @@ async function validateHomepageIntroOnce(){
         trace.timestamps.push(Math.round(performance.now()));
       }
       previouslyVisible=visible;
+      const line=document.querySelector(".maison-intro__rule");
+      if(line&&!trace.lineDoneAt){
+        const style=getComputedStyle(line);
+        if(style.display!=="none"&&Number(style.opacity)>.8&&line.getBoundingClientRect().width>100)
+          trace.lineDoneAt=performance.now();
+      }
+      const shine=document.querySelector(".maison-intro__shine");
+      const shining=!!shine&&getComputedStyle(shine).display!=="none"&&Number(getComputedStyle(shine).opacity)>.20;
+      if(shining&&!wasShining){
+        trace.shinePasses++;
+        if(!trace.firstShineAt)trace.firstShineAt=performance.now();
+      }
+      wasShining=shining;
       trace.samples++;
     };
     const observer=new MutationObserver(inspect);
@@ -464,10 +484,14 @@ async function validateHomepageIntroOnce(){
     completions:window.__fertiniIntroTrace.completions,
     samples:window.__fertiniIntroTrace.samples,
     timestamps:window.__fertiniIntroTrace.timestamps,
+    lineDoneAt:window.__fertiniIntroTrace.lineDoneAt,
+    firstShineAt:window.__fertiniIntroTrace.firstShineAt,
+    shinePasses:window.__fertiniIntroTrace.shinePasses,
     started:sessionStorage.getItem("fertini:intro:started:v4")
   })`);
   if(!introTrace || introTrace.starts!==1 || introTrace.completions!==1 ||
-      introTrace.started!=="1")
+      introTrace.started!=="1" || !introTrace.lineDoneAt ||
+      !(introTrace.firstShineAt>introTrace.lineDoneAt) || introTrace.shinePasses!==1)
    throw Error("Cold-load intro flashed or restarted more than once: "+JSON.stringify(introTrace));
   process.stdout.write("COLD START INTRO TRACE "+JSON.stringify(introTrace)+"\\n");
   const first=await evaluate(send,`(()=>({
