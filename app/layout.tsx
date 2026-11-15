@@ -39,7 +39,7 @@ export async function generateMetadata():Promise<Metadata>{
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const music=(await readSiteContent().catch(()=>DEFAULT_SITE_CONTENT)).music;
   return <html lang="fa" dir="rtl" className="h-full antialiased">
-    <head><meta name="enamad" content="487910412" /><script dangerouslySetInnerHTML={{__html:"try{if(sessionStorage.getItem('fertini:intro:seen:v3')==='1')document.documentElement.classList.add('fertini-intro-seen')}catch(e){}"}} /></head>
+    <head><script dangerouslySetInnerHTML={{__html:"try{if(sessionStorage.getItem('fertini:intro:seen:v3')==='1')document.documentElement.classList.add('fertini-intro-seen')}catch(e){}"}} /></head>
     <body id="top" className="flex min-h-full flex-col font-sans">
       <MaisonAmbientSound audioUrl={music.audioUrl} musicEnabled={music.enabled}><CartCountProvider>{children}<FertiniEditorialMotion/><SupportChat/></CartCountProvider></MaisonAmbientSound>
     </body>
