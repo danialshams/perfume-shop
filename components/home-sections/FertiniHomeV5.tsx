@@ -53,6 +53,34 @@ function ResilientPhoto({src,fallback,alt,sizes,priority=false,loading}:{
       else setFailedBackup(fallback);
     }}/>;
 }
+function FragranceCardInfo({name,subtitle,price,discountPercent=0,preview=false}:{
+  name:string;subtitle:string;price:number|null;discountPercent?:number;preview?:boolean;
+}){
+  return <div className="fertini-v5-card__info" data-fertini-caption>
+    <div className="fertini-v5-card__details">
+      <div className="fertini-v5-card__identity" dir="rtl">
+        <div className="fertini-v5-card__text-mask">
+          <h3 data-fertini-caption-line>{name}</h3>
+        </div>
+        <div className="fertini-v5-card__text-mask">
+          <span className="fertini-v5-card__subtitle" data-fertini-caption-line lang="en" dir="ltr">{subtitle}</span>
+        </div>
+      </div>
+      <div className="fertini-v5-card__price-column" dir="rtl">
+        <div className="fertini-v5-card__text-mask">
+          <p className="fertini-v5-card__price" data-fertini-caption-line>
+            {price===null?"قیمت پس از انتخاب":price.toLocaleString("fa-IR")+" تومان"}
+          </p>
+        </div>
+        {(preview||discountPercent>0)&&<div className="fertini-v5-card__text-mask">
+          <span className="fertini-v5-card__price-note" data-fertini-caption-line>
+            {preview?"قیمت نمایشی":discountPercent+"٪ تخفیف کمپین"}
+          </span>
+        </div>}
+      </div>
+    </div>
+  </div>;
+}
 function ProductCard({product,large=false,mode="up",discountPercent=0,editorialImage}:{
   product:HomeProduct;large?:boolean;mode?:"up"|"fade"|"right"|"left"|"stretch";discountPercent?:number;editorialImage?:string
 }){
@@ -64,11 +92,8 @@ function ProductCard({product,large=false,mode="up",discountPercent=0,editorialI
         alt={product.name} loading="lazy"
         sizes={large?"(min-width:960px) 32vw, 68vw":"(min-width:960px) 27vw, (min-width:600px) 46vw, 45vw"}/>
     </div>
-    <div className="fertini-v5-card__info" data-fertini-caption>
-      <span lang="en" dir="ltr">{product.subtitle}</span>
-      <h3>{product.name}</h3>
-      <p>{displayPrice===null?"برای اطلاع از قیمت، جزئیات را ببینید":displayPrice.toLocaleString("fa-IR")+" تومان"} {discountPercent>0&&<span className="fertini-v5-sale-badge">{discountPercent}٪ تخفیف کمپین</span>}</p>
-    </div>
+    <FragranceCardInfo name={product.name} subtitle={product.subtitle}
+      price={displayPrice} discountPercent={discountPercent}/>
   </Link>;
 }
 function EditorialPreviewCard({src,name,subtitle,price,mode="up",large=false}:{
@@ -80,11 +105,7 @@ function EditorialPreviewCard({src,name,subtitle,price,mode="up",large=false}:{
       <ResilientPhoto src={src} fallback="" alt={name}
         loading="lazy" sizes={large?"(min-width:960px) 32vw,68vw":"(min-width:960px) 27vw,45vw"}/>
     </div>
-    <div className="fertini-v5-card__info" data-fertini-caption>
-      <span lang="en" dir="ltr">{subtitle}</span>
-      <h3>{name}</h3>
-      <p>{price.toLocaleString("fa-IR")} تومان <span className="fertini-v5-editorial__demo-label">نمایشی</span></p>
-    </div>
+    <FragranceCardInfo name={name} subtitle={subtitle} price={price} preview/>
   </article>;
 }
 export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEMO_HOME_PRODUCTS,catalogState="demo",scentFamilies=[]}:{
