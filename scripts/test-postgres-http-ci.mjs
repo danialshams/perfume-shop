@@ -358,9 +358,12 @@ try{
  // build-time data seed. Verify access control, zero stock and repeat safety
  // against the isolated disposable PostgreSQL test database.
  const importUrl="/api/v1/admin/editorial-import";
- const importHeaders={...auth,Origin:base,"Content-Type":"application/json"};
+ // In production the site's configured canonical HTTPS origin is used for
+ // privileged requests; the disposable CI service itself runs on localhost.
+ const importOrigin="https://fertiniperfume.com";
+ const importHeaders={...auth,Origin:importOrigin,"Content-Type":"application/json"};
  const deniedImport=await read(importUrl,{method:"POST",
-  headers:{Origin:base,"Content-Type":"application/json"},
+  headers:{Origin:importOrigin,"Content-Type":"application/json"},
   body:JSON.stringify({confirm:true})});
  assert.equal(deniedImport.status,401,"Anonymous visitors must never import editorial products");
  const csrfImport=await read(importUrl,{method:"POST",
