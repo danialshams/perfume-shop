@@ -182,6 +182,23 @@ export default function EditProductDrawer({
     const scentFamilyMode =
         Form.useWatch("scent_family_mode", form) ?? "EXISTING";
 
+    const watchedName=Form.useWatch("name",form);
+    const watchedFamilyId=Form.useWatch("scent_family_id",form);
+    const watchedNewFamily=Form.useWatch("new_scent_family",form);
+    const watchedImages=Form.useWatch("images",form);
+    const watchedVariants=Form.useWatch("variants",form);
+    const readyToSave=String(watchedName??"").trim().length>=2 &&
+      (scentFamilyMode==="NEW"?String(watchedNewFamily?.name??"").trim().length>=2:Number(watchedFamilyId)>0) &&
+      Array.isArray(watchedImages)&&watchedImages.filter((im:any)=>im?.image_url&&im.is_main).length===1 &&
+      Array.isArray(watchedVariants)&&watchedVariants.length>0 &&
+      (selectedType==="GROUPED"||watchedVariants.length===1) &&
+      watchedVariants.every((v:any)=>
+        Number.isFinite(Number(v?.price))&&Number(v.price)>0 &&
+        Number.isInteger(Number(v?.stock_qty))&&Number(v.stock_qty)>=0 &&
+        (v?.discount_price==null||v.discount_price===""||Number(v.discount_price)<Number(v.price))&&
+        (selectedType==="SINGLE"||(Array.isArray(v?.images)&&v.images.filter((im:any)=>im?.image_url&&im.is_main).length===1)));
+
+
     const title = useMemo(() => {
         if (!product) return "ویرایش محصول";
         return `ویرایش: ${product.name}`;
@@ -664,13 +681,13 @@ export default function EditProductDrawer({
 
             form.setFieldValue("variants", updatedVariants);
 
-            message.success("تصویر واریانت آپلود شد");
+            message.success("تصویر مدل / حجم آپلود شد");
         } catch (error: unknown) {
             console.error(error);
             message.error(
                 error instanceof Error
                     ? error.message
-                    : "آپلود تصویر واریانت با خطا مواجه شد"
+                    : "آپلود تصویر مدل / حجم با خطا مواجه شد"
             );
         } finally {
             setVariantUploading((prev) => ({
@@ -925,7 +942,7 @@ export default function EditProductDrawer({
                         : undefined,
 
                 is_active: Boolean(values.is_active),
-                is_featured: Boolean(values.is_featured),
+                is_featured: false,
                 is_best_seller: Boolean(values.is_best_seller),
                 status: "ACTIVE",
                 voice_file: values.voice_file?.trim() || null,
@@ -942,7 +959,7 @@ export default function EditProductDrawer({
             onSuccess?.();
         } catch (error) {
             console.error("handleSubmit error:", error);
-            message.error("خطا در بروزرسانی محصول");
+            message.error(error instanceof Error?error.message:"خطا در بروزرسانی محصول");
         } finally {
             setSubmitting(false);
         }
@@ -973,6 +990,7 @@ export default function EditProductDrawer({
                     <Button
                         type="primary"
                         loading={submitting}
+                        disabled={loading||metaLoading||uploading||voiceUploading||Object.values(variantUploading).some(Boolean)||!readyToSave}
                         onClick={handleSubmit}
                     >
                         ذخیره تغییرات
@@ -1061,13 +1079,7 @@ export default function EditProductDrawer({
                         />
                     </Form.Item>
 
-                    <Form.Item
-                        label="محصول ویژه"
-                        name="is_featured"
-                        valuePropName="checked"
-                    >
-                        <Switch checkedChildren="ویژه" unCheckedChildren="عادی" />
-                    </Form.Item>
+                    
 
                     <Form.Item
                         label="محصول پرفروش"
@@ -1396,7 +1408,7 @@ export default function EditProductDrawer({
                     </Form.Item>
                 </div>
 
-                <Divider titlePlacement="right">واریانت‌ها</Divider>
+                <Divider titlePlacement="right">مدل / حجم‌ها</Divider>
 
                 <Form.List name="variants">
                     {(fields, { add, remove }) => (
@@ -1457,7 +1469,7 @@ export default function EditProductDrawer({
                                         {selectedType === "GROUPED" ? (
                                             <>
                                                 <Divider>
-                                                    تصاویر این واریانت
+                                                    تصاویر این مدل / حجم
                                                 </Divider>
 
                                                 <Space
@@ -1482,7 +1494,7 @@ export default function EditProductDrawer({
                                                                 ]
                                                             }
                                                         >
-                                                            آپلود تصویر واریانت
+                                                            آپلود تصویر مدل / حجم
                                                         </Button>
                                                     </Upload>
 
@@ -1551,7 +1563,7 @@ export default function EditProductDrawer({
                                                                 </div>
                                                             ) : (
                                                                 <div className="rounded-md border border-dashed p-6 text-center text-sm text-gray-500">
-                                                                    هنوز تصویری برای این واریانت ثبت نشده است
+                                                                    هنوز تصویری برای این مدل / حجم ثبت نشده است
                                                                 </div>
                                                             );
 
@@ -1579,7 +1591,7 @@ export default function EditProductDrawer({
                                         })
                                     }
                                 >
-                                    افزودن واریانت
+                                    افزودن مدل / حجم
                                 </Button>
                             ) : null}
                         </Space>
