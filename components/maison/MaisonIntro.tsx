@@ -104,7 +104,7 @@ export default function MaisonIntro() {
         .to(sheen,{backgroundPosition:"180% 50%",duration:.9,ease:"sine.inOut"},1.95)
         .to(sub,{autoAlpha:1,y:0,duration:.48,ease:"power2.out"},2.04)
         .to(root,{autoAlpha:0,duration:.43,ease:"power2.inOut"},2.92);
-      const elapsed = Math.max(0,(performance.now()-introStartedAt!)/1000);
+      const elapsed = Math.max(0,(performance.now() - introStartedAt!)/1000);
       tl.time(Math.min(elapsed,tl.duration()));
       if(elapsed<tl.duration())tl.play();
       else finishFrame=window.requestAnimationFrame(finish);
