@@ -76,7 +76,8 @@ export async function GET(request:NextRequest){
    else members.set(mobile,{mobile,name:user.full_name?.trim()||"مشتری",purchaseCount:0,totalSpent:0,lastPurchaseAt:null,registered:true});
   }
   const query=(new URL(request.url)).searchParams.get("q")?.trim().toLowerCase()||"";
-  const ranked=[...members.values()].filter(m=>!query||m.mobile.includes(normalizePhone(query))||m.name.toLowerCase().includes(query))
+  const digitsQuery=normalizePhone(query);
+  const ranked=[...members.values()].filter(m=>!query||(digitsQuery.length>0&&m.mobile.includes(digitsQuery))||m.name.toLowerCase().includes(query))
    .sort((a,b)=>b.totalSpent-a.totalSpent||b.purchaseCount-a.purchaseCount||a.name.localeCompare(b.name,"fa"));
   const params=new URL(request.url).searchParams;
   const page=Math.max(1,Math.min(10000,Number(params.get("page"))||1));
