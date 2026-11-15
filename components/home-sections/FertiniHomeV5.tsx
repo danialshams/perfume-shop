@@ -31,12 +31,16 @@ const editorialHeroes=[
   "/fertini/editorial/hero-amber.avif",
   "/fertini/editorial/hero-bronze.avif",
 ];
+// Low-bitrate editorial samples were only 5-6 KB and produced visibly soft
+// category images. Prefer a store manager's real upload; otherwise use the
+// existing crisp local bottle illustrations instead of enlarging thumbnails.
 const familyStillLife=(name:string,index:number)=>{
   const normalized=name.toLowerCase();
-  if(/گلی|floral|گل|رز|یاس/.test(normalized))return "/fertini/editorial/family-floral.avif";
-  if(/عود|oud|agar|شرقی|amber|گرم|ادویه/.test(normalized))return "/fertini/editorial/family-oud.avif";
-  if(/چوب|wood|cedar|سدر|دودی/.test(normalized))return "/fertini/editorial/family-woody.avif";
-  return ["/fertini/editorial/family-woody.avif","/fertini/editorial/family-floral.avif","/fertini/editorial/family-oud.avif"][index%3];
+  if(/گلی|floral|گل|رز|یاس/.test(normalized))return "/fertini/lumiere-front.svg";
+  if(/عود|oud|agar|شرقی|amber|گرم|ادویه/.test(normalized))return "/fertini/sillage-front.svg";
+  if(/چوب|wood|cedar|سدر|دودی/.test(normalized))return "/fertini/nocturne-front.svg";
+  return ["/fertini/nocturne-front.svg","/fertini/lumiere-front.svg","/fertini/sillage-front.svg"][index%3];
+
 };
 
 // Serve home images directly from the host rather than depending on its
@@ -151,7 +155,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
   const displayedFamilies=catalogState==="database"
     ?scentFamilies.map((f,index)=>({id:String(f.id),name:f.name,subtitle:"",photo:f.image_url&&!/\.svg(?:$|\?)/i.test(f.image_url)&&!f.image_url.includes("placeholder")?f.image_url:familyStillLife(f.name,index),url:"/products?scent_family_id="+f.id}))
     :content.families.map((f,index)=>({id:f.id,name:f.name,subtitle:f.subtitle,
-        photo:/\.svg(?:$|\?)/i.test(f.photo)?familyStillLife(f.name,index):f.photo,
+        photo:f.photo,
         url:"/products?family="+f.id}));
   const sections={
     shipping:content.shipping.some(method=>method.enabled)?<section className="fertini-v5-delivery maison-wide" aria-label="راهنمای روش‌های ارسال">
