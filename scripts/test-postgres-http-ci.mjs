@@ -52,9 +52,9 @@ try{
  // Previously the API returned 200 and the browser navigated straight back
  // to /admin/login; the existing suite only exercised other admin APIs.
  const loggedInMe=await read("/api/v1/auth/me",{headers:auth});
- assert.equal(loggedInMe.status,200,
-  "Admin auth cookie must survive a second request: "+await loggedInMe.text());
  const loggedInJson=await loggedInMe.json();
+ assert.equal(loggedInMe.status,200,
+  "Admin auth cookie must survive a second request: "+JSON.stringify(loggedInJson));
  assert.equal(loggedInJson.data?.role,"ADMIN","Login session must have ADMIN role");
  const protectedPage=await read("/admin/dashboard",{headers:auth,redirect:"manual"});
  assert.equal(protectedPage.status,200,
