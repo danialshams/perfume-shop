@@ -1,11 +1,11 @@
 "use client";
 import {type FormEvent,Suspense,useState} from "react";
-import {useRouter,useSearchParams} from "next/navigation";
+import {useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {ArrowUpLeft,Eye,EyeOff,LockKeyhole} from "lucide-react";
 
 function LoginContent(){
- const router=useRouter(),params=useSearchParams();
+ const params=useSearchParams();
  const proposed=params.get("redirect")||"/admin/dashboard";
  const destination=proposed.startsWith("/admin/")&&!proposed.startsWith("//")?proposed:"/admin/dashboard";
  const [email,setEmail]=useState(""),[password,setPassword]=useState("");
@@ -19,8 +19,21 @@ function LoginContent(){
     body:JSON.stringify({email:email.trim().toLowerCase(),password}),
    });
    const data=await response.json().catch(()=>({}));
-   if(!response.ok)throw Error(data.message||"ایمیل یا رمز عبور معتبر نیست.");
-   router.replace(destination);router.refresh();
+   if(!response.ok || data.success!==true)throw Error(data.message||"ایمیل یا رمز عبور معتبر نیست.");
+   // The HTTP-only cookie must be read back on a second request before
+   // navigating. A concurrent router.replace() + router.refresh() could
+   // re-use the unauthenticated RSC tree and bounce to /admin/login.
+   const verify=await fetch("/api/v1/auth/me",{
+    method:"GET",credentials:"same-origin",cache:"no-store",
+    headers:{"Cache-Control":"no-store"},
+   });
+   const session=await verify.json().catch(()=>null);
+   if(!verify.ok || !session?.data || session.data.role!=="ADMIN"){
+    throw Error("ورود تأیید شد اما نشست مدیریت فعال نشد. لطفاً تنظیمات کوکی یا سرور را بررسی کنید.");
+   }
+   // A document navigation guarantees the fresh session cookie is included
+   // in the protected server-rendered /admin route.
+   window.location.replace(destination);
   }catch(e){setError(e instanceof Error?e.message:"ارتباط با سرور ممکن نیست.")}
   finally{setBusy(false)}
  }
