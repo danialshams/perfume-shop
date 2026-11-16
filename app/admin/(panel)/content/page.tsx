@@ -153,8 +153,15 @@ export default function AdminContentPage() {
     {!connected && <div className="fst-notice mb-4">
       امکان ذخیره تغییرات در حال حاضر در دسترس نیست. دوباره تلاش کنید.
     </div>}
-    <LiveHomePreview unsaved={changed}/>
-    <form onSubmit={e => void save(e)} className="grid gap-4">
+    <div className="fst-content-workbench">
+     <div className="fst-content-editor">
+      <nav className="fst-editor-jump" aria-label="دسترسی سریع به بخش‌های صفحه اصلی">
+       {([
+         ["fst-editor-layout","ساختار صفحه"],["fst-editor-hero","هیرو"],["fst-editor-best","پرفروش‌ترین‌ها"],
+         ["fst-editor-latest","جدیدترین‌ها"],["fst-editor-families","رایحه‌ها"],["fst-editor-footer","فوتر"]
+       ] as const).map(([href,label])=><a href={"#"+href} key={href}>{label}</a>)}
+      </nav>
+    <form onSubmit={e => void save(e)} className="fst-content-form grid gap-4">
       <section className="fst-card scroll-mt-24" id="fst-editor-layout">
         <div className="fst-editor-heading"><span>00 / PAGE STRUCTURE</span><h2>ترتیب و نمایش بخش‌ها</h2></div>
         <p className="fst-helper">هیرو همیشه اول است. کمپین، محصولات، گروه‌های بویایی و راهنمای ارسال را می‌توان مستقل از هم جابه‌جا یا پنهان کرد.</p>
@@ -274,5 +281,10 @@ export default function AdminContentPage() {
         </div>
       </div>
     </form>
+     </div>
+     <aside className="fst-content-preview" aria-label="پیش‌نمایش واقعی صفحه اصلی">
+      <LiveHomePreview unsaved={changed}/>
+     </aside>
+    </div>
   </div>;
 }

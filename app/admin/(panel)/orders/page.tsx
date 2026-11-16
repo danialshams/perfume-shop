@@ -789,12 +789,12 @@ function AdminOrdersPageContent() {
 
 
  return (
-  <div className="min-w-0 text-[#292621]" dir="rtl">
+  <div className="fst-orders-page min-w-0" dir="rtl">
     {/* ---------- Header ---------- */}
     <div className="fst-page-heading">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
+      <div className="fst-orders-heading-inner flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="truncate text-base font-semibold md:text-lg">
+          <h1 className="fst-orders-title truncate">
             سفارش‌ها
           </h1>
           <p className="mt-0.5 text-xs text-zinc-500">
@@ -812,12 +812,12 @@ function AdminOrdersPageContent() {
       </div>
     </div>
     {operationError&&<div className="fst-error" role="alert">{operationError}</div>}
-    <main className="mx-auto w-full max-w-7xl py-4 md:py-6">
+    <main className="fst-orders-workspace w-full">
       {/* ---------- Filters ---------- */}
       <div
         className={`${
           showFilters ? "block" : "hidden"
-        } mb-4 rounded-2xl border border-zinc-200 bg-white p-3 md:mb-6 md:block md:p-4`}
+        } fst-orders-filters mb-4 rounded-2xl border border-zinc-200 bg-white p-3 md:mb-6 md:block md:p-4`}
       >
         <div className="grid grid-cols-1 gap-2.5 md:grid-cols-12 md:gap-3">
           <div className="md:col-span-5">
@@ -974,7 +974,7 @@ function AdminOrdersPageContent() {
       </div>
 
       {/* ---------- Desktop table ---------- */}
-      <div className="hidden overflow-hidden rounded-2xl border border-zinc-200 bg-white lg:block">
+      <div className="fst-orders-table hidden overflow-hidden rounded-2xl border border-zinc-200 bg-white lg:block">
         <div className="overflow-x-auto">
           <table className="min-w-full text-right">
             <thead>

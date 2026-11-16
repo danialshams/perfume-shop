@@ -22,7 +22,7 @@ function renderParentTags(parentNames?: string[]) {
     return (
         <Space size={[4, 4]} wrap>
             {parentNames.map((name) => (
-                <Tag key={name} color="purple">
+                <Tag key={name} style={{background:"#edf3ec",borderColor:"#dce8dd",color:"#45624d"}}>
                     {name}
                 </Tag>
             ))}

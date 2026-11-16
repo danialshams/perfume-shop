@@ -67,7 +67,7 @@ function ToolbarButton({
                 onClick={onClick}
                 className={[
                     "flex items-center justify-center",
-                    active ? "!bg-[#1b3a6b]" : "",
+                    active ? "!bg-[#425e4b]" : "",
                 ].join(" ")}
             >
                 {children}

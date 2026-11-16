@@ -42,9 +42,11 @@ export function EngagementAdmin({start="threads"}:{start?:Tab}){
  async function newFaq(e:FormEvent){e.preventDefault();if(await act({action:"faqCreate",question,answer})){setQuestion("");setAnswer("")}}
  const tabs:{id:Tab;label:string}[]=[{id:"threads",label:"چت آنلاین"},{id:"reviews",label:"دیدگاه‌ها"},{id:"faq",label:"سؤال‌های متداول"},{id:"settings",label:"تنظیمات پاسخ‌گویی"}];
  return <section className="eng-admin" dir="rtl">
-  <header className="eng-admin-heading"><div><span>پشتیبانی مشتریان</span><h1>پیام‌ها و دیدگاه‌ها</h1><p>مدیریت گفتگو، دیدگاه‌های متنی، پرسش‌های متداول و زمان پاسخ‌گویی.</p></div>
+  <header className="eng-admin-heading"><div><span>FERTINI / CUSTOMER CARE</span>
+    <h1>{tab==="threads"?"چت آنلاین":tab==="reviews"?"مدیریت دیدگاه‌ها":tab==="faq"?"سؤال‌های متداول":"تنظیمات پاسخ‌گویی"}</h1>
+    <p>{tab==="threads"?"مشاهده گفتگوها و پاسخ به مشتریان.":tab==="reviews"?"بررسی، انتشار و پاسخ به دیدگاه‌های متنی.":tab==="faq"?"مدیریت سؤال‌ها و پاسخ‌های کوتاه فروشگاه.":"پیام خوشامدگویی و ساعات پاسخ‌گویی."}</p></div>
    <button type="button" onClick={()=>void refresh(tab)} disabled={loading}>بازخوانی</button></header>
-  <nav className="eng-admin-tabs" aria-label="بخش‌های پشتیبانی">{tabs.map(t=><button type="button" key={t.id} className={tab===t.id?"active":""} onClick={()=>{setTab(t.id);setActive("")}}>{t.label}</button>)}</nav>
+  <nav className="eng-admin-tabs" aria-label="بخش‌های پشتیبانی">{tabs.map(t=><button type="button" key={t.id} className={tab===t.id?"active":""} aria-current={tab===t.id?"page":undefined} onClick={()=>{setTab(t.id);setActive("")}}>{t.label}</button>)}</nav>
   {notice&&<p role="status" className="eng-admin-notice">{notice}</p>}
   {tab==="threads"&&<div className="eng-chat-desk">
    <div className="eng-chat-list"><h2>گفتگوها</h2>{items.length?items.map(t=><button type="button" key={t.id} className={active===t.id?"selected":""} onClick={()=>void openThread(t.id)}>

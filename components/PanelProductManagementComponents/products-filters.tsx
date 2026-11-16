@@ -18,7 +18,7 @@ export default function ProductsFilters({
     onReset,
 }: Props) {
     return (
-        <div className="mb-5 rounded-md border border-[#e3e8e1] bg-white p-4">
+        <section className="fst-product-filters mb-5">
             <div className="grid grid-cols-1 gap-3">
                 <Input
                     size="large"
@@ -50,6 +50,6 @@ export default function ProductsFilters({
                     پاک‌کردن
                 </Button>
             </div>
-        </div>
+        </section>
     );
 }
