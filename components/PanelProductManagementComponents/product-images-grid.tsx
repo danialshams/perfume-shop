@@ -12,7 +12,7 @@ export default function ProductImagesGrid({
 }) {
     if (!images?.length) {
         return (
-            <div className="rounded-3xl border border-dashed border-neutral-200 p-6 text-center text-sm text-neutral-500">
+            <div className="rounded-lg border border-dashed border-[#dfe7de] p-6 text-center text-sm text-neutral-500">
                 تصویری برای این محصول ثبت نشده است.
             </div>
         );
@@ -23,7 +23,7 @@ export default function ProductImagesGrid({
             {images.map((image) => (
                 <div
                     key={image.id}
-                    className="overflow-hidden rounded-3xl border border-neutral-100 bg-white shadow-sm"
+                    className="overflow-hidden rounded-lg border border-[#e6ece5] bg-white shadow-sm"
                 >
                     <div className="relative aspect-square w-full bg-neutral-100">
                         <Image

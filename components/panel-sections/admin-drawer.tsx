@@ -20,6 +20,7 @@ export default function AdminDrawer({
 }: Props) {
     return (
         <Drawer
+            rootClassName="fst-studio-drawer"
             open={open}
             title={title}
             onClose={onClose}

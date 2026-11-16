@@ -352,7 +352,7 @@ export default function ProductDetailsModal({
             onCancel={onClose}
             title={
                 <div className="flex min-w-0 flex-col">
-                    <span className="truncate text-base font-black text-neutral-900 md:text-lg">
+                    <span className="truncate text-base font-semibold text-neutral-900 md:text-lg">
                         {safeProduct.name}
                     </span>
 
@@ -366,26 +366,26 @@ export default function ProductDetailsModal({
             <div className="space-y-6 md:space-y-8">
                 <section className="grid grid-cols-1 gap-5 xl:grid-cols-12 xl:gap-6">
                     <div className="xl:col-span-4">
-                        <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white">
+                        <div className="overflow-hidden rounded-lg border border-[#dfe7de] bg-white">
                             <div className="p-3 md:p-4">
                                 {mainProductImage?.image_url ? (
                                     <Image
                                         src={mainProductImage.image_url}
                                         alt={safeProduct.name || "product-image"}
-                                        className="w-full rounded-2xl object-cover"
+                                        className="w-full rounded-md object-cover"
                                         style={{
                                             maxHeight: 420,
                                             objectFit: "cover",
                                         }}
                                     />
                                 ) : (
-                                    <div className="flex h-[260px] items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 px-4 text-center text-sm text-neutral-400 md:h-[420px]">
+                                    <div className="flex h-[260px] items-center justify-center rounded-md border border-dashed border-[#dfe7de] bg-[#f8faf7] px-4 text-center text-sm text-neutral-400 md:h-[420px]">
                                         تصویری برای این محصول ثبت نشده است
                                     </div>
                                 )}
                             </div>
 
-                            <div className="border-t border-neutral-100 p-4">
+                            <div className="border-t border-[#e6ece5] p-4">
                                 <div className="grid grid-cols-2 gap-3 text-center">
                                     <MiniStat
                                         label="قیمت"
@@ -551,7 +551,7 @@ export default function ProductDetailsModal({
                     />
 
                     {voiceFile ? (
-                        <div className="rounded-3xl border border-neutral-200 bg-white p-4 md:p-5">
+                        <div className="rounded-lg border border-[#dfe7de] bg-white p-4 md:p-5">
                             <div className="mb-4 flex items-center gap-2 text-sm font-bold text-neutral-800">
                                 <Music4 size={18} />
                                 پیش‌نمایش فایل صوتی
@@ -566,7 +566,7 @@ export default function ProductDetailsModal({
                                 مرورگر شما از پخش فایل صوتی پشتیبانی نمی‌کند
                             </audio>
 
-                            <div className="mt-4 break-all rounded-2xl bg-neutral-50 p-3 text-xs leading-6 text-neutral-500">
+                            <div className="mt-4 break-all rounded-md bg-[#f8faf7] p-3 text-xs leading-6 text-neutral-500">
                                 {voiceFile}
                             </div>
                         </div>
@@ -674,7 +674,7 @@ function SectionHeader({
 }) {
     return (
         <div className="flex flex-col gap-1">
-            <h3 className="text-base font-black text-neutral-900">{title}</h3>
+            <h3 className="text-base font-semibold text-neutral-900">{title}</h3>
 
             {description ? (
                 <p className="text-xs leading-6 text-neutral-500">
@@ -693,10 +693,10 @@ function MiniStat({
     value: string | number;
 }) {
     return (
-        <div className="rounded-2xl bg-neutral-50 p-3">
+        <div className="rounded-md bg-[#f8faf7] p-3">
             <div className="text-xs text-neutral-500">{label}</div>
 
-            <div className="mt-1 break-words text-xs font-black text-neutral-900 md:text-sm">
+            <div className="mt-1 break-words text-xs font-semibold text-neutral-900 md:text-sm">
                 {value || "-"}
             </div>
         </div>
@@ -713,7 +713,7 @@ function InfoCard({
     valueNode?: ReactNode;
 }) {
     return (
-        <div className="rounded-3xl border border-neutral-100 bg-neutral-50 p-4">
+        <div className="rounded-lg border border-[#e6ece5] bg-[#f8faf7] p-4">
             <div className="text-xs text-neutral-500">{label}</div>
 
             <div className="mt-2 break-words text-sm font-bold text-neutral-900">
@@ -731,8 +731,8 @@ function TextBlock({
     value?: string | null;
 }) {
     return (
-        <div className="rounded-3xl border border-neutral-100 bg-white p-4">
-            <h4 className="mb-3 text-sm font-black text-neutral-800">
+        <div className="rounded-lg border border-[#e6ece5] bg-white p-4">
+            <h4 className="mb-3 text-sm font-semibold text-neutral-800">
                 {title}
             </h4>
 
@@ -759,15 +759,15 @@ function ScentFamilyBlock({
     const hasRealScentFamily = safeName !== "-";
 
     return (
-        <div className="overflow-hidden rounded-3xl border border-neutral-100 bg-white">
+        <div className="overflow-hidden rounded-lg border border-[#e6ece5] bg-white">
             <div className="grid grid-cols-1 md:grid-cols-12">
                 <div className="md:col-span-4 lg:col-span-3">
                     {safeImageUrl ? (
-                        <div className="border-b border-neutral-100 bg-neutral-50 p-3 md:border-b-0 md:border-l">
+                        <div className="border-b border-[#e6ece5] bg-[#f8faf7] p-3 md:border-b-0 md:border-l">
                             <Image
                                 src={safeImageUrl}
                                 alt={safeName}
-                                className="w-full rounded-2xl object-cover"
+                                className="w-full rounded-md object-cover"
                                 style={{
                                     height: 220,
                                     objectFit: "cover",
@@ -775,7 +775,7 @@ function ScentFamilyBlock({
                             />
                         </div>
                     ) : (
-                        <div className="flex h-[220px] items-center justify-center border-b border-dashed border-neutral-200 bg-neutral-50 px-4 text-center text-sm text-neutral-400 md:border-b-0 md:border-l">
+                        <div className="flex h-[220px] items-center justify-center border-b border-dashed border-[#dfe7de] bg-[#f8faf7] px-4 text-center text-sm text-neutral-400 md:border-b-0 md:border-l">
                             تصویری برای گروه بویایی ثبت نشده است
                         </div>
                     )}
@@ -787,7 +787,7 @@ function ScentFamilyBlock({
                             نام گروه بویایی
                         </div>
 
-                        <div className="mt-2 text-lg font-black text-neutral-900">
+                        <div className="mt-2 text-lg font-semibold text-neutral-900">
                             {safeName}
                         </div>
                     </div>
@@ -844,10 +844,10 @@ function VariantImagesBlock({
     images: NormalizedVariantImage[];
 }) {
     return (
-        <div className="rounded-3xl border border-neutral-200 bg-white p-4">
-            <div className="mb-4 flex flex-col gap-3 border-b border-neutral-100 pb-4 md:flex-row md:items-center md:justify-between">
+        <div className="rounded-lg border border-[#dfe7de] bg-white p-4">
+            <div className="mb-4 flex flex-col gap-3 border-b border-[#e6ece5] pb-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h4 className="text-sm font-black text-neutral-900">
+                    <h4 className="text-sm font-semibold text-neutral-900">
                         مدل / حجم {toPersianDigits(variantIndex + 1)}
                     </h4>
 
@@ -890,7 +890,7 @@ function VariantImagesBlock({
                             key={
                                 image.id || `${image.image_url}-${imageIndex}`
                             }
-                            className="overflow-hidden rounded-2xl border border-neutral-100 bg-neutral-50"
+                            className="overflow-hidden rounded-md border border-[#e6ece5] bg-[#f8faf7]"
                         >
                             <div className="p-3">
                                 <Image
@@ -904,7 +904,7 @@ function VariantImagesBlock({
                                 />
                             </div>
 
-                            <div className="space-y-2 border-t border-neutral-100 px-4 py-3 text-sm">
+                            <div className="space-y-2 border-t border-[#e6ece5] px-4 py-3 text-sm">
                                 <div className="flex items-center justify-between gap-3">
                                     <span className="text-neutral-500">
                                         تصویر
@@ -947,7 +947,7 @@ function VariantImagesBlock({
 
 function EmptyState({ message }: { message: string }) {
     return (
-        <div className="rounded-3xl border border-dashed border-neutral-200 bg-neutral-50 p-6 text-center text-sm leading-7 text-neutral-500 md:p-8">
+        <div className="rounded-lg border border-dashed border-[#dfe7de] bg-[#f8faf7] p-6 text-center text-sm leading-7 text-neutral-500 md:p-8">
             {message}
         </div>
     );

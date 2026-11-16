@@ -22,6 +22,7 @@ export default function AdminModal({
 }: Props) {
     return (
         <Modal
+            rootClassName="fst-studio-modal"
             open={open}
             title={title}
             onCancel={onCancel}
