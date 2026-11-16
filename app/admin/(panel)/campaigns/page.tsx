@@ -18,11 +18,12 @@ export default function CampaignStudio(){
  const [createProductOpen,setCreateProductOpen]=useState(false);
  const [categoryOptions,setCategoryOptions]=useState<any[]>([]);
  const [productSearch,setProductSearch]=useState("");
+ const [selectedCampaign,setSelectedCampaign]=useState<string|null>(null);
  async function load(){
   setBusy(true);setError("");
   try{const r=await fetch("/api/v1/admin/store-settings",{cache:"no-store",credentials:"same-origin"});const d=await r.json();
    if(!r.ok)throw Error(d.error||"دریافت اطلاعات ناموفق بود.");
-   setItems(d.campaigns||[]);setProducts(d.products||[]);setLoaded(true)
+   setItems(d.campaigns||[]);setProducts(d.products||[]);setSelectedCampaign(current=>(d.campaigns||[]).some((x:FertiniCampaign)=>x.id===current)?current:(d.campaigns||[])[0]?.id??null);setLoaded(true)
   }catch(e){setError(e instanceof Error?e.message:"خطای دریافت اطلاعات")}finally{setBusy(false)}
  }
  useEffect(()=>{void load()},[]);
@@ -58,15 +59,27 @@ export default function CampaignStudio(){
  return <div className="fst-marketing">
   <header className="fst-page-heading"><div><small>FERTINI / CAMPAIGNS</small><h1>مدیریت کمپین‌ها</h1>
    <p>بنر، بازه زمانی، درصد تخفیف و عطرهای کمپین را تنظیم کن. نمایش کمپین فعال به زمان شروع و پایان آن وابسته است.</p></div>
-   <button type="button" className="fst-btn fst-btn-primary" onClick={()=>setItems(a=>[...a,initial()])} disabled={items.length>=12||!loaded}><Plus size={16}/> کمپین جدید</button></header>
+   <button type="button" className="fst-btn fst-btn-primary" onClick={()=>{const entry=initial();setItems(a=>[...a,entry]);setSelectedCampaign(entry.id)}} disabled={items.length>=12||!loaded}><Plus size={16}/> کمپین جدید</button></header>
   {error&&<p className="fst-error" role="alert">{error}</p>}{success&&<p className="fst-notice" role="status">{success}</p>}
   <div className="fst-notice mb-4">عطر کمپین را همین‌جا اضافه کن یا از محصولات موجود انتخاب کن. قیمت تخفیفی در خرید نهایی با قوانین کمپین محاسبه می‌شود.</div>
-  <form className="grid gap-4" onSubmit={save}>
-   {items.map((item,index)=><section className="fst-card" key={item.id}>
+  <form className="fst-campaign-workbench" onSubmit={save}>
+   <aside className="fst-campaign-index" aria-label="فهرست کمپین‌ها">
+    <div className="fst-campaign-index__head"><h2>کمپین‌های فروشگاه</h2><span>{items.length.toLocaleString("fa-IR")} کمپین</span></div>
+    <div className="fst-campaign-index__list">
+     {items.map(item=><button type="button" key={item.id} className={"fst-campaign-index__item "+((selectedCampaign??items[0]?.id)===item.id?"is-active":"")}
+       aria-pressed={(selectedCampaign??items[0]?.id)===item.id} onClick={()=>setSelectedCampaign(item.id)}>
+       <span className="fst-campaign-index__photo">{item.banner?<img src={item.banner} alt=""/>:<span>F</span>}</span>
+       <span className="fst-campaign-index__copy"><strong>{item.title}</strong><small>{item.discountPercent.toLocaleString("fa-IR")}٪ تخفیف · {item.productIds.length.toLocaleString("fa-IR")} محصول</small></span>
+       <span className={"fst-campaign-index__state "+(item.enabled?"is-enabled":"")}>{item.enabled?"فعال":"غیرفعال"}</span>
+     </button>)}
+    </div>
+   </aside>
+   <div className="fst-campaign-editor">
+    {items.map((item,index)=>(selectedCampaign??items[0]?.id)===item.id?<section className="fst-card" key={item.id}>
     <div className="fst-editor-heading"><div><span>CAMPAIGN / {String(index+1).padStart(2,"0")}</span><h2>{item.title}</h2></div>
     <div className="flex gap-2"><button type="button" aria-label="بالا" disabled={index===0} onClick={()=>setItems(old=>{const next=[...old];[next[index-1],next[index]]=[next[index],next[index-1]];return next})}><ArrowUp size={17}/></button>
     <button type="button" aria-label="پایین" disabled={index===items.length-1} onClick={()=>setItems(old=>{const next=[...old];[next[index],next[index+1]]=[next[index+1],next[index]];return next})}><ArrowDown size={17}/></button>
-    <button type="button" aria-label="حذف کمپین" onClick={()=>setItems(a=>a.filter(x=>x.id!==item.id))}><Trash2 size={17}/></button></div></div>
+    <button type="button" aria-label="حذف کمپین" onClick={()=>{setItems(a=>a.filter(x=>x.id!==item.id));setSelectedCampaign(null)}}><Trash2 size={17}/></button></div></div>
     <div className="fst-marketing-fields">
      <label className="fst-field">عنوان کمپین<input required value={item.title} maxLength={100} onChange={e=>edit(item.id,{title:e.target.value})}/></label>
      <label className="fst-field">درصد تخفیف<input required type="number" min="1" max="80" value={item.discountPercent} onChange={e=>edit(item.id,{discountPercent:Number(e.target.value)})}/></label>
@@ -90,9 +103,10 @@ export default function CampaignStudio(){
      <input type="checkbox" checked={item.productIds.includes(p.id)} disabled={!item.productIds.includes(p.id)&&item.productIds.length>=60}
       onChange={e=>edit(item.id,{productIds:e.target.checked?[...item.productIds,p.id]:item.productIds.filter(x=>x!==p.id)})}/>
      <img src={p.image} alt=""/><span>{p.name}</span></label>)}</div>
-   </section>)}
+   </section>:null)}
    {!items.length&&<div className="fst-card"><p className="fst-empty">هنوز کمپینی ساخته نشده است. کمپین جدید بساز تا در صفحه اصلی نمایش داده شود.</p></div>}
    <div className="fst-save-bar"><span>کمپین‌ها در دیتابیس ذخیره می‌شوند.</span><button className="fst-btn fst-btn-primary" type="submit" disabled={busy||!!uploading||!loaded}><Save size={16}/>{busy?"در حال ذخیره…":"ذخیره کمپین‌ها"}</button></div>
+   </div>
   </form>
   <AntdApp><CreateProductDrawer open={createProductOpen} categories={categoryOptions}
    onClose={()=>setCreateProductOpen(false)}
