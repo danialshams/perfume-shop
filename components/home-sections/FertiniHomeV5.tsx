@@ -48,8 +48,8 @@ function FragranceCardInfo({name,subtitle,price,discountPercent=0,preview=false}
   name:string;subtitle:string;price:number|null;discountPercent?:number;preview?:boolean;
 }){
   return <div className="fertini-v5-card__info" data-fertini-caption>
-    <div className="fertini-v5-card__details" dir="ltr" style={{display:"flex",flexDirection:"row",justifyContent:"space-between",direction:"ltr",alignItems:"flex-start"}}>
-      <div className="fertini-v5-card__identity" dir="rtl" style={{flex:"1 1 56%",minWidth:0,textAlign:"left",direction:"rtl"}}>
+    <div className="fertini-v5-card__details" dir="ltr">
+      <div className="fertini-v5-card__identity" dir="rtl">
         <div className="fertini-v5-card__text-mask">
           <h3 data-fertini-caption-line>{name}</h3>
         </div>
@@ -57,7 +57,7 @@ function FragranceCardInfo({name,subtitle,price,discountPercent=0,preview=false}
           <span className="fertini-v5-card__subtitle" data-fertini-caption-line lang="en" dir="ltr">{subtitle}</span>
         </div>
       </div>
-      <div className="fertini-v5-card__price-column" dir="rtl" style={{flex:"0 0 40%",minWidth:0,textAlign:"right",direction:"rtl"}}>
+      <div className="fertini-v5-card__price-column" dir="rtl">
         <div className="fertini-v5-card__text-mask">
           <p className="fertini-v5-card__price" data-fertini-caption-line>
             {price===null?"قیمت پس از انتخاب":price.toLocaleString("fa-IR")+" تومان"}
