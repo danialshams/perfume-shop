@@ -141,7 +141,7 @@ async function pageScreenshot({name,url,width,height,mobile,assertHome}){
     heroTitleOpacity:title?Number(getComputedStyle(title).opacity):null,
     cardNameLeftOfPrice:!!name&&!!price&&name.getBoundingClientRect().right<=price.getBoundingClientRect().left+3,
     cardLayoutIsPhysicalGrid:card?.querySelector(".fertini-v5-card__details")?
-      getComputedStyle(card.querySelector(".fertini-v5-card__details")).display==="flex":false,
+      getComputedStyle(card.querySelector(".fertini-v5-card__details")).display==="grid":false,
     latestNameLeftOfPrice:!!latestName&&!!latestPrice&&
       latestName.getBoundingClientRect().right<=latestPrice.getBoundingClientRect().left+3,
     cardSubtitleBelowName:!!name&&!!subtitle&&subtitle.getBoundingClientRect().top>=name.getBoundingClientRect().bottom-4,
@@ -503,7 +503,7 @@ async function validateHomepageIntroOnce(){
     let previouslyVisible=false;
     const trace=window.__fertiniIntroTrace={
       starts:0,completions:0,samples:0,mounts:0,timestamps:[],
-      lineDoneAt:null,firstShineAt:null,shinePasses:0,ghostWordSeen:false
+      lineDoneAt:null,firstShineAt:null,shinePasses:0,ghostWordSeen:false,lightAboveLetters:false
     };
     let previouslyMounted=false,wasShining=false;
     const inspect=()=>{
@@ -530,6 +530,13 @@ async function validateHomepageIntroOnce(){
       const shine=document.querySelector(".maison-intro__shine");
       if(shine?.textContent?.trim())trace.ghostWordSeen=true;
       const shining=!!shine&&getComputedStyle(shine).display!=="none"&&Number(getComputedStyle(shine).opacity)>.20;
+      if(shining&&el){
+        const letter=el.querySelector("[data-intro-letter]");
+        const lightLayer=Number(getComputedStyle(shine).zIndex)||0;
+        const glyphLayer=Number(getComputedStyle(letter||el).zIndex)||0;
+        if(lightLayer>glyphLayer && getComputedStyle(shine).mixBlendMode==="screen")
+          trace.lightAboveLetters=true;
+      }
       if(shining&&!wasShining){
         trace.shinePasses++;
         if(!trace.firstShineAt)trace.firstShineAt=performance.now();
@@ -557,11 +564,12 @@ async function validateHomepageIntroOnce(){
     firstShineAt:window.__fertiniIntroTrace.firstShineAt,
     shinePasses:window.__fertiniIntroTrace.shinePasses,
     ghostWordSeen:window.__fertiniIntroTrace.ghostWordSeen,
+    lightAboveLetters:window.__fertiniIntroTrace.lightAboveLetters,
     started:sessionStorage.getItem("fertini:intro:started:v4")
   })`);
   if(!introTrace || introTrace.starts!==1 || introTrace.completions!==1 ||
       introTrace.started!=="1" || !introTrace.lineDoneAt ||
-      !(introTrace.firstShineAt>introTrace.lineDoneAt) || introTrace.shinePasses!==1 || introTrace.ghostWordSeen)
+      !(introTrace.firstShineAt>introTrace.lineDoneAt) || introTrace.shinePasses!==1 || introTrace.ghostWordSeen || !introTrace.lightAboveLetters)
    throw Error("Cold-load intro flashed or restarted more than once: "+JSON.stringify(introTrace));
   process.stdout.write("COLD START INTRO TRACE "+JSON.stringify(introTrace)+"\\n");
   // The decision dialog must come AFTER the first intro and must never

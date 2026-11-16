@@ -185,7 +185,8 @@ assert.doesNotMatch(footerMotion,/letterSpacing:/);
 assert.ok(intro.includes('className="maison-intro__shine" aria-hidden="true"/'));
 assert.ok(!intro.includes('aria-hidden="true">FERTINI</div>'));
 assert.doesNotMatch(introCss,/-webkit-background-clip:text/);
-assert.ok(introCss.includes("rgba(255,251,223,.30)"));
+assert.ok(introCss.includes("rgba(255,246,207,.54)"));
+assert.ok(introCss.includes("z-index:5;pointer-events:none;opacity:0"));
 assert.ok(introCss.includes("The sweep uses the position of the stationary wordmark"));
 assert.match(home,/function FragranceCardInfo/);
 assert.match(home,/fertini-v5-card__details/);
@@ -197,9 +198,12 @@ assert.match(productStyle,/direction:ltr;/);
 assert.ok(productStyle.includes("display:grid;grid-template-columns:minmax(0,1fr) minmax(0,44%)"));
 assert.ok(productStyle.includes("grid-column:1;grid-row:1"));
 assert.ok(productStyle.includes("grid-column:2;grid-row:1"));
-assert.ok(home.includes('className="fertini-v5-card__details" dir="ltr" style={{display:"flex"'));
-assert.ok(home.includes('flex:"1 1 56%"'));
-assert.ok(home.includes('flex:"0 0 40%"'));
+assert.ok(home.includes('className="fertini-v5-card__details" dir="ltr"')); 
+assert.ok(!home.includes('className="fertini-v5-card__details" dir="ltr" style='));
+assert.ok(!home.includes('className="fertini-v5-card__identity" dir="rtl" style='));
+assert.ok(!home.includes('className="fertini-v5-card__price-column" dir="rtl" style='));
+assert.ok(!home.includes('flex:"1 1 56%"'));
+assert.ok(!home.includes('flex:"0 0 40%"'));
 assert.match(productStyle,/\.fertini-v5-card__text-mask\{/);
 assert.match(productStyle,/overflow:hidden/);
 assert.ok(productMotion.includes('querySelectorAll<HTMLElement>("[data-fertini-caption-line]")'));
@@ -271,5 +275,12 @@ assert.ok(read("app/admin/(panel)/customers/page.tsx").includes("CustomerClub"))
 assert.ok(read("components/admin/CustomerClub.tsx").includes("purchaseCount"));
 assert.ok(!read("components/admin/CustomerClub.tsx").includes("points"));
 assert.ok(read("server/validations/product.validation.ts").includes("validatePhotoChoices"));
+
+// A successful admin login must validate the cookie before a fresh document
+// navigation; never race an App Router replace and refresh into stale RSC.
+const adminLogin=read("app/admin/login/page.tsx");
+assert.ok(adminLogin.includes('fetch("/api/v1/auth/me"'));
+assert.ok(adminLogin.includes('window.location.replace(destination)'));
+assert.ok(!adminLogin.includes('router.replace(destination);router.refresh()'));
 
 console.log("FERTINI v4 showroom, filters, motion and editorial SEO assertions passed.");

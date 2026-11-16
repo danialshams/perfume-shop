@@ -48,6 +48,21 @@ try{
  const token=cookies.match(/admin_access_token=[^;]+/);
  assert.ok(token,"Admin session cookie was not issued");
  const auth={cookie:token[0]};
+ // An actual login must work on the NEXT server-side document request.
+ // Previously the API returned 200 and the browser navigated straight back
+ // to /admin/login; the existing suite only exercised other admin APIs.
+ const loggedInMe=await read("/api/v1/auth/me",{headers:auth});
+ const loggedInJson=await loggedInMe.json();
+ assert.equal(loggedInMe.status,200,
+  "Admin auth cookie must survive a second request: "+JSON.stringify(loggedInJson));
+ assert.equal(loggedInJson.data?.role,"ADMIN","Login session must have ADMIN role");
+ const protectedPage=await read("/admin/dashboard",{headers:auth,redirect:"manual"});
+ assert.equal(protectedPage.status,200,
+  "Authenticated admin dashboard must not redirect back to login: "+protectedPage.status);
+ const protectedHtml=await protectedPage.text();
+ assert.ok(protectedHtml.includes("نمای کلی فروشگاه") &&
+  !protectedPage.headers.get("location")?.includes("/admin/login"),
+  "Admin dashboard did not recognize the new session cookie");
 
  // Legacy coupon API must NOT treat the Promise from requireAdmin as authorization.
  for(const [method,path] of [

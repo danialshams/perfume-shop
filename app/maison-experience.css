@@ -62,16 +62,18 @@
 .maison-intro__shine{
  position:absolute;left:50%;top:0;transform:translateX(-50%);
  width:100%;height:clamp(60px,11vw,152px);
- z-index:2;pointer-events:none;opacity:0;
+ /* Actual brand glyphs are z-index:3; a z-index:2 light is hidden behind
+    their solid dark fill. The light needs to pass IN FRONT of those glyphs. */
+ z-index:5;pointer-events:none;opacity:0;
  background:linear-gradient(107deg,
-  transparent 37%,
-  rgba(188,150,104,.035) 42%,
-  rgba(212,178,126,.11) 46%,
-  rgba(255,251,223,.30) 50%,
-  rgba(199,161,111,.12) 54%,
-  transparent 63%);
+  transparent 33%,
+  rgba(199,159,113,.06) 40%,
+  rgba(220,183,129,.21) 46%,
+  rgba(255,246,207,.54) 50%,
+  rgba(215,173,118,.19) 55%,
+  transparent 67%);
  background-size:240% 100%;background-repeat:no-repeat;
- filter:blur(3px);mix-blend-mode:screen;
+ filter:blur(2px);mix-blend-mode:screen;
 }
 .maison-intro__sub{font-size:11px;letter-spacing:.15em}
 @media(max-width:600px){
