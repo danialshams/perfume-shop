@@ -19,6 +19,7 @@ function MobileProductCard({
 }) {
   const mobileDisplayPrice = displayPrice.replace(/\s*t$/i, " تومان").trim();
   const mobileOriginalPrice = originalPrice?.replace(/\s*t$/i, " تومان").trim() || null;
+  const productLabel = product.scent_family || product.family || product.categoryNames?.[0] || "";
 
 
   return (
@@ -64,68 +65,16 @@ function MobileProductCard({
         />
       </div>
 
-      <div
-        dir="rtl"
-        className="
-          mt-[8px]
-          flex
-          min-h-[28px]
-          items-start
-          justify-between
-          gap-2
-          px-[6px]
-        "
-      >
-        <h3
-          className="
-            min-w-0
-            flex-1
-            line-clamp-1
-            text-right
-            text-[11.7px]
-            font-normal
-            leading-[1.62]
-            tracking-[-0.015em]
-            text-[#33383C]
-            sm:text-[12px]
-            lg:text-[12.2px]
-          "
-        >
-          {product.name}
-        </h3>
-
-        <div dir="ltr" className="shrink-0 whitespace-nowrap text-left">
-          {mobileOriginalPrice && (
-            <p
-              className="
-                text-[10px]
-                font-light
-                leading-[1.2]
-                tracking-[0.005em]
-                text-[#A0A0A0]
-                line-through
-                mb-[2px]
-                sm:text-[10px]
-                lg:text-[10px]
-              "
-            >
-              {mobileOriginalPrice}
-            </p>
-          )}
-
-          <p
-            className="
-              text-[11.8px]
-              font-light
-              leading-[1.5]
-              tracking-[0.005em]
-              text-[#7B8487]
-              sm:text-[11.8px]
-              lg:text-[12px]
-            "
-          >
-            {mobileDisplayPrice}
-          </p>
+      {/* Explicit LTR grid for physical left/name and right/price in RTL pages. */}
+      <div dir="ltr" data-fertini-caption-layout="name-left-price-right"
+        className="mt-[10px] grid min-h-[48px] grid-cols-[minmax(0,1fr)_minmax(0,44%)] items-start gap-x-2 px-[6px]">
+        <div dir="rtl" className="min-w-0 text-left">
+          <h3 className="line-clamp-2 text-left text-[11.7px] font-normal leading-[1.62] tracking-[-0.015em] text-[#33383C] sm:text-[12px] lg:text-[12.2px]">{product.name}</h3>
+          {productLabel && <span className="mt-1 block text-left text-[10px] font-normal leading-[1.6] text-[#849189]">{productLabel}</span>}
+        </div>
+        <div dir="rtl" className="min-w-0 text-right">
+          {mobileOriginalPrice && <p className="mb-[2px] text-right text-[10px] font-light leading-[1.4] text-[#A0A0A0] line-through">{mobileOriginalPrice}</p>}
+          <p className="text-right text-[11px] font-light leading-[1.8] tracking-[0.005em] text-[#566258] sm:text-[11.8px] lg:text-[12px]">{mobileDisplayPrice}</p>
         </div>
       </div>
     </article>

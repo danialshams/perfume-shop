@@ -175,3 +175,16 @@
    transform:none!important;opacity:1!important;visibility:visible!important;
  }
 }
+
+/* Explicit physical placement for all bestsellers/new arrivals/campaign cards. */
+.fertini-v5 [data-fertini-caption-layout="name-left-price-right"]{
+ display:grid;grid-template-areas:"name price";
+ grid-template-columns:minmax(0,1fr) minmax(0,44%);
+ direction:ltr;align-items:start;column-gap:clamp(8px,1.7vw,22px);
+}
+.fertini-v5 [data-fertini-caption-layout="name-left-price-right"] .fertini-v5-card__identity{
+ grid-area:name;direction:rtl;text-align:left;min-width:0;
+}
+.fertini-v5 [data-fertini-caption-layout="name-left-price-right"] .fertini-v5-card__price-column{
+ grid-area:price;direction:rtl;text-align:right;min-width:0;
+}

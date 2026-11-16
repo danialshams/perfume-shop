@@ -116,3 +116,13 @@ body:has(.maison-detail) .fertini-ambient,body:has(.fertini-demo) .fertini-ambie
 @media(max-width:700px){.fertini-demo-shelf__heading{align-items:flex-start;flex-direction:column}.fertini-demo-shelf__grid{grid-template-columns:1fr;gap:44px}.fertini-demo-shelf__photo{aspect-ratio:1/1.1}}
 
 .fertini-demo-shelf__photo img{object-fit:cover;object-position:center}
+
+/* Demo catalog uses the same left-name/right-price geometry. */
+.fertini-demo-shelf [data-fertini-caption-layout="name-left-price-right"]{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,44%);
+ direction:ltr;align-items:start;column-gap:clamp(9px,2vw,22px);
+}
+.fertini-demo-shelf__identity{min-width:0;text-align:left}
+.fertini-demo-shelf__identity h3{font-family:"Vazirmatn",sans-serif;font-size:clamp(16px,2vw,23px);font-weight:350;line-height:1.65;margin:0}
+.fertini-demo-shelf__identity span{display:block;margin-top:3px;text-align:left;color:#87958a;font:11px/1.6 "Cormorant Garamond",Georgia,serif;letter-spacing:.1em}
+.fertini-demo-shelf__details p.fertini-demo-shelf__price{min-width:0;text-align:right;font:400 clamp(10px,1.05vw,13px)/2 "Vazirmatn",sans-serif;color:#3c5040;margin:3px 0 0}

@@ -57,28 +57,10 @@
 .maison-intro__brand{display:flex;justify-content:center;white-space:nowrap;font:400 clamp(60px,11vw,152px)/1 Georgia,"Times New Roman",serif;letter-spacing:.19em;padding-left:.19em}
 .maison-intro__brand [data-intro-letter]{display:inline-block;visibility:hidden;opacity:0;will-change:transform,opacity,filter}
 .maison-intro__rule{width:clamp(110px,19vw,220px);height:1px;background:linear-gradient(90deg,transparent,#ad9070 18%,#886d51 50%,#ad9070 82%,transparent);transform:scaleX(0);transform-origin:50% 50%;opacity:0;margin-top:2px}
-/* This is a light, not a second text layer. Actual letter spans carry the
-   subtle gold highlight, so no shifted copy of FERTINI can move past the logo. */
-.maison-intro__shine{
- position:absolute;left:50%;top:0;transform:translateX(-50%);
- width:100%;height:clamp(60px,11vw,152px);
- /* Actual brand glyphs are z-index:3; a z-index:2 light is hidden behind
-    their solid dark fill. The light needs to pass IN FRONT of those glyphs. */
- z-index:5;pointer-events:none;opacity:0;
- background:linear-gradient(107deg,
-  transparent 33%,
-  rgba(199,159,113,.06) 40%,
-  rgba(220,183,129,.21) 46%,
-  rgba(255,246,207,.54) 50%,
-  rgba(215,173,118,.19) 55%,
-  transparent 67%);
- background-size:240% 100%;background-repeat:no-repeat;
- filter:blur(2px);mix-blend-mode:screen;
-}
+/* No rectangular overlay: light is clipped to the actual glyph shapes. */
 .maison-intro__sub{font-size:11px;letter-spacing:.15em}
 @media(max-width:600px){
  .maison-intro__brand{font-size:clamp(47px,12vw,68px);letter-spacing:.13em;padding-left:.13em}
- .maison-intro__shine{height:clamp(47px,12vw,68px)}
  .maison-intro__rule{width:148px}
 }
 
@@ -94,12 +76,14 @@
   box-shadow:0 0 1px rgba(96,70,48,.14);
   transform-origin:center center;
 }
-/* The sweep uses the position of the stationary wordmark, not a copied word.
-   Respect each assembled letter's own color and leave the hairline clear. */
-.fertini-intro .maison-intro__shine{white-space:normal;letter-spacing:normal;padding:0}
+/* True letter-only champagne highlight, with dark ink at both ends. */
 .fertini-intro .maison-intro__brand [data-intro-letter]{
- position:relative;z-index:3;will-change:color,text-shadow,transform,filter;
-}
-@media(max-width:600px){
- .fertini-intro .maison-intro__shine{height:clamp(47px,12vw,68px)}
+ position:relative;z-index:3;color:#252e29;
+ background-image:linear-gradient(106deg,
+  #252e29 0%,#252e29 39%,#49463e 44%,#83745e 48%,
+  #d7c5a2 50%,#e9dfc5 51%,#ac9675 53%,#4e493e 58%,
+  #252e29 64%,#252e29 100%);
+ background-size:340% 100%;background-position:100% 50%;background-repeat:no-repeat;
+ -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+ will-change:background-position,transform,filter;
 }
