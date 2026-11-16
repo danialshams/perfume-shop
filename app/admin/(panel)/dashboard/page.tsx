@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import {useEffect,useState} from "react";
-import {Package,ShoppingBag,Shapes,Users,ArrowUpLeft,PanelsTopLeft,Search,RefreshCw,ArrowLeft} from "lucide-react";
+import {Package,ShoppingBag,Shapes,Users,ArrowUpLeft,PanelsTopLeft,Search,RefreshCw,ArrowLeft,MessageCircle,CalendarRange} from "lucide-react";
 
 type Recent={id:number;order_number:string|null;customer_name:string|null;total_amount:number;created_at:string};
 type Overview={products:number|null;orders:number|null;categories:number|null;customers:number|null;partial:boolean;recent:Recent[]};
@@ -15,6 +15,9 @@ const tasks=[
  {href:"/admin/products",title:"مدیریت عطرها",detail:"افزودن عطر، قیمت، عکس و موجودی",icon:Package},
  {href:"/admin/content",title:"چیدمان صفحه اصلی",detail:"هیرو، پرفروش‌ها و کارت‌های رایحه",icon:PanelsTopLeft},
  {href:"/admin/seo",title:"تنظیمات سئو",detail:"پیش‌نمایش گوگل و تنظیمات صفحات",icon:Search},
+ {href:"/admin/orders",title:"رسیدگی به سفارش‌ها",detail:"جزئیات سفارش، پرداخت و وضعیت ارسال",icon:ShoppingBag},
+ {href:"/admin/support",title:"صندوق گفتگوی آنلاین",detail:"پیام‌های جدید و پاسخ به مشتریان",icon:MessageCircle},
+ {href:"/admin/campaigns",title:"کمپین‌های فروش",detail:"بنر، بازه زمانی و محصولات تخفیف‌دار",icon:CalendarRange},
 ] as const;
 
 export default function AdminDashboardPage(){
@@ -53,7 +56,7 @@ export default function AdminDashboardPage(){
   <section className="fst-dashboard-orders">
    <div className="fst-dashboard-orders-heading"><h2>آخرین سفارش‌ها</h2><Link href="/admin/orders">مدیریت سفارش‌ها <ArrowLeft size={15}/></Link></div>
    {data?.recent?.length?data.recent.slice(0,5).map(order=><Link href={"/admin/orders?openOrder="+order.id} key={order.id} className="fst-list-row">
-    <span><b>{order.customer_name||"مشتری"}</b><small className="block">سفارش #{order.order_number||order.id}</small></span>
+    <span><b>{order.customer_name||"مشتری"}</b><small className="block">سفارش #{order.order_number||order.id}{order.created_at?" · "+new Date(order.created_at).toLocaleDateString("fa-IR"):""}</small></span>
     <strong>{Number(order.total_amount||0).toLocaleString("fa-IR")} تومان</strong>
    </Link>):<p className="fst-empty">{loading?"در حال دریافت سفارش‌ها…":error?"دریافت سفارش‌ها ممکن نشد.":"هنوز سفارشی ثبت نشده است."}</p>}
   </section>
