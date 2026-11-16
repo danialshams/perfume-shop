@@ -1106,7 +1106,7 @@ export default function EditProductDrawer({
                 </Form.Item>
                 <Divider titlePlacement="right">گروه بویایی</Divider>
 
-                <Card className="rounded-3xl border border-neutral-200 bg-neutral-50/70">
+                <Card className="rounded-lg border border-[#dfe7de] bg-[#f8faf7]/70">
                     <Form.Item
                         name="scent_family_mode"
                         initialValue="EXISTING"
@@ -1152,10 +1152,10 @@ export default function EditProductDrawer({
 
                 <Divider titlePlacement="right">فایل صوتی محصول</Divider>
 
-                <div className="mb-6 rounded-3xl border border-neutral-200 bg-neutral-50/70 p-4">
+                <div className="mb-6 rounded-lg border border-[#dfe7de] bg-[#f8faf7]/70 p-4">
                     {voiceFileValue ? (
                         <div className="space-y-4">
-                            <div className="rounded-2xl border border-neutral-200 bg-white p-4">
+                            <div className="rounded-md border border-[#dfe7de] bg-white p-4">
                                 <div className="mb-3 flex items-center gap-2 font-medium text-neutral-800">
                                     <Music4 size={18} />
                                     فایل صوتی آپلود شده
@@ -1172,12 +1172,12 @@ export default function EditProductDrawer({
                             </div>
 
                             {voiceUploading ? (
-                                <div className="rounded-2xl border border-primary/20 bg-white p-4">
+                                <div className="rounded-md border border-[#dce7dc] bg-white p-4">
                                     <div className="mb-2 flex items-center justify-between text-sm">
                                         <span className="font-medium text-neutral-700">
                                             در حال آپلود فایل صوتی...
                                         </span>
-                                        <span className="font-bold text-primary">
+                                        <span className="font-bold text-[#425e4b]">
                                             {voiceUploadPercent}%
                                         </span>
                                     </div>
@@ -1289,7 +1289,7 @@ export default function EditProductDrawer({
                             </div>
                         </div>
                     ) : (
-                        <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-6 text-center">
+                        <div className="rounded-md border border-dashed border-neutral-300 bg-white p-6 text-center">
                             <div className="mb-3 flex justify-center text-neutral-500">
                                 <Music4 size={28} />
                             </div>
@@ -1303,12 +1303,12 @@ export default function EditProductDrawer({
                             </div>
 
                             {voiceUploading ? (
-                                <div className="mx-auto mb-4 max-w-md rounded-2xl border border-primary/20 bg-neutral-50 p-4 text-right">
+                                <div className="mx-auto mb-4 max-w-md rounded-md border border-[#dce7dc] bg-[#f8faf7] p-4 text-right">
                                     <div className="mb-2 flex items-center justify-between text-sm">
                                         <span className="font-medium text-neutral-700">
                                             در حال آپلود فایل صوتی...
                                         </span>
-                                        <span className="font-bold text-primary">
+                                        <span className="font-bold text-[#425e4b]">
                                             {voiceUploadPercent}%
                                         </span>
                                     </div>
