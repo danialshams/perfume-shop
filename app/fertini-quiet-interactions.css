@@ -54,7 +54,7 @@
  cursor:pointer;transition:background .35s,color .35s,border-color .35s;
 }
 .fertini-music-consent__action.is-accept{
- background:#475b4d;border-color:#475b4d;color:#f8f9f4;
+ background:#475b4d;border:0;color:#f8f9f4;
 }
 .fertini-music-consent__action.is-accept:hover{background:#36473b}
 .fertini-music-consent__action.is-decline:hover{background:#e8ebe3}
