@@ -2,13 +2,13 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {useEffect,useState,type ReactNode} from "react";
-import {Home,CalendarRange,Package,ShoppingBag,Menu,X} from "lucide-react";
+import {Home,PanelsTopLeft,Package,ShoppingBag,Menu,X} from "lucide-react";
 import AdminSidebar from "./admin-sidebar";
 import AdminHeader from "./admin-header";
 
 const shortcuts=[
  {href:"/admin/dashboard",title:"خانه",icon:Home},
- {href:"/admin/campaigns",title:"کمپین",icon:CalendarRange},
+ {href:"/admin/content",title:"صفحه اصلی",icon:PanelsTopLeft},
  {href:"/admin/products",title:"محصولات",icon:Package},
  {href:"/admin/orders",title:"سفارش‌ها",icon:ShoppingBag},
 ] as const;
@@ -25,7 +25,8 @@ export default function AdminShell({children,previewGuest=false}:{children:React
   return()=>{document.body.style.overflow=old;window.removeEventListener("keydown",escape)};
  },[open]);
  return <div className="fertini-studio" dir="rtl">
-  <aside className={"fst-sidebar "+(open?"is-open":"")}>
+  <a href="#admin-main" className="fst-skip-link">رفتن به محتوای اصلی</a>
+  <aside id="fst-main-sidebar" className={"fst-sidebar "+(open?"is-open":"")}>
    <button type="button" aria-label="بستن منو" className="fst-sidebar-close" onClick={()=>setOpen(false)}><X size={20}/></button>
    <AdminSidebar onNavigate={()=>setOpen(false)}/>
   </aside>

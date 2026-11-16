@@ -16,13 +16,13 @@ type Props = {
 
 export default function AdminStatusBadge({ type, label }: Props) {
     const map = {
-        active: "success",
+        active: "#e7f1e7",
         inactive: "default",
-        draft: "warning",
-        featured: "magenta",
+        draft: "#f7eedc",
+        featured: "#e3ece1",
         "not-featured": "default",
-        "low-stock": "error",
-        "in-stock": "processing",
+        "low-stock": "#fae5da",
+        "in-stock": "#e8f0e9",
     } as const;
 
     return <Tag color={map[type]}>{label}</Tag>;

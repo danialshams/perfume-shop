@@ -8,6 +8,7 @@ import AdminShell from "@/components/admin/admin-shell";
 import AdminAntdProvider from "@/components/panel-sections/admin-antd-provider";
 import "./fertini-studio.css";
 import "./fertini-unified.css";
+import "./fertini-studio-v2.css";
 export const dynamic="force-dynamic";
 export const metadata:Metadata={robots:{index:false,follow:false}};
 export default async function AdminPanelLayout({children}:{children:ReactNode}){

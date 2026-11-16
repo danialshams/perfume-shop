@@ -31,7 +31,7 @@ export default function AdminDataTable<T extends object>({
     scroll = { x: 1200 },
 }: Props<T>) {
     return (
-        <div className="overflow-hidden rounded-[28px] border border-white/60 bg-white/90 shadow-sm backdrop-blur">
+        <div className="fst-data-table-frame">
             <Table<T>
                 columns={columns}
                 dataSource={data}
