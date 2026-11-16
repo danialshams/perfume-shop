@@ -120,23 +120,21 @@
 .fertini-v5-family--oud .fertini-v5-family__photo{background:linear-gradient(150deg,#141719,#51423b 55%,#262321)}
 .fertini-v5-family--vanilla .fertini-v5-family__photo{background:linear-gradient(140deg,#be9c74,#e6d5bb 55%,#aa855d)}
 
-/* Editorial product captions: name on the left, price on the right,
-   and the small fragrance label below the name. Works for all cards in
-   Bestsellers and New Arrivals, on desktop and on narrow mobile screens. */
+/* Editorial captions: name + label physically RIGHT, price physically LEFT.
+   Same geometry in bestsellers, new arrivals and campaign cards. */
 .fertini-v5 .fertini-v5-card__info{padding-top:clamp(13px,1.6vw,21px)}
 .fertini-v5 .fertini-v5-card__details{
- /* Physical columns, not logical RTL flex order:
-    left = name + small label, right = price + discount/demo label. */
+ /* RTL first grid column sits on the physical right. */
  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,44%);
- grid-template-rows:auto;align-items:start;direction:ltr;
+ grid-template-rows:auto;align-items:start;direction:rtl;
  column-gap:clamp(10px,1.8vw,24px);min-width:0;
 }
 .fertini-v5 .fertini-v5-card__identity{
- grid-column:1;grid-row:1;min-width:0;direction:rtl;text-align:left;
+ grid-column:1;grid-row:1;min-width:0;direction:rtl;text-align:right;
 }
 .fertini-v5 .fertini-v5-card__price-column{
  grid-column:2;grid-row:1;min-width:0;max-width:100%;
- direction:rtl;text-align:right;justify-self:stretch;
+ direction:rtl;text-align:left;justify-self:stretch;
 }
 .fertini-v5 .fertini-v5-card__text-mask{
  display:block;overflow:hidden;line-height:normal;
@@ -147,20 +145,20 @@
 }
 .fertini-v5 .fertini-v5-card__identity h3{
  color:#35473a;font:350 clamp(19px,2.15vw,31px)/1.6 "Vazirmatn","Vazirmatn RD",sans-serif;
- margin:0;letter-spacing:0;overflow-wrap:anywhere;text-align:left;
+ margin:0;letter-spacing:0;overflow-wrap:anywhere;text-align:right;
 }
 .fertini-v5 .fertini-v5-card__subtitle{
  font:400 clamp(9px,.9vw,11px)/1.7 "Cormorant Garamond",Georgia,serif;
- letter-spacing:.11em;color:#849189;text-align:left;
+ letter-spacing:.11em;color:#849189;text-align:right;
  margin-top:1px;
 }
 .fertini-v5 .fertini-v5-card__price-column p.fertini-v5-card__price{
  color:#3c5040;font:400 clamp(11px,1.05vw,14px)/2 "Vazirmatn",sans-serif;
- text-align:right;margin:3px 0 0;white-space:normal;
+ text-align:left;margin:3px 0 0;white-space:normal;
 }
 .fertini-v5 .fertini-v5-card__price-note{
  color:#8c998e;font:350 10px/1.8 "Vazirmatn",sans-serif;
- text-align:right;margin-top:1px;
+ text-align:left;margin-top:1px;
 }
 @media(max-width:600px){
  .fertini-v5 .fertini-v5-card__details{gap:7px}
@@ -176,15 +174,15 @@
  }
 }
 
-/* Explicit physical placement for all bestsellers/new arrivals/campaign cards. */
-.fertini-v5 [data-fertini-caption-layout="name-left-price-right"]{
+/* Final physical grid: first item RIGHT, second item LEFT. */
+.fertini-v5 [data-fertini-caption-layout="name-right-price-left"]{
  display:grid;grid-template-areas:"name price";
  grid-template-columns:minmax(0,1fr) minmax(0,44%);
- direction:ltr;align-items:start;column-gap:clamp(8px,1.7vw,22px);
+ direction:rtl;align-items:start;column-gap:clamp(8px,1.7vw,22px);
 }
-.fertini-v5 [data-fertini-caption-layout="name-left-price-right"] .fertini-v5-card__identity{
- grid-area:name;direction:rtl;text-align:left;min-width:0;
+.fertini-v5 [data-fertini-caption-layout="name-right-price-left"] .fertini-v5-card__identity{
+ grid-area:name;grid-column:1;grid-row:1;direction:rtl;text-align:right;min-width:0;
 }
-.fertini-v5 [data-fertini-caption-layout="name-left-price-right"] .fertini-v5-card__price-column{
- grid-area:price;direction:rtl;text-align:right;min-width:0;
+.fertini-v5 [data-fertini-caption-layout="name-right-price-left"] .fertini-v5-card__price-column{
+ grid-area:price;grid-column:2;grid-row:1;direction:rtl;text-align:left;min-width:0;
 }

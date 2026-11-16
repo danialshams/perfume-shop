@@ -74,20 +74,23 @@ export default function MaisonIntro() {
     };
     unlockScrollRef.current = releaseScroll;
 
-    // Set before the first tween so a React remount or browser reload cannot
-    // show a second copy while the first intro is already in progress.
-    introStartedInDocument = true;
-    try { window.sessionStorage.setItem(START_KEY, "1"); } catch {}
-    if (introStartedAt === null) introStartedAt = performance.now();
-
+    // Keep the brand hidden until its actual lightweight face is ready.
+    // A late Google Fonts swap changes letter shapes mid-animation.
+    let cancelled = false;
     let finishFrame = 0;
-    const ctx = gsap.context(() => {
+    let ctx: gsap.Context | null = null;
+    const startIntro = () => {
+      if (cancelled) return;
+      introStartedInDocument = true;
+      try { window.sessionStorage.setItem(START_KEY, "1"); } catch {}
+      if (introStartedAt === null) introStartedAt = performance.now();
+      ctx = gsap.context(() => {
       const letters = root.querySelectorAll<HTMLElement>("[data-intro-letter]");
       const brand = root.querySelector<HTMLElement>(".maison-intro__brand");
       const line = root.querySelector<HTMLElement>(".maison-intro__rule");
       const sub = root.querySelector<HTMLElement>(".maison-intro__sub");
-      // All characters use the exact same existing Georgia wordmark font.
-      // Only the intro assembles letters; section headings reveal as full lines.
+      // Keep the same 300-weight Cormorant face through assembly, shimmer and fade.
+      // Only position, blur, opacity and letter fill-position change.
       gsap.set(brand,{autoAlpha:1});
       gsap.set(line,{scaleX:0,autoAlpha:1,transformOrigin:"50% 50%"});
       // Paint inside actual glyphs only: no rectangular light over letter gaps.
@@ -112,11 +115,17 @@ export default function MaisonIntro() {
       tl.time(Math.min(elapsed,tl.duration()));
       if(elapsed<tl.duration())tl.play();
       else finishFrame=window.requestAnimationFrame(finish);
-    },root);
+      },root);
+    };
+    // Preload the exact font face to prevent geometry changing during or after shine.
+    void document.fonts.load('300 140px "Cormorant Garamond"', "FERTINI")
+      .catch(() => [])
+      .then(startIntro);
 
     return () => {
+      cancelled = true;
       window.cancelAnimationFrame(finishFrame);
-      ctx.revert();
+      ctx?.revert();
       releaseScroll();
     };
   }, [finish]);

@@ -117,7 +117,7 @@ export default function LuxuryProductsView({demoMode=false}:{demoMode?:boolean})
                 {sampleProducts.map(item=>
                   <Link key={item.id} className="fertini-demo-shelf__card" href={"/fragrance/"+item.id}>
                     <div className="fertini-demo-shelf__photo"><Image fill sizes="(min-width:900px) 30vw, 88vw" src={item.image} alt={item.name}/></div>
-                    <div className="fertini-demo-shelf__details" dir="ltr" data-fertini-caption-layout="name-left-price-right">
+                    <div className="fertini-demo-shelf__details" dir="rtl" data-fertini-caption-layout="name-right-price-left">
                       <div className="fertini-demo-shelf__identity" dir="rtl"><h3>{item.name}</h3><span lang="en" dir="ltr">{item.subtitle}</span></div>
                       <p className="fertini-demo-shelf__price" dir="rtl">از {item.variants[1].price.toLocaleString("fa-IR")} تومان</p>
                     </div>

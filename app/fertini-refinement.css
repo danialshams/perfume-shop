@@ -65,12 +65,12 @@
 .fertini-edit__journal strong{font-weight:300;font-size:17px}
 .fertini-edit__journal>span:last-child{font-size:12px}
 .fertini-footer{background:#1d2221}
-.fertini-footer .maison-footer__wordmark{font-weight:300;font-size:clamp(80px,10vw,164px);letter-spacing:.08em;white-space:nowrap}
+.fertini-footer .maison-footer__wordmark{font-family:var(--maison-latin);font-weight:300;font-synthesis:none;-webkit-text-stroke:.5px #1d2221;font-size:clamp(80px,10vw,164px);letter-spacing:.09em;white-space:nowrap}
 .fertini-footer .maison-footer__wordmark span{font-size:13px}
 .fertini-footer .maison-footer__links>div{gap:21px}
 .fertini-footer .maison-footer__links a{display:block}
 .fertini-intro{background:#e8ece8!important;color:#252e29!important}
-.fertini-intro .maison-intro__brand{font-weight:300;letter-spacing:.2em!important;font-size:clamp(64px,12vw,140px)}
+.fertini-intro .maison-intro__brand{font-family:var(--maison-latin);font-weight:300;font-synthesis:none;-webkit-text-stroke:.5px #e8ece8;letter-spacing:.2em!important;font-size:clamp(64px,12vw,140px)}
 .fertini-intro .maison-intro__sub{font:12px "Cormorant Garamond",Georgia,serif;letter-spacing:.29em;color:#7d8880}
 .fertini-intro .maison-intro__content{gap:22px}
 .fertini-intro .maison-intro__overline{display:none!important}
