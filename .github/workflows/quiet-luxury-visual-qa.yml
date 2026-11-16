@@ -23,6 +23,14 @@ jobs:
         with:
           node-version: "22"
           cache: npm
+      - name: Inspect public cPanel revision (informational, never reveals credentials)
+        continue-on-error: true
+        run: |
+          echo "Production revision at time of CI:"
+          curl -fsS --connect-timeout 8 --max-time 15 \
+            https://fertiniperfume.com/api/v1/deployment \
+            | head -c 350 || true
+          echo
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
       - name: Test cinematic storefront structure
