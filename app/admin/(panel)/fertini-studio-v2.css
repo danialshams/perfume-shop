@@ -407,3 +407,75 @@
  .fst-product-drawer .ant-drawer-extra button{min-height:36px;padding:5px 9px;font-size:11px}
  .fst-studio-confirm>div:nth-child(2){padding:20px}
 }
+
+/* Campaign and shipping focused workspaces: one list, one visible editor. */
+.fertini-studio :is(.fst-campaign-workbench,.fst-shipping-workbench){
+ display:grid;grid-template-columns:minmax(228px,.73fr) minmax(0,1.27fr);
+ gap:18px;align-items:start;direction:rtl;
+}
+.fertini-studio :is(.fst-campaign-index,.fst-shipping-index){
+ background:#fff;border:1px solid #e2e9e0;border-radius:8px;padding:15px;
+ position:sticky;top:83px;max-height:calc(100dvh - 105px);
+ overflow:auto;min-width:0;scrollbar-width:thin;
+}
+.fertini-studio .fst-campaign-index__head{
+ display:flex;align-items:center;justify-content:space-between;gap:7px;
+ border-bottom:1px solid #e8eee7;padding:4px 4px 15px;margin-bottom:11px;
+}
+.fertini-studio .fst-campaign-index__head h2{font-size:14px;font-weight:600;color:#304838;margin:0}
+.fertini-studio .fst-campaign-index__head>span{font-size:10px;color:#829586;white-space:nowrap}
+.fertini-studio .fst-campaign-index__list{display:grid;gap:7px}
+.fertini-studio .fst-campaign-index__item{
+ display:flex;align-items:center;gap:10px;width:100%;text-align:right;
+ border:1px solid transparent;background:#fafbf9;padding:11px;
+ border-radius:6px;min-height:75px;transition:background .15s,border-color .15s;
+}
+.fertini-studio .fst-campaign-index__item:hover,
+.fertini-studio .fst-campaign-index__item.is-active{background:#edf4ec;border-color:#aec8b1}
+.fertini-studio .fst-campaign-index__photo{
+ width:46px;height:58px;flex:none;background:#e8eee5;border-radius:4px;
+ overflow:hidden;display:grid;place-items:center;color:#61796a;font:22px Georgia,serif;
+}
+.fertini-studio .fst-campaign-index__photo img{display:block;width:100%;height:100%;object-fit:cover}
+.fertini-studio .fst-campaign-index__copy{min-width:0;display:grid;gap:6px;flex:1}
+.fertini-studio .fst-campaign-index__copy strong{font-size:12px;font-weight:600;line-height:1.6;overflow-wrap:anywhere}
+.fertini-studio .fst-campaign-index__copy small{font-size:10px;color:#879689;line-height:1.65}
+.fertini-studio .fst-campaign-index__state{font-size:9px;background:#f1f2ef;color:#78837a;padding:4px 7px;border-radius:4px}
+.fertini-studio .fst-campaign-index__state.is-enabled{background:#e2efe1;color:#477350}
+.fertini-studio .fst-campaign-editor,.fertini-studio .fst-shipping-editor{min-width:0;display:grid;gap:13px}
+.fertini-studio .fst-campaign-editor>.fst-card{padding:clamp(18px,2.5vw,28px)}
+.fertini-studio .fst-campaign-editor>.fst-card>.fst-editor-heading{padding-bottom:15px;border-bottom:1px solid #e7ede5;margin-bottom:20px}
+.fertini-studio .fst-campaign-editor>.fst-card>.fst-editor-heading button{width:33px;height:33px;display:grid;place-items:center;border:1px solid #e1e8df;border-radius:5px;color:#526d57}
+.fertini-studio .fst-campaign-editor>.fst-card>.fst-editor-heading button:hover{background:#f0f5ef}
+.fertini-studio .fst-campaign-editor .fst-marketing-banner{height:clamp(175px,23vw,295px);background:#f1f5ef}
+.fertini-studio .fst-campaign-editor .fst-marketing-products{grid-template-columns:repeat(2,minmax(0,1fr));max-height:370px}
+.fertini-studio .fst-shipping-index__item{
+ border:1px solid transparent;border-radius:6px;background:#fafbf9;
+ padding:13px 14px;min-height:83px;display:grid;gap:4px;width:100%;
+ text-align:right;margin-top:7px;
+}
+.fertini-studio .fst-shipping-index__item:hover,.fertini-studio .fst-shipping-index__item.is-active{
+ background:#edf4ec;border-color:#aec8b1
+}
+.fertini-studio .fst-shipping-index__item strong{font-size:13px;font-weight:600;color:#344b3b}
+.fertini-studio .fst-shipping-index__item small{font-size:10px;color:#7c8e7f}
+.fertini-studio .fst-shipping-index__item span{font-size:10px;color:#54765b;justify-self:start}
+.fertini-studio .fst-shipping-editor>.fst-card{padding:clamp(18px,2vw,28px)}
+.fertini-studio .fst-shipping-editor>.fst-card>.fst-editor-heading{padding-bottom:12px;border-bottom:1px solid #e7eee6}
+.fertini-studio .fst-shipping-editor>.fst-card>.fst-editor-heading button{color:#9c6155}
+.fertini-studio :is(.fst-campaign-workbench,.fst-shipping-workbench) .fst-save-bar{
+ position:sticky;bottom:14px;z-index:50
+}
+@media(max-width:1100px){
+ .fertini-studio :is(.fst-campaign-workbench,.fst-shipping-workbench){grid-template-columns:1fr}
+ .fertini-studio :is(.fst-campaign-index,.fst-shipping-index){position:static;max-height:none}
+ .fertini-studio .fst-campaign-index__list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:820px){
+ .fertini-studio :is(.fst-campaign-workbench,.fst-shipping-workbench){gap:13px}
+ .fertini-studio .fst-campaign-index__list{grid-template-columns:1fr}
+ .fertini-studio .fst-campaign-editor .fst-marketing-products{grid-template-columns:1fr 1fr}
+ .fertini-studio :is(.fst-campaign-workbench,.fst-shipping-workbench) .fst-save-bar{
+  bottom:calc(70px + env(safe-area-inset-bottom))
+ }
+}
