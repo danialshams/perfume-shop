@@ -3,7 +3,7 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {LayoutDashboard,Package,Shapes,ShoppingBag,PanelsTopLeft,
   ChevronLeft,ExternalLink,Users,TicketPercent,MessageSquare,MessageCircle,HelpCircle,
-  Search,Flower2,Music2,Truck,CalendarRange,Wallet} from "lucide-react";
+  Search,Flower2,Music2,Truck,CalendarRange} from "lucide-react";
 
 const groups=[
  {title:"فروش و کالا",links:[
@@ -12,8 +12,7 @@ const groups=[
   {href:"/admin/categories",title:"دسته‌بندی محصولات",icon:Shapes},
   {href:"/admin/scent-families",title:"گروه‌های بویایی",icon:Flower2},
   {href:"/admin/shipping",title:"روش‌های ارسال",icon:Truck},
-  {href:"/admin/coupons",title:"کدهای تخفیف",icon:TicketPercent},
-  {href:"/admin/payments",title:"تراکنش‌ها",icon:Wallet}]},
+  {href:"/admin/coupons",title:"کدهای تخفیف",icon:TicketPercent}]},
  {title:"محتوا و ظاهر فروشگاه",links:[
   {href:"/admin/content",title:"صفحه اصلی و اسلایدها",icon:PanelsTopLeft},
   {href:"/admin/campaigns",title:"کمپین‌ها",icon:CalendarRange},
