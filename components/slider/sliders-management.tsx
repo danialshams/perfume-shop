@@ -10,18 +10,18 @@ import {
     Space,
     Table,
     Tag,
-    Typography,
     Empty,
     Spin,
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
 
 import MobileSliderCard from "./mobile-slider-card";
+import AdminPageHeader from "../panel-sections/admin-page-header";
 import SliderForm from "./slider-form";
 import type { SliderFormValues, SliderItem } from "./slider-types";
 
 const { useBreakpoint } = Grid;
-const { Title } = Typography;
+// Layout typography is shared across all FERTINI Studio pages.
 
 export default function SlidersManagement() {
     const { message, modal } = App.useApp();
@@ -270,22 +270,14 @@ export default function SlidersManagement() {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between gap-3">
-                <Title level={4} className="!m-0">
-                    مدیریت اسلایدرها
-                </Title>
-
-                <Button
-                    type="primary"
-                    onClick={() => {
-                        setEditingItem(null);
-                        setOpenForm(true);
-                    }}
-                    className="rounded-xl"
-                >
-                    افزودن اسلایدر
-                </Button>
-            </div>
+            <AdminPageHeader
+                title="مدیریت اسلایدرها"
+                subtitle="اسلایدهای ثبت‌شده را بررسی و ویرایش کن. اسلایدهای هیرو صفحه اصلی از ویرایشگر محتوا هم مدیریت می‌شوند."
+                actions={<Button type="primary" onClick={() => {
+                    setEditingItem(null);
+                    setOpenForm(true);
+                }}>افزودن اسلایدر</Button>}
+            />
 
             {isMobile ? (
                 loading ? (
@@ -322,6 +314,7 @@ export default function SlidersManagement() {
 
             {isMobile ? (
                 <Modal
+                    rootClassName="fst-studio-modal"
                     open={openForm}
                     onCancel={closeForm}
                     footer={null}
@@ -332,6 +325,7 @@ export default function SlidersManagement() {
                 </Modal>
             ) : (
                 <Drawer
+                    rootClassName="fst-studio-drawer"
                     open={openForm}
                     onClose={closeForm}
                     destroyOnClose
