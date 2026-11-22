@@ -51,7 +51,15 @@ export default function MaisonIntro() {
         window.sessionStorage.getItem(START_KEY) === "1";
     } catch {}
 
-    if (seen || new URLSearchParams(window.location.search).has("studioPreview") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // Do not run a long, GPU/filter-heavy intro on older iPhones or low-memory devices.
+    // Next.js 16's JavaScript baseline is newer than Safari 15, so the HTML
+    // also contains a pre-hydration escape hatch for those browsers.
+    const oldIOS = /iP(?:hone|ad|od)/.test(navigator.userAgent) &&
+      /OS (?:[0-9]|1[0-5])_/.test(navigator.userAgent);
+    const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+    const constrained = oldIOS || (typeof memory === "number" && memory <= 2) ||
+      (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 2);
+    if (seen || constrained || new URLSearchParams(window.location.search).has("studioPreview") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       // Happens before the next paint: no brief second splash on back navigation.
       root.style.display = "none";
       const frame = window.requestAnimationFrame(finish);
@@ -118,13 +126,18 @@ export default function MaisonIntro() {
       },root);
     };
     // Preload the exact font face to prevent geometry changing during or after shine.
-    void document.fonts.load('300 140px "Cormorant Garamond"', "FERTINI")
-      .catch(() => [])
-      .then(startIntro);
+    // A blocked Google Fonts request used to keep the visitor behind the intro
+    // indefinitely. Never wait for a third-party font longer than 900ms.
+    const fontReady = document.fonts
+      ? document.fonts.load('300 140px "Cormorant Garamond"', "FERTINI").catch(() => [])
+      : Promise.resolve([]);
+    void Promise.race([fontReady, new Promise(resolve => setTimeout(resolve, 900))]).then(startIntro);
+    const safetyTimer = window.setTimeout(finish, 6500);
 
     return () => {
       cancelled = true;
       window.cancelAnimationFrame(finishFrame);
+      window.clearTimeout(safetyTimer);
       ctx?.revert();
       releaseScroll();
     };
