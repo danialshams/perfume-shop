@@ -23,7 +23,13 @@ type Item={element:HTMLElement;prepare:()=>void;play:()=>void;settle:()=>void;tl
 export default function FertiniEditorialMotion(){
  const pathname=usePathname();
  useEffect(()=>{
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const ua=navigator.userAgent;
+  const legacy=/iP(?:hone|ad|od)/.test(ua)&&/OS (?:[0-9]|1[0-5])_/.test(ua);
+  const memory=(navigator as Navigator & {deviceMemory?:number}).deviceMemory;
+  // The photos and captions stay visible; only the expensive clip/blur choreography is skipped.
+  if(legacy || (typeof memory==="number" && memory<=2) ||
+     (navigator.hardwareConcurrency>0 && navigator.hardwareConcurrency<=2) ||
+     matchMedia("(prefers-reduced-motion: reduce)").matches)return;
   let live=true,ready=pathname!=="/";
   if(pathname==="/")try{ready=sessionStorage.getItem("fertini:intro:seen:v3")==="1"}catch{ready=true}
   const seen=new WeakSet<HTMLElement>(),items:Item[]=[];
