@@ -196,3 +196,17 @@
   animation:none!important;
  }
 }
+
+
+/* Legacy and memory-constrained devices: no permanent GPU layers or blur masks.
+   Original photographs are delivered unchanged. */
+html.fertini-legacy-device .fertini-v5-card__media img,
+html.fertini-legacy-device .fertini-v5-family__photo img,
+html.fertini-legacy-device .fertini-v5-hero .fertini-hero__image img {
+  will-change:auto !important;
+  transform:none !important;
+  transition:none !important;
+}
+html.fertini-legacy-device .fertini-v5 .fertini-v5-hero .fertini-hero__image.is-active img {
+  transform:none !important;
+}
