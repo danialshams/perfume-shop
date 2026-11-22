@@ -41,7 +41,10 @@ export async function generateMetadata():Promise<Metadata>{
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const music=(await readSiteContent().catch(()=>DEFAULT_SITE_CONTENT)).music;
   return <html lang="fa" dir="rtl" className="h-full antialiased">
-    <head><script dangerouslySetInnerHTML={{__html:"try{if(sessionStorage.getItem('fertini:intro:seen:v3')==='1')document.documentElement.classList.add('fertini-intro-seen')}catch(e){}"}} /></head>
+    <head>
+      <link rel="preconnect" href="https://fertiniperfume.com" crossOrigin="anonymous"/>
+      <script dangerouslySetInnerHTML={{__html:"try{var ua=navigator.userAgent;var legacy=/iP(?:hone|ad|od)/.test(ua)&&/OS (?:[0-9]|1[0-5])_/.test(ua);if(legacy)document.documentElement.classList.add('fertini-legacy-device','fertini-intro-seen');if(sessionStorage.getItem('fertini:intro:seen:v3')==='1')document.documentElement.classList.add('fertini-intro-seen')}catch(e){}"}} />
+    </head>
     <body id="top" className="flex min-h-full flex-col font-sans">
       <MaisonAmbientSound audioUrl={music.audioUrl} musicEnabled={music.enabled}><CartCountProvider>{children}<FertiniEditorialMotion/><SupportChat/></CartCountProvider></MaisonAmbientSound>
     </body>
