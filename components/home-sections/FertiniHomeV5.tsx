@@ -38,7 +38,8 @@ function ResilientPhoto({src,fallback,alt,sizes,priority=false,loading}:{
     </div>;
   }
   return <Image src={actual} alt={alt} fill unoptimized priority={priority}
-    loading={priority?undefined:loading} sizes={sizes}
+    loading={priority?undefined:loading} fetchPriority={priority?"high":loading==="eager"?"low":undefined}
+    decoding="async" sizes={sizes}
     onError={()=>{
       if(!sourceFailed)setFailedSrc(src);
       else setFailedBackup(fallback);
@@ -279,7 +280,7 @@ export default function FertiniHomeV5({content=DEFAULT_SITE_CONTENT,products=DEM
       <div className="fertini-hero__gallery">
         {slides.map((slide,index)=><div key={index} className={"fertini-hero__image"+(index===active?" is-active":"")+(slide.photo.endsWith(".svg")?" is-vector-art":"")} aria-hidden={index!==active}>
           <ResilientPhoto src={slide.photo} fallback={slide.fallback}
-            priority={index<2} sizes="100vw" alt={index===active?slide.alt:""}/>
+            priority={index===0} loading={index===0?undefined:"eager"} sizes="100vw" alt={index===active?slide.alt:""}/>
         </div>)}
         <div className="fertini-hero__controls" role="group" aria-label="اسلایدهای معرفی">
           <span lang="en" dir="ltr">{String(active+1).padStart(2,"0")} / {String(slides.length).padStart(2,"0")}</span>
